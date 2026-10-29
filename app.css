@@ -30,6 +30,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .menu-btn { min-height: 72px; display: flex; flex: none; flex-direction: column; justify-content: center; gap: 5px; width: 56px; padding: 0 14px; background: var(--ink); border: 0; border-radius: 0; cursor: pointer; }
 .menu-btn span { display: block; height: 3px; background: #fff; }
 .side-body { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.fullmap { position: absolute; right: 10px; bottom: 40px; z-index: 5; padding: 8px 12px; font-weight: 700; color: #fff; background: var(--ink); border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
 .stage { position: relative; min-height: 0; background: #e8e4da; }
 .map { position: absolute; inset: 0; }
 .map-note { position: absolute; left: 16px; bottom: 36px; right: 16px; max-width: 420px; background: var(--hi); border: 3px solid var(--ink); padding: 8px 12px; font-weight: 700; }
