@@ -134,6 +134,19 @@ assert.equal((await page.textContent('[data-testid=detail] .ctx')).trim(), 'ä½æ
 await page.fill('.search', '');
 ok('Heading shows "year, location" (location omitted when the handout gives none); context text comes from the notes');
 
+// Collapsible building list (desktop)
+const sideW = () => page.evaluate(() => document.querySelector('.side').getBoundingClientRect().width);
+assert.ok((await sideW()) > 300);
+await page.click('.side-toggle');
+await page.waitForTimeout(100);
+assert.ok((await sideW()) < 2);
+const stageW = await page.evaluate(() => document.querySelector('.stage').getBoundingClientRect().width);
+assert.ok(stageW >= 1270, String(stageW));
+await page.click('.side-toggle');
+await page.waitForTimeout(100);
+assert.ok((await sideW()) > 300);
+ok('Building list collapses to give the map the full width, and expands again');
+
 // Plain-text rendering (HTML is not executed)
 const injected = await page.evaluate(() => document.querySelectorAll('.detail script, .list script, .detail img').length);
 assert.equal(injected, 0);

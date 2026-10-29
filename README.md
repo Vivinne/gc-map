@@ -59,7 +59,7 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 ```bash
 npm test     # 17 unit tests: filtering, geometry, hash, parsing, data validation
 npm run typecheck
-npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (18 checks)
+npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (19 checks)
 ```
 
 `e2e` needs `esbuild` and `playwright` (listed as devDependencies); the first run needs `npx playwright install chromium`.

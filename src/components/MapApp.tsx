@@ -15,6 +15,7 @@ const placesById = new Map(dataset.places.map((p) => [p.id, p]));
 
 export default function MapApp() {
   const [init] = useState(() => parseHash(typeof window === 'undefined' ? '' : window.location.hash));
+  const [sideOpen, setSideOpen] = useState(true);
   const [eras, setEras] = useState<ReadonlySet<EraId>>(() => new Set(init.e));
   const [q, setQ] = useState(init.q);
   const [onlyLocated, setOnlyLocated] = useState(init.loc);
@@ -111,7 +112,7 @@ export default function MapApp() {
   const choicePlaces = choices.map((id) => placesById.get(id)).filter((p): p is Place => Boolean(p));
 
   return (
-    <div className="app" data-tab={tab}>
+    <div className="app" data-tab={tab} data-side={sideOpen ? 'open' : 'closed'}>
       <aside className="side">
         <header className="brand">
           <h1>GC Buildings Map</h1>
@@ -160,6 +161,15 @@ export default function MapApp() {
       </aside>
 
       <main className="stage">
+        <button
+          type="button"
+          className="side-toggle"
+          aria-expanded={sideOpen}
+          aria-label={sideOpen ? 'Collapse building list' : 'Expand building list'}
+          onClick={() => setSideOpen((v) => !v)}
+        >
+          {sideOpen ? '◀' : '▶'}
+        </button>
         <MapView fc={fc} selectedPid={selectedId} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
         {selected && (
           <DetailPanel
