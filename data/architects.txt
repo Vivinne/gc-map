@@ -1,0 +1,48 @@
+# handout value | full name shown in the detail panel (values not listed are shown as written in the handout)
+Nero | Nero Claudius Caesar
+Hadrian | Publius Aelius Hadrianus (Hadrian)
+Maxentius／Constantine | Marcus Aurelius Valerius Maxentius／Flavius Valerius Constantinus (Constantine the Great)
+Constantine | Flavius Valerius Constantinus (Constantine the Great)
+Maximianus | Marcus Aurelius Valerius Maximianus (Maximian)
+Anthemius／Isidore | Anthemius of Tralles／Isidore of Miletus
+Friedrich II | Friedrich II von Hohenstaufen
+Brunelleschi | Filippo Brunelleschi
+Michelozzo | Michelozzo di Bartolomeo
+Alberti | Leon Battista Alberti
+Filarete | Antonio di Pietro Averlino (Filarete)
+Mantegna | Andrea Mantegna
+Bramante | Donato Bramante
+G. da Sangallo | Giuliano da Sangallo
+Serlio | Sebastiano Serlio
+Michelangelo | Michelangelo Buonarroti
+Palladio | Andrea Palladio
+Alessi | Galeazzo Alessi
+Vignola | Giacomo Barozzi da Vignola
+Vasari | Giorgio Vasari
+B. Rossellino | Bernardo Rossellino
+Vignola（立面 della Porta） | Giacomo Barozzi da Vignola（立面：Giacomo della Porta）
+Bernini | Gian Lorenzo Bernini
+Longhena | Baldassare Longhena
+Borromini | Francesco Borromini
+Guarini | Guarino Guarini
+Juvarra | Filippo Juvarra
+Salvi | Nicola Salvi
+Vanvitelli | Luigi Vanvitelli
+Piermarini | Giuseppe Piermarini
+Maderno | Carlo Maderno
+Schinkel | Karl Friedrich Schinkel
+Klenze | Leo von Klenze
+Philip Webb（為 Morris） | Philip Webb（為 William Morris）
+G. B. Bossi（Galimberti） | Giovanni Battista Bossi（Galimberti）
+Gaudí | Antoni Gaudí
+Rietveld | Gerrit Rietveld
+Le Corbusier | Le Corbusier (Charles-Édouard Jeanneret)
+Mies（總策劃） | Ludwig Mies van der Rohe（總策劃）
+Mies | Ludwig Mies van der Rohe
+Van Alen | William Van Alen
+Gio Ponti（與 Nervi） | Gio Ponti（與 Pier Luigi Nervi）
+BBPR | BBPR (Gian Luigi Banfi, Lodovico Barbiano di Belgiojoso, Enrico Peressutti, Ernesto Nathan Rogers)
+Rogers＋Piano | Richard Rogers／Renzo Piano
+I. M. Pei | Ieoh Ming Pei
+Spreckelsen | Johann Otto von Spreckelsen
+Louis Kahn | Louis I. Kahn

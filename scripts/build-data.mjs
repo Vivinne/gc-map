@@ -145,6 +145,10 @@ function main() {
   const { rows, styles } = parseHandout(readFileSync(P('content/handout-c3-s6.md'), 'utf8'));
   const errors = [], warns = [];
 
+  // Full architect names (data/architects.txt)
+  const ARCH = new Map(dataLines('data/architects.txt').map((l) => l.split('|').map((x) => x.trim())));
+  for (const r of rows) r.who = ARCH.get(r.who) ?? r.who;
+
   // Per-row span and summary (data/entries.txt)
   const entries = new Map();
   for (const l of dataLines('data/entries.txt')) {

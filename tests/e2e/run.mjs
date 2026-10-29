@@ -139,6 +139,11 @@ assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1959
 await page.fill('.search', 'Triennale');
 await page.click('.list .item:has-text("Triennale")');
 assert.equal((await page.textContent('[data-testid=detail] .who')).trim(), 'Giovanni Muzio');
+await page.fill('.search', 'Rucellai');
+await page.click('.list .item:has-text("Palazzo Rucellai")');
+assert.equal((await page.textContent('[data-testid=detail] .who')).trim(), 'Leon Battista Alberti');
+await page.fill('.search', 'Triennale');
+await page.click('.list .item:has-text("Triennale")');
 assert.equal((await page.textContent('[data-testid=detail] .dash')).trim(), '－');
 assert.equal((await page.textContent('[data-testid=detail] .ctx')).trim(), '位於 Parco Sempione，是 Triennale 的展場，2025 年再度為 Triennale 展出之地。');
 await page.fill('.search', '');
@@ -148,6 +153,13 @@ const mini = await page.innerText('[data-testid=detail]');
 assert.ok(!mini.includes('－'));
 await page.fill('.search', '');
 ok('Heading shows "year, location" (location omitted when the handout gives none); context text comes from the notes');
+
+// Full map button: fits every marker, including New York and Tokyo
+await page.click('.fullmap');
+const fullB = await page.evaluate(() => window.__map.focus);
+assert.equal(fullB.kind, 'bounds');
+assert.ok(fullB.bounds[0][0] < -70 && fullB.bounds[1][0] > 130, JSON.stringify(fullB.bounds));
+ok('The "Full map" button refits the map to every marker');
 
 // Collapsible building list (desktop)
 const sideW = () => page.evaluate(() => document.querySelector('.side').getBoundingClientRect().width);

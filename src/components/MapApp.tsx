@@ -68,6 +68,14 @@ export default function MapApp() {
     }
   }, []);
 
+  const showFullMap = useCallback(() => {
+    const b = boundsOf(dataset.places);
+    if (!b) return;
+    nonce.current += 1;
+    setFocus({ kind: 'bounds', bounds: b, nonce: nonce.current });
+    setTab('map');
+  }, []);
+
   const select = useCallback(
     (id: string) => {
       const p = placesById.get(id);
@@ -182,6 +190,7 @@ export default function MapApp() {
       </aside>
 
       <main className="stage">
+        <button type="button" className="fullmap" onClick={showFullMap}>Full map</button>
         <MapView fc={fc} selectedPid={selectedId} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
         {selected && (
           <DetailPanel
