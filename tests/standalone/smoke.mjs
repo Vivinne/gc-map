@@ -1,6 +1,6 @@
 // Smoke test for the static single-page build, using a fake window.maplibregl (it only records calls) to verify
 // (1) the loading flow and fallback in index.html, (2) the calls MapView makes to MapLibre (layers, events, view), (3) the UI flow after a click.
-// This is not real MapLibre: tiles, clustering, fonts and the actual API behaviour still need checking in a real browser.
+// This is not real MapLibre: tiles, fonts and the actual API behaviour still need checking in a real browser.
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -76,18 +76,18 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 4);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 2);
   const f = await page.evaluate(() => ({
-    src: window.__fake.sources.places && { cluster: window.__fake.sources.places.cluster, radius: window.__fake.sources.places.clusterRadius },
+    src: window.__fake.sources.places && { cluster: window.__fake.sources.places.cluster },
     layers: window.__fake.layers.map((l) => l.id),
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['clusters', 'cluster-count', 'points', 'selected']);
-  assert.equal(f.src.cluster, true);
+  assert.deepEqual(f.layers, ['points', 'selected']);
+  assert.ok(!f.src.cluster, 'No clustering');
   assert.deepEqual(f.pointsPaint['circle-opacity'], ['case', ['get', 'est'], 0.5, 1]);
   assert.equal(f.controls, 1);
-  ok('Cluster source and 4 layers created; semi-transparent expression for estimates; navigation control');
+  ok('Source without clustering and 2 layers created; semi-transparent expression for estimates; navigation control');
 
   await page.waitForFunction((n) => window.__fake.setData.includes(n), totalPts);
   assert.equal((await page.textContent('[data-testid=count]')).includes(`${totalPts} map markers`), true);
@@ -110,13 +110,6 @@ async function open({ pinned = true, fallback = true } = {}) {
   await page.evaluate((ids) => { window.__fake.hits = ids.map((pid) => ({ properties: { pid } })); window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); }, ['st-peters-dome-vatican', 'st-peters-facade-nave-vatican']);
   await page.waitForSelector('[data-testid=chooser]');
   ok('Several entries at one location -> chooser');
-
-  // Cluster click -> zoom in
-  await page.evaluate(() => { window.__fake.hits = [{ geometry: { type: 'Point', coordinates: [12.5, 41.9] }, properties: { cluster_id: 7 } }]; window.__fake.map.fireLayer('click', 'clusters', { point: { x: 5, y: 5 } }); });
-  await page.waitForFunction(() => window.__fake.ease);
-  const ease = await page.evaluate(() => window.__fake.ease);
-  assert.deepEqual(ease, { center: [12.5, 41.9], zoom: 8.5 });
-  ok('Cluster click -> easeTo zooms to the expansion level');
 
   // Data and view update after filtering
   await page.click('.era-item:has-text("Modern")');

@@ -65,40 +65,11 @@ export default function MapView({ fc, selectedPid, bounds, focus, active, onPick
       map.addSource(SOURCE, {
         type: 'geojson',
         data: latest.current.fc as unknown as GeoData,
-        cluster: true,
-        clusterRadius: 44,
-        clusterMaxZoom: 15,
-      });
-      map.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: SOURCE,
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': INK,
-          'circle-radius': ['step', ['get', 'point_count'], 16, 10, 20, 30, 26],
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#ffffff',
-        },
-      });
-      map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: SOURCE,
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['Noto Sans Regular'],
-          'text-size': 13,
-          'text-allow-overlap': true,
-        },
-        paint: { 'text-color': '#ffffff' },
       });
       map.addLayer({
         id: 'points',
         type: 'circle',
         source: SOURCE,
-        filter: ['!', ['has', 'point_count']],
         paint: {
           'circle-color': ['get', 'color'],
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 5, 10, 7, 15, 10],
@@ -122,14 +93,6 @@ export default function MapView({ fc, selectedPid, bounds, focus, active, onPick
         },
       });
 
-      map.on('click', 'clusters', async (e) => {
-        const f = map.queryRenderedFeatures(e.point, { layers: ['clusters'] })[0];
-        if (!f || f.geometry.type !== 'Point') return;
-        const src = map.getSource(SOURCE) as GeoJSONSource;
-        const zoom = await src.getClusterExpansionZoom(Number(f.properties?.cluster_id));
-        map.easeTo({ center: f.geometry.coordinates as [number, number], zoom: zoom + 0.5 });
-      });
-
       map.on('click', 'points', (e) => {
         const { x, y } = e.point;
         const hits = map.queryRenderedFeatures(
@@ -143,10 +106,8 @@ export default function MapView({ fc, selectedPid, bounds, focus, active, onPick
         if (pids.length) latest.current.onPick(pids);
       });
 
-      for (const layer of ['clusters', 'points']) {
-        map.on('mouseenter', layer, () => (map.getCanvas().style.cursor = 'pointer'));
-        map.on('mouseleave', layer, () => (map.getCanvas().style.cursor = ''));
-      }
+      map.on('mouseenter', 'points', () => (map.getCanvas().style.cursor = 'pointer'));
+      map.on('mouseleave', 'points', () => (map.getCanvas().style.cursor = ''));
       setReady(true);
     });
 

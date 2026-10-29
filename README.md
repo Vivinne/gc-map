@@ -68,7 +68,7 @@ npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (
 
 - `npm install`, `next dev` and `next build` have not been run in a real environment.
 - Static build: whether `maplibre-gl@5.6.0` files exist on jsDelivr, and whether the basemap loads when `index.html` is opened directly from `file://`, are unverified (the fallback is `@5`).
-- The real MapLibre map has not been run: tile loading, clustering, click hit-testing, and whether the font name used by the cluster-count layer in `MapView.tsx` (`Noto Sans Regular`) exists in OpenFreeMap's glyphs. If cluster numbers do not appear, check that first.
+- The real MapLibre map has not been run: tile loading and click hit-testing (markers are not clustered; overlapping markers are resolved by the chooser list).
 - `tsc --noEmit` has only been run with a shim in place of `@types/react`; rerun `npm run typecheck` after `npm install`.
 - The coordinates were copied from source-page text summaries and have not been spot-checked by a human; Polimi Campus Nord is a station coordinate, not the campus itself.
 - The 17 remaining estimated points come from model memory and were checked against no source (no coordinate could be retrieved for them); those with low confidence may be several km off. Check each one before use. 18 earlier estimates were replaced by de.wikipedia page coordinates.
