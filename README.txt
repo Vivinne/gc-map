@@ -7,8 +7,8 @@ Opening
   then open http://localhost:3000 in a browser.
 
 Contents
-  Handout C3 §6 has 162 rows and 173 map markers.
-  153 markers come from Wikipedia and 3 from other web pages (named in the note); all are marked "Supplementary - to be verified" and the detail panel links to the source.
+  Handout C3 §6 has 161 rows and 172 map markers.
+  153 markers come from Wikipedia and 2 from other web pages (named in the note); all are marked "Supplementary - to be verified" and the detail panel links to the source.
   17 markers are memory estimates (semi-transparent on the map, marked "unverified" in the detail panel) with no source; check each one.
   Every row has a coordinate.
 
