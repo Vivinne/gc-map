@@ -91,14 +91,6 @@ export default function MapApp() {
     [select],
   );
 
-  const toggleEra = (id: EraId) =>
-    setEras((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
@@ -140,21 +132,26 @@ export default function MapApp() {
             placeholder="Search building, place, architect, keyword"
             aria-label="Search"
           />
-          <div className="chips" role="group" aria-label="Era">
-            {dataset.eras.map((e) => (
-              <button
-                key={e.id}
-                type="button"
-                className="chip"
-                style={{ ['--c' as string]: e.color }}
-                aria-pressed={eras.has(e.id)}
-                onClick={() => toggleEra(e.id)}
-              >
-                {e.label}
-                <small>{eraCounts.get(e.id) ?? 0}</small>
-              </button>
-            ))}
-          </div>
+          {eras.size === 1 ? (
+            <div className="era-focus" role="group" aria-label="Style">
+              <button type="button" className="era-back" aria-label="Back to all styles" onClick={() => setEras(new Set())}>←</button>
+              {dataset.eras.filter((e) => eras.has(e.id)).map((e) => (
+                <span key={e.id} className="era-current" style={{ ['--c' as string]: e.color }}>
+                  {e.label} <small>{eraCounts.get(e.id) ?? 0}</small>
+                </span>
+              ))}
+            </div>
+          ) : (
+            <ul className="era-list" aria-label="Style">
+              {dataset.eras.map((e) => (
+                <li key={e.id} style={{ ['--c' as string]: e.color }}>
+                  <button type="button" className="era-item" onClick={() => setEras(new Set([e.id]))}>
+                    {e.label} <small>{eraCounts.get(e.id) ?? 0}</small>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           <label className="check">
             <input type="checkbox" checked={onlyLocated} onChange={(e) => setOnlyLocated(e.target.checked)} />
             Located only

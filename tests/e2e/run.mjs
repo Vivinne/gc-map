@@ -42,20 +42,22 @@ ok('List rows and marker count are correct');
 // View: no filter = Europe; with a filter = zoom to the results
 const home = await page.evaluate(() => window.__map.bounds);
 assert.deepEqual(home, [[-8, 36], [29.5, 55]]);
-await page.click('.chip:has-text("Modern")');
+await page.click('.era-item:has-text("Modern")');
 const modernBounds = await page.evaluate(() => window.__map.bounds);
 assert.ok(modernBounds[0][0] < -70 && modernBounds[1][0] > 130, JSON.stringify(modernBounds)); // includes New York and Tokyo
-await page.click('.chip:has-text("Modern")');
+await page.click('.era-back');
 assert.deepEqual(await page.evaluate(() => window.__map.bounds), [[-8, 36], [29.5, 55]]);
 ok('View: fixed on Europe with no filter, zooms to the results with a filter, back to Europe once cleared');
 
 // Era filter
-await page.click('.chip:has-text("Ancient")');
+await page.click('.era-item:has-text("Ancient")');
 assert.equal(await page.locator('.list .item').count(), ancient.length);
-assert.equal(await page.getAttribute('.chip:has-text("Ancient")', 'aria-pressed'), 'true');
+assert.equal(await page.locator('.era-item').count(), 0);
+assert.match(await page.textContent('.era-current'), /Ancient/);
 assert.equal(await page.locator('.marker').count(), ancient.reduce((n, p) => n + p.points.length, 0));
 ok(`Ancient filter -> ${ancient.length} entries`);
-await page.click('.chip:has-text("Ancient")');
+await page.click('.era-back');
+assert.equal(await page.locator('.era-item').count(), 5);
 assert.equal(await page.locator('.list .item').count(), total);
 ok('Clearing the filter restores all entries');
 
@@ -159,7 +161,7 @@ const p2 = await newPage({ width: 1280, height: 800 });
 await p2.goto(page_url + '#p=maxxi-rome&e=modern&q=hadid&loc=1');
 await p2.waitForSelector('[data-testid=detail]');
 assert.equal((await p2.textContent('[data-testid=detail] h2')).trim(), 'MAXXI');
-assert.equal(await p2.getAttribute('.chip:has-text("Modern")', 'aria-pressed'), 'true');
+assert.match(await p2.textContent('.era-current'), /Modern/);
 assert.equal(await p2.inputValue('.search'), 'hadid');
 assert.equal(await p2.isChecked('.check input'), true);
 ok('URL hash restores selection / era / search / located-only');
