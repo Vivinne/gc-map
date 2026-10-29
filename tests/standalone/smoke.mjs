@@ -119,7 +119,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   ok('Cluster click -> easeTo zooms to the expansion level');
 
   // Data and view update after filtering
-  await page.click('.chip:has-text("Modern")');
+  await page.click('.era-item:has-text("Modern")');
   await page.waitForFunction(() => window.__fake.setData.length >= 2);
   const lastCount = await page.evaluate(() => window.__fake.setData.at(-1));
   assert.ok(lastCount < totalPts && lastCount > 0, String(lastCount));
