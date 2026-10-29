@@ -142,6 +142,11 @@ assert.equal((await page.textContent('[data-testid=detail] .who')).trim(), 'Giov
 assert.equal((await page.textContent('[data-testid=detail] .dash')).trim(), '－');
 assert.equal((await page.textContent('[data-testid=detail] .ctx')).trim(), '位於 Parco Sempione，是 Triennale 的展場，2025 年再度為 Triennale 展出之地。');
 await page.fill('.search', '');
+await page.fill('.search', 'Miniato');
+await page.click('.list .item:has-text("San Miniato")');
+const mini = await page.innerText('[data-testid=detail]');
+assert.ok(!mini.includes('－'));
+await page.fill('.search', '');
 ok('Heading shows "year, location" (location omitted when the handout gives none); context text comes from the notes');
 
 // Collapsible building list (desktop)
