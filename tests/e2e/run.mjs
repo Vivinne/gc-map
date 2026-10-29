@@ -137,12 +137,14 @@ ok('Heading shows "year, location" (location omitted when the handout gives none
 // Collapsible building list (desktop)
 const sideW = () => page.evaluate(() => document.querySelector('.side').getBoundingClientRect().width);
 assert.ok((await sideW()) > 300);
-await page.click('.side-toggle');
+await page.click('.menu-btn');
 await page.waitForTimeout(100);
-assert.ok((await sideW()) < 2);
+assert.ok((await sideW()) > 40 && (await sideW()) < 80);
+assert.equal(await page.locator('.side .list').isVisible(), false);
+await page.screenshot({ path: resolve(shots, 'desktop-collapsed.png') });
 const stageW = await page.evaluate(() => document.querySelector('.stage').getBoundingClientRect().width);
-assert.ok(stageW >= 1270, String(stageW));
-await page.click('.side-toggle');
+assert.ok(stageW >= 1200, String(stageW));
+await page.click('.menu-btn');
 await page.waitForTimeout(100);
 assert.ok((await sideW()) > 300);
 ok('Building list collapses to give the map the full width, and expands again');

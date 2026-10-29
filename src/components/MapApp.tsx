@@ -114,11 +114,23 @@ export default function MapApp() {
   return (
     <div className="app" data-tab={tab} data-side={sideOpen ? 'open' : 'closed'}>
       <aside className="side">
-        <header className="brand">
-          <h1>GC Buildings Map</h1>
-          <p>C3 buildings | by handout §6 style lookup · {dataset.places.length} entries</p>
-        </header>
+        <div className="side-top">
+          <button
+            type="button"
+            className="menu-btn"
+            aria-expanded={sideOpen}
+            aria-label={sideOpen ? 'Collapse building list' : 'Expand building list'}
+            onClick={() => setSideOpen((v) => !v)}
+          >
+            <span /><span /><span />
+          </button>
+          <header className="brand">
+            <h1>GC Buildings Map</h1>
+            <p>C3 buildings | by handout §6 style lookup · {dataset.places.length} entries</p>
+          </header>
+        </div>
 
+        <div className="side-body">
         <div className="controls">
           <input
             className="search"
@@ -158,18 +170,10 @@ export default function MapApp() {
         <footer className="credits">
           Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates come from Wikipedia or from web pages named in the note, with source links, and are marked "Supplementary - to be verified"; semi-transparent markers are memory estimates with no source, unverified.
         </footer>
+        </div>
       </aside>
 
       <main className="stage">
-        <button
-          type="button"
-          className="side-toggle"
-          aria-expanded={sideOpen}
-          aria-label={sideOpen ? 'Collapse building list' : 'Expand building list'}
-          onClick={() => setSideOpen((v) => !v)}
-        >
-          {sideOpen ? '◀' : '▶'}
-        </button>
         <MapView fc={fc} selectedPid={selectedId} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
         {selected && (
           <DetailPanel
