@@ -1,6 +1,6 @@
 # GC Buildings Map (private, runs locally)
 
-Map of the C3 buildings: a filterable list on the left, markers on the map on the right; click a marker to see that row's notes. Data comes from handout C3 §6.1–6.13 (162 rows).
+Map of the C3 buildings: a filterable list on the left, markers on the map on the right; click a marker to see that row's notes (heading: NAME in bold capitals, then year and location in lowercase; context: architect, a dash, then the note; blank when the handout has none). Coordinates, sources and "show on map" buttons are not displayed. Data comes from handout C3 §6.1–6.13 (161 rows).
 
 ## Run
 
@@ -46,11 +46,10 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 ## How the rules map to the data
 
 - Sourced coordinates (mostly Wikipedia; 3 points come from Structurae, latitude.to and Komoot, named in the note) are marked "Supplementary - to be verified" and carry a source link. Precision is one of `page` (page coordinate), `contained` (taken from the containing building or complex), `approx` (approximate) or `manual`.
-- Memory estimates (`estimate`) are marked "Memory estimate - unverified" with a confidence level and have no source link; they are semi-transparent on the map and have a dashed-border precision label in the detail panel.
-- For the 7 rows where the handout gives no location, the coordinate is supplied by a source and the note starts with `Supplementary location: City`; the detail panel still shows the location as not given in the handout. These rows must not use estimates.
-- Villa Muggia: the source (FAI) says it stands in Imola and dates from 1936, while the handout says Milan, 1944. The map marks the position the source gives and the note flags the inconsistency; the handout text is unchanged. Confirm which is right.
+- Memory estimates (`estimate`) are marked "Memory estimate - unverified" with a confidence level and have no source link; they are semi-transparent on the map.
+- For the 7 rows where the handout gives no location, the coordinate is supplied by a source and the note starts with `Supplementary location: City`; the heading omits the location. These rows must not use estimates.
 - Polimi Campus Nord: only the coordinate of Milano Bovisa station (which serves the Bovisa campus) was found, so it stands in as an approximate position; it is not the campus itself.
-- All 162 rows currently have a coordinate, so the sidebar "Unlocated list" appears only when a gap exists.
+- All 161 rows currently have a coordinate, so the sidebar "Unlocated list" appears only when a gap exists.
 - Plain-text rendering; no `dangerouslySetInnerHTML`.
 - Private use: `<meta robots noindex>` and `public/robots.txt` (disallow all). This is not confidentiality: anyone who knows the URL of a published copy can open it.
 
@@ -59,7 +58,7 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 ```bash
 npm test     # 17 unit tests: filtering, geometry, hash, parsing, data validation
 npm run typecheck
-npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (22 checks)
+npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (18 checks)
 ```
 
 `e2e` needs `esbuild` and `playwright` (listed as devDependencies); the first run needs `npx playwright install chromium`.

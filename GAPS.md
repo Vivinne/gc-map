@@ -40,13 +40,11 @@ The handout row has no location; the coordinate and location come from a source 
 | Salk Institute | San Diego (La Jolla) | 32.8875, -117.24639 | https://en.wikipedia.org/wiki/Salk_Institute_for_Biological_Studies |
 | Vanna Venturi House | Philadelphia (Chestnut Hill) | 40.0707, -75.2081 | https://en.wikipedia.org/wiki/Vanna_Venturi_House |
 
-## Source location disagrees with the handout (1)
+## Source location disagrees with the handout (0)
 
 The map marks the position given by the source; the handout text is unchanged. Decide whether to change the handout or the coordinate.
 
-| Building | Handout location | Coordinate | Explanation | Source |
-|---|---|---|---|---|
-| Villa Muggia | Milan | 44.358981, 11.676297 | Location per source: Imola; the handout says Milan, 1944, while FAI (fondoambiente.it) states it was built in Imola in 1936 (Via Bel Poggio 4) and was ruined in WWII; coordinates taken from Komoot; inconsistent with the handout, to be verified | https://www.komoot.com/highlight/3868301 |
+(none)
 
 ## No coordinate found and no estimate (0)
 

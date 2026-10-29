@@ -113,7 +113,4 @@ test('data: rows with no handout location need a sourced coordinate, never an es
   for (const p of dataset.places) {
     for (const pt of p.points) if (/^Location per source: /.test(pt.note)) assert.match(pt.note, /inconsistent with the handout/, p.name);
   }
-  const muggia = dataset.places.find((p) => p.name === 'Villa Muggia')!;
-  assert.equal(muggia.loc, 'Milan');
-  assert.match(muggia.points[0]!.note, /^Location per source: Imola/);
 });

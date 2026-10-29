@@ -90,12 +90,6 @@ export default function MapApp() {
     [select],
   );
 
-  const focusPoint = useCallback((pt: Point) => {
-    nonce.current += 1;
-    setFocus({ kind: 'point', lng: pt.lng, lat: pt.lat, zoom: 16, nonce: nonce.current });
-    setTab('map');
-  }, []);
-
   const toggleEra = (id: EraId) =>
     setEras((prev) => {
       const next = new Set(prev);
@@ -171,9 +165,7 @@ export default function MapApp() {
           <DetailPanel
             place={selected}
             era={eraOf(dataset.eras, selected.era)}
-            missing={unlocated}
             onClose={() => setSelectedId('')}
-            onFocusPoint={focusPoint}
           />
         )}
         {!selected && choicePlaces.length > 1 && (

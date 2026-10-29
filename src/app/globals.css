@@ -67,8 +67,13 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .detail, .chooser { position: absolute; top: 16px; left: 16px; z-index: 5; width: min(400px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; background: #fff; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
 .detail .head { position: relative; padding: 14px 52px 14px 16px; color: #fff; background: var(--c); }
 .detail .kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
-.detail h2 { margin: 2px 0; font-size: 24px; line-height: 1.2; overflow-wrap: anywhere; }
-.detail .loc { margin: 0; font-weight: 700; }
+.detail h2 { margin: 0 0 2px; font-size: 24px; font-weight: 800; line-height: 1.2; text-transform: uppercase; overflow-wrap: anywhere; }
+.detail .loc { margin: 0; font-weight: 400; text-transform: lowercase; }
+.context { padding: 14px 16px 16px; }
+.context p { margin: 0; }
+.context .who { font-weight: 700; min-height: 1.4em; }
+.context .dash { margin: 6px 0; }
+.context .ctx { min-height: 1.4em; line-height: 1.5; }
 .close { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; font-size: 24px; line-height: 1; color: var(--ink); background: #fff; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
 .rows { margin: 0; }
 .row { display: grid; grid-template-columns: 7.5em 1fr; border-bottom: 1px solid var(--rule); }

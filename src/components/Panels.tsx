@@ -1,29 +1,11 @@
 'use client';
 
-import type { Era, Place, Point, Unlocated } from '../lib/types';
-
-const PRECISION_LABEL: Record<Point['precision'], string> = {
-  page: 'Source page marker point',
-  contained: 'Taken from the containing building / square page',
-  approx: 'Approximate location',
-  manual: 'Entered manually',
-  estimate: 'Estimate (from memory, no source)',
-};
+import type { Era, Place, Unlocated } from '../lib/types';
 
 const KIND_LABEL: Record<Unlocated['kind'], string> = {
   'no-location': 'No location in the handout (not filled in, per the rules)',
   'not-found': 'No coordinate found',
   partial: 'No coordinate found for some sub-items',
-};
-
-const sourceLabel = (url: string): string => {
-  const w = /^https:\/\/([a-z]{2})\.wikipedia\.org\//.exec(url);
-  if (w) return `Wikipedia (${w[1]})`;
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return 'Source page';
-  }
 };
 
 export function eraOf(eras: readonly Era[], id: string): Era | undefined {
@@ -65,59 +47,27 @@ export function PlaceList({
   );
 }
 
+const blank = (v: string): string => (v.trim() === '—' ? '' : v.trim());
+
 export function DetailPanel({
-  place, era, missing, onClose, onFocusPoint,
+  place, era, onClose,
 }: {
   place: Place;
   era: Era | undefined;
-  missing: readonly Unlocated[];
   onClose: () => void;
-  onFocusPoint: (pt: Point) => void;
 }) {
-  const rows: [string, string][] = [
-    ['Year', place.year],
-    ['Architect / Person', place.who],
-    ['Notes', place.note],
-  ];
+  const sub = [blank(place.year), place.loc].filter(Boolean).join(', ');
   return (
     <section className="detail" style={{ ['--c' as string]: era?.color }} aria-label={`${place.name} details`} data-testid="detail">
       <header className="head">
         <button type="button" className="close" onClick={onClose} aria-label="Close">×</button>
-        <p className="kicker">{era?.label} · {place.style}</p>
         <h2>{place.name}</h2>
-        <p className="loc">{place.loc || 'Location: not given in the handout'}</p>
+        <p className="loc">{sub}</p>
       </header>
-      <dl className="rows">
-        {rows.map(([k, v]) => (
-          <div key={k} className="row">
-            <dt>{k}</dt>
-            <dd>{v}</dd>
-          </div>
-        ))}
-      </dl>
-      <div className="coords">
-        <h3>Coordinates</h3>
-        {place.points.length === 0 && (
-          <p className="gap">
-            No coordinate yet: {missing.find((m) => m.id === place.id)?.reason ?? 'not yet looked up'}. Add one in data/geo-manual.csv.
-          </p>
-        )}
-        {place.points.map((pt) => (
-          <div key={pt.id} className="pt">
-            <button type="button" className="locate" onClick={() => onFocusPoint(pt)}>
-              {pt.sub || 'Show on map'}
-            </button>
-            <span className={`prec prec-${pt.precision}`}>{PRECISION_LABEL[pt.precision]}</span>
-            <span className="status">{pt.status}</span>
-            {pt.note && <span className="pnote">{pt.note}</span>}
-            {pt.sourceUrl && (
-              <a href={pt.sourceUrl} target="_blank" rel="noopener noreferrer">
-                Source: {sourceLabel(pt.sourceUrl)}
-              </a>
-            )}
-            <span className="num">{pt.lat.toFixed(5)}, {pt.lng.toFixed(5)}</span>
-          </div>
-        ))}
+      <div className="context">
+        <p className="who">{blank(place.who)}</p>
+        <p className="dash">－</p>
+        <p className="ctx">{blank(place.note)}</p>
       </div>
     </section>
   );

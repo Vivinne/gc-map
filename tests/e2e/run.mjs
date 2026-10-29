@@ -80,12 +80,13 @@ ok(`Located only -> ${located} entries`);
 await page.click('.list .item:has-text("Colosseum")');
 await page.waitForSelector('[data-testid=detail]');
 assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Colosseum');
-const href = await page.getAttribute('[data-testid=detail] .pt a', 'href');
-assert.equal(href, 'https://en.wikipedia.org/wiki/Colosseum');
-assert.equal(await page.getAttribute('[data-testid=detail] .pt a', 'rel'), 'noopener noreferrer');
+assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), 'AD 80, Rome');
+assert.equal(await page.locator('[data-testid=detail] .pt, [data-testid=detail] .coords, [data-testid=detail] .locate, [data-testid=detail] a').count(), 0);
+assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('[data-testid=detail] h2')).textTransform), 'uppercase');
+assert.equal((await page.textContent('[data-testid=detail] .dash')).trim(), '－');
 assert.match(page.url(), /#p=colosseum-rome/);
 assert.equal(await page.getAttribute('.marker[data-pid=colosseum-rome]', 'data-selected'), 'true');
-ok('Selecting a building: detail, source link, URL hash, map selection state');
+ok('Selecting a building: detail in heading/context format (no coordinates, source or locate button), URL hash, map selection state');
 await page.screenshot({ path: resolve(shots, 'desktop-detail.png') });
 
 // Several entries at one coordinate -> chooser
@@ -105,13 +106,9 @@ ok('Choosing one entry in the chooser -> detail');
 // Multi-point building
 const palladioName = data.places.find((p) => p.id.startsWith('palladio')).name;
 await page.click(`.list .item:has-text("${palladioName}")`);
-const ptCount = await page.locator('[data-testid=detail] .pt').count();
-assert.ok(ptCount >= 3, String(ptCount));
-ok(`Compound row shows ${ptCount} sub-points`);
-await page.click('[data-testid=detail] .locate >> nth=1');
-const mapState = await page.evaluate(() => window.__map);
-assert.ok(mapState.focus && mapState.focus.kind === 'point');
-ok('The sub-point "Show on map" button focuses the map');
+const ptCount = await page.locator('[data-testid=detail] .context').count();
+assert.equal(ptCount, 1);
+ok('Compound row shows one context block (no sub-point list)');
 
 // Unlocated list: with gaps it opens to show the reason; with no gaps the whole block is absent
 const unloc = JSON.parse(readFileSync(resolve(root, 'src/data/unlocated.json'), 'utf8'));
@@ -126,36 +123,16 @@ if (unloc.length === 0) {
   ok('Unlocated list -> detail shows the reason for the gap');
 }
 
-// Rows with no handout location whose coordinate was supplied by a source
+// Blank fields stay blank; missing years are filled
 await page.fill('.search', 'Salk');
 await page.click('.list .item:has-text("Salk Institute")');
-await page.waitForSelector('[data-testid=detail] .pt');
-assert.match(await page.textContent('[data-testid=detail] .loc'), /not given in the handout/);
-assert.match(await page.textContent('[data-testid=detail] .pnote'), /^Supplementary location: San Diego/);
-assert.equal(await page.getAttribute('[data-testid=detail] .pt a', 'href'), 'https://en.wikipedia.org/wiki/Salk_Institute_for_Biological_Studies');
-ok('Row with no location: location still shows "not given in the handout", the coordinate carries "Supplementary location" and a source');
-await page.fill('.search', 'Wexner');
-await page.click('.list .item:has-text("Wexner Center")');
-await page.waitForSelector('[data-testid=detail] .pt a');
-assert.equal((await page.textContent('[data-testid=detail] .pt a')).trim(), 'Source: latitude.to');
-ok('A non-Wikipedia source shows its domain name');
-await page.fill('.search', 'Villa Muggia');
-await page.click('.list .item:has-text("Villa Muggia")');
-await page.waitForSelector('[data-testid=detail] .pnote');
-assert.match(await page.textContent('[data-testid=detail] .loc'), /Milan/);
-assert.match(await page.textContent('[data-testid=detail] .pnote'), /inconsistent with the handout/);
-ok('Source location disagrees with the handout: handout location unchanged, the coordinate note flags the conflict');
+await page.waitForSelector('[data-testid=detail]');
+assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1965');
+await page.fill('.search', 'Triennale');
+await page.click('.list .item:has-text("Triennale")');
+assert.equal((await page.textContent('[data-testid=detail] .ctx')).trim(), '2025 Triennale 展場');
 await page.fill('.search', '');
-
-// Estimate point: marked unverified, no source link
-await page.fill('.search', 'Santa Susanna');
-await page.click('.list .item:has-text("Santa Susanna")');
-await page.waitForSelector('[data-testid=detail] .prec-estimate');
-assert.match(await page.textContent('[data-testid=detail] .status'), /unverified/);
-assert.match(await page.textContent('[data-testid=detail] .pnote'), /confidence/i);
-assert.equal(await page.locator('[data-testid=detail] .pt a').count(), 0);
-await page.fill('.search', '');
-ok('Estimate point: shows "Estimate (from memory, no source)", "unverified" and a confidence level, with no source link');
+ok('Heading shows "year, location" (location omitted when the handout gives none); context text comes from the notes');
 
 // Plain-text rendering (HTML is not executed)
 const injected = await page.evaluate(() => document.querySelectorAll('.detail script, .list script, .detail img').length);

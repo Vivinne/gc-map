@@ -7,9 +7,9 @@
 
 | 建築 | 年份 | 建築師／人物 | 內容 |
 |---|---|---|---|
-| Valle dei Templi<br><span class="loc">Agrigento（西西里）</span> | — | — | 大希臘 Doric 神廟群 |
-| Parthenon<br><span class="loc">Athens（希臘）</span> | — | — | Doric、Peripteral 圍柱式代表 |
-| Erechtheion<br><span class="loc">Athens（希臘）</span> | — | — | Ionic；北門廊 Caryatids 女像柱 |
+| Valle dei Templi<br><span class="loc">Agrigento（西西里）</span> | BC 5 世紀 | — | 大希臘 Doric 神廟群 |
+| Parthenon<br><span class="loc">Athens（希臘）</span> | BC 438 | — | Doric、Peripteral 圍柱式代表 |
+| Erechtheion<br><span class="loc">Athens（希臘）</span> | BC 406 | — | Ionic；北門廊 Caryatids 女像柱 |
 
 ### 6.2 古羅馬建築（Ancient Rome）
 
@@ -22,7 +22,7 @@
 | Pantheon<br><span class="loc">Rome</span> | AD 125 | Hadrian | Rotunda；穹頂直徑＝高＝43.3 m；Oculus 9 m；無鋼筋混凝土穹頂 |
 | Basilica of Maxentius and Constantine<br><span class="loc">Rome</span> | 308–312 起 | Maxentius／Constantine | 中殿三組混凝土十字拱；早期基督教堂範本 |
 | Arch of Constantine<br><span class="loc">Rome</span> | 315 | Constantine | 紀念 Milvian Bridge 之勝；大量 Spolia |
-| Roman Forum 與帝國議事廣場<br><span class="loc">Rome</span> | — | — | 共和 Forum 與帝國 Fori Imperiali |
+| Roman Forum 與帝國議事廣場<br><span class="loc">Rome</span> | BC 6 世紀–AD 113 | — | 共和 Forum 與帝國 Fori Imperiali |
 
 ### 6.3 早期基督教與拜占庭建築（Early Christian and Byzantine）
 
@@ -40,8 +40,8 @@
 | Basilica di Sant'Ambrogio<br><span class="loc">Milan</span> | 原堂 379–386；現堂約 1080 起 | — | Lombard Romanesque 原型；紅磚＋肋拱；無 clerestory |
 | Mont-Saint-Michel Abbey<br><span class="loc">Mont-Saint-Michel（法）</span> | 1023 | — | Romanesque／Gothic；La Merveille 奇蹟樓 |
 | Parma Baptistery<br><span class="loc">Parma</span> | 1196 | Benedetto Antelami | 八角形；粉紅 Verona 大理石；四層 loggias；Romanesque → Gothic |
-| Pisa Cathedral 與斜塔<br><span class="loc">Pisa</span> | — | — | Italian Romanesque；彩色大理石盲拱廊 |
-| San Miniato al Monte<br><span class="loc">Florence</span> | — | — | Romanesque；內有 Cardinal of Portugal Chapel（Rossellino） |
+| Pisa Cathedral 與斜塔<br><span class="loc">Pisa</span> | 1118（主教堂）、1372（斜塔） | — | Italian Romanesque；彩色大理石盲拱廊 |
+| San Miniato al Monte<br><span class="loc">Florence</span> | 1207 | — | Romanesque；內有 Cardinal of Portugal Chapel（Rossellino） |
 
 ### 6.5 哥德式建築（Gothic）
 
@@ -62,9 +62,9 @@
 | Cathédrale Sainte-Croix d'Orléans<br><span class="loc">Orléans（法）</span> | 1278 | — | — |
 | Duomo di Milano<br><span class="loc">Milan</span> | 1386 | — | 義大利規模最大的哥德式；融合倫巴底與國際哥德 |
 | Seville Cathedral<br><span class="loc">Seville（西）</span> | 1401 | — | Late Gothic |
-| Santa Maria del Fiore（主體）<br><span class="loc">Florence</span> | — | — | Brunelleschi 圓頂之前的哥德大教堂 |
-| Siena Cathedral<br><span class="loc">Siena</span> | — | — | 鑲嵌大理石地面；Gate of Heaven 屋頂步道；Gothic |
-| Basilica di San Francesco d'Assisi<br><span class="loc">Assisi</span> | — | — | Giotto 壁畫；少用飛扶壁 |
+| Santa Maria del Fiore（主體）<br><span class="loc">Florence</span> | 1436 | — | Brunelleschi 圓頂之前的哥德大教堂 |
+| Siena Cathedral<br><span class="loc">Siena</span> | 1263 | — | 鑲嵌大理石地面；Gate of Heaven 屋頂步道；Gothic |
+| Basilica di San Francesco d'Assisi<br><span class="loc">Assisi</span> | 1253 | — | Giotto 壁畫；少用飛扶壁 |
 
 ### 6.6 文藝復興與矯飾主義建築（Renaissance and Mannerism）
 
@@ -100,9 +100,9 @@
 | Vasari Corridor<br><span class="loc">Florence</span> | 1565 | Vasari | Ponte Vecchio — Palazzo Vecchio — Uffizi — Pitti |
 | Villa Capra（La Rotonda）<br><span class="loc">Vicenza</span> | 1570 | Palladio | 四面對稱、希臘柱廊、穹頂 |
 | Il Redentore<br><span class="loc">Venice</span> | 1577 | Palladio | — |
-| Sforza Castle<br><span class="loc">Milan</span> | — | Filarete | — |
-| Basilica di San Lorenzo<br><span class="loc">Florence</span> | — | Brunelleschi | pietra serena 灰色砂岩建立嚴格模矩 |
-| Pienza Cathedral<br><span class="loc">Pienza</span> | — | B. Rossellino | — |
+| Sforza Castle<br><span class="loc">Milan</span> | 1452（Filarete 塔） | Filarete | — |
+| Basilica di San Lorenzo<br><span class="loc">Florence</span> | 1470 | Brunelleschi | pietra serena 灰色砂岩建立嚴格模矩 |
+| Pienza Cathedral<br><span class="loc">Pienza</span> | 1462 | B. Rossellino | — |
 
 ### 6.7 巴洛克與洛可可建築（Baroque and Rococo）
 
@@ -127,10 +127,10 @@
 | Teatro alla Scala<br><span class="loc">Milan</span> | 1778 | Piermarini | — |
 | Palazzo Reale（Milan）<br><span class="loc">Milan</span> | 1778 | Piermarini | — |
 | Palazzo Belgioioso<br><span class="loc">Milan</span> | 1781 | Piermarini | — |
-| 聖伯多祿大殿立面與中殿<br><span class="loc">Vatican</span> | — | Maderno | 把 Greek Cross 變拉丁十字；1626 落成 |
-| Santa Susanna<br><span class="loc">Rome</span> | — | Maderno | Baroque |
-| Ecstasy of Saint Teresa<br><span class="loc">Rome（Santa Maria della Vittoria）</span> | — | Bernini | Bel Composto 美妙融合 |
-| Sant'Ignazio di Loyola<br><span class="loc">Rome</span> | — | Andrea Pozzo | 畫出立體穹頂（trompe l'oeil） |
+| 聖伯多祿大殿立面與中殿<br><span class="loc">Vatican</span> | 1626 | Maderno | 把 Greek Cross 變拉丁十字；1626 落成 |
+| Santa Susanna<br><span class="loc">Rome</span> | 1603 | Maderno | Baroque |
+| Ecstasy of Saint Teresa<br><span class="loc">Rome（Santa Maria della Vittoria）</span> | 1652 | Bernini | Bel Composto 美妙融合 |
+| Sant'Ignazio di Loyola<br><span class="loc">Rome</span> | 1685 | Andrea Pozzo | 畫出立體穹頂（trompe l'oeil） |
 
 ### 6.8 新古典與哥德復興建築（Neoclassicism and Gothic Revival）
 
@@ -138,12 +138,12 @@
 |---|---|---|---|
 | Basilique du Sacré-Cœur<br><span class="loc">Paris</span> | 1875 | — | Romano-Byzantine |
 | Mole Antonelliana<br><span class="loc">Turin</span> | 1889（Antonelli 1888 逝世） | Alessandro Antonelli | 原猶太會堂 → 國家電影博物館；167.5 m |
-| Arco della Pace<br><span class="loc">Milan</span> | — | — | 義大利新古典代表 |
-| Panthéon<br><span class="loc">Paris</span> | — | — | 法國版萬神殿；葬 Voltaire、Hugo、Curie 夫婦 |
-| Arc de Triomphe／Arc du Carrousel<br><span class="loc">Paris</span> | — | — | 皆紀念 1805 Austerlitz |
-| Altes Museum<br><span class="loc">Berlin</span> | — | Schinkel | 希臘柱式＋Pantheon 內部 |
-| Alte Pinakothek<br><span class="loc">Munich（德）</span> | — | Klenze | 新古典 |
-| Königsplatz<br><span class="loc">Munich（德）</span> | — | Klenze | 新古典 |
+| Arco della Pace<br><span class="loc">Milan</span> | 1838 | — | 義大利新古典代表 |
+| Panthéon<br><span class="loc">Paris</span> | 1790 | — | 法國版萬神殿；葬 Voltaire、Hugo、Curie 夫婦 |
+| Arc de Triomphe／Arc du Carrousel<br><span class="loc">Paris</span> | 1808（Carrousel）、1836（Étoile） | — | 皆紀念 1805 Austerlitz |
+| Altes Museum<br><span class="loc">Berlin</span> | 1830 | Schinkel | 希臘柱式＋Pantheon 內部 |
+| Alte Pinakothek<br><span class="loc">Munich（德）</span> | 1836 | Klenze | 新古典 |
+| Königsplatz<br><span class="loc">Munich（德）</span> | 1862 | Klenze | 新古典 |
 
 ### 6.9 工業革命與新材料建築（Industrial Revolution and New Materials）
 
@@ -159,9 +159,9 @@
 |---|---|---|---|
 | Red House<br><span class="loc">Kent（英）</span> | 1859 | Philip Webb（為 Morris） | Arts & Crafts 起點 |
 | Secession Building<br><span class="loc">Vienna</span> | 1897 起（Secession） | Joseph Maria Olbrich | 金球頂 |
-| Casa Galimberti／Palazzo Castiglioni<br><span class="loc">Milan</span> | — | G. B. Bossi（Galimberti） | 義大利 Stile Liberty |
-| Sagrada Família 等 Gaudí 作品<br><span class="loc">Barcelona（西）</span> | — | Gaudí | Casa Vicens、Palau Güell、Colònia Güell、Casa Batlló、Casa Milà、Park Güell、Sagrada Família |
-| Tassel House<br><span class="loc">Brussels（比）</span> | — | Victor Horta | Art Nouveau |
+| Casa Galimberti／Palazzo Castiglioni<br><span class="loc">Milan</span> | 1905（Galimberti）、1904（Castiglioni） | G. B. Bossi（Galimberti） | 義大利 Stile Liberty |
+| Sagrada Família 等 Gaudí 作品<br><span class="loc">Barcelona（西）</span> | 1882 起（施工中） | Gaudí | Casa Vicens、Palau Güell、Colònia Güell、Casa Batlló、Casa Milà、Park Güell、Sagrada Família |
+| Tassel House<br><span class="loc">Brussels（比）</span> | 1893 | Victor Horta | Art Nouveau |
 
 ### 6.11 包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）
 
@@ -176,24 +176,23 @@
 | Fallingwater<br><span class="loc">Pennsylvania（美）</span> | 1935 | Frank Lloyd Wright | 懸臂跨瀑布 |
 | Unité d'Habitation | 戰後 | Le Corbusier | 垂直聚落；清水混凝土；Brutalism |
 | Notre-Dame-du-Haut（Ronchamp）<br><span class="loc">Ronchamp（法）</span> | 1950–60 | Le Corbusier | 自由平面；廊香教堂 |
-| AEG Turbine Factory<br><span class="loc">Berlin</span> | — | Peter Behrens | Werkbund 代表作 |
-| Chrysler Building<br><span class="loc">New York</span> | — | Van Alen | Art Deco |
-| Empire State Building<br><span class="loc">New York</span> | — | Shreve, Lamb & Harmon | Art Deco |
-| Seagram Building<br><span class="loc">New York</span> | — | Mies | International Style |
-| Neue Nationalgalerie<br><span class="loc">Berlin</span> | — | Mies | — |
-| Guggenheim Museum New York<br><span class="loc">New York</span> | — | Frank Lloyd Wright | — |
-| Müller House<br><span class="loc">Prague</span> | — | Adolf Loos | Raumplan |
-| Paimio Sanatorium<br><span class="loc">Paimio（芬）</span> | — | Alvar Aalto | 北歐現代主義 |
-| MIT Baker House<br><span class="loc">Cambridge（美）</span> | — | Alvar Aalto | 北歐現代主義 |
+| AEG Turbine Factory<br><span class="loc">Berlin</span> | 1909 | Peter Behrens | Werkbund 代表作 |
+| Chrysler Building<br><span class="loc">New York</span> | 1930 | Van Alen | Art Deco |
+| Empire State Building<br><span class="loc">New York</span> | 1931 | Shreve, Lamb & Harmon | Art Deco |
+| Seagram Building<br><span class="loc">New York</span> | 1958 | Mies | International Style |
+| Neue Nationalgalerie<br><span class="loc">Berlin</span> | 1968 | Mies | — |
+| Guggenheim Museum New York<br><span class="loc">New York</span> | 1959 | Frank Lloyd Wright | — |
+| Müller House<br><span class="loc">Prague</span> | 1930 | Adolf Loos | Raumplan |
+| Paimio Sanatorium<br><span class="loc">Paimio（芬）</span> | 1933 | Alvar Aalto | 北歐現代主義 |
+| MIT Baker House<br><span class="loc">Cambridge（美）</span> | 1949 | Alvar Aalto | 北歐現代主義 |
 
 ### 6.12 義大利理性主義與未來主義建築（Italian Rationalism and Futurism）
 
 | 建築 | 年份 | 建築師／人物 | 內容 |
 |---|---|---|---|
 | Casa del Fascio<br><span class="loc">Como</span> | 開工 1932／落成 1936 | Giuseppe Terragni | 義大利理性主義；玻璃磚 |
-| Villa Muggia<br><span class="loc">Milan</span> | 1944 | Piero Bottoni | — |
 | QT8<br><span class="loc">Milan</span> | 1947 | Piero Bottoni | 戰後實驗性住宅區 |
-| Asilo Sant'Elia<br><span class="loc">Como</span> | — | Giuseppe Terragni | 幼兒園；大量開窗 |
+| Asilo Sant'Elia<br><span class="loc">Como</span> | 1937 | Giuseppe Terragni | 幼兒園；大量開窗 |
 
 ### 6.13 戰後與當代建築（Postwar and Contemporary）
 
@@ -205,27 +204,27 @@
 | Centre Pompidou<br><span class="loc">Paris</span> | 1977 | Rogers＋Piano | 結構與設備外露；顏色區分 |
 | Tomba Brion | 1978 | Carlo Scarpa | — |
 | Guggenheim Museum Bilbao<br><span class="loc">Bilbao（西）</span> | 1997 | Frank Gehry | 鈦金屬曲面 |
-| MAXXI<br><span class="loc">Rome</span> | — | Zaha Hadid | — |
-| Gallaratese Quarter<br><span class="loc">Milan</span> | — | Aldo Rossi | La Tendenza |
-| Generali Tower（CityLife）<br><span class="loc">Milan</span> | — | Zaha Hadid | 「Twisted」 |
-| Palazzo dell'Arte（Triennale）<br><span class="loc">Milan</span> | — | Giovanni Muzio | 2025 Triennale 展場 |
+| MAXXI<br><span class="loc">Rome</span> | 2010 | Zaha Hadid | — |
+| Gallaratese Quarter<br><span class="loc">Milan</span> | 1973 | Aldo Rossi | La Tendenza |
+| Generali Tower（CityLife）<br><span class="loc">Milan</span> | 2017 | Zaha Hadid | 「Twisted」 |
+| Palazzo dell'Arte（Triennale）<br><span class="loc">Milan</span> | 1933 | Giovanni Muzio | 2025 Triennale 展場 |
 | Polimi Campus Nord<br><span class="loc">Milan</span> | — | Renzo Piano | — |
-| Museo Castelvecchio<br><span class="loc">Verona</span> | — | Carlo Scarpa | 陰影縫隙；構造碎片 |
-| Louvre Pyramid<br><span class="loc">Paris</span> | — | I. M. Pei | Mitterrand Grands Projets |
-| Grande Arche<br><span class="loc">Paris</span> | — | Spreckelsen | 致敬大革命 200 週年 |
-| Bibliothèque nationale de France<br><span class="loc">Paris</span> | — | Dominique Perrault | 四棟玻璃大樓 |
-| Musée d'Orsay<br><span class="loc">Paris</span> | — | Gae Aulenti | 1900 世博火車站改建 |
-| Louvre Abu Dhabi<br><span class="loc">Abu Dhabi</span> | — | Jean Nouvel | — |
-| Philharmonie de Paris<br><span class="loc">Paris</span> | — | Jean Nouvel | — |
-| Lloyd's Building<br><span class="loc">London</span> | — | Richard Rogers | Bowellism |
-| The Gherkin<br><span class="loc">London</span> | — | Norman Foster | Diagrid |
-| London City Hall<br><span class="loc">London</span> | — | Norman Foster | 透明球體 |
-| Grand Court<br><span class="loc">London</span> | — | Norman Foster | 結構玻璃天幕 |
-| Reichstag（玻璃穹頂）<br><span class="loc">Berlin</span> | — | Norman Foster | 民主透明 |
-| Jewish Museum Berlin<br><span class="loc">Berlin</span> | — | Daniel Libeskind | 解構 |
-| Dancing House<br><span class="loc">Prague</span> | — | Frank Gehry | — |
-| Vitra Fire Station | — | Zaha Hadid | — |
-| Phaeno Science Center | — | Zaha Hadid | — |
-| Wexner Center | — | Peter Eisenman | — |
-| Salk Institute | — | Louis Kahn | Brutalism |
-| Vanna Venturi House | — | Robert Venturi | Postmodernism |
+| Museo Castelvecchio<br><span class="loc">Verona</span> | 1964 | Carlo Scarpa | 陰影縫隙；構造碎片 |
+| Louvre Pyramid<br><span class="loc">Paris</span> | 1989 | I. M. Pei | Mitterrand Grands Projets |
+| Grande Arche<br><span class="loc">Paris</span> | 1989 | Spreckelsen | 致敬大革命 200 週年 |
+| Bibliothèque nationale de France<br><span class="loc">Paris</span> | 1995 | Dominique Perrault | 四棟玻璃大樓 |
+| Musée d'Orsay<br><span class="loc">Paris</span> | 1986 | Gae Aulenti | 1900 世博火車站改建 |
+| Louvre Abu Dhabi<br><span class="loc">Abu Dhabi</span> | 2017 | Jean Nouvel | — |
+| Philharmonie de Paris<br><span class="loc">Paris</span> | 2015 | Jean Nouvel | — |
+| Lloyd's Building<br><span class="loc">London</span> | 1986 | Richard Rogers | Bowellism |
+| The Gherkin<br><span class="loc">London</span> | 2004 | Norman Foster | Diagrid |
+| London City Hall<br><span class="loc">London</span> | 2002 | Norman Foster | 透明球體 |
+| Grand Court<br><span class="loc">London</span> | 2000 | Norman Foster | 結構玻璃天幕 |
+| Reichstag（玻璃穹頂）<br><span class="loc">Berlin</span> | 1999 | Norman Foster | 民主透明 |
+| Jewish Museum Berlin<br><span class="loc">Berlin</span> | 1999 | Daniel Libeskind | 解構 |
+| Dancing House<br><span class="loc">Prague</span> | 1996 | Frank Gehry | — |
+| Vitra Fire Station | 1993 | Zaha Hadid | — |
+| Phaeno Science Center | 2005 | Zaha Hadid | — |
+| Wexner Center | 1989 | Peter Eisenman | — |
+| Salk Institute | 1965 | Louis Kahn | Brutalism |
+| Vanna Venturi House | 1964 | Robert Venturi | Postmodernism |

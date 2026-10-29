@@ -176,7 +176,6 @@ Phaeno Science Center |  | en:Phaeno_Science_Center | 52.42889°N 10.79°E | Sup
 Wexner Center |  | url:https://latitude.to/articles-by-country/us/united-states/23472/wexner-center-for-the-arts | 40.0002°N 83.0094°W | Supplementary location: Columbus (Ohio, USA); coordinates taken from latitude.to, not Wikipedia
 Salk Institute |  | en:Salk_Institute_for_Biological_Studies | 32.8875°N 117.24639°W | Supplementary location: San Diego (La Jolla)
 Vanna Venturi House |  | en:Vanna_Venturi_House | 40.0707°N 75.2081°W | Supplementary location: Philadelphia (Chestnut Hill)
-Villa Muggia |  | url:https://www.komoot.com/highlight/3868301 | 44.358981°N 11.676297°E | Location per source: Imola; the handout says Milan, 1944, while FAI (fondoambiente.it) states it was built in Imola in 1936 (Via Bel Poggio 4) and was ruined in WWII; coordinates taken from Komoot; inconsistent with the handout, to be verified
 Polimi Campus Nord |  | en:Milano_Bovisa_railway_station | 45.5025°N 9.15917°E | Approximate; represented by Milano Bovisa station (serving the Bovisa campus); Renzo Piano's Campus Nord is in the Goccia area of Bovisa; coordinates of the campus itself not found
 Valle dei Templi |  | de:Tal_der_Tempel | 37.2897°N 13.5900°E | 
 Basilica of Saint-Denis |  | de:Basilika_Saint-Denis | 48.9354°N 2.3597°E | 
