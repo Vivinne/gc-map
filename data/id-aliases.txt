@@ -1,0 +1,5 @@
+# building name (exactly as in content/handout-c3-s6.md) | fixed id prefix
+# Used for names that would otherwise get a hash-suffixed slug.
+聖伯多祿大殿（首版設計） | st-peters-first-design
+聖伯多祿大殿穹頂 | st-peters-dome
+聖伯多祿大殿立面與中殿 | st-peters-facade-nave

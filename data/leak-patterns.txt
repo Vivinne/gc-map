@@ -1,0 +1,15 @@
+# One JavaScript regular expression per line (flags after the last slash). Displayed fields must match none of them.
+# Source-material markers that must never reach the site: question IDs, knowledge-point IDs, to-be-confirmed marks, exam wording.
+/\bq-[A-Za-z0-9]/
+/\[to be confirmed|\(to be confirmed/i
+/〔待確認|（待確認/
+/\bk-\d{4}\b/
+/conflicts\s*§|reports\/conflicts/
+/\[supplement\]/i
+/\[補充\]/
+/past[- ]exam|candidate answer|practice question|corresponding question/i
+/考古題|候選答案|練習題|對應題目/
+/not supplemented here|no example given|summary only|spelling in notes/i
+/本庫不補|未舉例|整理摘要|筆記拼字/
+/\*\*|\\\\text|\$[^$]+\$/
+/<[a-z][^>]*>/i

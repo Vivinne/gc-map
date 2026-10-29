@@ -1,0 +1,3921 @@
+{
+ "eras": [
+  {
+   "id": "ancient",
+   "label": "Ancient",
+   "color": "#B5452E"
+  },
+  {
+   "id": "medieval",
+   "label": "Medieval",
+   "color": "#2F5D8C"
+  },
+  {
+   "id": "renbar",
+   "label": "Renaissance and Baroque",
+   "color": "#9A6700"
+  },
+  {
+   "id": "c19",
+   "label": "19th Century",
+   "color": "#2E7D5B"
+  },
+  {
+   "id": "modern",
+   "label": "Modern",
+   "color": "#6B3FA0"
+  }
+ ],
+ "styles": [
+  {
+   "id": "6.1",
+   "name": "古希臘建築（Ancient Greece）"
+  },
+  {
+   "id": "6.2",
+   "name": "古羅馬建築（Ancient Rome）"
+  },
+  {
+   "id": "6.3",
+   "name": "早期基督教與拜占庭建築（Early Christian and Byzantine）"
+  },
+  {
+   "id": "6.4",
+   "name": "羅曼式建築（Romanesque）"
+  },
+  {
+   "id": "6.5",
+   "name": "哥德式建築（Gothic）"
+  },
+  {
+   "id": "6.6",
+   "name": "文藝復興與矯飾主義建築（Renaissance and Mannerism）"
+  },
+  {
+   "id": "6.7",
+   "name": "巴洛克與洛可可建築（Baroque and Rococo）"
+  },
+  {
+   "id": "6.8",
+   "name": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）"
+  },
+  {
+   "id": "6.9",
+   "name": "工業革命與新材料建築（Industrial Revolution and New Materials）"
+  },
+  {
+   "id": "6.10",
+   "name": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）"
+  },
+  {
+   "id": "6.11",
+   "name": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）"
+  },
+  {
+   "id": "6.12",
+   "name": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）"
+  },
+  {
+   "id": "6.13",
+   "name": "戰後與當代建築（Postwar and Contemporary）"
+  }
+ ],
+ "places": [
+  {
+   "id": "valle-dei-templi-agrigento",
+   "name": "Valle dei Templi",
+   "loc": "Agrigento（西西里）",
+   "year": "—",
+   "who": "—",
+   "note": "大希臘 Doric 神廟群",
+   "style": "古希臘建築（Ancient Greece）",
+   "styleId": "6.1",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "valle-dei-templi-agrigento~0",
+     "sub": "",
+     "lat": 37.2897,
+     "lng": 13.59,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Tal_der_Tempel",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "parthenon-athens",
+   "name": "Parthenon",
+   "loc": "Athens（希臘）",
+   "year": "—",
+   "who": "—",
+   "note": "Doric、Peripteral 圍柱式代表",
+   "style": "古希臘建築（Ancient Greece）",
+   "styleId": "6.1",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "parthenon-athens~0",
+     "sub": "",
+     "lat": 37.9715,
+     "lng": 23.7266,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Parthenon",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "erechtheion-athens",
+   "name": "Erechtheion",
+   "loc": "Athens（希臘）",
+   "year": "—",
+   "who": "—",
+   "note": "Ionic；北門廊 Caryatids 女像柱",
+   "style": "古希臘建築（Ancient Greece）",
+   "styleId": "6.1",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "erechtheion-athens~0",
+     "sub": "",
+     "lat": 37.97167,
+     "lng": 23.72611,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing acropolis page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Acropolis_of_Athens",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "cloaca-maxima-rome",
+   "name": "Cloaca Maxima",
+   "loc": "Rome",
+   "year": "BC 6 世紀",
+   "who": "—",
+   "note": "大下水道；羅馬工程年代排序起點（王政時期）",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "cloaca-maxima-rome~0",
+     "sub": "",
+     "lat": 41.8889,
+     "lng": 12.4803,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Cloaca_Maxima",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "aqua-appia-rome",
+   "name": "Aqua Appia",
+   "loc": "Rome",
+   "year": "BC 312",
+   "who": "—",
+   "note": "第一條引水道",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "aqua-appia-rome~0",
+     "sub": "",
+     "lat": 41.8885,
+     "lng": 12.48,
+     "precision": "estimate",
+     "note": "Low confidence (may be several km off, or a linear / grouped item); Linear remains; this point is only the aqueduct terminus (Forum Boarium area)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "domus-aurea-rome",
+   "name": "Domus Aurea",
+   "loc": "Rome",
+   "year": "AD 64 後",
+   "who": "Nero",
+   "note": "Sala Ottagona 八角廳是 Pantheon 穹頂先驅；「grotesque」詞源",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "domus-aurea-rome~0",
+     "sub": "",
+     "lat": 41.891389,
+     "lng": 12.495278,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Domus_Aurea",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "colosseum-rome",
+   "name": "Colosseum",
+   "loc": "Rome",
+   "year": "AD 80",
+   "who": "—",
+   "note": "疊柱式（Tuscan → Ionic → Corinthian；底層另有 Doric 的寫法）；券柱＋混凝土拱頂",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "colosseum-rome~0",
+     "sub": "",
+     "lat": 41.8903,
+     "lng": 12.4922,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Colosseum",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "pantheon-rome",
+   "name": "Pantheon",
+   "loc": "Rome",
+   "year": "AD 125",
+   "who": "Hadrian",
+   "note": "Rotunda；穹頂直徑＝高＝43.3 m；Oculus 9 m；無鋼筋混凝土穹頂",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "pantheon-rome~0",
+     "sub": "",
+     "lat": 41.8986,
+     "lng": 12.4768,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Pantheon,_Rome",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilica-of-maxentius-and-constantine-rome",
+   "name": "Basilica of Maxentius and Constantine",
+   "loc": "Rome",
+   "year": "308–312 起",
+   "who": "Maxentius／Constantine",
+   "note": "中殿三組混凝土十字拱；早期基督教堂範本",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "basilica-of-maxentius-and-constantine-rome~0",
+     "sub": "",
+     "lat": 41.8919,
+     "lng": 12.4883,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Maxentius",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "arch-of-constantine-rome",
+   "name": "Arch of Constantine",
+   "loc": "Rome",
+   "year": "315",
+   "who": "Constantine",
+   "note": "紀念 Milvian Bridge 之勝；大量 Spolia",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "arch-of-constantine-rome~0",
+     "sub": "",
+     "lat": 41.88972,
+     "lng": 12.49083,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Arch_of_Constantine",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "roman-forum-1a9a-rome",
+   "name": "Roman Forum 與帝國議事廣場",
+   "loc": "Rome",
+   "year": "—",
+   "who": "—",
+   "note": "共和 Forum 與帝國 Fori Imperiali",
+   "style": "古羅馬建築（Ancient Rome）",
+   "styleId": "6.2",
+   "era": "ancient",
+   "points": [
+    {
+     "id": "roman-forum-1a9a-rome~0",
+     "sub": "Roman Forum",
+     "lat": 41.8922,
+     "lng": 12.4852,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Roman_Forum",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "colonne-di-san-lorenzo-milan",
+   "name": "Colonne di San Lorenzo",
+   "loc": "Milan",
+   "year": "2 世紀柱、4 世紀末重組",
+   "who": "—",
+   "note": "16 根 Corinthian 柱；Spolia",
+   "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
+   "styleId": "6.3",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "colonne-di-san-lorenzo-milan~0",
+     "sub": "",
+     "lat": 45.4582,
+     "lng": 9.181,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Colonne_di_San_Lorenzo",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "mediolanum-circo-thermae-herculeae-cb01-milan",
+   "name": "Mediolanum 皇宮區、Circo、Thermae Herculeae",
+   "loc": "Milan",
+   "year": "286 起",
+   "who": "Maximianus",
+   "note": "西羅馬首都的帝國建築；Circo 殘塔＝San Giorgio al Palazzo 鐘樓",
+   "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
+   "styleId": "6.3",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "mediolanum-circo-thermae-herculeae-cb01-milan~0",
+     "sub": "",
+     "lat": 45.46694,
+     "lng": 9.19,
+     "precision": "approx",
+     "note": "Approximate: central Milan, not the actual location of the buildings",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Milan",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "hagia-sophia-istanbul",
+   "name": "Hagia Sophia",
+   "loc": "Istanbul（土耳其）",
+   "year": "532–537",
+   "who": "Anthemius／Isidore",
+   "note": "Pendentive 穹頂；Justinian 時期",
+   "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
+   "styleId": "6.3",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "hagia-sophia-istanbul~0",
+     "sub": "",
+     "lat": 41.00833,
+     "lng": 28.98,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Hagia_Sophia",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilica-di-san-marco-venice",
+   "name": "Basilica di San Marco",
+   "loc": "Venice",
+   "year": "1094",
+   "who": "—",
+   "note": "Byzantine；希臘十字平面",
+   "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
+   "styleId": "6.3",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "basilica-di-san-marco-venice~0",
+     "sub": "",
+     "lat": 45.43389,
+     "lng": 12.33806,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing square page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_San_Marco",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilica-di-sant-ambrogio-milan",
+   "name": "Basilica di Sant'Ambrogio",
+   "loc": "Milan",
+   "year": "原堂 379–386；現堂約 1080 起",
+   "who": "—",
+   "note": "Lombard Romanesque 原型；紅磚＋肋拱；無 clerestory",
+   "style": "羅曼式建築（Romanesque）",
+   "styleId": "6.4",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "basilica-di-sant-ambrogio-milan~0",
+     "sub": "",
+     "lat": 45.462425,
+     "lng": 9.175806,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Sant'Ambrogio",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "mont-saint-michel-abbey-mont-saint-michel",
+   "name": "Mont-Saint-Michel Abbey",
+   "loc": "Mont-Saint-Michel（法）",
+   "year": "1023",
+   "who": "—",
+   "note": "Romanesque／Gothic；La Merveille 奇蹟樓",
+   "style": "羅曼式建築（Romanesque）",
+   "styleId": "6.4",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "mont-saint-michel-abbey-mont-saint-michel~0",
+     "sub": "",
+     "lat": 48.636,
+     "lng": -1.511,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing island / town page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Mont-Saint-Michel",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "parma-baptistery-parma",
+   "name": "Parma Baptistery",
+   "loc": "Parma",
+   "year": "1196",
+   "who": "Benedetto Antelami",
+   "note": "八角形；粉紅 Verona 大理石；四層 loggias；Romanesque → Gothic",
+   "style": "羅曼式建築（Romanesque）",
+   "styleId": "6.4",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "parma-baptistery-parma~0",
+     "sub": "",
+     "lat": 44.80308,
+     "lng": 10.33041,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Parma_Baptistery",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "pisa-cathedral-87fa-pisa",
+   "name": "Pisa Cathedral 與斜塔",
+   "loc": "Pisa",
+   "year": "—",
+   "who": "—",
+   "note": "Italian Romanesque；彩色大理石盲拱廊",
+   "style": "羅曼式建築（Romanesque）",
+   "styleId": "6.4",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "pisa-cathedral-87fa-pisa~0",
+     "sub": "Pisa Cathedral",
+     "lat": 43.723281,
+     "lng": 10.395845,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Pisa_Cathedral",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "pisa-cathedral-87fa-pisa~1",
+     "sub": "斜塔",
+     "lat": 43.72306,
+     "lng": 10.39639,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Leaning_Tower_of_Pisa",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "san-miniato-al-monte-florence",
+   "name": "San Miniato al Monte",
+   "loc": "Florence",
+   "year": "—",
+   "who": "—",
+   "note": "Romanesque；內有 Cardinal of Portugal Chapel（Rossellino）",
+   "style": "羅曼式建築（Romanesque）",
+   "styleId": "6.4",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "san-miniato-al-monte-florence~0",
+     "sub": "",
+     "lat": 43.759758,
+     "lng": 11.264731,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://it.wikipedia.org/wiki/Basilica_di_San_Miniato_al_Monte",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilica-of-saint-denis-saint-denis",
+   "name": "Basilica of Saint-Denis",
+   "loc": "Saint-Denis（法）",
+   "year": "1140",
+   "who": "—",
+   "note": "法國哥德大教堂年表起點",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "basilica-of-saint-denis-saint-denis~0",
+     "sub": "",
+     "lat": 48.9354,
+     "lng": 2.3597,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Basilika_Saint-Denis",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "notre-dame-de-mantes-la-jolie-mantes",
+   "name": "Notre-Dame de Mantes-la-Jolie",
+   "loc": "Mantes（法）",
+   "year": "1150",
+   "who": "—",
+   "note": "Collégiale",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "notre-dame-de-mantes-la-jolie-mantes~0",
+     "sub": "",
+     "lat": 48.9903,
+     "lng": 1.717,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "notre-dame-de-paris-paris",
+   "name": "Notre-Dame de Paris",
+   "loc": "Paris",
+   "year": "1163",
+   "who": "—",
+   "note": "High Gothic；拿破崙 1804 加冕地",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "notre-dame-de-paris-paris~0",
+     "sub": "",
+     "lat": 48.85306,
+     "lng": 2.35,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Notre-Dame_de_Paris",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "chartres-cathedral-chartres",
+   "name": "Chartres Cathedral",
+   "loc": "Chartres（法）",
+   "year": "1194",
+   "who": "—",
+   "note": "沙特藍；High Gothic",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "chartres-cathedral-chartres~0",
+     "sub": "",
+     "lat": 48.4478,
+     "lng": 1.4878,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Chartres_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "bourges-cathedral-bourges",
+   "name": "Bourges Cathedral",
+   "loc": "Bourges（法）",
+   "year": "1195",
+   "who": "—",
+   "note": "沒有 Transept（橫向耳堂）",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "bourges-cathedral-bourges~0",
+     "sub": "",
+     "lat": 47.08194,
+     "lng": 2.39944,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Bourges_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "reims-cathedral-reims",
+   "name": "Reims Cathedral",
+   "loc": "Reims（法）",
+   "year": "1211",
+   "who": "—",
+   "note": "裝飾尖拱",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "reims-cathedral-reims~0",
+     "sub": "",
+     "lat": 49.25389,
+     "lng": 4.03417,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Reims_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "amiens-cathedral-amiens",
+   "name": "Amiens Cathedral",
+   "loc": "Amiens（法）",
+   "year": "1220",
+   "who": "—",
+   "note": "42.3 m",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "amiens-cathedral-amiens~0",
+     "sub": "",
+     "lat": 49.895,
+     "lng": 2.30222,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Amiens_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "salisbury-cathedral-salisbury",
+   "name": "Salisbury Cathedral",
+   "loc": "Salisbury（英）",
+   "year": "1220",
+   "who": "—",
+   "note": "保存 Magna Carta 抄本",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "salisbury-cathedral-salisbury~0",
+     "sub": "",
+     "lat": 51.06472,
+     "lng": -1.7975,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Salisbury_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "strasbourg-cathedral-strasbourg",
+   "name": "Strasbourg Cathedral",
+   "loc": "Strasbourg（法）",
+   "year": "1225",
+   "who": "—",
+   "note": "Hugo：Marvel；粉紅砂岩",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "strasbourg-cathedral-strasbourg~0",
+     "sub": "",
+     "lat": 48.58167,
+     "lng": 7.75083,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Strasbourg_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "castel-del-monte-puglia",
+   "name": "Castel del Monte",
+   "loc": "Puglia",
+   "year": "1240",
+   "who": "Friedrich II",
+   "note": "Octagon Plan；歸為「Other」，與哥德大教堂不同類",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "castel-del-monte-puglia~0",
+     "sub": "",
+     "lat": 41.084753,
+     "lng": 16.270935,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Castel_del_Monte,_Apulia",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "sainte-chapelle-paris",
+   "name": "Sainte-Chapelle",
+   "loc": "Paris",
+   "year": "1242",
+   "who": "—",
+   "note": "Rayonnant",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "sainte-chapelle-paris~0",
+     "sub": "",
+     "lat": 48.85528,
+     "lng": 2.345,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Sainte-Chapelle",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "cologne-cathedral-cologne",
+   "name": "Cologne Cathedral",
+   "loc": "Cologne（德）",
+   "year": "1248",
+   "who": "—",
+   "note": "德國哥德",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "cologne-cathedral-cologne~0",
+     "sub": "",
+     "lat": 50.94139,
+     "lng": 6.95833,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Cologne_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "cathedrale-sainte-croix-d-orleans-orleans",
+   "name": "Cathédrale Sainte-Croix d'Orléans",
+   "loc": "Orléans（法）",
+   "year": "1278",
+   "who": "—",
+   "note": "—",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "cathedrale-sainte-croix-d-orleans-orleans~0",
+     "sub": "",
+     "lat": 47.90111,
+     "lng": 1.91056,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Orl%C3%A9ans_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "duomo-di-milano-milan",
+   "name": "Duomo di Milano",
+   "loc": "Milan",
+   "year": "1386",
+   "who": "—",
+   "note": "義大利規模最大的哥德式；融合倫巴底與國際哥德",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "duomo-di-milano-milan~0",
+     "sub": "",
+     "lat": 45.46417,
+     "lng": 9.19139,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Milan_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "seville-cathedral-seville",
+   "name": "Seville Cathedral",
+   "loc": "Seville（西）",
+   "year": "1401",
+   "who": "—",
+   "note": "Late Gothic",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "seville-cathedral-seville~0",
+     "sub": "",
+     "lat": 37.385894,
+     "lng": -5.993056,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Seville_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-maria-del-fiore-3eab-florence",
+   "name": "Santa Maria del Fiore（主體）",
+   "loc": "Florence",
+   "year": "—",
+   "who": "—",
+   "note": "Brunelleschi 圓頂之前的哥德大教堂",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "santa-maria-del-fiore-3eab-florence~0",
+     "sub": "",
+     "lat": 43.77306,
+     "lng": 11.25694,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Florence_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "siena-cathedral-siena",
+   "name": "Siena Cathedral",
+   "loc": "Siena",
+   "year": "—",
+   "who": "—",
+   "note": "鑲嵌大理石地面；Gate of Heaven 屋頂步道；Gothic",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "siena-cathedral-siena~0",
+     "sub": "",
+     "lat": 43.3177,
+     "lng": 11.329,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Siena_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilica-di-san-francesco-d-assisi-assisi",
+   "name": "Basilica di San Francesco d'Assisi",
+   "loc": "Assisi",
+   "year": "—",
+   "who": "—",
+   "note": "Giotto 壁畫；少用飛扶壁",
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "points": [
+    {
+     "id": "basilica-di-san-francesco-d-assisi-assisi~0",
+     "sub": "",
+     "lat": 43.0749,
+     "lng": 12.6064,
+     "precision": "estimate",
+     "note": "High confidence (within about 300 m)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "ospedale-degli-innocenti-foundling-hospital-florence",
+   "name": "Ospedale degli Innocenti（Foundling Hospital）",
+   "loc": "Florence",
+   "year": "1419",
+   "who": "Brunelleschi",
+   "note": "第一座 Renaissance 建築；圓拱＋Corinthian 柱",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "ospedale-degli-innocenti-foundling-hospital-florence~0",
+     "sub": "",
+     "lat": 43.7762,
+     "lng": 11.2611,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Ospedale_degli_Innocenti",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-maria-del-fiore-8b69-florence",
+   "name": "Santa Maria del Fiore 穹頂",
+   "loc": "Florence",
+   "year": "1420",
+   "who": "Brunelleschi",
+   "note": "雙層殼體、魚骨砌磚、無木鷹架；Vasari、Zuccari《最後審判》",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "santa-maria-del-fiore-8b69-florence~0",
+     "sub": "",
+     "lat": 43.77306,
+     "lng": 11.25694,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing cathedral page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Florence_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "pazzi-chapel-santa-croce-florence",
+   "name": "Pazzi Chapel（Santa Croce）",
+   "loc": "Florence",
+   "year": "1443",
+   "who": "Brunelleschi",
+   "note": "Santa Croce 內；立面由 Niccolò Matas 設計",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "pazzi-chapel-santa-croce-florence~0",
+     "sub": "",
+     "lat": 43.768006,
+     "lng": 11.262989,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Pazzi_Chapel",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-medici-riccardi-florence",
+   "name": "Palazzo Medici Riccardi",
+   "loc": "Florence",
+   "year": "1444",
+   "who": "Michelozzo",
+   "note": "贊助人 Cosimo il Vecchio",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzo-medici-riccardi-florence~0",
+     "sub": "",
+     "lat": 43.77528,
+     "lng": 11.255989,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Medici_Riccardi",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "tempio-malatestiano-rimini",
+   "name": "Tempio Malatestiano",
+   "loc": "Rimini",
+   "year": "1447",
+   "who": "Alberti",
+   "note": "Giotto Crucifix",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "tempio-malatestiano-rimini~0",
+     "sub": "",
+     "lat": 44.059624,
+     "lng": 12.570232,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Tempio_Malatestiano",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "ca-granda-milan",
+   "name": "Ca' Granda",
+   "loc": "Milan",
+   "year": "15 世紀",
+   "who": "Filarete",
+   "note": "大醫院；今 Milan 大學主校區；十字形庭院",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "ca-granda-milan~0",
+     "sub": "",
+     "lat": 45.4601,
+     "lng": 9.1944,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Ospedale_Maggiore_(Mailand)",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-rucellai-florence",
+   "name": "Palazzo Rucellai",
+   "loc": "Florence",
+   "year": "1450",
+   "who": "Alberti",
+   "note": "三層柱式 Tuscan–Ionic–Corinthian 壁柱",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzo-rucellai-florence~0",
+     "sub": "",
+     "lat": 43.7713,
+     "lng": 11.2496,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Rucellai",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-maria-novella-18f6-florence",
+   "name": "Santa Maria Novella（立面）",
+   "loc": "Florence",
+   "year": "1456",
+   "who": "Alberti",
+   "note": "渦卷包住未完工哥德立面",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "santa-maria-novella-18f6-florence~0",
+     "sub": "",
+     "lat": 43.7746,
+     "lng": 11.2493,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_Novella",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "sant-andrea-mantua",
+   "name": "Sant'Andrea",
+   "loc": "Mantua",
+   "year": "1470",
+   "who": "Alberti",
+   "note": "Pediment＋凱旋門",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "sant-andrea-mantua~0",
+     "sub": "",
+     "lat": 45.15889,
+     "lng": 10.79417,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Sant'Andrea,_Mantua",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "camera-degli-sposi-mantua",
+   "name": "Camera degli Sposi",
+   "loc": "Mantua",
+   "year": "1474",
+   "who": "Mantegna",
+   "note": "Palazzo Ducale；di sotto in sù 仰視透視",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "camera-degli-sposi-mantua~0",
+     "sub": "",
+     "lat": 45.1603,
+     "lng": 10.798,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing Palazzo Ducale page",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Ducale_(Mantua)",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-maria-presso-san-satiro-milan",
+   "name": "Santa Maria presso San Satiro",
+   "loc": "Milan",
+   "year": "1482",
+   "who": "Bramante",
+   "note": "Trompe l'oeil：實深 90–97 cm 的唱詩班，視覺上約 10 m 深",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "santa-maria-presso-san-satiro-milan~0",
+     "sub": "",
+     "lat": 45.462647,
+     "lng": 9.188033,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_presso_San_Satiro",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-gondi-florence",
+   "name": "Palazzo Gondi",
+   "loc": "Florence",
+   "year": "1490",
+   "who": "G. da Sangallo",
+   "note": "—",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzo-gondi-florence~0",
+     "sub": "",
+     "lat": 43.7703,
+     "lng": 11.2571,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km); Via dei Gondi",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "santa-maria-delle-grazie-tribuna-milan",
+   "name": "Santa Maria delle Grazie（Tribuna）",
+   "loc": "Milan",
+   "year": "1492 開工",
+   "who": "Bramante",
+   "note": "後殿穹頂；《最後的晚餐》",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "santa-maria-delle-grazie-tribuna-milan~0",
+     "sub": "",
+     "lat": 45.46583,
+     "lng": 9.17111,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_delle_Grazie,_Milan",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "tempietto-rome",
+   "name": "Tempietto",
+   "loc": "Rome",
+   "year": "1502",
+   "who": "Bramante",
+   "note": "Central Plan＋Doric 柱",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "tempietto-rome~0",
+     "sub": "",
+     "lat": 41.8886,
+     "lng": 12.4666,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing church page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/San_Pietro_in_Montorio",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "cortile-del-belvedere-vatican",
+   "name": "Cortile del Belvedere",
+   "loc": "Vatican",
+   "year": "1505",
+   "who": "Bramante",
+   "note": "透視觀景庭園；Julius II",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "cortile-del-belvedere-vatican~0",
+     "sub": "",
+     "lat": 41.90417,
+     "lng": 12.45472,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Cortile_del_Belvedere",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "st-peters-first-design-vatican",
+   "name": "聖伯多祿大殿（首版設計）",
+   "loc": "Vatican",
+   "year": "1506",
+   "who": "Bramante",
+   "note": "Greek Cross；大量拆除舊石柱 → Maestro Ruinante",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "st-peters-first-design-vatican~0",
+     "sub": "",
+     "lat": 41.90222,
+     "lng": 12.45333,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "san-maurizio-al-monastero-maggiore-milan",
+   "name": "San Maurizio al Monastero Maggiore",
+   "loc": "Milan",
+   "year": "1518",
+   "who": "Bernardino Luini",
+   "note": "「Sistine Chapel of Milan」",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "san-maurizio-al-monastero-maggiore-milan~0",
+     "sub": "",
+     "lat": 45.465502,
+     "lng": 9.178921,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/San_Maurizio_al_Monastero_Maggiore",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "fontainebleau-fontainebleau",
+   "name": "Fontainebleau",
+   "loc": "Fontainebleau（法）",
+   "year": "1528（另一寫法 1552）",
+   "who": "Serlio",
+   "note": "Renaissance 傳到法國",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "fontainebleau-fontainebleau~0",
+     "sub": "",
+     "lat": 48.4022,
+     "lng": 2.7006,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palace_of_Fontainebleau",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-te-mantua",
+   "name": "Palazzo Te",
+   "loc": "Mantua",
+   "year": "1534",
+   "who": "Giulio Romano",
+   "note": "Slipping Triglyphs；Mannerism",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzo-te-mantua~0",
+     "sub": "",
+     "lat": 45.1481,
+     "lng": 10.7864,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Te",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "laurentian-library-florence",
+   "name": "Laurentian Library",
+   "loc": "Florence",
+   "year": "1534",
+   "who": "Michelangelo",
+   "note": "三股樓梯、嵌牆暗柱；Mannerism 開端",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "laurentian-library-florence~0",
+     "sub": "",
+     "lat": 43.7745,
+     "lng": 11.2534,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Biblioteca_Medicea_Laurenziana",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "piazza-del-campidoglio-rome",
+   "name": "Piazza del Campidoglio",
+   "loc": "Rome",
+   "year": "1546",
+   "who": "Michelangelo",
+   "note": "橢圓／梯形；解決不對稱壓迫感",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "piazza-del-campidoglio-rome~0",
+     "sub": "",
+     "lat": 41.89333,
+     "lng": 12.48278,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_del_Campidoglio",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "st-peters-dome-vatican",
+   "name": "聖伯多祿大殿穹頂",
+   "loc": "Vatican",
+   "year": "1546",
+   "who": "Michelangelo",
+   "note": "雙層圓頂；Giacomo della Porta 完工",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "st-peters-dome-vatican~0",
+     "sub": "",
+     "lat": 41.90222,
+     "lng": 12.45333,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilica-palladiana-vicenza",
+   "name": "Basilica Palladiana",
+   "loc": "Vicenza",
+   "year": "1549",
+   "who": "Palladio",
+   "note": "Serliana 拱",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "basilica-palladiana-vicenza~0",
+     "sub": "",
+     "lat": 45.547,
+     "lng": 11.5466,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_Palladiana",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palladio-86f2-veneto",
+   "name": "Palladio 的別墅群",
+   "loc": "Veneto",
+   "year": "1549–1559",
+   "who": "Palladio",
+   "note": "Pojana 1549、Barbaro 1554、Badoer 1556、Foscari 1559（Foscari 又名 Malcontenta）",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palladio-86f2-veneto~0",
+     "sub": "Villa Barbaro（Maser）",
+     "lat": 45.8122,
+     "lng": 11.9764,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Villa_Barbaro",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "palladio-86f2-veneto~1",
+     "sub": "Villa Badoer（Fratta Polesine）",
+     "lat": 45.030353,
+     "lng": 11.639861,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Villa_Badoer",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "palladio-86f2-veneto~2",
+     "sub": "Villa Foscari（Malcontenta）",
+     "lat": 45.43528,
+     "lng": 12.20111,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Villa_Foscari",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "palladio-86f2-veneto~3",
+     "sub": "Villa Pojana",
+     "lat": 45.2854,
+     "lng": 11.4983,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Villa_Pojana",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-marino-milan",
+   "name": "Palazzo Marino",
+   "loc": "Milan",
+   "year": "1558",
+   "who": "Alessi",
+   "note": "今 Milan 市政廳",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzo-marino-milan~0",
+     "sub": "",
+     "lat": 45.466497,
+     "lng": 9.190686,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Marino",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "villa-farnese-caprarola",
+   "name": "Villa Farnese",
+   "loc": "Caprarola",
+   "year": "1559",
+   "who": "Vignola",
+   "note": "Pentagon＋圓形庭院",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "villa-farnese-caprarola~0",
+     "sub": "",
+     "lat": 42.3289,
+     "lng": 12.2367,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Farnese_(Caprarola)",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "uffizi-florence",
+   "name": "Uffizi",
+   "loc": "Florence",
+   "year": "1560",
+   "who": "Vasari",
+   "note": "U 形中庭；Medici 辦公室",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "uffizi-florence~0",
+     "sub": "",
+     "lat": 43.7683,
+     "lng": 11.2553,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Uffizi",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "vasari-corridor-florence",
+   "name": "Vasari Corridor",
+   "loc": "Florence",
+   "year": "1565",
+   "who": "Vasari",
+   "note": "Ponte Vecchio — Palazzo Vecchio — Uffizi — Pitti",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "vasari-corridor-florence~0",
+     "sub": "",
+     "lat": 43.768203,
+     "lng": 11.254047,
+     "precision": "page",
+     "note": "The corridor is several hundred metres long; the coordinates are the page marker point",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Vasari_Corridor",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "villa-capra-la-rotonda-vicenza",
+   "name": "Villa Capra（La Rotonda）",
+   "loc": "Vicenza",
+   "year": "1570",
+   "who": "Palladio",
+   "note": "四面對稱、希臘柱廊、穹頂",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "villa-capra-la-rotonda-vicenza~0",
+     "sub": "",
+     "lat": 45.5315,
+     "lng": 11.5603,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Villa_La_Rotonda",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "il-redentore-venice",
+   "name": "Il Redentore",
+   "loc": "Venice",
+   "year": "1577",
+   "who": "Palladio",
+   "note": "—",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "il-redentore-venice~0",
+     "sub": "",
+     "lat": 45.424992,
+     "lng": 12.332453,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Il_Redentore",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "sforza-castle-milan",
+   "name": "Sforza Castle",
+   "loc": "Milan",
+   "year": "—",
+   "who": "Filarete",
+   "note": "—",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "sforza-castle-milan~0",
+     "sub": "",
+     "lat": 45.47,
+     "lng": 9.17861,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Sforza_Castle",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilica-di-san-lorenzo-florence",
+   "name": "Basilica di San Lorenzo",
+   "loc": "Florence",
+   "year": "—",
+   "who": "Brunelleschi",
+   "note": "pietra serena 灰色砂岩建立嚴格模矩",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "basilica-di-san-lorenzo-florence~0",
+     "sub": "",
+     "lat": 43.774917,
+     "lng": 11.253861,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_San_Lorenzo,_Florence",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "pienza-cathedral-pienza",
+   "name": "Pienza Cathedral",
+   "loc": "Pienza",
+   "year": "—",
+   "who": "B. Rossellino",
+   "note": "—",
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "pienza-cathedral-pienza~0",
+     "sub": "",
+     "lat": 43.0763,
+     "lng": 11.6791,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Pienza_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "gesu-church-of-the-gesu-rome",
+   "name": "Gesù（Church of the Gesù）",
+   "loc": "Rome",
+   "year": "1568",
+   "who": "Vignola（立面 della Porta）",
+   "note": "Baroque 起源；取消側廊 → 單一寬中殿",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "gesu-church-of-the-gesu-rome~0",
+     "sub": "",
+     "lat": 41.89583,
+     "lng": 12.47972,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Church_of_the_Ges%C3%B9",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "baldacchino-53ab-vatican",
+   "name": "Baldacchino（聖伯多祿）",
+   "loc": "Vatican",
+   "year": "1624",
+   "who": "Bernini",
+   "note": "29 m；Solomonic Columns",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "baldacchino-53ab-vatican~0",
+     "sub": "",
+     "lat": 41.90222,
+     "lng": 12.45333,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing basilica page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-maria-della-salute-venice",
+   "name": "Santa Maria della Salute",
+   "loc": "Venice",
+   "year": "1631",
+   "who": "Longhena",
+   "note": "Octagon",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "santa-maria-della-salute-venice~0",
+     "sub": "",
+     "lat": 45.43083,
+     "lng": 12.33444,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_della_Salute",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "san-carlo-alle-quattro-fontane-rome",
+   "name": "San Carlo alle Quattro Fontane",
+   "loc": "Rome",
+   "year": "1638",
+   "who": "Borromini",
+   "note": "橢圓平面、波浪立面、卵形穹頂",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "san-carlo-alle-quattro-fontane-rome~0",
+     "sub": "",
+     "lat": 41.90181,
+     "lng": 12.49074,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/San_Carlo_alle_Quattro_Fontane",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "sant-ivo-alla-sapienza-rome",
+   "name": "Sant'Ivo alla Sapienza",
+   "loc": "Rome",
+   "year": "1642",
+   "who": "Borromini",
+   "note": "六角星形平面＋螺旋燈籠頂",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "sant-ivo-alla-sapienza-rome~0",
+     "sub": "",
+     "lat": 41.898221,
+     "lng": 12.474734,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Ivo_alla_Sapienza",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "fontana-dei-quattro-fiumi-rome",
+   "name": "Fontana dei Quattro Fiumi",
+   "loc": "Rome（Piazza Navona）",
+   "year": "1651",
+   "who": "Bernini",
+   "note": "空心方尖碑＋雕塑",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "fontana-dei-quattro-fiumi-rome~0",
+     "sub": "",
+     "lat": 41.899,
+     "lng": 12.4731,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing square page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_Navona",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "piazza-san-pietro-vatican",
+   "name": "Piazza San Pietro",
+   "loc": "Vatican",
+   "year": "1656",
+   "who": "Bernini",
+   "note": "橢圓＋梯形＋Doric 柱廊",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "piazza-san-pietro-vatican~0",
+     "sub": "",
+     "lat": 41.9022,
+     "lng": 12.4572,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Square",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-maria-della-pace-rome",
+   "name": "Santa Maria della Pace",
+   "loc": "Rome",
+   "year": "1656",
+   "who": "Pietro da Cortona",
+   "note": "Tuscan 柱＋半圓層；建築＋都市",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "santa-maria-della-pace-rome~0",
+     "sub": "",
+     "lat": 41.89987,
+     "lng": 12.47164,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_della_Pace",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "sant-andrea-al-quirinale-rome",
+   "name": "Sant'Andrea al Quirinale",
+   "loc": "Rome",
+   "year": "1658",
+   "who": "Bernini",
+   "note": "橫向橢圓平面",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "sant-andrea-al-quirinale-rome~0",
+     "sub": "",
+     "lat": 41.90068,
+     "lng": 12.48934,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Andrea_al_Quirinale",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palace-of-versailles-versailles",
+   "name": "Palace of Versailles",
+   "loc": "Versailles（法）",
+   "year": "1661",
+   "who": "—",
+   "note": "French Baroque；Louis XIV",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palace-of-versailles-versailles~0",
+     "sub": "",
+     "lat": 48.8047,
+     "lng": 2.1203,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palace_of_Versailles",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "scala-regia-vatican",
+   "name": "Scala Regia",
+   "loc": "Vatican",
+   "year": "1663",
+   "who": "Bernini",
+   "note": "儀典入口階梯",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "scala-regia-vatican~0",
+     "sub": "",
+     "lat": 41.90361,
+     "lng": 12.45639,
+     "precision": "contained",
+     "note": "Coordinates taken from the containing palace page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Apostolic_Palace",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "cappella-della-sindone-turin",
+   "name": "Cappella della Sindone",
+   "loc": "Turin",
+   "year": "1668",
+   "who": "Guarini",
+   "note": "Hexagon 圓頂；錐形透空拱券網格",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "cappella-della-sindone-turin~0",
+     "sub": "",
+     "lat": 45.07332,
+     "lng": 7.685435,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Chapel_of_the_Holy_Shroud",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "san-bernardino-alle-ossa-milan",
+   "name": "San Bernardino alle Ossa",
+   "loc": "Milan",
+   "year": "1726",
+   "who": "—",
+   "note": "Ossario 人骨小堂；Baroque／Rococo",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "san-bernardino-alle-ossa-milan~0",
+     "sub": "",
+     "lat": 45.462553,
+     "lng": 9.195611,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/San_Bernardino_alle_Ossa",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzina-di-caccia-di-stupinigi-turin",
+   "name": "Palazzina di Caccia di Stupinigi",
+   "loc": "Turin",
+   "year": "1729",
+   "who": "Juvarra",
+   "note": "X 型平面＋中央橢圓宴會廳",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzina-di-caccia-di-stupinigi-turin~0",
+     "sub": "",
+     "lat": 45.004,
+     "lng": 7.6045,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km); Stupinigi (Nichelino)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "trevi-fountain-rome",
+   "name": "Trevi Fountain",
+   "loc": "Rome",
+   "year": "1732",
+   "who": "Salvi",
+   "note": "Palazzo Poli 牆壁改造；Corinthian 柱",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "trevi-fountain-rome~0",
+     "sub": "",
+     "lat": 41.90083,
+     "lng": 12.48306,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Trevi_Fountain",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "royal-palace-of-caserta-caserta",
+   "name": "Royal Palace of Caserta",
+   "loc": "Caserta",
+   "year": "1752",
+   "who": "Vanvitelli",
+   "note": "「義大利的凡爾賽」",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "royal-palace-of-caserta-caserta~0",
+     "sub": "",
+     "lat": 41.07333,
+     "lng": 14.32639,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Royal_Palace_of_Caserta",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "teatro-alla-scala-milan",
+   "name": "Teatro alla Scala",
+   "loc": "Milan",
+   "year": "1778",
+   "who": "Piermarini",
+   "note": "—",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "teatro-alla-scala-milan~0",
+     "sub": "",
+     "lat": 45.4675,
+     "lng": 9.18917,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/La_Scala",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-reale-milan-milan",
+   "name": "Palazzo Reale（Milan）",
+   "loc": "Milan",
+   "year": "1778",
+   "who": "Piermarini",
+   "note": "—",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzo-reale-milan-milan~0",
+     "sub": "",
+     "lat": 45.4632,
+     "lng": 9.1911,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Royal_Palace_of_Milan",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-belgioioso-milan",
+   "name": "Palazzo Belgioioso",
+   "loc": "Milan",
+   "year": "1781",
+   "who": "Piermarini",
+   "note": "—",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "palazzo-belgioioso-milan~0",
+     "sub": "",
+     "lat": 45.467578,
+     "lng": 9.192423,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Belgioioso",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "st-peters-facade-nave-vatican",
+   "name": "聖伯多祿大殿立面與中殿",
+   "loc": "Vatican",
+   "year": "—",
+   "who": "Maderno",
+   "note": "把 Greek Cross 變拉丁十字；1626 落成",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "st-peters-facade-nave-vatican~0",
+     "sub": "",
+     "lat": 41.90222,
+     "lng": 12.45333,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-susanna-rome",
+   "name": "Santa Susanna",
+   "loc": "Rome",
+   "year": "—",
+   "who": "Maderno",
+   "note": "Baroque",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "santa-susanna-rome~0",
+     "sub": "",
+     "lat": 41.9042,
+     "lng": 12.4953,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km); Via XX Settembre",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "ecstasy-of-saint-teresa-rome",
+   "name": "Ecstasy of Saint Teresa",
+   "loc": "Rome（Santa Maria della Vittoria）",
+   "year": "—",
+   "who": "Bernini",
+   "note": "Bel Composto 美妙融合",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "ecstasy-of-saint-teresa-rome~0",
+     "sub": "",
+     "lat": 41.9047,
+     "lng": 12.4957,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km); Santa Maria della Vittoria",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "sant-ignazio-di-loyola-rome",
+   "name": "Sant'Ignazio di Loyola",
+   "loc": "Rome",
+   "year": "—",
+   "who": "Andrea Pozzo",
+   "note": "畫出立體穹頂（trompe l'oeil）",
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "renbar",
+   "points": [
+    {
+     "id": "sant-ignazio-di-loyola-rome~0",
+     "sub": "",
+     "lat": 41.899,
+     "lng": 12.479778,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Ignazio,_Rome",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "basilique-du-sacre-c-ur-paris",
+   "name": "Basilique du Sacré-Cœur",
+   "loc": "Paris",
+   "year": "1875",
+   "who": "—",
+   "note": "Romano-Byzantine",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "basilique-du-sacre-c-ur-paris~0",
+     "sub": "",
+     "lat": 48.8867,
+     "lng": 2.3428,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Sacr%C3%A9-C%C5%93ur_de_Montmartre",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "mole-antonelliana-turin",
+   "name": "Mole Antonelliana",
+   "loc": "Turin",
+   "year": "1889（Antonelli 1888 逝世）",
+   "who": "Alessandro Antonelli",
+   "note": "原猶太會堂 → 國家電影博物館；167.5 m",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "mole-antonelliana-turin~0",
+     "sub": "",
+     "lat": 45.0689,
+     "lng": 7.6931,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Mole_Antonelliana",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "arco-della-pace-milan",
+   "name": "Arco della Pace",
+   "loc": "Milan",
+   "year": "—",
+   "who": "—",
+   "note": "義大利新古典代表",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "arco-della-pace-milan~0",
+     "sub": "",
+     "lat": 45.4757,
+     "lng": 9.1724,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Arco_della_Pace",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "pantheon-paris",
+   "name": "Panthéon",
+   "loc": "Paris",
+   "year": "—",
+   "who": "—",
+   "note": "法國版萬神殿；葬 Voltaire、Hugo、Curie 夫婦",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "pantheon-paris~0",
+     "sub": "",
+     "lat": 48.84611,
+     "lng": 2.34583,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Panth%C3%A9on,_Paris",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "arc-de-triomphe-arc-du-carrousel-paris",
+   "name": "Arc de Triomphe／Arc du Carrousel",
+   "loc": "Paris",
+   "year": "—",
+   "who": "—",
+   "note": "皆紀念 1805 Austerlitz",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "arc-de-triomphe-arc-du-carrousel-paris~0",
+     "sub": "Arc de Triomphe",
+     "lat": 48.873778,
+     "lng": 2.295028,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Arc_de_Triomphe",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "arc-de-triomphe-arc-du-carrousel-paris~1",
+     "sub": "Arc du Carrousel",
+     "lat": 48.86173,
+     "lng": 2.33291,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Arc_de_Triomphe_du_Carrousel",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "altes-museum-berlin",
+   "name": "Altes Museum",
+   "loc": "Berlin",
+   "year": "—",
+   "who": "Schinkel",
+   "note": "希臘柱式＋Pantheon 內部",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "altes-museum-berlin~0",
+     "sub": "",
+     "lat": 52.51944,
+     "lng": 13.39833,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Altes_Museum",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "alte-pinakothek-munich",
+   "name": "Alte Pinakothek",
+   "loc": "Munich（德）",
+   "year": "—",
+   "who": "Klenze",
+   "note": "新古典",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "alte-pinakothek-munich~0",
+     "sub": "",
+     "lat": 48.14833,
+     "lng": 11.57,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Alte_Pinakothek",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "konigsplatz-munich",
+   "name": "Königsplatz",
+   "loc": "Munich（德）",
+   "year": "—",
+   "who": "Klenze",
+   "note": "新古典",
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "points": [
+    {
+     "id": "konigsplatz-munich~0",
+     "sub": "",
+     "lat": 48.145753,
+     "lng": 11.565375,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/K%C3%B6nigsplatz_(M%C3%BCnchen)",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "bibliotheque-sainte-genevieve-paris",
+   "name": "Bibliothèque Sainte-Geneviève",
+   "loc": "Paris",
+   "year": "1850",
+   "who": "Henri Labrouste",
+   "note": "外石內鐵",
+   "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
+   "styleId": "6.9",
+   "era": "c19",
+   "points": [
+    {
+     "id": "bibliotheque-sainte-genevieve-paris~0",
+     "sub": "",
+     "lat": 48.8469,
+     "lng": 2.3461,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km); North side of Place du Panthéon",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "crystal-palace-london",
+   "name": "Crystal Palace",
+   "loc": "London",
+   "year": "1851",
+   "who": "Joseph Paxton",
+   "note": "全鐵骨架＋平板玻璃；預製先河",
+   "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
+   "styleId": "6.9",
+   "era": "c19",
+   "points": [
+    {
+     "id": "crystal-palace-london~0",
+     "sub": "",
+     "lat": 51.4226,
+     "lng": -0.0756,
+     "precision": "contained",
+     "note": "Original building burned down in 1936; the coordinates are the original site, Crystal Palace Park",
+     "sourceUrl": "https://en.wikipedia.org/wiki/The_Crystal_Palace",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "eiffel-tower-paris",
+   "name": "Eiffel Tower",
+   "loc": "Paris",
+   "year": "1889",
+   "who": "Gustave Eiffel",
+   "note": "鍛鐵桁架",
+   "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
+   "styleId": "6.9",
+   "era": "c19",
+   "points": [
+    {
+     "id": "eiffel-tower-paris~0",
+     "sub": "",
+     "lat": 48.858222,
+     "lng": 2.2945,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Eiffel_Tower",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "red-house-kent",
+   "name": "Red House",
+   "loc": "Kent（英）",
+   "year": "1859",
+   "who": "Philip Webb（為 Morris）",
+   "note": "Arts & Crafts 起點",
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "points": [
+    {
+     "id": "red-house-kent~0",
+     "sub": "",
+     "lat": 51.45556,
+     "lng": 0.13028,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Red_House,_Bexleyheath",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "secession-building-vienna",
+   "name": "Secession Building",
+   "loc": "Vienna",
+   "year": "1897 起（Secession）",
+   "who": "Joseph Maria Olbrich",
+   "note": "金球頂",
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "points": [
+    {
+     "id": "secession-building-vienna~0",
+     "sub": "",
+     "lat": 48.200517,
+     "lng": 16.365675,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Secession_Building",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "casa-galimberti-palazzo-castiglioni-milan",
+   "name": "Casa Galimberti／Palazzo Castiglioni",
+   "loc": "Milan",
+   "year": "—",
+   "who": "G. B. Bossi（Galimberti）",
+   "note": "義大利 Stile Liberty",
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "points": [
+    {
+     "id": "casa-galimberti-palazzo-castiglioni-milan~0",
+     "sub": "",
+     "lat": 45.4735,
+     "lng": 9.204,
+     "precision": "estimate",
+     "note": "Low confidence (may be several km off, or a linear / grouped item); Both buildings are in the Porta Venezia area; one point represents both",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "sagrada-familia-gaudi-53a7-barcelona",
+   "name": "Sagrada Família 等 Gaudí 作品",
+   "loc": "Barcelona（西）",
+   "year": "—",
+   "who": "Gaudí",
+   "note": "Casa Vicens、Palau Güell、Colònia Güell、Casa Batlló、Casa Milà、Park Güell、Sagrada Família",
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "points": [
+    {
+     "id": "sagrada-familia-gaudi-53a7-barcelona~0",
+     "sub": "Sagrada Família",
+     "lat": 41.40369,
+     "lng": 2.17433,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "sagrada-familia-gaudi-53a7-barcelona~1",
+     "sub": "Casa Vicens",
+     "lat": 41.40358,
+     "lng": 2.15079,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Vicens",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "sagrada-familia-gaudi-53a7-barcelona~2",
+     "sub": "Palau Güell",
+     "lat": 41.37889,
+     "lng": 2.17417,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palau_G%C3%BCell",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "sagrada-familia-gaudi-53a7-barcelona~3",
+     "sub": "Casa Batlló",
+     "lat": 41.39158,
+     "lng": 2.16492,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Batll%C3%B3",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "sagrada-familia-gaudi-53a7-barcelona~4",
+     "sub": "Casa Milà",
+     "lat": 41.39528,
+     "lng": 2.16167,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Mil%C3%A0",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "sagrada-familia-gaudi-53a7-barcelona~5",
+     "sub": "Park Güell",
+     "lat": 41.41361,
+     "lng": 2.15278,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Park_G%C3%BCell",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "sagrada-familia-gaudi-53a7-barcelona~6",
+     "sub": "Colònia Güell",
+     "lat": 41.3611,
+     "lng": 2.0294,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Col%C3%B2nia_G%C3%BCell",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "tassel-house-brussels",
+   "name": "Tassel House",
+   "loc": "Brussels（比）",
+   "year": "—",
+   "who": "Victor Horta",
+   "note": "Art Nouveau",
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "points": [
+    {
+     "id": "tassel-house-brussels~0",
+     "sub": "",
+     "lat": 50.82778,
+     "lng": 4.362028,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/H%C3%B4tel_Tassel",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "schroder-house-utrecht",
+   "name": "Schröder House",
+   "loc": "Utrecht（荷）",
+   "year": "1924",
+   "who": "Rietveld",
+   "note": "De Stijl",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "schroder-house-utrecht~0",
+     "sub": "",
+     "lat": 52.08528,
+     "lng": 5.14722,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Rietveld_Schr%C3%B6der_House",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "pavillon-de-l-esprit-nouveau-paris",
+   "name": "Pavillon de l'Esprit Nouveau",
+   "loc": "Paris",
+   "year": "1925",
+   "who": "Le Corbusier",
+   "note": "巴黎世博；擅自參展",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "pavillon-de-l-esprit-nouveau-paris~0",
+     "sub": "",
+     "lat": 48.865633,
+     "lng": 2.311486,
+     "precision": "contained",
+     "note": "Original pavilion demolished after the 1925 Expo (rebuilt in Bologna in 1977); the page does not say what the coordinates refer to, so a point near the original site in Paris is used; to be verified",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Pavillon_de_l'Esprit_Nouveau",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "bauhaus-dessau-1578-dessau",
+   "name": "Bauhaus Dessau 校舍",
+   "loc": "Dessau（德）",
+   "year": "1925 遷校；1926 設計落成",
+   "who": "Walter Gropius",
+   "note": "風車平面、RC 框架、玻璃帷幕",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "bauhaus-dessau-1578-dessau~0",
+     "sub": "",
+     "lat": 51.8432,
+     "lng": 12.2205,
+     "precision": "page",
+     "note": "Page marker point; may be several hundred metres from the building; to be verified",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Bauhaus_Dessau",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "weissenhof-estate-stuttgart",
+   "name": "Weissenhof Estate",
+   "loc": "Stuttgart（德）",
+   "year": "1927",
+   "who": "Mies（總策劃）",
+   "note": "2027＝100 週年",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "weissenhof-estate-stuttgart~0",
+     "sub": "",
+     "lat": 48.8005,
+     "lng": 9.17767,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Weissenhof_Estate",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "villa-savoye-poissy",
+   "name": "Villa Savoye",
+   "loc": "Poissy 附近（法）",
+   "year": "約 1929",
+   "who": "Le Corbusier",
+   "note": "五點建築全納入",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "villa-savoye-poissy~0",
+     "sub": "",
+     "lat": 48.92444,
+     "lng": 2.02833,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Villa_Savoye",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "barcelona-pavilion-barcelona",
+   "name": "Barcelona Pavilion",
+   "loc": "Barcelona（西）",
+   "year": "1929",
+   "who": "Mies",
+   "note": "大理石牆、倒影池；承重柱與隔牆分離",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "barcelona-pavilion-barcelona~0",
+     "sub": "",
+     "lat": 41.37056,
+     "lng": 2.15,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Barcelona_Pavilion",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "fallingwater-pennsylvania",
+   "name": "Fallingwater",
+   "loc": "Pennsylvania（美）",
+   "year": "1935",
+   "who": "Frank Lloyd Wright",
+   "note": "懸臂跨瀑布",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "fallingwater-pennsylvania~0",
+     "sub": "",
+     "lat": 39.90626,
+     "lng": -79.46783,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Fallingwater",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "unite-d-habitation",
+   "name": "Unité d'Habitation",
+   "loc": "",
+   "year": "戰後",
+   "who": "Le Corbusier",
+   "note": "垂直聚落；清水混凝土；Brutalism",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "unite-d-habitation~0",
+     "sub": "",
+     "lat": 43.2613,
+     "lng": 5.396261,
+     "precision": "page",
+     "note": "Supplementary location: Marseille; coordinates taken from Structurae (Cité Radieuse de Marseille)",
+     "sourceUrl": "https://structurae.net/structures/20003307",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "notre-dame-du-haut-ronchamp-ronchamp",
+   "name": "Notre-Dame-du-Haut（Ronchamp）",
+   "loc": "Ronchamp（法）",
+   "year": "1950–60",
+   "who": "Le Corbusier",
+   "note": "自由平面；廊香教堂",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "notre-dame-du-haut-ronchamp-ronchamp~0",
+     "sub": "",
+     "lat": 47.7033,
+     "lng": 6.6205,
+     "precision": "estimate",
+     "note": "High confidence (within about 300 m)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "aeg-turbine-factory-berlin",
+   "name": "AEG Turbine Factory",
+   "loc": "Berlin",
+   "year": "—",
+   "who": "Peter Behrens",
+   "note": "Werkbund 代表作",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "aeg-turbine-factory-berlin~0",
+     "sub": "",
+     "lat": 52.5282,
+     "lng": 13.3245,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/AEG-Turbinenfabrik",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "chrysler-building-new-york",
+   "name": "Chrysler Building",
+   "loc": "New York",
+   "year": "—",
+   "who": "Van Alen",
+   "note": "Art Deco",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "chrysler-building-new-york~0",
+     "sub": "",
+     "lat": 40.75167,
+     "lng": -73.97528,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Chrysler_Building",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "empire-state-building-new-york",
+   "name": "Empire State Building",
+   "loc": "New York",
+   "year": "—",
+   "who": "Shreve, Lamb & Harmon",
+   "note": "Art Deco",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "empire-state-building-new-york~0",
+     "sub": "",
+     "lat": 40.7483,
+     "lng": -73.9856,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Empire_State_Building",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "seagram-building-new-york",
+   "name": "Seagram Building",
+   "loc": "New York",
+   "year": "—",
+   "who": "Mies",
+   "note": "International Style",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "seagram-building-new-york~0",
+     "sub": "",
+     "lat": 40.75861,
+     "lng": -73.97222,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Seagram_Building",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "neue-nationalgalerie-berlin",
+   "name": "Neue Nationalgalerie",
+   "loc": "Berlin",
+   "year": "—",
+   "who": "Mies",
+   "note": "—",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "neue-nationalgalerie-berlin~0",
+     "sub": "",
+     "lat": 52.50694,
+     "lng": 13.36778,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Neue_Nationalgalerie",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "guggenheim-museum-new-york-new-york",
+   "name": "Guggenheim Museum New York",
+   "loc": "New York",
+   "year": "—",
+   "who": "Frank Lloyd Wright",
+   "note": "—",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "guggenheim-museum-new-york-new-york~0",
+     "sub": "",
+     "lat": 40.78306,
+     "lng": -73.95889,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Solomon_R._Guggenheim_Museum",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "muller-house-prague",
+   "name": "Müller House",
+   "loc": "Prague",
+   "year": "—",
+   "who": "Adolf Loos",
+   "note": "Raumplan",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "muller-house-prague~0",
+     "sub": "",
+     "lat": 50.0925,
+     "lng": 14.37833,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Villa_M%C3%BCller",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "paimio-sanatorium-paimio",
+   "name": "Paimio Sanatorium",
+   "loc": "Paimio（芬）",
+   "year": "—",
+   "who": "Alvar Aalto",
+   "note": "北歐現代主義",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "paimio-sanatorium-paimio~0",
+     "sub": "",
+     "lat": 60.4515,
+     "lng": 22.684,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "mit-baker-house-cambridge",
+   "name": "MIT Baker House",
+   "loc": "Cambridge（美）",
+   "year": "—",
+   "who": "Alvar Aalto",
+   "note": "北歐現代主義",
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "points": [
+    {
+     "id": "mit-baker-house-cambridge~0",
+     "sub": "",
+     "lat": 42.3571,
+     "lng": -71.096,
+     "precision": "estimate",
+     "note": "High confidence (within about 300 m)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "casa-del-fascio-como",
+   "name": "Casa del Fascio",
+   "loc": "Como",
+   "year": "開工 1932／落成 1936",
+   "who": "Giuseppe Terragni",
+   "note": "義大利理性主義；玻璃磚",
+   "style": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）",
+   "styleId": "6.12",
+   "era": "modern",
+   "points": [
+    {
+     "id": "casa-del-fascio-como~0",
+     "sub": "",
+     "lat": 45.812363,
+     "lng": 9.086022,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_del_Fascio_(Como)",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "villa-muggia-milan",
+   "name": "Villa Muggia",
+   "loc": "Milan",
+   "year": "1944",
+   "who": "Piero Bottoni",
+   "note": "—",
+   "style": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）",
+   "styleId": "6.12",
+   "era": "modern",
+   "points": [
+    {
+     "id": "villa-muggia-milan~0",
+     "sub": "",
+     "lat": 44.358981,
+     "lng": 11.676297,
+     "precision": "page",
+     "note": "Location per source: Imola; the handout says Milan, 1944, while FAI (fondoambiente.it) states it was built in Imola in 1936 (Via Bel Poggio 4) and was ruined in WWII; coordinates taken from Komoot; inconsistent with the handout, to be verified",
+     "sourceUrl": "https://www.komoot.com/highlight/3868301",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "qt8-milan",
+   "name": "QT8",
+   "loc": "Milan",
+   "year": "1947",
+   "who": "Piero Bottoni",
+   "note": "戰後實驗性住宅區",
+   "style": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）",
+   "styleId": "6.12",
+   "era": "modern",
+   "points": [
+    {
+     "id": "qt8-milan~0",
+     "sub": "",
+     "lat": 45.485,
+     "lng": 9.14,
+     "precision": "estimate",
+     "note": "Low confidence (may be several km off, or a linear / grouped item); Northwest Milan; the housing district is very large",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "asilo-sant-elia-como",
+   "name": "Asilo Sant'Elia",
+   "loc": "Como",
+   "year": "—",
+   "who": "Giuseppe Terragni",
+   "note": "幼兒園；大量開窗",
+   "style": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）",
+   "styleId": "6.12",
+   "era": "modern",
+   "points": [
+    {
+     "id": "asilo-sant-elia-como~0",
+     "sub": "",
+     "lat": 45.807,
+     "lng": 9.077,
+     "precision": "estimate",
+     "note": "Low confidence (may be several km off, or a linear / grouped item); Southwest of Como old town",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "pirelli-tower-milan",
+   "name": "Pirelli Tower",
+   "loc": "Milan",
+   "year": "1958",
+   "who": "Gio Ponti（與 Nervi）",
+   "note": "歸類 Post-modern；127 m",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "pirelli-tower-milan~0",
+     "sub": "",
+     "lat": 45.48472,
+     "lng": 9.20139,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Pirelli_Tower",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "torre-velasca-milan",
+   "name": "Torre Velasca",
+   "loc": "Milan",
+   "year": "1958",
+   "who": "BBPR",
+   "note": "模仿倫巴底城堡輪廓；都市脈絡主義",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "torre-velasca-milan~0",
+     "sub": "",
+     "lat": 45.46,
+     "lng": 9.19056,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Torre_Velasca",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "nakagin-capsule-tower-tokyo",
+   "name": "Nakagin Capsule Tower",
+   "loc": "Tokyo",
+   "year": "1972",
+   "who": "Kisho Kurokawa",
+   "note": "Metabolism",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "nakagin-capsule-tower-tokyo~0",
+     "sub": "",
+     "lat": 35.665611,
+     "lng": 139.763389,
+     "precision": "contained",
+     "note": "Building demolished in 2022; the coordinates are the original site",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Nakagin_Capsule_Tower",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "centre-pompidou-paris",
+   "name": "Centre Pompidou",
+   "loc": "Paris",
+   "year": "1977",
+   "who": "Rogers＋Piano",
+   "note": "結構與設備外露；顏色區分",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "centre-pompidou-paris~0",
+     "sub": "",
+     "lat": 48.8606,
+     "lng": 2.3522,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Centre_Pompidou",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "tomba-brion",
+   "name": "Tomba Brion",
+   "loc": "",
+   "year": "1978",
+   "who": "Carlo Scarpa",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "tomba-brion~0",
+     "sub": "",
+     "lat": 45.751323,
+     "lng": 11.913341,
+     "precision": "page",
+     "note": "Supplementary location: Altivole (San Vito d'Altivole, Treviso province)",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Brion_tomb",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "guggenheim-museum-bilbao-bilbao",
+   "name": "Guggenheim Museum Bilbao",
+   "loc": "Bilbao（西）",
+   "year": "1997",
+   "who": "Frank Gehry",
+   "note": "鈦金屬曲面",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "guggenheim-museum-bilbao-bilbao~0",
+     "sub": "",
+     "lat": 43.26861,
+     "lng": -2.93389,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Guggenheim_Museum_Bilbao",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "maxxi-rome",
+   "name": "MAXXI",
+   "loc": "Rome",
+   "year": "—",
+   "who": "Zaha Hadid",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "maxxi-rome~0",
+     "sub": "",
+     "lat": 41.929,
+     "lng": 12.466,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/MAXXI",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "gallaratese-quarter-milan",
+   "name": "Gallaratese Quarter",
+   "loc": "Milan",
+   "year": "—",
+   "who": "Aldo Rossi",
+   "note": "La Tendenza",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "gallaratese-quarter-milan~0",
+     "sub": "",
+     "lat": 45.503,
+     "lng": 9.127,
+     "precision": "estimate",
+     "note": "Low confidence (may be several km off, or a linear / grouped item); Gallaratese district in northwest Milan",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "generali-tower-citylife-milan",
+   "name": "Generali Tower（CityLife）",
+   "loc": "Milan",
+   "year": "—",
+   "who": "Zaha Hadid",
+   "note": "「Twisted」",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "generali-tower-citylife-milan~0",
+     "sub": "",
+     "lat": 45.4783,
+     "lng": 9.1552,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Generali_Tower",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-dell-arte-triennale-milan",
+   "name": "Palazzo dell'Arte（Triennale）",
+   "loc": "Milan",
+   "year": "—",
+   "who": "Giovanni Muzio",
+   "note": "2025 Triennale 展場",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "palazzo-dell-arte-triennale-milan~0",
+     "sub": "",
+     "lat": 45.4725,
+     "lng": 9.1722,
+     "precision": "estimate",
+     "note": "Medium confidence (within about 1 km); Parco Sempione",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "polimi-campus-nord-milan",
+   "name": "Polimi Campus Nord",
+   "loc": "Milan",
+   "year": "—",
+   "who": "Renzo Piano",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "polimi-campus-nord-milan~0",
+     "sub": "",
+     "lat": 45.5025,
+     "lng": 9.15917,
+     "precision": "approx",
+     "note": "Approximate; represented by Milano Bovisa station (serving the Bovisa campus); Renzo Piano's Campus Nord is in the Goccia area of Bovisa; coordinates of the campus itself not found",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Milano_Bovisa_railway_station",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "museo-castelvecchio-verona",
+   "name": "Museo Castelvecchio",
+   "loc": "Verona",
+   "year": "—",
+   "who": "Carlo Scarpa",
+   "note": "陰影縫隙；構造碎片",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "museo-castelvecchio-verona~0",
+     "sub": "",
+     "lat": 45.4391,
+     "lng": 10.9894,
+     "precision": "estimate",
+     "note": "High confidence (within about 300 m)",
+     "sourceUrl": "",
+     "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "louvre-pyramid-paris",
+   "name": "Louvre Pyramid",
+   "loc": "Paris",
+   "year": "—",
+   "who": "I. M. Pei",
+   "note": "Mitterrand Grands Projets",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "louvre-pyramid-paris~0",
+     "sub": "",
+     "lat": 48.861,
+     "lng": 2.335861,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Louvre_Pyramid",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "grande-arche-paris",
+   "name": "Grande Arche",
+   "loc": "Paris",
+   "year": "—",
+   "who": "Spreckelsen",
+   "note": "致敬大革命 200 週年",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "grande-arche-paris~0",
+     "sub": "",
+     "lat": 48.89278,
+     "lng": 2.23583,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Grande_Arche",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "bibliotheque-nationale-de-france-paris",
+   "name": "Bibliothèque nationale de France",
+   "loc": "Paris",
+   "year": "—",
+   "who": "Dominique Perrault",
+   "note": "四棟玻璃大樓",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "bibliotheque-nationale-de-france-paris~0",
+     "sub": "",
+     "lat": 48.8336,
+     "lng": 2.3758,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Biblioth%C3%A8que_nationale_de_France",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "musee-d-orsay-paris",
+   "name": "Musée d'Orsay",
+   "loc": "Paris",
+   "year": "—",
+   "who": "Gae Aulenti",
+   "note": "1900 世博火車站改建",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "musee-d-orsay-paris~0",
+     "sub": "",
+     "lat": 48.859972,
+     "lng": 2.326527,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Mus%C3%A9e_d'Orsay",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "louvre-abu-dhabi-abu-dhabi",
+   "name": "Louvre Abu Dhabi",
+   "loc": "Abu Dhabi",
+   "year": "—",
+   "who": "Jean Nouvel",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "louvre-abu-dhabi-abu-dhabi~0",
+     "sub": "",
+     "lat": 24.5336,
+     "lng": 54.3984,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Louvre_Abu_Dhabi",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "philharmonie-de-paris-paris",
+   "name": "Philharmonie de Paris",
+   "loc": "Paris",
+   "year": "—",
+   "who": "Jean Nouvel",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "philharmonie-de-paris-paris~0",
+     "sub": "",
+     "lat": 48.891566,
+     "lng": 2.39407,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Philharmonie_de_Paris",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "lloyd-s-building-london",
+   "name": "Lloyd's Building",
+   "loc": "London",
+   "year": "—",
+   "who": "Richard Rogers",
+   "note": "Bowellism",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "lloyd-s-building-london~0",
+     "sub": "",
+     "lat": 51.51306,
+     "lng": -0.082361,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Lloyd's_building",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "the-gherkin-london",
+   "name": "The Gherkin",
+   "loc": "London",
+   "year": "—",
+   "who": "Norman Foster",
+   "note": "Diagrid",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "the-gherkin-london~0",
+     "sub": "",
+     "lat": 51.51444,
+     "lng": -0.08028,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/The_Gherkin",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "london-city-hall-london",
+   "name": "London City Hall",
+   "loc": "London",
+   "year": "—",
+   "who": "Norman Foster",
+   "note": "透明球體",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "london-city-hall-london~0",
+     "sub": "",
+     "lat": 51.5047,
+     "lng": -0.0783,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/City_Hall_(London)",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "grand-court-london",
+   "name": "Grand Court",
+   "loc": "London",
+   "year": "—",
+   "who": "Norman Foster",
+   "note": "結構玻璃天幕",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "grand-court-london~0",
+     "sub": "",
+     "lat": 51.51944,
+     "lng": -0.12694,
+     "precision": "page",
+     "note": "Inside the British Museum",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Queen_Elizabeth_II_Great_Court",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "reichstag-8020-berlin",
+   "name": "Reichstag（玻璃穹頂）",
+   "loc": "Berlin",
+   "year": "—",
+   "who": "Norman Foster",
+   "note": "民主透明",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "reichstag-8020-berlin~0",
+     "sub": "",
+     "lat": 52.51861,
+     "lng": 13.37611,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Reichstag_building",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "jewish-museum-berlin-berlin",
+   "name": "Jewish Museum Berlin",
+   "loc": "Berlin",
+   "year": "—",
+   "who": "Daniel Libeskind",
+   "note": "解構",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "jewish-museum-berlin-berlin~0",
+     "sub": "",
+     "lat": 52.502,
+     "lng": 13.395,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Jewish_Museum_Berlin",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "dancing-house-prague",
+   "name": "Dancing House",
+   "loc": "Prague",
+   "year": "—",
+   "who": "Frank Gehry",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "dancing-house-prague~0",
+     "sub": "",
+     "lat": 50.07556,
+     "lng": 14.41417,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Dancing_House",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "vitra-fire-station",
+   "name": "Vitra Fire Station",
+   "loc": "",
+   "year": "—",
+   "who": "Zaha Hadid",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "vitra-fire-station~0",
+     "sub": "",
+     "lat": 47.600364,
+     "lng": 7.614678,
+     "precision": "page",
+     "note": "Supplementary location: Weil am Rhein (Germany)",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Vitra_Fire_Station",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "phaeno-science-center",
+   "name": "Phaeno Science Center",
+   "loc": "",
+   "year": "—",
+   "who": "Zaha Hadid",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "phaeno-science-center~0",
+     "sub": "",
+     "lat": 52.42889,
+     "lng": 10.79,
+     "precision": "page",
+     "note": "Supplementary location: Wolfsburg (Germany)",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Phaeno_Science_Center",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "wexner-center",
+   "name": "Wexner Center",
+   "loc": "",
+   "year": "—",
+   "who": "Peter Eisenman",
+   "note": "—",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "wexner-center~0",
+     "sub": "",
+     "lat": 40.0002,
+     "lng": -83.0094,
+     "precision": "page",
+     "note": "Supplementary location: Columbus (Ohio, USA); coordinates taken from latitude.to, not Wikipedia",
+     "sourceUrl": "https://latitude.to/articles-by-country/us/united-states/23472/wexner-center-for-the-arts",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "salk-institute",
+   "name": "Salk Institute",
+   "loc": "",
+   "year": "—",
+   "who": "Louis Kahn",
+   "note": "Brutalism",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "salk-institute~0",
+     "sub": "",
+     "lat": 32.8875,
+     "lng": -117.24639,
+     "precision": "page",
+     "note": "Supplementary location: San Diego (La Jolla)",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Salk_Institute_for_Biological_Studies",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "vanna-venturi-house",
+   "name": "Vanna Venturi House",
+   "loc": "",
+   "year": "—",
+   "who": "Robert Venturi",
+   "note": "Postmodernism",
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "points": [
+    {
+     "id": "vanna-venturi-house~0",
+     "sub": "",
+     "lat": 40.0707,
+     "lng": -75.2081,
+     "precision": "page",
+     "note": "Supplementary location: Philadelphia (Chestnut Hill)",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Vanna_Venturi_House",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  }
+ ]
+}

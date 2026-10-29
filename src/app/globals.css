@@ -1,0 +1,114 @@
+/* Bold flat colour blocks: solid fills, thick black borders, no gradients or soft shadows */
+:root {
+  --ink: #111827;
+  --paper: #f7f5f0;
+  --muted: #4b5563;
+  --rule: #d9d4c7;
+  --hi: #ffe27a;
+  color-scheme: light;
+  font-family: system-ui, -apple-system, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--paper); color: var(--ink); }
+button { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+.boot { padding: 24px; font-weight: 700; }
+
+/* ---------- Layout ---------- */
+.app { display: grid; grid-template-columns: 380px 1fr; height: 100dvh; }
+.side { display: flex; flex-direction: column; min-height: 0; background: #fff; border-right: 3px solid var(--ink); }
+.stage { position: relative; min-height: 0; background: #e8e4da; }
+.map { position: absolute; inset: 0; }
+.map-note { position: absolute; left: 16px; bottom: 36px; right: 16px; max-width: 420px; background: var(--hi); border: 3px solid var(--ink); padding: 8px 12px; font-weight: 700; }
+.tabs { display: none; }
+
+/* ---------- Sidebar ---------- */
+.brand { background: var(--ink); color: #fff; padding: 14px 16px; }
+.brand h1 { margin: 0; font-size: 22px; letter-spacing: 0.04em; }
+.brand p { margin: 2px 0 0; font-size: 12px; opacity: 0.8; }
+
+.controls { display: grid; gap: 10px; padding: 12px 16px; border-bottom: 3px solid var(--ink); }
+.search { width: 100%; padding: 10px 12px; font: inherit; background: #fff; border: 3px solid var(--ink); border-radius: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 10px; font-weight: 700; color: var(--c); background: #fff; border: 3px solid var(--c); border-radius: 0; cursor: pointer; }
+.chip small { font-weight: 400; opacity: 0.85; }
+.chip[aria-pressed='true'] { color: #fff; background: var(--c); }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--ink); }
+.count { margin: 0; font-size: 13px; color: var(--muted); }
+
+.list { flex: 1; min-height: 120px; margin: 0; padding: 0; overflow: auto; list-style: none; }
+.empty { padding: 16px; color: var(--muted); }
+.item { display: grid; grid-template-columns: 10px 1fr; width: 100%; padding: 0; text-align: left; background: #fff; border: 0; border-bottom: 1px solid var(--rule); cursor: pointer; }
+.item .bar { background: var(--c); }
+.item .txt { display: grid; padding: 8px 12px; }
+.item .name { font-weight: 700; }
+.item .meta { font-size: 12px; color: var(--muted); }
+.item:hover { background: #faf7ee; }
+.item[aria-current='true'] { background: var(--hi); }
+.tag { margin-left: 8px; padding: 0 6px; font-style: normal; font-weight: 700; color: #fff; background: var(--ink); }
+
+.unloc { border-top: 3px solid var(--ink); background: #fff; max-height: 40%; overflow: auto; }
+.unloc summary { padding: 10px 16px; font-weight: 700; cursor: pointer; background: var(--paper); }
+.unloc .group { padding: 0 16px 8px; }
+.unloc h4 { margin: 10px 0 4px; font-size: 13px; }
+.unloc ul { margin: 0; padding: 0; list-style: none; }
+.unloc li { display: grid; padding: 3px 0; border-bottom: 1px dotted var(--rule); }
+.unloc li button { padding: 0; text-align: left; font-weight: 700; background: none; border: 0; cursor: pointer; text-decoration: underline; }
+.unloc .why { font-size: 12px; color: var(--muted); }
+
+.credits { padding: 8px 16px; font-size: 11px; color: var(--muted); background: var(--paper); border-top: 1px solid var(--rule); }
+
+/* ---------- Detail panel ---------- */
+.detail, .chooser { position: absolute; top: 16px; left: 16px; z-index: 5; width: min(400px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; background: #fff; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
+.detail .head { position: relative; padding: 14px 52px 14px 16px; color: #fff; background: var(--c); }
+.detail .kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+.detail h2 { margin: 2px 0; font-size: 24px; line-height: 1.2; overflow-wrap: anywhere; }
+.detail .loc { margin: 0; font-weight: 700; }
+.close { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; font-size: 24px; line-height: 1; color: var(--ink); background: #fff; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
+.rows { margin: 0; }
+.row { display: grid; grid-template-columns: 7.5em 1fr; border-bottom: 1px solid var(--rule); }
+.row dt { padding: 8px 12px; font-size: 13px; font-weight: 700; background: var(--paper); }
+.row dd { margin: 0; padding: 8px 12px; overflow-wrap: anywhere; }
+.coords { padding: 10px 16px 14px; }
+.coords h3 { margin: 0 0 6px; font-size: 14px; }
+.gap { margin: 0; padding: 8px 10px; background: var(--hi); border: 2px solid var(--ink); }
+.pt { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; padding: 8px 0; border-bottom: 1px dotted var(--rule); font-size: 13px; }
+.locate { padding: 4px 10px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 0; cursor: pointer; }
+.prec { padding: 0 6px; font-weight: 700; border: 2px solid var(--ink); }
+.prec-approx { background: var(--hi); }
+.prec-estimate { background: var(--hi); border-style: dashed; }
+.status { color: var(--muted); }
+.pnote { flex-basis: 100%; color: var(--muted); }
+.num { color: var(--muted); font-variant-numeric: tabular-nums; }
+.pt a { font-weight: 700; color: var(--ink); }
+
+.chooser header { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 16px; color: #fff; background: var(--ink); }
+.chooser .close { position: static; width: 32px; height: 32px; font-size: 20px; color: var(--ink); }
+.chooser ul { margin: 0; padding: 0; list-style: none; }
+
+/* Keep the MapLibre attribution in the map corner, not covered by a panel */
+.maplibregl-ctrl-attrib { font-size: 11px; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  .side, .stage { grid-row: 1; grid-column: 1; }
+  .side { border-right: 0; }
+  .app[data-tab='map'] .side { display: none; }
+  .app[data-tab='list'] .stage { display: none; }
+  .tabs { grid-row: 2; display: grid; grid-template-columns: 1fr 1fr; border-top: 3px solid var(--ink); }
+  .tabs button { padding: 12px; font-weight: 700; background: #fff; border: 0; border-radius: 0; cursor: pointer; }
+  .tabs button + button { border-left: 3px solid var(--ink); }
+  .tabs button[aria-pressed='true'] { color: #fff; background: var(--ink); }
+  .detail, .chooser { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 55%; border-width: 3px 0 0; box-shadow: none; }
+  .map-note { bottom: 60%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}

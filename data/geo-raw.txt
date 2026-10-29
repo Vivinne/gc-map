@@ -1,0 +1,198 @@
+# key | sub_label | lang:wikipedia_title | raw_coordinate_string | note
+# key = the "Building" column of content/handout-c3-s6.md, verbatim; a row may have several points (different sub_label)
+# raw = coordinate string copied verbatim from the source page; the script converts it to decimal degrees and range-checks it
+Pantheon |  | en:Pantheon,_Rome | 41.8986°N 12.4768°E | 
+Colosseum |  | en:Colosseum | 41.8903°N 12.4922°E | 
+Domus Aurea |  | en:Domus_Aurea | 41.891388888889°N 12.495277777778°E | 
+Basilica of Maxentius and Constantine |  | en:Basilica_of_Maxentius | 41.8919°N 12.4883°E | 
+Arch of Constantine |  | en:Arch_of_Constantine | 41.88972°N 12.49083°E | 
+Roman Forum 與帝國議事廣場 | Roman Forum | en:Roman_Forum | 41.8922°N 12.4852°E | 
+Cloaca Maxima |  | en:Cloaca_Maxima | 41.8889°N 12.4803°E | 
+Tempietto |  | en:San_Pietro_in_Montorio | 41.8886°N 12.4666°E | Coordinates taken from the containing church page
+Cortile del Belvedere |  | en:Cortile_del_Belvedere | 41.90417°N 12.45472°E | 
+聖伯多祿大殿（首版設計） |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
+Piazza del Campidoglio |  | en:Piazza_del_Campidoglio | 41.89333°N 12.48278°E | 
+聖伯多祿大殿穹頂 |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
+Gesù（Church of the Gesù） |  | en:Church_of_the_Gesù | 41.89583°N 12.47972°E | 
+聖伯多祿大殿立面與中殿 |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
+Baldacchino（聖伯多祿） |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | Coordinates taken from the containing basilica page
+Fontana dei Quattro Fiumi |  | en:Piazza_Navona | 41.899°N 12.4731°E | Coordinates taken from the containing square page
+Piazza San Pietro |  | en:St._Peter's_Square | 41.9022°N 12.4572°E | 
+Sant'Andrea al Quirinale |  | en:Sant'Andrea_al_Quirinale | 41.90068°N 12.48934°E | 
+Scala Regia |  | en:Apostolic_Palace | 41.90361°N 12.45639°E | Coordinates taken from the containing palace page
+San Carlo alle Quattro Fontane |  | en:San_Carlo_alle_Quattro_Fontane | 41.90181°N 12.49074°E | 
+Sant'Ivo alla Sapienza |  | en:Sant'Ivo_alla_Sapienza | 41.898221°N 12.474734°E | 
+Santa Maria della Pace |  | en:Santa_Maria_della_Pace | 41.89987°N 12.47164°E | 
+Trevi Fountain |  | en:Trevi_Fountain | 41.90083°N 12.48306°E | 
+Sant'Ignazio di Loyola |  | en:Sant'Ignazio,_Rome | 41.899000°N 12.479778°E | 
+MAXXI |  | en:MAXXI | 41.929°N 12.466°E | 
+Hagia Sophia |  | en:Hagia_Sophia | 41.00833°N 28.98000°E | 
+Parthenon |  | en:Parthenon | 37.9715°N 23.7266°E | 
+Colonne di San Lorenzo |  | en:Colonne_di_San_Lorenzo | 45.4582°N 9.1810°E | 
+Basilica di Sant'Ambrogio |  | en:Basilica_of_Sant'Ambrogio | 45.4624250°N 9.1758056°E | 
+Duomo di Milano |  | en:Milan_Cathedral | 45.46417°N 9.19139°E | 
+Sforza Castle |  | en:Sforza_Castle | 45.47000°N 9.17861°E | 
+Sant'Andrea |  | en:Basilica_of_Sant'Andrea,_Mantua | 45.15889°N 10.79417°E | 
+Santa Maria delle Grazie（Tribuna） |  | en:Santa_Maria_delle_Grazie,_Milan | 45.46583°N 9.17111°E | 
+Santa Maria presso San Satiro |  | en:Santa_Maria_presso_San_Satiro | 45.4626472°N 9.1880333°E | 
+San Maurizio al Monastero Maggiore |  | en:San_Maurizio_al_Monastero_Maggiore | 45.465502°N 9.178921°E | 
+Palazzo Marino |  | en:Palazzo_Marino | 45.4664972°N 9.1906861°E | 
+San Bernardino alle Ossa |  | en:San_Bernardino_alle_Ossa | 45.4625528°N 9.1956111°E | 
+Teatro alla Scala |  | en:La_Scala | 45.46750°N 9.18917°E | 
+Palazzo Reale（Milan） |  | en:Royal_Palace_of_Milan | 45.4632°N 9.1911°E | 
+Palazzo Belgioioso |  | en:Palazzo_Belgioioso | 45.467578°N 9.192423°E | 
+Casa del Fascio |  | en:Casa_del_Fascio_(Como) | 45.812363°N 9.086022°E | 
+Pirelli Tower |  | en:Pirelli_Tower | 45.48472°N 9.20139°E | 
+Torre Velasca |  | en:Torre_Velasca | 45.46000°N 9.19056°E | 
+Generali Tower（CityLife） |  | en:Generali_Tower | 45.4783°N 9.1552°E | 
+Pisa Cathedral 與斜塔 | Pisa Cathedral | en:Pisa_Cathedral | 43.723281°N 10.395845°E | 
+Pisa Cathedral 與斜塔 | 斜塔 | en:Leaning_Tower_of_Pisa | 43.72306°N 10.39639°E | 
+Santa Maria del Fiore（主體） |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | 
+Santa Maria del Fiore 穹頂 |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | Coordinates taken from the containing cathedral page
+Pazzi Chapel（Santa Croce） |  | en:Pazzi_Chapel | 43.7680056°N 11.2629889°E | 
+Basilica di San Lorenzo |  | en:Basilica_of_San_Lorenzo,_Florence | 43.774917°N 11.253861°E | 
+Palazzo Medici Riccardi |  | en:Palazzo_Medici_Riccardi | 43.77528°N 11.2559889°E | 
+Santa Maria Novella（立面） |  | en:Santa_Maria_Novella | 43.7746°N 11.2493°E | 
+Pienza Cathedral |  | en:Pienza_Cathedral | 43.0763°N 11.6791°E | 
+Uffizi |  | en:Uffizi | 43.7683°N 11.2553°E | 
+Vasari Corridor |  | en:Vasari_Corridor | 43.7682028°N 11.2540472°E | The corridor is several hundred metres long; the coordinates are the page marker point
+Siena Cathedral |  | en:Siena_Cathedral | 43.3177°N 11.3290°E | 
+Basilica Palladiana |  | en:Basilica_Palladiana | 45.5470°N 11.5466°E | 
+Il Redentore |  | en:Il_Redentore | 45.4249917°N 12.3324528°E | 
+San Miniato al Monte |  | it:Basilica_di_San_Miniato_al_Monte | 43.759758,11.264731 | 
+Villa Capra（La Rotonda） |  | en:Villa_La_Rotonda | 45.5315°N 11.5603°E | 
+Palladio 的別墅群 | Villa Barbaro（Maser） | en:Villa_Barbaro | 45.8122°N 11.9764°E | 
+Palladio 的別墅群 | Villa Badoer（Fratta Polesine） | en:Villa_Badoer | 45.0303528°N 11.6398611°E | 
+Palladio 的別墅群 | Villa Foscari（Malcontenta） | en:Villa_Foscari | 45.43528°N 12.20111°E | 
+Santa Maria della Salute |  | en:Santa_Maria_della_Salute | 45.43083°N 12.33444°E | 
+Parma Baptistery |  | en:Parma_Baptistery | 44.80308°N 10.33041°E | 
+Castel del Monte |  | en:Castel_del_Monte,_Apulia | 41.0847535°N 16.2709346°E | 
+Tempio Malatestiano |  | en:Tempio_Malatestiano | 44.059624°N 12.570232°E | 
+Cappella della Sindone |  | en:Chapel_of_the_Holy_Shroud | 45.07332°N 7.685435°E | 
+Royal Palace of Caserta |  | en:Royal_Palace_of_Caserta | 41.07333°N 14.32639°E | 
+Mont-Saint-Michel Abbey |  | en:Mont-Saint-Michel | 48.636°N 1.511°W | Coordinates taken from the containing island / town page
+Notre-Dame de Paris |  | en:Notre-Dame_de_Paris | 48.85306°N 2.35000°E | 
+Chartres Cathedral |  | en:Chartres_Cathedral | 48.4478°N 1.4878°E | 
+Bourges Cathedral |  | en:Bourges_Cathedral | 47.08194°N 2.39944°E | 
+Reims Cathedral |  | en:Reims_Cathedral | 49.25389°N 4.03417°E | 
+Amiens Cathedral |  | en:Amiens_Cathedral | 49.89500°N 2.30222°E | 
+Strasbourg Cathedral |  | en:Strasbourg_Cathedral | 48.58167°N 7.75083°E | 
+Sainte-Chapelle |  | en:Sainte-Chapelle | 48.85528°N 2.34500°E | 
+Cathédrale Sainte-Croix d'Orléans |  | en:Orléans_Cathedral | 47.90111°N 1.91056°E | 
+Fontainebleau |  | en:Palace_of_Fontainebleau | 48.4022°N 2.7006°E | 
+Palace of Versailles |  | en:Palace_of_Versailles | 48.8047°N 2.1203°E | 
+Panthéon |  | en:Panthéon,_Paris | 48.84611°N 2.34583°E | 
+Arc de Triomphe／Arc du Carrousel | Arc de Triomphe | en:Arc_de_Triomphe | 48.873778°N 2.295028°E | 
+Arc de Triomphe／Arc du Carrousel | Arc du Carrousel | en:Arc_de_Triomphe_du_Carrousel | 48.86173°N 2.33291°E | 
+Eiffel Tower |  | en:Eiffel_Tower | 48.858222°N 2.294500°E | 
+Villa Savoye |  | en:Villa_Savoye | 48.92444°N 2.02833°E | 
+Pavillon de l'Esprit Nouveau |  | en:Pavillon_de_l'Esprit_Nouveau | 48.865633°N 2.311486°E | Original pavilion demolished after the 1925 Expo (rebuilt in Bologna in 1977); the page does not say what the coordinates refer to, so a point near the original site in Paris is used; to be verified
+Louvre Pyramid |  | en:Louvre_Pyramid | 48.861000°N 2.335861°E | 
+Grande Arche |  | en:Grande_Arche | 48.89278°N 2.23583°E | 
+Musée d'Orsay |  | en:Musée_d'Orsay | 48.859972°N 2.326527°E | 
+Philharmonie de Paris |  | en:Philharmonie_de_Paris | 48.891566°N 2.39407°E | 
+Erechtheion |  | en:Acropolis_of_Athens | 37.97167°N 23.72611°E | Coordinates taken from the containing acropolis page
+Salisbury Cathedral |  | en:Salisbury_Cathedral | 51.06472°N 1.79750°W | 
+Cologne Cathedral |  | en:Cologne_Cathedral | 50.94139°N 6.95833°E | 
+Seville Cathedral |  | en:Seville_Cathedral | 37.3858944°N 5.9930556°W | 
+Altes Museum |  | en:Altes_Museum | 52.51944°N 13.39833°E | 
+Alte Pinakothek |  | en:Alte_Pinakothek | 48.14833°N 11.57000°E | 
+Crystal Palace |  | en:The_Crystal_Palace | 51.4226°N 0.0756°W | Original building burned down in 1936; the coordinates are the original site, Crystal Palace Park
+Red House |  | en:Red_House,_Bexleyheath | 51.45556°N 0.13028°E | 
+Sagrada Família 等 Gaudí 作品 | Sagrada Família | en:Sagrada_Família | 41.40369°N 2.17433°E | 
+Sagrada Família 等 Gaudí 作品 | Casa Vicens | en:Casa_Vicens | 41.40358°N 2.15079°E | 
+Sagrada Família 等 Gaudí 作品 | Palau Güell | en:Palau_Güell | 41.37889°N 2.17417°E | 
+Sagrada Família 等 Gaudí 作品 | Casa Batlló | en:Casa_Batlló | 41.39158°N 2.16492°E | 
+Sagrada Família 等 Gaudí 作品 | Casa Milà | en:Casa_Milà | 41.39528°N 2.16167°E | 
+Sagrada Família 等 Gaudí 作品 | Park Güell | en:Park_Güell | 41.41361°N 2.15278°E | 
+Tassel House |  | en:Hôtel_Tassel | 50.82778°N 4.362028°E | 
+Weissenhof Estate |  | en:Weissenhof_Estate | 48.80050°N 9.17767°E | 
+Schröder House |  | en:Rietveld_Schröder_House | 52.08528°N 5.14722°E | 
+Chrysler Building |  | en:Chrysler_Building | 40.75167°N 73.97528°W | 
+Empire State Building |  | en:Empire_State_Building | 40.7483°N 73.9856°W | 
+Barcelona Pavilion |  | en:Barcelona_Pavilion | 41.37056°N 2.15000°E | 
+Seagram Building |  | en:Seagram_Building | 40.75861°N 73.97222°W | 
+Neue Nationalgalerie |  | en:Neue_Nationalgalerie | 52.50694°N 13.36778°E | 
+Fallingwater |  | en:Fallingwater | 39.90626°N 79.46783°W | 
+Guggenheim Museum New York |  | en:Solomon_R._Guggenheim_Museum | 40.78306°N 73.95889°W | 
+Müller House |  | en:Villa_Müller | 50.09250°N 14.37833°E | 
+Lloyd's Building |  | en:Lloyd's_building | 51.51306°N 0.082361°W | 
+Grand Court |  | en:Queen_Elizabeth_II_Great_Court | 51.51944°N 0.12694°W | Inside the British Museum
+Reichstag（玻璃穹頂） |  | en:Reichstag_building | 52.51861°N 13.37611°E | 
+Jewish Museum Berlin |  | en:Jewish_Museum_Berlin | 52.502°N 13.395°E | 
+Guggenheim Museum Bilbao |  | en:Guggenheim_Museum_Bilbao | 43.26861°N 2.93389°W | 
+Nakagin Capsule Tower |  | en:Nakagin_Capsule_Tower | 35.6656111°N 139.7633889°E | Building demolished in 2022; the coordinates are the original site
+Secession Building |  | en:Secession_Building | 48.2005167°N 16.3656750°E | 
+Bauhaus Dessau 校舍 |  | en:Bauhaus_Dessau | 51.8432°N 12.2205°E | Page marker point; may be several hundred metres from the building; to be verified
+AEG Turbine Factory |  | de:AEG-Turbinenfabrik | 52.5282 N, 13.3245 E | 
+The Gherkin |  | en:The_Gherkin | 51.51444°N 0.08028°W | 
+Königsplatz |  | de:Königsplatz_(München) | 48.145752777778 N, 11.565375 E | 
+Mediolanum 皇宮區、Circo、Thermae Herculeae |  | en:Milan | 45.46694°N 9.19000°E | Approximate: central Milan, not the actual location of the buildings
+Dancing House |  | en:Dancing_House | 50.07556°N 14.41417°E | 
+Basilica di San Marco |  | en:Piazza_San_Marco | 45.43389°N 12.33806°E | Coordinates taken from the containing square page
+Valle dei Templi |  | en:Temple_of_Concordia | NONE | Page has no coordinates
+Aqua Appia |  | en:Aqua_Appia | NONE | Page has no coordinates
+Santa Susanna |  | en:Santa_Susanna | NONE | Page has no coordinates
+Ecstasy of Saint Teresa |  | en:Santa_Maria_della_Vittoria | NONE | Page has no coordinates
+Ca' Granda |  | en:Ca'_Granda | NONE | Page has no coordinates
+Camera degli Sposi |  | en:Ducal_Palace,_Mantua | NONE | Page has no coordinates
+Palazzo Te |  | en:Palazzo_Te | NONE | Page has no coordinates
+Arco della Pace |  | en:Arco_della_Pace | NONE | Page has no coordinates
+Casa Galimberti／Palazzo Castiglioni |  | en:Palazzo_Castiglioni | NONE | Page has no coordinates
+Asilo Sant'Elia |  | en:Asilo_Sant'Elia | NONE | Page does not exist
+QT8 |  | en:QT8 | NONE | Page has no coordinates
+Gallaratese Quarter |  | — | NONE | Not searched
+Palazzo dell'Arte（Triennale） |  | en:Triennale_Milano | NONE | Page does not exist
+Ospedale degli Innocenti（Foundling Hospital） |  | en:Ospedale_degli_Innocenti | NONE | Page has no coordinates
+Palazzo Rucellai |  | en:Palazzo_Rucellai | NONE | Page has no coordinates
+Palazzo Gondi |  | en:Palazzo_Gondi | NONE | Page has no coordinates
+Laurentian Library |  | en:Laurentian_Library | NONE | Page has no coordinates
+Palladio 的別墅群 | Villa Pojana | en:Villa_Pojana | NONE | Page has no coordinates
+Museo Castelvecchio |  | en:Castelvecchio_Museum | NONE | Page has no coordinates
+Basilica di San Francesco d'Assisi |  | en:Basilica_of_San_Francesco_d'Assisi | NONE | Page has no coordinates
+Villa Farnese |  | en:Villa_Farnese | NONE | Page has no coordinates
+Palazzina di Caccia di Stupinigi |  | en:Palazzina_di_caccia_di_Stupinigi | NONE | Page has no coordinates
+Mole Antonelliana |  | en:Mole_Antonelliana | NONE | Page has no coordinates
+Basilica of Saint-Denis |  | en:Basilica_of_St_Denis | NONE | Page has no coordinates
+Notre-Dame de Mantes-la-Jolie |  | fr:Collégiale_Notre-Dame_de_Mantes-la-Jolie | NONE | Page has no coordinates
+Basilique du Sacré-Cœur |  | en:Sacré-Cœur,_Paris | NONE | Page has no coordinates
+Bibliothèque Sainte-Geneviève |  | en:Sainte-Geneviève_Library | NONE | Page has no coordinates
+Notre-Dame-du-Haut（Ronchamp） |  | en:Notre_Dame_du_Haut | NONE | Page has no coordinates
+Centre Pompidou |  | en:Centre_Pompidou | NONE | Page has no coordinates
+Bibliothèque nationale de France |  | en:Bibliothèque_nationale_de_France | NONE | Page has no coordinates
+Louvre Abu Dhabi |  | en:Louvre_Abu_Dhabi | NONE | Page has no coordinates
+Sagrada Família 等 Gaudí 作品 | Colònia Güell | en:Colònia_Güell | NONE | Page does not exist
+Paimio Sanatorium |  | en:Paimio_Sanatorium | NONE | Page has no coordinates
+MIT Baker House |  | en:Baker_House | NONE | Page has no coordinates
+London City Hall |  | en:City_Hall,_London | NONE | Page coordinates point to The Crystal (GLA moved there in 2021, Royal Docks), not the Southwark building designed by Foster; not used
+
+# ---- Follow-up lookup for unlocated rows (user instruction, 2026-10-29) ----
+# Rows whose handout entry has no location: the note must start with "Supplementary location: City"; where the source location disagrees with the handout, start with "Location per source: City".
+# page column: lang:Title = Wikipedia; url:https://... = other web page.
+Unité d'Habitation |  | url:https://structurae.net/structures/20003307 | 43°15′40.68″N 5°23′46.54″E | Supplementary location: Marseille; coordinates taken from Structurae (Cité Radieuse de Marseille)
+Tomba Brion |  | en:Brion_tomb | 45.751323°N 11.913341°E | Supplementary location: Altivole (San Vito d'Altivole, Treviso province)
+Vitra Fire Station |  | en:Vitra_Fire_Station | 47.6003639°N 7.6146778°E | Supplementary location: Weil am Rhein (Germany)
+Phaeno Science Center |  | en:Phaeno_Science_Center | 52.42889°N 10.79°E | Supplementary location: Wolfsburg (Germany)
+Wexner Center |  | url:https://latitude.to/articles-by-country/us/united-states/23472/wexner-center-for-the-arts | 40.0002°N 83.0094°W | Supplementary location: Columbus (Ohio, USA); coordinates taken from latitude.to, not Wikipedia
+Salk Institute |  | en:Salk_Institute_for_Biological_Studies | 32.8875°N 117.24639°W | Supplementary location: San Diego (La Jolla)
+Vanna Venturi House |  | en:Vanna_Venturi_House | 40.0707°N 75.2081°W | Supplementary location: Philadelphia (Chestnut Hill)
+Villa Muggia |  | url:https://www.komoot.com/highlight/3868301 | 44.358981°N 11.676297°E | Location per source: Imola; the handout says Milan, 1944, while FAI (fondoambiente.it) states it was built in Imola in 1936 (Via Bel Poggio 4) and was ruined in WWII; coordinates taken from Komoot; inconsistent with the handout, to be verified
+Polimi Campus Nord |  | en:Milano_Bovisa_railway_station | 45.5025°N 9.15917°E | Approximate; represented by Milano Bovisa station (serving the Bovisa campus); Renzo Piano's Campus Nord is in the Goccia area of Bovisa; coordinates of the campus itself not found
+Valle dei Templi |  | de:Tal_der_Tempel | 37.2897°N 13.5900°E | 
+Basilica of Saint-Denis |  | de:Basilika_Saint-Denis | 48.9354°N 2.3597°E | 
+Ospedale degli Innocenti（Foundling Hospital） |  | de:Ospedale_degli_Innocenti | 43.7762°N 11.2611°E | 
+Ca' Granda |  | de:Ospedale_Maggiore_(Mailand) | 45.4601°N 9.1944°E | 
+Palazzo Rucellai |  | de:Palazzo_Rucellai | 43.7713°N 11.2496°E | 
+Camera degli Sposi |  | de:Palazzo_Ducale_(Mantua) | 45.1603°N 10.7980°E | Coordinates taken from the containing Palazzo Ducale page
+Palazzo Te |  | de:Palazzo_Te | 45.1481°N 10.7864°E | 
+Laurentian Library |  | de:Biblioteca_Medicea_Laurenziana | 43.7745°N 11.2534°E | 
+Villa Farnese |  | de:Palazzo_Farnese_(Caprarola) | 42.3289°N 12.2367°E | 
+Basilique du Sacré-Cœur |  | de:Sacré-Cœur_de_Montmartre | 48.8867°N 2.3428°E | 
+Mole Antonelliana |  | de:Mole_Antonelliana | 45.0689°N 7.6931°E | 
+Arco della Pace |  | de:Arco_della_Pace | 45.4757°N 9.1724°E | 
+Centre Pompidou |  | de:Centre_Pompidou | 48.8606°N 2.3522°E | 
+Bibliothèque nationale de France |  | de:Bibliothèque_nationale_de_France | 48.8336°N 2.3758°E | 
+Louvre Abu Dhabi |  | de:Louvre_Abu_Dhabi | 24.5336°N 54.3984°E | 
+London City Hall |  | de:City_Hall_(London) | 51.5047°N 0.0783°W | 
+Palladio 的別墅群 | Villa Pojana | de:Villa_Pojana | 45.2854°N 11.4983°E | 
+Sagrada Família 等 Gaudí 作品 | Colònia Güell | de:Colònia_Güell | 41.3611°N 2.0294°E | 

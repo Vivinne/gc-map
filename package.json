@@ -1,0 +1,37 @@
+{
+  "name": "gc-building-map",
+  "version": "0.1.0",
+  "private": true,
+  "description": "General Culture C3 buildings map (private, runs locally)",
+  "scripts": {
+    "data": "node scripts/build-data.mjs",
+    "predev": "node scripts/build-data.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/build-data.mjs",
+    "build": "next build",
+    "site": "node scripts/build-data.mjs && node scripts/build-standalone.mjs",
+    "site:test": "node tests/standalone/smoke.mjs",
+    "serve": "python3 -m http.server 3000 --directory out",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "e2e": "node tests/e2e/build.mjs && node tests/e2e/run.mjs"
+  },
+  "dependencies": {
+    "maplibre-gl": "^5.6.0",
+    "next": "^15.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "esbuild": "^0.25.0",
+    "playwright": "^1.55.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20.9"
+  }
+}
