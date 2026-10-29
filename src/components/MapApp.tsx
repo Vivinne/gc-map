@@ -176,7 +176,7 @@ export default function MapApp() {
         )}
 
         <footer className="credits">
-          Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates come from Wikipedia or from web pages named in the note, with source links, and are marked "Supplementary - to be verified"; semi-transparent markers are memory estimates with no source, unverified.
+          Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.
         </footer>
         </div>
       </aside>
