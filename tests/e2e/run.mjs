@@ -87,11 +87,12 @@ assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Coloss
 assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), 'AD 70–80, Rome');
 assert.equal(await page.locator('[data-testid=detail] .pt, [data-testid=detail] .coords, [data-testid=detail] .locate, [data-testid=detail] a').count(), 0);
 assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('[data-testid=detail] h2')).textTransform), 'uppercase');
-assert.equal((await page.textContent('[data-testid=detail] .dash')).trim(), '－');
+assert.equal(await page.locator('[data-testid=detail] .who, [data-testid=detail] .dash').count(), 0);
+assert.match(await page.textContent('[data-testid=detail] .ctx'), /橢圓形競技場/);
 assert.match(page.url(), /#p=colosseum-rome/);
 assert.equal(await page.getAttribute('.marker[data-pid=colosseum-rome]', 'data-selected'), 'true');
 await page.fill('.search', '');
-ok('Selecting a building: detail in heading/context format (no coordinates, source or locate button), URL hash, map selection state');
+ok('Selecting a building: detail in heading/context format (no architect line or dash when the handout names none; no coordinates, source or locate button), URL hash, map selection state');
 await page.screenshot({ path: resolve(shots, 'desktop-detail.png') });
 
 // Several entries at one coordinate -> chooser
@@ -137,6 +138,8 @@ await page.waitForSelector('[data-testid=detail]');
 assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1959–1965');
 await page.fill('.search', 'Triennale');
 await page.click('.list .item:has-text("Triennale")');
+assert.equal((await page.textContent('[data-testid=detail] .who')).trim(), 'Giovanni Muzio');
+assert.equal((await page.textContent('[data-testid=detail] .dash')).trim(), '－');
 assert.equal((await page.textContent('[data-testid=detail] .ctx')).trim(), '位於 Parco Sempione，是 Triennale 的展場，2025 年再度為 Triennale 展出之地。');
 await page.fill('.search', '');
 ok('Heading shows "year, location" (location omitted when the handout gives none); context text comes from the notes');

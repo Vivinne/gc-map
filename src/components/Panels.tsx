@@ -56,8 +56,12 @@ export function DetailPanel({
         <p className="loc">{sub}</p>
       </header>
       <div className="context">
-        <p className="who">{blank(place.who)}</p>
-        <p className="dash">－</p>
+        {blank(place.who) && (
+          <>
+            <p className="who">{blank(place.who)}</p>
+            <p className="dash">－</p>
+          </>
+        )}
         <p className="ctx">{blank(place.summary)}</p>
       </div>
     </section>
