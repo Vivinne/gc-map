@@ -136,21 +136,28 @@ export default function MapApp() {
             <div className="era-focus" role="group" aria-label="Style">
               <button type="button" className="era-back" aria-label="Back to all styles" onClick={() => setEras(new Set())}>←</button>
               {dataset.eras.filter((e) => eras.has(e.id)).map((e) => (
-                <span key={e.id} className="era-current" style={{ ['--c' as string]: e.color }}>
-                  {e.label} <small>{eraCounts.get(e.id) ?? 0}</small>
+                <span key={e.id} className="chip era-current" aria-pressed="true" style={{ ['--c' as string]: e.color }}>
+                  {e.label}
+                  <small>{eraCounts.get(e.id) ?? 0}</small>
                 </span>
               ))}
             </div>
           ) : (
-            <ul className="era-list" aria-label="Style">
+            <div className="chips" role="group" aria-label="Style">
               {dataset.eras.map((e) => (
-                <li key={e.id} style={{ ['--c' as string]: e.color }}>
-                  <button type="button" className="era-item" onClick={() => setEras(new Set([e.id]))}>
-                    {e.label} <small>{eraCounts.get(e.id) ?? 0}</small>
-                  </button>
-                </li>
+                <button
+                  key={e.id}
+                  type="button"
+                  className="chip era-item"
+                  style={{ ['--c' as string]: e.color }}
+                  aria-pressed={eras.has(e.id)}
+                  onClick={() => setEras(new Set([e.id]))}
+                >
+                  {e.label}
+                  <small>{eraCounts.get(e.id) ?? 0}</small>
+                </button>
               ))}
-            </ul>
+            </div>
           )}
           <label className="check">
             <input type="checkbox" checked={onlyLocated} onChange={(e) => setOnlyLocated(e.target.checked)} />
@@ -161,8 +168,12 @@ export default function MapApp() {
           </p>
         </div>
 
-        <PlaceList places={visible} eras={dataset.eras} selectedId={selectedId} onSelect={select} />
-        <UnlocatedList items={unlocated} onSelect={select} />
+        {filtersActive && (
+          <>
+            <PlaceList places={visible} eras={dataset.eras} selectedId={selectedId} onSelect={select} />
+            <UnlocatedList items={unlocated} onSelect={select} />
+          </>
+        )}
 
         <footer className="credits">
           Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates come from Wikipedia or from web pages named in the note, with source links, and are marked "Supplementary - to be verified"; semi-transparent markers are memory estimates with no source, unverified.

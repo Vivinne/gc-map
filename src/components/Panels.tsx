@@ -24,21 +24,12 @@ export function PlaceList({
   return (
     <ul className="list" aria-label="Building list">
       {places.map((p) => (
-        <li key={p.id}>
-          <button
-            type="button"
-            className="item"
-            style={{ ['--c' as string]: eraOf(eras, p.era)?.color }}
-            aria-current={p.id === selectedId}
-            onClick={() => onSelect(p.id)}
-          >
-            <span className="bar" />
-            <span className="txt">
-              <span className="name">{p.name}</span>
-              <span className="meta">
-                {[p.loc || 'Location not given', p.year !== '—' ? p.year : ''].filter(Boolean).join(' | ')}
-                {p.points.length === 0 && <em className="tag">Unlocated</em>}
-              </span>
+        <li key={p.id} style={{ ['--c' as string]: eraOf(eras, p.era)?.color }}>
+          <button type="button" className="item" aria-current={p.id === selectedId} onClick={() => onSelect(p.id)}>
+            <span className="name">{p.name}</span>
+            <span className="meta">
+              {[p.loc || 'Location not given', p.year !== '—' ? p.year : ''].filter(Boolean).join(' | ')}
+              {p.points.length === 0 && <em className="tag">Unlocated</em>}
             </span>
           </button>
         </li>

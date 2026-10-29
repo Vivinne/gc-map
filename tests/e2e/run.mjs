@@ -35,9 +35,9 @@ await page.goto(page_url);
 await page.waitForSelector('[data-testid=count]');
 assert.equal((await page.textContent('[data-testid=count]')).trim(), `Showing ${total} / ${total} entries | ${totalPts} map markers`);
 ok(`Initially ${total} entries and ${totalPts} markers shown`);
-assert.equal(await page.locator('.list .item').count(), total);
+assert.equal(await page.locator('.list').count(), 0);
 assert.equal(await page.locator('.marker').count(), totalPts);
-ok('List rows and marker count are correct');
+ok('The building list is hidden while only the style tags are shown; marker count is correct');
 
 // View: no filter = Europe; with a filter = zoom to the results
 const home = await page.evaluate(() => window.__map.bounds);
@@ -55,10 +55,11 @@ assert.equal(await page.locator('.list .item').count(), ancient.length);
 assert.equal(await page.locator('.era-item').count(), 0);
 assert.match(await page.textContent('.era-current'), /Ancient/);
 assert.equal(await page.locator('.marker').count(), ancient.reduce((n, p) => n + p.points.length, 0));
+await page.screenshot({ path: resolve(shots, 'desktop-style.png') });
 ok(`Ancient filter -> ${ancient.length} entries`);
 await page.click('.era-back');
 assert.equal(await page.locator('.era-item').count(), 5);
-assert.equal(await page.locator('.list .item').count(), total);
+assert.equal(await page.locator('.list').count(), 0);
 ok('Clearing the filter restores all entries');
 
 // Search (including diacritics)
@@ -79,6 +80,7 @@ await page.uncheck('.check input');
 ok(`Located only -> ${located} entries`);
 
 // Select -> detail
+await page.fill('.search', 'Colosseum');
 await page.click('.list .item:has-text("Colosseum")');
 await page.waitForSelector('[data-testid=detail]');
 assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Colosseum');
@@ -88,6 +90,7 @@ assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('
 assert.equal((await page.textContent('[data-testid=detail] .dash')).trim(), '－');
 assert.match(page.url(), /#p=colosseum-rome/);
 assert.equal(await page.getAttribute('.marker[data-pid=colosseum-rome]', 'data-selected'), 'true');
+await page.fill('.search', '');
 ok('Selecting a building: detail in heading/context format (no coordinates, source or locate button), URL hash, map selection state');
 await page.screenshot({ path: resolve(shots, 'desktop-detail.png') });
 
@@ -107,7 +110,9 @@ ok('Choosing one entry in the chooser -> detail');
 
 // Multi-point building
 const palladioName = data.places.find((p) => p.id.startsWith('palladio')).name;
+await page.fill('.search', 'Palladio');
 await page.click(`.list .item:has-text("${palladioName}")`);
+await page.fill('.search', '');
 const ptCount = await page.locator('[data-testid=detail] .context').count();
 assert.equal(ptCount, 1);
 ok('Compound row shows one context block (no sub-point list)');
@@ -178,6 +183,8 @@ await m.click('.tabs button:has-text("List")');
 assert.equal(await m.locator('.side').isVisible(), true);
 assert.equal(await m.locator('.stage').isVisible(), false);
 await m.screenshot({ path: resolve(shots, 'mobile-list.png') });
+assert.equal(await m.locator('.list').count(), 0);
+await m.fill('.search', 'Trevi');
 await m.click('.list .item:has-text("Trevi Fountain")');
 assert.equal(await m.locator('.stage').isVisible(), true);
 await m.waitForSelector('[data-testid=detail]');
