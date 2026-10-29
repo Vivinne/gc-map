@@ -21,9 +21,15 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 /* ---------- Layout ---------- */
 .app { display: grid; grid-template-columns: 380px 1fr; height: 100dvh; }
 .side { display: flex; flex-direction: column; min-height: 0; background: #fff; border-right: 3px solid var(--ink); }
-.app[data-side='closed'] { grid-template-columns: 0 1fr; }
-.app[data-side='closed'] .side { visibility: hidden; overflow: hidden; border-right: 0; }
-.side-toggle { position: absolute; left: 0; top: 50%; z-index: 6; width: 28px; height: 56px; transform: translateY(-50%); padding: 0; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 0 6px 6px 0; cursor: pointer; }
+.app[data-side='closed'] { grid-template-columns: 56px 1fr; }
+.app[data-side='closed'] .side-body, .app[data-side='closed'] .brand { display: none; }
+.side-top { display: flex; align-items: stretch; flex: none; border-bottom: 3px solid var(--ink); }
+.side-top .brand { flex: 1; min-width: 0; border-bottom: 0; }
+.app[data-side='closed'] .side { background: var(--ink); }
+.app[data-side='closed'] .side-top { border-bottom: 0; }
+.menu-btn { min-height: 72px; display: flex; flex: none; flex-direction: column; justify-content: center; gap: 5px; width: 56px; padding: 0 14px; background: var(--ink); border: 0; border-radius: 0; cursor: pointer; }
+.menu-btn span { display: block; height: 3px; background: #fff; }
+.side-body { display: flex; flex: 1; flex-direction: column; min-height: 0; }
 .stage { position: relative; min-height: 0; background: #e8e4da; }
 .map { position: absolute; inset: 0; }
 .map-note { position: absolute; left: 16px; bottom: 36px; right: 16px; max-width: 420px; background: var(--hi); border: 3px solid var(--ink); padding: 8px 12px; font-weight: 700; }
@@ -104,9 +110,9 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 
 /* ---------- Mobile ---------- */
 @media (max-width: 900px) {
-  .side-toggle { display: none; }
+  .menu-btn { display: none; }
   .app[data-side='closed'] { grid-template-columns: 1fr; }
-  .app[data-side='closed'] .side { visibility: visible; }
+  .app[data-side='closed'] .side-body, .app[data-side='closed'] .brand { display: flex; }
   .app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
   .side, .stage { grid-row: 1; grid-column: 1; }
   .side { border-right: 0; }
