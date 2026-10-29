@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>GC Buildings Map</title>
+<link id="ml-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="root"><p class="boot">Loading…</p></div>
+<noscript><p class="boot">JavaScript must be enabled.</p></noscript>
+<script>
+(function () {
+  // MapLibre: load the pinned version first; on failure fall back to the @5 range; if that fails too, show the reason. app.js starts only after MapLibre has loaded.
+  var root = document.getElementById('root');
+  function add(src, ok, fail) {
+    var s = document.createElement('script');
+    s.src = src; s.onload = ok; s.onerror = fail;
+    document.head.appendChild(s);
+  }
+  function app() { add('app.js', function () {}, function () { root.innerHTML = '<p class="boot">app.js failed to load.</p>'; }); }
+  function giveUp() {
+    root.innerHTML = '<p class="boot">Could not load MapLibre (jsDelivr). Check your network connection and refresh.</p>';
+  }
+  add('https://cdn.jsdelivr.net/npm/maplibre-gl@5.6.0/dist/maplibre-gl.js', app, function () {
+    var css = document.getElementById('ml-css');
+    css.href = 'https://cdn.jsdelivr.net/npm/maplibre-gl@5/dist/maplibre-gl.css';
+    add('https://cdn.jsdelivr.net/npm/maplibre-gl@5/dist/maplibre-gl.js', app, giveUp);
+  });
+})();
+</script>
+</body>
+</html>
