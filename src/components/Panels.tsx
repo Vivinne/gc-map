@@ -67,7 +67,7 @@ export function DetailPanel({
       <div className="context">
         <p className="who">{blank(place.who)}</p>
         <p className="dash">－</p>
-        <p className="ctx">{blank(place.note)}</p>
+        <p className="ctx">{blank(place.summary)}</p>
       </div>
     </section>
   );

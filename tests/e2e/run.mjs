@@ -80,7 +80,7 @@ ok(`Located only -> ${located} entries`);
 await page.click('.list .item:has-text("Colosseum")');
 await page.waitForSelector('[data-testid=detail]');
 assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Colosseum');
-assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), 'AD 80, Rome');
+assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), 'AD 70–80, Rome');
 assert.equal(await page.locator('[data-testid=detail] .pt, [data-testid=detail] .coords, [data-testid=detail] .locate, [data-testid=detail] a').count(), 0);
 assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('[data-testid=detail] h2')).textTransform), 'uppercase');
 assert.equal((await page.textContent('[data-testid=detail] .dash')).trim(), '－');
@@ -127,10 +127,10 @@ if (unloc.length === 0) {
 await page.fill('.search', 'Salk');
 await page.click('.list .item:has-text("Salk Institute")');
 await page.waitForSelector('[data-testid=detail]');
-assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1965');
+assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1959–1965');
 await page.fill('.search', 'Triennale');
 await page.click('.list .item:has-text("Triennale")');
-assert.equal((await page.textContent('[data-testid=detail] .ctx')).trim(), '2025 Triennale 展場');
+assert.equal((await page.textContent('[data-testid=detail] .ctx')).trim(), '位於 Parco Sempione，是 Triennale 的展場，2025 年再度為 Triennale 展出之地。');
 await page.fill('.search', '');
 ok('Heading shows "year, location" (location omitted when the handout gives none); context text comes from the notes');
 

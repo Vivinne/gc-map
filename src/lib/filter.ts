@@ -8,7 +8,7 @@ export const norm = (s: string): string =>
     .toLowerCase();
 
 const haystack = (p: Place): string =>
-  norm([p.name, p.loc, p.year, p.who, p.note, p.style, ...p.points.map((x) => x.sub)].join(' '));
+  norm([p.name, p.loc, p.year, p.who, p.note, p.summary, p.style, ...p.points.map((x) => x.sub)].join(' '));
 
 /** Every whitespace-separated keyword must match (AND) */
 export function matchesQuery(p: Place, q: string): boolean {

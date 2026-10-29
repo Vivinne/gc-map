@@ -145,8 +145,24 @@ function main() {
   const { rows, styles } = parseHandout(readFileSync(P('content/handout-c3-s6.md'), 'utf8'));
   const errors = [], warns = [];
 
+  // Per-row span and summary (data/entries.txt)
+  const entries = new Map();
+  for (const l of dataLines('data/entries.txt')) {
+    const [name, span = '', summary = ''] = l.split('|').map((x) => x.trim());
+    if (entries.has(name)) errors.push(`entries.txt: duplicate name: ${name}`);
+    entries.set(name, { span, summary });
+  }
+  for (const r of rows) {
+    const e = entries.get(r.name);
+    if (!e) { errors.push(`entries.txt: no line for handout row: ${r.name}`); continue; }
+    r.year = e.span || r.year;
+    r.summary = e.summary;
+  }
+  const rowNames = new Set(rows.map((r) => r.name));
+  for (const n of entries.keys()) if (!rowNames.has(n)) errors.push(`entries.txt: name matches no handout row: ${n}`);
+
   // Leak scan
-  for (const r of rows) for (const f of ['name', 'loc', 'year', 'who', 'note']) for (const re of LEAK) if (re.test(r[f])) errors.push(`Leak: ${r.name}.${f} matches ${re}`);
+  for (const r of rows) for (const f of ['name', 'loc', 'year', 'who', 'note', 'summary']) for (const re of LEAK) if (re.test(r[f])) errors.push(`Leak: ${r.name}.${f} matches ${re}`);
 
   // Unique ids
   const seen = new Map();
@@ -232,7 +248,7 @@ function main() {
 
   // Assemble
   const places = rows.map((r) => ({
-    id: r.id, name: r.name, loc: r.loc, year: r.year, who: r.who, note: r.note,
+    id: r.id, name: r.name, loc: r.loc, year: r.year, who: r.who, note: r.note, summary: r.summary ?? '',
     style: r.style.name, styleId: r.style.id, era: r.era,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
   }));

@@ -114,3 +114,11 @@ test('data: rows with no handout location need a sourced coordinate, never an es
     for (const pt of p.points) if (/^Location per source: /.test(pt.note)) assert.match(pt.note, /inconsistent with the handout/, p.name);
   }
 });
+
+test('data: every row has a span and a one- or two-sentence summary (Polimi Campus Nord excepted), without architect-style leak patterns', () => {
+  for (const p of dataset.places) {
+    if (p.name === 'Polimi Campus Nord') { assert.equal(p.summary, ''); continue; }
+    assert.ok(p.summary.length > 10, p.name);
+    assert.match(p.year, /\d/, p.name);
+  }
+});

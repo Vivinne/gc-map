@@ -29,6 +29,8 @@ export interface Place {
   year: string;
   who: string;
   note: string;
+  /** One- or two-sentence summary shown in the detail panel (data/entries.txt) */
+  summary: string;
   style: string;
   styleId: string;
   era: EraId;
