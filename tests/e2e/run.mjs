@@ -158,8 +158,9 @@ ok('Heading shows "year, location" (location omitted when the handout gives none
 await page.click('.fullmap');
 const fullB = await page.evaluate(() => window.__map.focus);
 assert.equal(fullB.kind, 'bounds');
+assert.deepEqual(fullB.blendWith, [[-8, 36], [29.5, 55]]);
 assert.ok(fullB.bounds[0][0] < -70 && fullB.bounds[1][0] > 130, JSON.stringify(fullB.bounds));
-ok('The "Full map" button refits the map to every marker');
+ok('The "Full map" button zooms out to halfway between the Europe view and a fit of every marker');
 
 // Collapsible building list (desktop)
 const sideW = () => page.evaluate(() => document.querySelector('.side').getBoundingClientRect().width);

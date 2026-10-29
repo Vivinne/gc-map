@@ -15,7 +15,7 @@ type GeoData = Parameters<GeoJSONSource['setData']>[0];
 
 export type FocusTarget =
   | { kind: 'point'; lng: number; lat: number; zoom: number; nonce: number }
-  | { kind: 'bounds'; bounds: [[number, number], [number, number]]; nonce: number };
+  | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; nonce: number };
 
 interface Props {
   fc: PointCollection;
@@ -150,7 +150,16 @@ export default function MapView({ fc, selectedPid, bounds, focus, active, onPick
     const map = mapRef.current;
     if (!map || !ready || !focus) return;
     if (focus.kind === 'point') map.flyTo({ center: [focus.lng, focus.lat], zoom: Math.max(map.getZoom(), focus.zoom), essential: true });
-    else map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });
+    else if (focus.blendWith && map.cameraForBounds) {
+      // Halfway between "fit everything" and the given reference view (less zoomed out than a full fit)
+      const all = map.cameraForBounds(focus.bounds, { padding: 120 });
+      const ref = map.cameraForBounds(focus.blendWith, { padding: 120 });
+      if (all?.center && ref && all.zoom != null && ref.zoom != null) {
+        map.flyTo({ center: all.center, zoom: (all.zoom + ref.zoom) / 2, essential: true, duration: 700 });
+        return;
+      }
+      map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });
+    } else map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus?.nonce, ready]);
 

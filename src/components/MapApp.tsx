@@ -72,7 +72,7 @@ export default function MapApp() {
     const b = boundsOf(dataset.places);
     if (!b) return;
     nonce.current += 1;
-    setFocus({ kind: 'bounds', bounds: b, nonce: nonce.current });
+    setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, nonce: nonce.current });
     setTab('map');
   }, []);
 
