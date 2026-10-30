@@ -1,1 +1,37 @@
-[]
+[
+ {
+  "id": "church-of-san-bernardino-urbino",
+  "name": "Church of San Bernardino",
+  "loc": "Urbino",
+  "kind": "not-found",
+  "reason": "No coordinate shown on the page text read (en, de, it)"
+ },
+ {
+  "id": "prado-museum-madrid",
+  "name": "Prado Museum",
+  "loc": "Madrid (Spain)",
+  "kind": "not-found",
+  "reason": "No coordinate shown on the page text read (en, es, fr, de)"
+ },
+ {
+  "id": "dutch-pavilion-venice",
+  "name": "Dutch Pavilion",
+  "loc": "Venice",
+  "kind": "not-found",
+  "reason": "No coordinate shown on the page text read (en)"
+ },
+ {
+  "id": "villa-mairea-noormarkku",
+  "name": "Villa Mairea",
+  "loc": "Noormarkku (Finland)",
+  "kind": "not-found",
+  "reason": "No coordinate shown on the page text read (en)"
+ },
+ {
+  "id": "allianz-arena-munich",
+  "name": "Allianz Arena",
+  "loc": "Munich (Germany)",
+  "kind": "not-found",
+  "reason": "No coordinate shown on the page text read (en, de, fr)"
+ }
+]

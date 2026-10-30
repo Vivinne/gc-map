@@ -66,3 +66,24 @@ Phaeno Science Center | Germany
 Wexner Center | United States
 Salk Institute | United States
 Vanna Venturi House | United States
+Saint Petersburg (Russia) | Others
+Naples | Italy
+Padua | Italy
+Urbino | Italy
+Madrid (Spain) | Others
+Glasgow (United Kingdom) | United Kingdom
+Brussels (Belgium) | Others
+Chicago (United States) | United States
+New Canaan (United States) | United States
+Stuttgart (Germany) | Germany
+Éveux (France) | France
+Amsterdam (Netherlands) | Others
+Noormarkku (Finland) | Others
+Vyborg (Russia) | Others
+Palm Springs (United States) | United States
+Pasadena (United States) | United States
+Alfeld (Germany) | Germany
+Seattle (United States) | United States
+Kuala Lumpur (Malaysia) | Others
+Munich (Germany) | Germany
+Elciego (Spain) | Others

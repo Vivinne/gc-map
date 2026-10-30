@@ -1,0 +1,5 @@
+# building name | extra style tags besides the one given by its handout section (era ids from scripts/build-data.mjs)
+# Used when the source states several styles: every stated style counts (user decision).
+Santa Croce | renaissance, c19
+Quirinal Palace | baroque
+Capodimonte Museum | c19

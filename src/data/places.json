@@ -11,9 +11,14 @@
    "color": "#2F5D8C"
   },
   {
-   "id": "renbar",
-   "label": "Renaissance and Baroque",
+   "id": "renaissance",
+   "label": "Renaissance",
    "color": "#9A6700"
+  },
+  {
+   "id": "baroque",
+   "label": "Baroque",
+   "color": "#C2185B"
   },
   {
    "id": "c19",
@@ -24,6 +29,16 @@
    "id": "modern",
    "label": "Modern",
    "color": "#6B3FA0"
+  },
+  {
+   "id": "beauxarts",
+   "label": "Beaux-Arts",
+   "color": "#5D4037"
+  },
+  {
+   "id": "others",
+   "label": "Others",
+   "color": "#546E7A"
   }
  ],
  "styles": [
@@ -78,6 +93,14 @@
   {
    "id": "6.13",
    "name": "戰後與當代建築（Postwar and Contemporary）"
+  },
+  {
+   "id": "6.14",
+   "name": "學院派建築（Beaux-Arts）"
+  },
+  {
+   "id": "6.15",
+   "name": "其他（Others：非建築物）"
   }
  ],
  "places": [
@@ -94,6 +117,9 @@
    "style": "古希臘建築（Ancient Greece）",
    "styleId": "6.1",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "valle-dei-templi-agrigento~0",
@@ -120,6 +146,9 @@
    "style": "古希臘建築（Ancient Greece）",
    "styleId": "6.1",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "parthenon-athens~0",
@@ -146,6 +175,9 @@
    "style": "古希臘建築（Ancient Greece）",
    "styleId": "6.1",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "erechtheion-athens~0",
@@ -172,6 +204,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "cloaca-maxima-rome~0",
@@ -198,6 +233,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "aqua-appia-rome~0",
@@ -228,6 +266,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "domus-aurea-rome~0",
@@ -254,6 +295,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "colosseum-rome~0",
@@ -280,6 +324,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "pantheon-rome~0",
@@ -306,6 +353,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "basilica-of-maxentius-and-constantine-rome~0",
@@ -332,6 +382,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "arch-of-constantine-rome~0",
@@ -358,6 +411,9 @@
    "style": "古羅馬建築（Ancient Rome）",
    "styleId": "6.2",
    "era": "ancient",
+   "eras": [
+    "ancient"
+   ],
    "points": [
     {
      "id": "roman-forum-1a9a-rome~0",
@@ -384,6 +440,9 @@
    "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
    "styleId": "6.3",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "colonne-di-san-lorenzo-milan~0",
@@ -410,6 +469,9 @@
    "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
    "styleId": "6.3",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "mediolanum-circo-thermae-herculeae-cb01-milan~0",
@@ -438,6 +500,9 @@
    "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
    "styleId": "6.3",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "hagia-sophia-istanbul~0",
@@ -464,6 +529,9 @@
    "style": "早期基督教與拜占庭建築（Early Christian and Byzantine）",
    "styleId": "6.3",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "basilica-di-san-marco-venice~0",
@@ -490,6 +558,9 @@
    "style": "羅曼式建築（Romanesque）",
    "styleId": "6.4",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "basilica-di-sant-ambrogio-milan~0",
@@ -516,6 +587,9 @@
    "style": "羅曼式建築（Romanesque）",
    "styleId": "6.4",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "mont-saint-michel-abbey-mont-saint-michel~0",
@@ -542,6 +616,9 @@
    "style": "羅曼式建築（Romanesque）",
    "styleId": "6.4",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "parma-baptistery-parma~0",
@@ -570,6 +647,9 @@
    "style": "羅曼式建築（Romanesque）",
    "styleId": "6.4",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "pisa-cathedral-87fa-pisa~0",
@@ -606,6 +686,9 @@
    "style": "羅曼式建築（Romanesque）",
    "styleId": "6.4",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "san-miniato-al-monte-florence~0",
@@ -632,6 +715,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "basilica-of-saint-denis-saint-denis~0",
@@ -658,6 +744,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "notre-dame-de-mantes-la-jolie-mantes~0",
@@ -684,6 +773,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "notre-dame-de-paris-paris~0",
@@ -710,6 +802,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "chartres-cathedral-chartres~0",
@@ -736,6 +831,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "bourges-cathedral-bourges~0",
@@ -762,6 +860,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "reims-cathedral-reims~0",
@@ -788,6 +889,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "amiens-cathedral-amiens~0",
@@ -814,6 +918,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "salisbury-cathedral-salisbury~0",
@@ -840,6 +947,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "strasbourg-cathedral-strasbourg~0",
@@ -866,6 +976,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "castel-del-monte-puglia~0",
@@ -892,6 +1005,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "sainte-chapelle-paris~0",
@@ -918,6 +1034,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "cologne-cathedral-cologne~0",
@@ -944,6 +1063,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "cathedrale-sainte-croix-d-orleans-orleans~0",
@@ -970,6 +1092,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "duomo-di-milano-milan~0",
@@ -996,6 +1121,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "seville-cathedral-seville~0",
@@ -1022,6 +1150,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "santa-maria-del-fiore-3eab-florence~0",
@@ -1050,6 +1181,9 @@
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "siena-cathedral-siena~0",
@@ -1072,10 +1206,15 @@
    "note": "Giotto 壁畫；少用飛扶壁",
    "summary": "上下兩層教堂，滿牆是 Giotto 的壁畫，結構上較少使用飛扶壁。",
    "country": "Italy",
-   "exams": [],
+   "exams": [
+    2010
+   ],
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
    "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
    "points": [
     {
      "id": "basilica-di-san-francesco-d-assisi-assisi~0",
@@ -1086,6 +1225,101 @@
      "note": "High confidence (within about 300 m)",
      "sourceUrl": "",
      "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "bargello-museum-florence",
+   "name": "Bargello Museum",
+   "loc": "Florence",
+   "year": "1255-1865",
+   "who": "—",
+   "note": "—",
+   "summary": "原為 Capitano del Popolo 與 podestà 官署，為佛羅倫斯最古老的公共建築；1865 年成為國立博物館，藏有義大利最大宗的哥德與文藝復興雕刻。",
+   "country": "Italy",
+   "exams": [
+    2016
+   ],
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
+   "points": [
+    {
+     "id": "bargello-museum-florence~0",
+     "sub": "",
+     "lat": 43.770361,
+     "lng": 11.258361,
+     "precision": "page",
+     "note": "converted from the page string 43° 46′ 13,3″ N, 11° 15′ 30,1″ O",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Bargello",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "santa-croce-florence",
+   "name": "Santa Croce",
+   "loc": "Florence",
+   "year": "1294-",
+   "who": "Niccolò Matas (facade)",
+   "note": "—",
+   "summary": "方濟會教堂，1294 年 5 月 12 日奠基；十六間禮拜堂，多有 Giotto 壁畫；新哥德式大理石立面為 1857–1863 年所建。",
+   "country": "Italy",
+   "exams": [
+    2010
+   ],
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "eras": [
+    "medieval",
+    "renaissance",
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "santa-croce-florence~0",
+     "sub": "",
+     "lat": 43.768417,
+     "lng": 11.262722,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "scrovegni-chapel-padua",
+   "name": "Scrovegni Chapel",
+   "loc": "Padua",
+   "year": "1303",
+   "who": "Giotto (frescoes)",
+   "note": "—",
+   "summary": "為銀行家 Enrico Scrovegni 的家族禮拜堂與陵墓；Giotto 壁畫覆蓋整個內部，西牆為〈最後審判〉。",
+   "country": "Italy",
+   "exams": [
+    2010
+   ],
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
+   "points": [
+    {
+     "id": "scrovegni-chapel-padua~0",
+     "sub": "",
+     "lat": 45.411944,
+     "lng": 11.879444,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Scrovegni_Chapel",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -1101,7 +1335,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "ospedale-degli-innocenti-foundling-hospital-florence~0",
@@ -1127,7 +1364,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "santa-maria-del-fiore-8b69-florence~0",
@@ -1153,7 +1393,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "pazzi-chapel-santa-croce-florence~0",
@@ -1179,7 +1422,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "palazzo-medici-riccardi-florence~0",
@@ -1207,7 +1453,10 @@
    ],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "tempio-malatestiano-rimini~0",
@@ -1233,7 +1482,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "ca-granda-milan~0",
@@ -1259,7 +1511,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "palazzo-rucellai-florence~0",
@@ -1282,10 +1537,15 @@
    "note": "渦卷包住未完工哥德立面",
    "summary": "用渦卷把中世紀未完工的哥德立面包進 Renaissance 的比例系統。",
    "country": "Italy",
-   "exams": [],
+   "exams": [
+    2010
+   ],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "santa-maria-novella-18f6-florence~0",
@@ -1311,7 +1571,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "sant-andrea-mantua~0",
@@ -1337,7 +1600,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "camera-degli-sposi-mantua~0",
@@ -1363,7 +1629,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "santa-maria-presso-san-satiro-milan~0",
@@ -1389,7 +1658,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "palazzo-gondi-florence~0",
@@ -1417,7 +1689,10 @@
    ],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "santa-maria-delle-grazie-tribuna-milan~0",
@@ -1443,7 +1718,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "tempietto-rome~0",
@@ -1469,7 +1747,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "cortile-del-belvedere-vatican~0",
@@ -1495,7 +1776,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "st-peters-first-design-vatican~0",
@@ -1521,7 +1805,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "san-maurizio-al-monastero-maggiore-milan~0",
@@ -1547,7 +1834,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "fontainebleau-fontainebleau~0",
@@ -1573,7 +1863,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "palazzo-te-mantua~0",
@@ -1599,7 +1892,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "laurentian-library-florence~0",
@@ -1625,7 +1921,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "piazza-del-campidoglio-rome~0",
@@ -1651,7 +1950,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "st-peters-dome-vatican~0",
@@ -1677,7 +1979,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "basilica-palladiana-vicenza~0",
@@ -1705,7 +2010,10 @@
    ],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "palladio-86f2-veneto~0",
@@ -1761,7 +2069,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "palazzo-marino-milan~0",
@@ -1787,7 +2098,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "villa-farnese-caprarola~0",
@@ -1813,7 +2127,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "uffizi-florence~0",
@@ -1839,7 +2156,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "vasari-corridor-florence~0",
@@ -1867,7 +2187,10 @@
    ],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "villa-capra-la-rotonda-vicenza~0",
@@ -1893,7 +2216,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "il-redentore-venice~0",
@@ -1919,7 +2245,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "sforza-castle-milan~0",
@@ -1945,7 +2274,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "basilica-di-san-lorenzo-florence~0",
@@ -1971,7 +2303,10 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renbar",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
    "points": [
     {
      "id": "pienza-cathedral-pienza~0",
@@ -1981,6 +2316,89 @@
      "precision": "page",
      "note": "",
      "sourceUrl": "https://en.wikipedia.org/wiki/Pienza_Cathedral",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "church-of-san-bernardino-urbino",
+   "name": "Church of San Bernardino",
+   "loc": "Urbino",
+   "year": "1482-1491",
+   "who": "Francesco di Giorgio Martini",
+   "note": "—",
+   "summary": "（Renaissance）Federico da Montefeltro 的家族陵墓；拉丁十字平面、筒形拱頂。",
+   "country": "Italy",
+   "exams": [
+    2010
+   ],
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
+   "points": []
+  },
+  {
+   "id": "quirinal-palace-rome",
+   "name": "Quirinal Palace",
+   "loc": "Rome",
+   "year": "1583",
+   "who": "Domenico Fontana (facade); Carlo Maderno (Great Chapel)",
+   "note": "—",
+   "summary": "教宗 Gregory XIII 的夏季居所；1583–1870 年為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為共和國總統官邸。",
+   "country": "Italy",
+   "exams": [
+    2017
+   ],
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renaissance",
+   "eras": [
+    "renaissance",
+    "baroque"
+   ],
+   "points": [
+    {
+     "id": "quirinal-palace-rome~0",
+     "sub": "",
+     "lat": 41.9,
+     "lng": 12.4875,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Quirinal_Palace",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "louvre-museum-paris",
+   "name": "Louvre Museum",
+   "loc": "Paris",
+   "year": "12th-1793",
+   "who": "Louis Visconti and Hector Lefuel (1850s expansion); I. M. Pei (pyramid and master plan)",
+   "note": "—",
+   "summary": "12th century 末由 Philip II 始建為要塞；1546 年 Francis I 起以 French Renaissance 風格重建；1793 年 8 月 10 日成為博物館。",
+   "country": "France",
+   "exams": [
+    2012
+   ],
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleId": "6.6",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
+   "points": [
+    {
+     "id": "louvre-museum-paris~0",
+     "sub": "",
+     "lat": 48.8625,
+     "lng": 2.336389,
+     "precision": "page",
+     "note": "converted from the page string 48° 51′ 45″ N, 2° 20′ 11″ O",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Louvre",
      "status": "Supplementary - to be verified"
     }
    ]
@@ -1997,7 +2415,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "gesu-church-of-the-gesu-rome~0",
@@ -2023,7 +2444,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "baldacchino-53ab-vatican~0",
@@ -2049,7 +2473,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "santa-maria-della-salute-venice~0",
@@ -2075,7 +2502,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "san-carlo-alle-quattro-fontane-rome~0",
@@ -2103,7 +2533,10 @@
    ],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "sant-ivo-alla-sapienza-rome~0",
@@ -2129,7 +2562,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "fontana-dei-quattro-fiumi-rome~0",
@@ -2155,7 +2591,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "piazza-san-pietro-vatican~0",
@@ -2181,7 +2620,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "santa-maria-della-pace-rome~0",
@@ -2207,7 +2649,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "sant-andrea-al-quirinale-rome~0",
@@ -2235,7 +2680,10 @@
    ],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "palace-of-versailles-versailles~0",
@@ -2261,7 +2709,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "scala-regia-vatican~0",
@@ -2289,7 +2740,10 @@
    ],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "cappella-della-sindone-turin~0",
@@ -2315,7 +2769,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "san-bernardino-alle-ossa-milan~0",
@@ -2341,7 +2798,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "palazzina-di-caccia-di-stupinigi-turin~0",
@@ -2367,7 +2827,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "trevi-fountain-rome~0",
@@ -2395,7 +2858,10 @@
    ],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "royal-palace-of-caserta-caserta~0",
@@ -2421,7 +2887,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "teatro-alla-scala-milan~0",
@@ -2447,7 +2916,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "palazzo-reale-milan-milan~0",
@@ -2473,7 +2945,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "palazzo-belgioioso-milan~0",
@@ -2499,7 +2974,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "st-peters-facade-nave-vatican~0",
@@ -2525,7 +3003,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "santa-susanna-rome~0",
@@ -2551,7 +3032,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "ecstasy-of-saint-teresa-rome~0",
@@ -2577,7 +3061,10 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renbar",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
    "points": [
     {
      "id": "sant-ignazio-di-loyola-rome~0",
@@ -2587,6 +3074,131 @@
      "precision": "page",
      "note": "",
      "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Ignazio,_Rome",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-montecitorio-rome",
+   "name": "Palazzo Montecitorio",
+   "loc": "Rome",
+   "year": "—",
+   "who": "Gian Lorenzo Bernini (design); Carlo Fontana (completion)",
+   "note": "—",
+   "summary": "為 Ludovico Ludovisi 樞機而設計，Gregory XV 逝世後停工，Innocent XII 時期重啟；1871 年起為眾議院所在，1918 年起長期使用。",
+   "country": "Italy",
+   "exams": [
+    2017
+   ],
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
+   "points": [
+    {
+     "id": "palazzo-montecitorio-rome~0",
+     "sub": "",
+     "lat": 41.901389,
+     "lng": 12.478611,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Montecitorio",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-madama-rome",
+   "name": "Palazzo Madama",
+   "loc": "Rome",
+   "year": "15th-1505",
+   "who": "—",
+   "note": "—",
+   "summary": "業主為 Medici 家族，現為共和國參議院所在。",
+   "country": "Italy",
+   "exams": [
+    2017
+   ],
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
+   "points": [
+    {
+     "id": "palazzo-madama-rome~0",
+     "sub": "",
+     "lat": 41.899167,
+     "lng": 12.474167,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Madama,_Rome",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "hermitage-museum-saint-petersburg",
+   "name": "Hermitage Museum",
+   "loc": "Saint Petersburg (Russia)",
+   "year": "1852",
+   "who": "Bartolomeo Rastrelli (Winter Palace)",
+   "note": "—",
+   "summary": "（Winter Palace：Elizabethan Baroque）1764 年 Catherine the Great 購入柏林商人的收藏為創立之始，1852 年起對外開放，藏品逾 300 萬件。",
+   "country": "Others",
+   "exams": [
+    2016
+   ],
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "baroque",
+   "eras": [
+    "baroque"
+   ],
+   "points": [
+    {
+     "id": "hermitage-museum-saint-petersburg~0",
+     "sub": "",
+     "lat": 59.940556,
+     "lng": 30.313611,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Hermitage_Museum",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "capodimonte-museum-naples",
+   "name": "Capodimonte Museum",
+   "loc": "Naples",
+   "year": "1957",
+   "who": "Giovanni Antonio Medrano",
+   "note": "—",
+   "summary": "（Italian Baroque, Neo-Classical）1738 年 Charles VII 原擬建獵宮，改建為大型宮殿；1950 年成為國立博物館，1957 年啟用。",
+   "country": "Italy",
+   "exams": [
+    2016
+   ],
+   "style": "巴洛克與洛可可建築（Baroque and Rococo）",
+   "styleId": "6.7",
+   "era": "baroque",
+   "eras": [
+    "baroque",
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "capodimonte-museum-naples~0",
+     "sub": "",
+     "lat": 40.866944,
+     "lng": 14.250556,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Museo_di_Capodimonte",
      "status": "Supplementary - to be verified"
     }
    ]
@@ -2604,6 +3216,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "basilique-du-sacre-c-ur-paris~0",
@@ -2630,6 +3245,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "mole-antonelliana-turin~0",
@@ -2656,6 +3274,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "arco-della-pace-milan~0",
@@ -2682,6 +3303,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "pantheon-paris~0",
@@ -2708,6 +3332,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "arc-de-triomphe-arc-du-carrousel-paris~0",
@@ -2744,6 +3371,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "altes-museum-berlin~0",
@@ -2770,6 +3400,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "alte-pinakothek-munich~0",
@@ -2796,6 +3429,9 @@
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "konigsplatz-munich~0",
@@ -2810,6 +3446,88 @@
    ]
   },
   {
+   "id": "palazzo-del-viminale-rome",
+   "name": "Palazzo del Viminale",
+   "loc": "Rome",
+   "year": "1911-1925",
+   "who": "Manfredo Manfredi",
+   "note": "—",
+   "summary": "（Greco-Roman classicism）1925 年 7 月 9 日啟用，自此為內政部所在。",
+   "country": "Italy",
+   "exams": [
+    2017
+   ],
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "palazzo-del-viminale-rome~0",
+     "sub": "",
+     "lat": 41.899167,
+     "lng": 12.493611,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_del_Viminale",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palazzo-della-farnesina-rome",
+   "name": "Palazzo della Farnesina",
+   "loc": "Rome",
+   "year": "1937-1959",
+   "who": "Enrico Del Debbio, Arnaldo Foschini and Vittorio Ballio Morpurgo",
+   "note": "—",
+   "summary": "（simplified neoclassicism）1943 年起因二戰停工，1946 年復工；1959 年完工後為外交部所在。",
+   "country": "Italy",
+   "exams": [
+    2017
+   ],
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "palazzo-della-farnesina-rome~0",
+     "sub": "",
+     "lat": 41.937222,
+     "lng": 12.457917,
+     "precision": "page",
+     "note": "converted from the page string 41° 56′ 14″ N, 12° 27′ 28,5″ O",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_della_Farnesina",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "prado-museum-madrid",
+   "name": "Prado Museum",
+   "loc": "Madrid (Spain)",
+   "year": "1819",
+   "who": "Juan de Villanueva",
+   "note": "—",
+   "summary": "（Neoclassical）1785 年於 Charles III 時期委託，其後停工，Ferdinand VII 時期復工；1819 年 11 月首次對外開放。",
+   "country": "Others",
+   "exams": [
+    2016
+   ],
+   "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
+   "styleId": "6.8",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": []
+  },
+  {
    "id": "bibliotheque-sainte-genevieve-paris",
    "name": "Bibliothèque Sainte-Geneviève",
    "loc": "Paris",
@@ -2822,6 +3540,9 @@
    "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
    "styleId": "6.9",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "bibliotheque-sainte-genevieve-paris~0",
@@ -2844,10 +3565,15 @@
    "note": "全鐵骨架＋平板玻璃；預製先河",
    "summary": "為 1851 年世博而建的全鐵骨架加平板玻璃大廳，以預製件約九個月就建成。",
    "country": "United Kingdom",
-   "exams": [],
+   "exams": [
+    2015
+   ],
    "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
    "styleId": "6.9",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "crystal-palace-london~0",
@@ -2870,10 +3596,15 @@
    "note": "鍛鐵桁架",
    "summary": "1889 年世博的入口，鍛鐵桁架高 300 m，一度是世界最高建築。",
    "country": "France",
-   "exams": [],
+   "exams": [
+    2015
+   ],
    "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
    "styleId": "6.9",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "eiffel-tower-paris~0",
@@ -2900,6 +3631,9 @@
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "red-house-kent~0",
@@ -2922,10 +3656,15 @@
    "note": "金球頂",
    "summary": "維也納分離派展館，頂上有金色月桂球頂，立面平滑，門上寫有「給時代藝術，給藝術自由」。",
    "country": "Others",
-   "exams": [],
+   "exams": [
+    2016
+   ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "secession-building-vienna~0",
@@ -2952,6 +3691,9 @@
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "casa-galimberti-palazzo-castiglioni-milan~0",
@@ -2974,10 +3716,15 @@
    "note": "Casa Vicens、Palau Güell、Colònia Güell、Casa Batlló、Casa Milà、Park Güell、Sagrada Família",
    "summary": "一系列有機曲線與自然形式的建築，其中聖家堂自 1882 年施工至今，主塔已於 2026 年達最終高度。",
    "country": "Others",
-   "exams": [],
+   "exams": [
+    2015
+   ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "sagrada-familia-gaudi-53a7-barcelona~0",
@@ -3066,6 +3813,9 @@
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
    "era": "c19",
+   "eras": [
+    "c19"
+   ],
    "points": [
     {
      "id": "tassel-house-brussels~0",
@@ -3075,6 +3825,68 @@
      "precision": "page",
      "note": "",
      "sourceUrl": "https://en.wikipedia.org/wiki/H%C3%B4tel_Tassel",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "glasgow-school-of-art-glasgow",
+   "name": "Glasgow School of Art",
+   "loc": "Glasgow (United Kingdom)",
+   "year": "1897-1909",
+   "who": "Charles Rennie Mackintosh and Margaret Macdonald Mackintosh",
+   "note": "—",
+   "summary": "（Modern Style / British Art Nouveau）分兩期建成：1899 年完成前半，1909 年完成後半；2014、2018 年兩度失火。",
+   "country": "United Kingdom",
+   "exams": [
+    2016
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "glasgow-school-of-art-glasgow~0",
+     "sub": "",
+     "lat": 55.866028,
+     "lng": -4.263778,
+     "precision": "page",
+     "note": "converted from the page string 55° 51′ 57,7″ N, 4° 15′ 49,6″ W",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Glasgow_School_of_Art",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palais-stoclet-brussels",
+   "name": "Palais Stoclet",
+   "loc": "Brussels (Belgium)",
+   "year": "1905-1911",
+   "who": "Josef Hoffmann",
+   "note": "—",
+   "summary": "（Vienna Secession）為 Adolphe Stoclet 興建，2009 年列入 UNESCO 世界遺產。",
+   "country": "Others",
+   "exams": [
+    2012
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "palais-stoclet-brussels~0",
+     "sub": "",
+     "lat": 50.835278,
+     "lng": 4.416111,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Stoclet_Palace",
      "status": "Supplementary - to be verified"
     }
    ]
@@ -3094,6 +3906,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "schroder-house-utrecht~0",
@@ -3120,6 +3935,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "pavillon-de-l-esprit-nouveau-paris~0",
@@ -3142,10 +3960,15 @@
    "note": "風車平面、RC 框架、玻璃帷幕",
    "summary": "Bauhaus 遷到 Dessau 後的新校舍，風車形平面、RC 框架與玻璃帷幕牆。",
    "country": "Germany",
-   "exams": [],
+   "exams": [
+    2014
+   ],
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "bauhaus-dessau-1578-dessau~0",
@@ -3172,6 +3995,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "weissenhof-estate-stuttgart~0",
@@ -3195,11 +4021,15 @@
    "summary": "把新建築五點（底層挑空、自由平面、自由立面、水平長窗、屋頂花園）全部納入的住宅。",
    "country": "France",
    "exams": [
-    2010
+    2010,
+    2016
    ],
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "villa-savoye-poissy~0",
@@ -3222,10 +4052,15 @@
    "note": "大理石牆、倒影池；承重柱與隔牆分離",
    "summary": "1929 年世博的德國館，以大理石牆、倒影池與承重柱與隔牆分離創造流動空間，1986 年原地重建。",
    "country": "Others",
-   "exams": [],
+   "exams": [
+    2012
+   ],
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "barcelona-pavilion-barcelona~0",
@@ -3248,10 +4083,15 @@
    "note": "懸臂跨瀑布",
    "summary": "把住宅懸挑在瀑布上方，岩石與瀑布成為空間的一部分，是有機建築的標誌。",
    "country": "United States",
-   "exams": [],
+   "exams": [
+    2015
+   ],
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "fallingwater-pennsylvania~0",
@@ -3278,6 +4118,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "unite-d-habitation~0",
@@ -3304,6 +4147,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "notre-dame-du-haut-ronchamp-ronchamp~0",
@@ -3326,10 +4172,15 @@
    "note": "Werkbund 代表作",
    "summary": "把工業廠房升格為紀念性建築，Werkbund 的代表，鋼構與大面積玻璃。",
    "country": "Germany",
-   "exams": [],
+   "exams": [
+    2016
+   ],
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "aeg-turbine-factory-berlin~0",
@@ -3352,10 +4203,15 @@
    "note": "Art Deco",
    "summary": "Art Deco 摩天樓，頂部是不鏽鋼拱形尖頂，一度是世界最高建築。",
    "country": "United States",
-   "exams": [],
+   "exams": [
+    2015
+   ],
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "chrysler-building-new-york~0",
@@ -3382,6 +4238,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "empire-state-building-new-york~0",
@@ -3408,6 +4267,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "seagram-building-new-york~0",
@@ -3434,6 +4296,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "neue-nationalgalerie-berlin~0",
@@ -3462,6 +4327,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "guggenheim-museum-new-york-new-york~0",
@@ -3488,6 +4356,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "muller-house-prague~0",
@@ -3516,6 +4387,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "paimio-sanatorium-paimio~0",
@@ -3542,6 +4416,9 @@
    "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
    "styleId": "6.11",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "mit-baker-house-cambridge~0",
@@ -3552,6 +4429,356 @@
      "note": "High confidence (within about 300 m)",
      "sourceUrl": "",
      "status": "Memory estimate - unverified"
+    }
+   ]
+  },
+  {
+   "id": "robie-house-chicago",
+   "name": "Robie House",
+   "loc": "Chicago (United States)",
+   "year": "1909-1910",
+   "who": "Frank Lloyd Wright",
+   "note": "—",
+   "summary": "（Prairie style）屋頂向外懸挑，不靠承重牆支撐。",
+   "country": "United States",
+   "exams": [
+    2016
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "robie-house-chicago~0",
+     "sub": "",
+     "lat": 41.789833,
+     "lng": -87.595917,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Robie_House",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "glass-house-new-canaan",
+   "name": "Glass House",
+   "loc": "New Canaan (United States)",
+   "year": "1947-1949",
+   "who": "Philip Johnson",
+   "note": "—",
+   "summary": "（Modern）外牆為炭黑色鋼構與玻璃。",
+   "country": "United States",
+   "exams": [
+    2012
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "glass-house-new-canaan~0",
+     "sub": "",
+     "lat": 41.142417,
+     "lng": -73.529389,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Glass_House_(New_Canaan,_Connecticut)",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "weissenhof-double-house-stuttgart",
+   "name": "Weissenhof Double House",
+   "loc": "Stuttgart (Germany)",
+   "year": "1927",
+   "who": "Le Corbusier and Pierre Jeanneret",
+   "note": "—",
+   "summary": "（Modern Movement）Werkbund 住宅區第 14–15 號；採 Five Points 與底層挑空柱，兩戶共用中央樓梯。",
+   "country": "Germany",
+   "exams": [
+    2011
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "weissenhof-double-house-stuttgart~0",
+     "sub": "",
+     "lat": 48.8005,
+     "lng": 9.177667,
+     "precision": "contained",
+     "note": "taken from the containing estate page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Weissenhof_Estate",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "sainte-marie-de-la-tourette-eveux",
+   "name": "Sainte Marie de La Tourette",
+   "loc": "Éveux (France)",
+   "year": "1956-1960",
+   "who": "Le Corbusier (Charles-Édouard Jeanneret)",
+   "note": "—",
+   "summary": "（Modernist, International）多明我會修道院；四道厚重矩形量體圍成封閉內院，起伏玻璃面由 Iannis Xenakis 設計。",
+   "country": "France",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "sainte-marie-de-la-tourette-eveux~0",
+     "sub": "",
+     "lat": 45.819444,
+     "lng": 4.6225,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Sainte_Marie_de_La_Tourette",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "van-gogh-museum-amsterdam",
+   "name": "Van Gogh Museum",
+   "loc": "Amsterdam (Netherlands)",
+   "year": "1973",
+   "who": "Gerrit Rietveld",
+   "note": "—",
+   "summary": "1963 年受託興建，1973 年 6 月 2 日開幕。",
+   "country": "Others",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "van-gogh-museum-amsterdam~0",
+     "sub": "",
+     "lat": 52.358333,
+     "lng": 4.881111,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Van_Gogh_Museum",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "dutch-pavilion-venice",
+   "name": "Dutch Pavilion",
+   "loc": "Venice",
+   "year": "1953",
+   "who": "Gerrit Rietveld (1953 rebuild); Ferdinand Boberg (1912 original)",
+   "note": "—",
+   "summary": "1912 年的原館後來被拆除，1953 年重建。",
+   "country": "Italy",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": []
+  },
+  {
+   "id": "villa-mairea-noormarkku",
+   "name": "Villa Mairea",
+   "loc": "Noormarkku (Finland)",
+   "year": "1938-1939",
+   "who": "Aino Aalto and Alvar Aalto",
+   "note": "—",
+   "summary": "（modernist）為 Harry 與 Maire Gullichsen 所建，平面為變形 L 形。",
+   "country": "Others",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": []
+  },
+  {
+   "id": "viipuri-library-vyborg",
+   "name": "Viipuri Library",
+   "loc": "Vyborg (Russia)",
+   "year": "1935",
+   "who": "Aino Aalto and Alvar Aalto",
+   "note": "—",
+   "summary": "（functionalist）設計時屬芬蘭，今屬俄羅斯；深圓筒天窗使日光均勻灑在閱覽桌上。",
+   "country": "Others",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "viipuri-library-vyborg~0",
+     "sub": "",
+     "lat": 60.709167,
+     "lng": 28.746944,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Vyborg_Library",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "kaufmann-desert-house-palm-springs",
+   "name": "Kaufmann Desert House",
+   "loc": "Palm Springs (United States)",
+   "year": "1946",
+   "who": "Richard Neutra",
+   "note": "—",
+   "summary": "（International Style）為 Edgar J. Kaufmann 的沙漠度假住宅。",
+   "country": "United States",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "kaufmann-desert-house-palm-springs~0",
+     "sub": "",
+     "lat": 33.845,
+     "lng": -116.552778,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Kaufmann_Desert_House",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "millard-house-pasadena",
+   "name": "Millard House",
+   "loc": "Pasadena (United States)",
+   "year": "1923-1924",
+   "who": "Frank Lloyd Wright",
+   "note": "—",
+   "summary": "（Mayan style）為書商 Alice Millard 興建；16 英寸方形混凝土砌塊相互咬合，並以鋼筋與砂漿加固。",
+   "country": "United States",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "millard-house-pasadena~0",
+     "sub": "",
+     "lat": 34.155278,
+     "lng": -118.160833,
+     "precision": "page",
+     "note": "converted from the page string 34° 9′ 19″ N, 118° 9′ 39″ W",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Millard_House",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "fagus-factory-alfeld",
+   "name": "Fagus Factory",
+   "loc": "Alfeld (Germany)",
+   "year": "1911-1913",
+   "who": "Walter Gropius and Adolf Meyer",
+   "note": "—",
+   "summary": "（early modern architecture）玻璃立面的轉角不設支柱；2011 年列入 UNESCO 世界遺產。",
+   "country": "Germany",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "fagus-factory-alfeld~0",
+     "sub": "",
+     "lat": 51.983611,
+     "lng": 9.811111,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Fagus_Factory",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "sommerfeld-house-berlin",
+   "name": "Sommerfeld House",
+   "loc": "Berlin",
+   "year": "1920-1921",
+   "who": "Walter Gropius and Adolf Meyer",
+   "note": "—",
+   "summary": "（Prairie）受 Prairie Houses 影響；以退役戰艦拆下的木材建造，樓梯上方有 Josef Albers 的大型彩繪玻璃；二戰中大部分被毀。",
+   "country": "Germany",
+   "exams": [
+    2010
+   ],
+   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
+   "styleId": "6.11",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "sommerfeld-house-berlin~0",
+     "sub": "",
+     "lat": 52.450167,
+     "lng": 13.3025,
+     "precision": "contained",
+     "note": "original site (house destroyed); converted from the page string 52° 27′ 0,6″ N, 13° 18′ 9″ O",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Haus_Sommerfeld",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -3570,6 +4797,9 @@
    "style": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）",
    "styleId": "6.12",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "casa-del-fascio-como~0",
@@ -3596,6 +4826,9 @@
    "style": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）",
    "styleId": "6.12",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "qt8-milan~0",
@@ -3622,6 +4855,9 @@
    "style": "義大利理性主義與未來主義建築（Italian Rationalism and Futurism）",
    "styleId": "6.12",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "asilo-sant-elia-como~0",
@@ -3648,6 +4884,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "pirelli-tower-milan~0",
@@ -3674,6 +4913,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "torre-velasca-milan~0",
@@ -3700,6 +4942,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "nakagin-capsule-tower-tokyo~0",
@@ -3726,6 +4971,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "centre-pompidou-paris~0",
@@ -3752,6 +5000,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "tomba-brion~0",
@@ -3782,6 +5033,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "guggenheim-museum-bilbao-bilbao~0",
@@ -3810,6 +5064,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "maxxi-rome~0",
@@ -3836,6 +5093,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "gallaratese-quarter-milan~0",
@@ -3864,6 +5124,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "generali-tower-citylife-milan~0",
@@ -3890,6 +5153,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "palazzo-dell-arte-triennale-milan~0",
@@ -3916,6 +5182,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "polimi-campus-nord-milan~0",
@@ -3942,6 +5211,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "museo-castelvecchio-verona~0",
@@ -3968,6 +5240,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "louvre-pyramid-paris~0",
@@ -3994,6 +5269,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "grande-arche-paris~0",
@@ -4020,6 +5298,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "bibliotheque-nationale-de-france-paris~0",
@@ -4048,6 +5329,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "musee-d-orsay-paris~0",
@@ -4074,6 +5358,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "louvre-abu-dhabi-abu-dhabi~0",
@@ -4100,6 +5387,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "philharmonie-de-paris-paris~0",
@@ -4126,6 +5416,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "lloyd-s-building-london~0",
@@ -4152,6 +5445,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "the-gherkin-london~0",
@@ -4178,6 +5474,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "london-city-hall-london~0",
@@ -4204,6 +5503,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "grand-court-london~0",
@@ -4230,6 +5532,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "reichstag-8020-berlin~0",
@@ -4258,6 +5563,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "jewish-museum-berlin-berlin~0",
@@ -4280,10 +5588,15 @@
    "note": "—",
    "summary": "布拉格河邊一對曲面塔樓，像一對跳舞的人，暱稱「Fred and Ginger」。",
    "country": "Others",
-   "exams": [],
+   "exams": [
+    2013
+   ],
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "dancing-house-prague~0",
@@ -4310,6 +5623,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "vitra-fire-station~0",
@@ -4336,6 +5652,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "phaeno-science-center~0",
@@ -4362,6 +5681,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "wexner-center~0",
@@ -4388,6 +5710,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "salk-institute~0",
@@ -4414,6 +5739,9 @@
    "style": "戰後與當代建築（Postwar and Contemporary）",
    "styleId": "6.13",
    "era": "modern",
+   "eras": [
+    "modern"
+   ],
    "points": [
     {
      "id": "vanna-venturi-house~0",
@@ -4423,6 +5751,243 @@
      "precision": "page",
      "note": "Supplementary location: Philadelphia (Chestnut Hill)",
      "sourceUrl": "https://en.wikipedia.org/wiki/Vanna_Venturi_House",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "space-needle-seattle",
+   "name": "Space Needle",
+   "loc": "Seattle (United States)",
+   "year": "1961",
+   "who": "John Graham & Company (architecture); Victor Steinbrueck (hourglass profile)",
+   "note": "—",
+   "summary": "（Futurist; Space Age; Googie; mid-century modern）為 1962 年世界博覽會而建，高 184 m。",
+   "country": "United States",
+   "exams": [
+    2013
+   ],
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "space-needle-seattle~0",
+     "sub": "",
+     "lat": 47.620278,
+     "lng": -122.349167,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Space_Needle",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "petronas-twin-towers-kuala-lumpur",
+   "name": "Petronas Twin Towers",
+   "loc": "Kuala Lumpur (Malaysia)",
+   "year": "1993-1996",
+   "who": "César Pelli",
+   "note": "—",
+   "summary": "（Postmodern Islamic architecture）高 451.9 m；1998–2004 年為世界最高建築，並為世界最高雙子塔。",
+   "country": "Others",
+   "exams": [
+    2013
+   ],
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "petronas-twin-towers-kuala-lumpur~0",
+     "sub": "",
+     "lat": 3.157778,
+     "lng": 101.711667,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Petronas_Towers",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "allianz-arena-munich",
+   "name": "Allianz Arena",
+   "loc": "Munich (Germany)",
+   "year": "2002-2005",
+   "who": "Herzog & de Meuron",
+   "note": "—",
+   "summary": "外殼為充氣 ETFE 板，為首座可整面變色的球場；Bayern Munich 自 2005 年起使用。",
+   "country": "Germany",
+   "exams": [
+    2012
+   ],
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": []
+  },
+  {
+   "id": "marques-de-riscal-hotel-elciego",
+   "name": "Marqués de Riscal Hotel",
+   "loc": "Elciego (Spain)",
+   "year": "2003-2006",
+   "who": "Frank Gehry",
+   "note": "—",
+   "summary": "位於 Marqués de Riscal 酒莊內；沿用 Guggenheim Museum Bilbao 的設計方法。",
+   "country": "Others",
+   "exams": [
+    2011
+   ],
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "marques-de-riscal-hotel-elciego~0",
+     "sub": "",
+     "lat": 42.511667,
+     "lng": -2.618056,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Marqu%25C3%25A9s_de_Riscal_Hotel",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "tate-modern-london",
+   "name": "Tate Modern",
+   "loc": "London",
+   "year": "1947-1963",
+   "who": "Giles Gilbert Scott (original building); Herzog & de Meuron (conversion and extension)",
+   "note": "—",
+   "summary": "（Art Deco and modernism）由發電廠改建，2000 年 5 月 11 日開幕；2016 年 6 月 17 日新館開放。",
+   "country": "United Kingdom",
+   "exams": [
+    2007
+   ],
+   "style": "戰後與當代建築（Postwar and Contemporary）",
+   "styleId": "6.13",
+   "era": "modern",
+   "eras": [
+    "modern"
+   ],
+   "points": [
+    {
+     "id": "tate-modern-london~0",
+     "sub": "",
+     "lat": 51.507917,
+     "lng": -0.099361,
+     "precision": "page",
+     "note": "converted from the page string 51° 30′ 28,5″ N, 0° 5′ 57,7″ W",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Tate_Modern",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "metropolitan-museum-of-art-new-york",
+   "name": "Metropolitan Museum of Art",
+   "loc": "New York",
+   "year": "1880",
+   "who": "Calvert Vaux and Jacob Wrey Mould (original building); Richard Morris Hunt and Richard Howland Hunt (Fifth Avenue facade, Great Hall, Grand Stairway)",
+   "note": "—",
+   "summary": "1870 年創立，1880 年遷入第五大道現址；第一件入藏品為羅馬石棺，至今仍展出。",
+   "country": "United States",
+   "exams": [
+    2016
+   ],
+   "style": "學院派建築（Beaux-Arts）",
+   "styleId": "6.14",
+   "era": "beauxarts",
+   "eras": [
+    "beauxarts"
+   ],
+   "points": [
+    {
+     "id": "metropolitan-museum-of-art-new-york~0",
+     "sub": "",
+     "lat": 40.779444,
+     "lng": -73.963056,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Metropolitan_Museum_of_Art",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "nevsky-prospect-saint-petersburg",
+   "name": "Nevsky Prospect",
+   "loc": "Saint Petersburg (Russia)",
+   "year": "1710-1718",
+   "who": "—",
+   "note": "—",
+   "summary": "1710–1715 年先建 Moika 至 Fontanka 一段；1723 年成為俄國第一條有街燈的街道。",
+   "country": "Others",
+   "exams": [
+    2019
+   ],
+   "style": "其他（Others：非建築物）",
+   "styleId": "6.15",
+   "era": "others",
+   "eras": [
+    "others"
+   ],
+   "points": [
+    {
+     "id": "nevsky-prospect-saint-petersburg~0",
+     "sub": "",
+     "lat": 59.931667,
+     "lng": 30.352778,
+     "precision": "approx",
+     "note": "approximate: a linear street; point taken from the article page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Nevsky_Prospect",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "north-doors-florence-baptistery-florence",
+   "name": "North Doors, Florence Baptistery",
+   "loc": "Florence",
+   "year": "1424",
+   "who": "Lorenzo Ghiberti",
+   "note": "—",
+   "summary": "20 面嵌板描繪基督生平，由下往上讀；框架上方另有 8 面福音書作者與教會聖師嵌板；1424 年復活節安裝。",
+   "country": "Italy",
+   "exams": [
+    2018
+   ],
+   "style": "其他（Others：非建築物）",
+   "styleId": "6.15",
+   "era": "others",
+   "eras": [
+    "others"
+   ],
+   "points": [
+    {
+     "id": "north-doors-florence-baptistery-florence~0",
+     "sub": "",
+     "lat": 43.773056,
+     "lng": 11.255,
+     "precision": "contained",
+     "note": "taken from the containing building page",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Florence_Baptistery",
      "status": "Supplementary - to be verified"
     }
    ]

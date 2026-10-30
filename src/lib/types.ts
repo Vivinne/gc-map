@@ -1,4 +1,4 @@
-export type EraId = 'ancient' | 'medieval' | 'renbar' | 'c19' | 'modern';
+export type EraId = 'ancient' | 'medieval' | 'renaissance' | 'baroque' | 'c19' | 'modern' | 'beauxarts' | 'others';
 
 /** page = page marker point; contained = taken from the containing building / square page; approx = approximate; manual = entered manually; estimate = memory estimate (no source, unverified) */
 export type Precision = 'page' | 'contained' | 'approx' | 'manual' | 'estimate';
@@ -38,6 +38,8 @@ export interface Place {
   style: string;
   styleId: string;
   era: EraId;
+  /** Every style tag the building counts under: its own era plus any extras (data/extra-styles.txt) */
+  eras: EraId[];
   points: Point[];
 }
 

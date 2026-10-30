@@ -19,7 +19,7 @@ export function buildGroups(eras: readonly Era[]): TagGroup[] {
   return [
     { id: 'years', label: 'Previous Years', tags: YEARS.map((y) => ({ id: `y:${y}`, label: String(y), test: (p) => p.exams.includes(y) })) },
     { id: 'country', label: 'Country', tags: COUNTRIES.map((c) => ({ id: `c:${c}`, label: c, test: (p) => p.country === c })) },
-    { id: 'styles', label: 'Styles', tags: eras.map((e) => ({ id: `s:${e.id}`, label: e.label, color: e.color, test: (p) => p.era === e.id })) },
+    { id: 'styles', label: 'Styles', tags: eras.map((e) => ({ id: `s:${e.id}`, label: e.label, color: e.color, test: (p) => p.eras.includes(e.id) })) },
   ];
 }
 

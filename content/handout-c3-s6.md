@@ -65,6 +65,9 @@
 | Santa Maria del Fiore（主體）<br><span class="loc">Florence</span> | 1436 | — | Brunelleschi 圓頂之前的哥德大教堂 |
 | Siena Cathedral<br><span class="loc">Siena</span> | 1263 | — | 鑲嵌大理石地面；Gate of Heaven 屋頂步道；Gothic |
 | Basilica di San Francesco d'Assisi<br><span class="loc">Assisi</span> | 1253 | — | Giotto 壁畫；少用飛扶壁 |
+| Bargello Museum<br><span class="loc">Florence</span> | 1255-1865 | — | — |
+| Santa Croce<br><span class="loc">Florence</span> | 1294- | Niccolò Matas (facade) | — |
+| Scrovegni Chapel<br><span class="loc">Padua</span> | 1303 | Giotto (frescoes) | — |
 
 ### 6.6 文藝復興與矯飾主義建築（Renaissance and Mannerism）
 
@@ -103,6 +106,9 @@
 | Sforza Castle<br><span class="loc">Milan</span> | 1452（Filarete 塔） | Filarete | — |
 | Basilica di San Lorenzo<br><span class="loc">Florence</span> | 1470 | Brunelleschi | pietra serena 灰色砂岩建立嚴格模矩 |
 | Pienza Cathedral<br><span class="loc">Pienza</span> | 1462 | B. Rossellino | — |
+| Church of San Bernardino<br><span class="loc">Urbino</span> | 1482-1491 | Francesco di Giorgio Martini | — |
+| Quirinal Palace<br><span class="loc">Rome</span> | 1583 | Domenico Fontana (facade); Carlo Maderno (Great Chapel) | — |
+| Louvre Museum<br><span class="loc">Paris</span> | 12th-1793 | Louis Visconti and Hector Lefuel (1850s expansion); I. M. Pei (pyramid and master plan) | — |
 
 ### 6.7 巴洛克與洛可可建築（Baroque and Rococo）
 
@@ -131,6 +137,10 @@
 | Santa Susanna<br><span class="loc">Rome</span> | 1603 | Maderno | Baroque |
 | Ecstasy of Saint Teresa<br><span class="loc">Rome（Santa Maria della Vittoria）</span> | 1652 | Bernini | Bel Composto 美妙融合 |
 | Sant'Ignazio di Loyola<br><span class="loc">Rome</span> | 1685 | Andrea Pozzo | 畫出立體穹頂（trompe l'oeil） |
+| Palazzo Montecitorio<br><span class="loc">Rome</span> | — | Gian Lorenzo Bernini (design); Carlo Fontana (completion) | — |
+| Palazzo Madama<br><span class="loc">Rome</span> | 15th-1505 | — | — |
+| Hermitage Museum<br><span class="loc">Saint Petersburg (Russia)</span> | 1852 | Bartolomeo Rastrelli (Winter Palace) | — |
+| Capodimonte Museum<br><span class="loc">Naples</span> | 1957 | Giovanni Antonio Medrano | — |
 
 ### 6.8 新古典與哥德復興建築（Neoclassicism and Gothic Revival）
 
@@ -144,6 +154,9 @@
 | Altes Museum<br><span class="loc">Berlin</span> | 1830 | Schinkel | 希臘柱式＋Pantheon 內部 |
 | Alte Pinakothek<br><span class="loc">Munich（德）</span> | 1836 | Klenze | 新古典 |
 | Königsplatz<br><span class="loc">Munich（德）</span> | 1862 | Klenze | 新古典 |
+| Palazzo del Viminale<br><span class="loc">Rome</span> | 1911-1925 | Manfredo Manfredi | — |
+| Palazzo della Farnesina<br><span class="loc">Rome</span> | 1937-1959 | Enrico Del Debbio, Arnaldo Foschini and Vittorio Ballio Morpurgo | — |
+| Prado Museum<br><span class="loc">Madrid (Spain)</span> | 1819 | Juan de Villanueva | — |
 
 ### 6.9 工業革命與新材料建築（Industrial Revolution and New Materials）
 
@@ -162,6 +175,8 @@
 | Casa Galimberti／Palazzo Castiglioni<br><span class="loc">Milan</span> | 1905（Galimberti）、1904（Castiglioni） | G. B. Bossi（Galimberti） | 義大利 Stile Liberty |
 | Sagrada Família 等 Gaudí 作品<br><span class="loc">Barcelona（西）</span> | 1882 起（施工中） | Gaudí | Casa Vicens、Palau Güell、Colònia Güell、Casa Batlló、Casa Milà、Park Güell、Sagrada Família |
 | Tassel House<br><span class="loc">Brussels（比）</span> | 1893 | Victor Horta | Art Nouveau |
+| Glasgow School of Art<br><span class="loc">Glasgow (United Kingdom)</span> | 1897-1909 | Charles Rennie Mackintosh and Margaret Macdonald Mackintosh | — |
+| Palais Stoclet<br><span class="loc">Brussels (Belgium)</span> | 1905-1911 | Josef Hoffmann | — |
 
 ### 6.11 包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）
 
@@ -185,6 +200,18 @@
 | Müller House<br><span class="loc">Prague</span> | 1930 | Adolf Loos | Raumplan |
 | Paimio Sanatorium<br><span class="loc">Paimio（芬）</span> | 1933 | Alvar Aalto | 北歐現代主義 |
 | MIT Baker House<br><span class="loc">Cambridge（美）</span> | 1949 | Alvar Aalto | 北歐現代主義 |
+| Robie House<br><span class="loc">Chicago (United States)</span> | 1909-1910 | Frank Lloyd Wright | — |
+| Glass House<br><span class="loc">New Canaan (United States)</span> | 1947-1949 | Philip Johnson | — |
+| Weissenhof Double House<br><span class="loc">Stuttgart (Germany)</span> | 1927 | Le Corbusier and Pierre Jeanneret | — |
+| Sainte Marie de La Tourette<br><span class="loc">Éveux (France)</span> | 1956-1960 | Le Corbusier | — |
+| Van Gogh Museum<br><span class="loc">Amsterdam (Netherlands)</span> | 1973 | Gerrit Rietveld | — |
+| Dutch Pavilion<br><span class="loc">Venice</span> | 1953 | Gerrit Rietveld (1953 rebuild); Ferdinand Boberg (1912 original) | — |
+| Villa Mairea<br><span class="loc">Noormarkku (Finland)</span> | 1938-1939 | Aino Aalto and Alvar Aalto | — |
+| Viipuri Library<br><span class="loc">Vyborg (Russia)</span> | 1935 | Aino Aalto and Alvar Aalto | — |
+| Kaufmann Desert House<br><span class="loc">Palm Springs (United States)</span> | 1946 | Richard Neutra | — |
+| Millard House<br><span class="loc">Pasadena (United States)</span> | 1923-1924 | Frank Lloyd Wright | — |
+| Fagus Factory<br><span class="loc">Alfeld (Germany)</span> | 1911-1913 | Walter Gropius and Adolf Meyer | — |
+| Sommerfeld House<br><span class="loc">Berlin</span> | 1920-1921 | Walter Gropius and Adolf Meyer | — |
 
 ### 6.12 義大利理性主義與未來主義建築（Italian Rationalism and Futurism）
 
@@ -228,3 +255,21 @@
 | Wexner Center | 1989 | Peter Eisenman | — |
 | Salk Institute | 1965 | Louis Kahn | Brutalism |
 | Vanna Venturi House | 1964 | Robert Venturi | Postmodernism |
+| Space Needle<br><span class="loc">Seattle (United States)</span> | 1961 | John Graham & Company (architecture); Victor Steinbrueck (hourglass profile) | — |
+| Petronas Twin Towers<br><span class="loc">Kuala Lumpur (Malaysia)</span> | 1993-1996 | César Pelli | — |
+| Allianz Arena<br><span class="loc">Munich (Germany)</span> | 2002-2005 | Herzog & de Meuron | — |
+| Marqués de Riscal Hotel<br><span class="loc">Elciego (Spain)</span> | 2003-2006 | Frank Gehry | — |
+| Tate Modern<br><span class="loc">London</span> | 1947-1963 | Giles Gilbert Scott (original building); Herzog & de Meuron (conversion and extension) | — |
+
+### 6.14 學院派建築（Beaux-Arts）
+
+| 建築 | 年份 | 建築師／人物 | 內容 |
+|---|---|---|---|
+| Metropolitan Museum of Art<br><span class="loc">New York</span> | 1880 | Calvert Vaux and Jacob Wrey Mould (original building); Richard Morris Hunt and Richard Howland Hunt (Fifth Avenue facade, Great Hall, Grand Stairway) | — |
+
+### 6.15 其他（Others：非建築物）
+
+| 建築 | 年份 | 建築師／人物 | 內容 |
+|---|---|---|---|
+| Nevsky Prospect<br><span class="loc">Saint Petersburg (Russia)</span> | 1710-1718 | — | — |
+| North Doors, Florence Baptistery<br><span class="loc">Florence</span> | 1424 | Lorenzo Ghiberti | — |

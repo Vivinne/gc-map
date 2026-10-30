@@ -1,6 +1,6 @@
 # GC Buildings Map (private, runs locally)
 
-Map of the C3 buildings: a filterable list on the left, markers on the map on the right; click a marker to see that row's notes (heading: NAME in bold capitals, then built span and location in lowercase; context: architect, a dash, then a short summary from `data/entries.txt`; blank when none). Coordinates, sources and "show on map" buttons are not displayed. Data comes from handout C3 §6.1–6.13 (161 rows).
+Map of the C3 buildings: a filterable list on the left, markers on the map on the right; click a marker to see that row's notes (heading: NAME in bold capitals, then built span and location in lowercase; context: architect, a dash, then a short summary from `data/entries.txt`; blank when none). Coordinates, sources and "show on map" buttons are not displayed. Data comes from handout C3 §6.1–6.15 (196 rows).
 
 ## Run
 
@@ -28,13 +28,14 @@ npm run site        # writes site/ (index.html, app.js, app.css, README.txt)
 
 | File | Purpose |
 |---|---|
-| `content/handout-c3-s6.md` | Display content: the thirteen style tables of handout §6, without question IDs, knowledge-point IDs or to-be-confirmed marks. This is the author's study notes and is kept in the original language (Chinese with English terms); it is data, not code. The parser does not depend on the language |
+| `content/handout-c3-s6.md` | Display content: the fifteen style tables of handout §6, without question IDs, knowledge-point IDs or to-be-confirmed marks. This is the author's study notes and is kept in the original language (Chinese with English terms); it is data, not code. The parser does not depend on the language |
 | `data/geo-raw.txt` | Coordinate overlay, five fields per line (key, sub, lang:title, coordinate, note; fields separated by a vertical bar). A page field of `lang:Title` means a Wikipedia page; `url:https://…` means another web page. A coordinate of `NONE` records that no coordinate was found. For a row with no handout location, the note must start with `Supplementary location: City` |
 | `data/geo-manual.csv` | Manual coordinates or overrides: `name,sub,lat,lng,source_url,note`. Overrides `geo-raw.txt` for the same `name` + `sub`; rows with empty lat/lng are skipped |
 | `data/geo-estimate.csv` | Memory estimates: `name,sub,lat,lng,conf,note`. No source, unverified; `conf` is h / m / l (about 300 m / 1 km / several km or more). Fills only points that `geo-raw.txt` lacks; rows with no handout location must not be estimated |
 | `data/entries.txt` | One line per handout row: `name`, built span, summary (vertical-bar separated). The span replaces the handout year in the display; the summary is shown in the detail panel. A missing row fails the build |
 | `data/architects.txt` | `handout value | full name`: the architect line in the detail panel shows the full name; unlisted values are shown as written |
 | `data/countries.txt` | `handout location | country tag` (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location are keyed by building name, using the supplementary location in `geo-raw.txt`. Vatican is listed under Italy |
+| `data/extra-styles.txt` | `building name | era ids` (comma separated): extra style tags besides the one given by the handout section, for buildings whose source states several styles |
 | `data/exams.txt` | `building name | years` (2007–2019): years in which the building itself was a past-exam topic. Shown as a grey italic last line, e.g. `【2016 TEST-ARCHED】`; only years are published, never question or knowledge-point IDs. Buildings not listed have no line |
 | `data/id-aliases.txt` | Fixed ids (`name | id`) for names that would otherwise get a hash-suffixed slug |
 | `data/leak-patterns.txt` | One `/regex/flags` per line: markers that must never appear in displayed fields (shared by the build and the tests) |
@@ -53,7 +54,7 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 - Memory estimates (`estimate`) are marked "Memory estimate - unverified" with a confidence level and have no source link; they are semi-transparent on the map.
 - For the 7 rows where the handout gives no location, the coordinate is supplied by a source and the note starts with `Supplementary location: City`; the heading omits the location. These rows must not use estimates.
 - Polimi Campus Nord: only the coordinate of Milano Bovisa station (which serves the Bovisa campus) was found, so it stands in as an approximate position; it is not the campus itself.
-- All 161 rows currently have a coordinate, so the sidebar "Unlocated list" appears only when a gap exists.
+- 5 rows have no sourced coordinate (Prado Museum, Allianz Arena, Villa Mairea, Dutch Pavilion, Church of San Bernardino: the Wikipedia pages read showed none); they appear in the sidebar "Unlocated list" while a filter or search is active. They must not be given estimates.
 - Plain-text rendering; no `dangerouslySetInnerHTML`.
 - Private use: `<meta robots noindex>` and `public/robots.txt` (disallow all). This is not confidentiality: anyone who knows the URL of a published copy can open it.
 
@@ -78,13 +79,12 @@ npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (
 
 ## Tags
 
-The sidebar has three groups of checkable tags: **Previous Years** (2007–2019), **Country** and **Styles** (the five style groups). Checking several tags shows the intersection (a building must match every checked tag, also within one group). The number on a tag is how many buildings would remain if it were added to the checked ones; the checked tags are stored in the URL hash (`t=y:2016,c:Italy`).
+The sidebar has three groups of checkable tags: **Previous Years** (2007–2019), **Country** and **Styles** (Ancient, Medieval, Renaissance, Baroque, 19th Century, Modern, Beaux-Arts and Others; Others holds non-building items). A building whose source states several styles counts under each of them (`data/extra-styles.txt`). Checking several tags shows the intersection (a building must match every checked tag, also within one group). The number on a tag is how many buildings would remain if it were added to the checked ones; the checked tags are stored in the URL hash (`t=y:2016,c:Italy`).
 
 ### Known gaps in `data/exams.txt`
-23 buildings carry exam years. They come from what the knowledge base stores for each 2007–2019 question: the stem, the answer, answer options that name a handout building, or the subject of a picture the knowledge base records. The knowledge base keeps stems truncated, options for only some questions, and no pictures, so a building that appeared only in an unstored option or picture is not tagged. Not assignable from the stored data:
-- Picture questions with no recorded subject: 2013 Q41 (church by Palladio), 2014 Q28, 2015 Q37, 2016 Q32 (Le Corbusier work), 2016 Q33, 2017 Q34/Q37/Q40, 2017 Q38 (museum by Wright, probably Guggenheim New York, not confirmed), 2017 Q46 (Robie House, not a handout row).
+70 buildings carry exam years. They come from what the knowledge base stores for each 2007–2019 question: the stem, the answer, answer options that name a handout building, or the subject of a picture the knowledge base records. The knowledge base keeps stems truncated, options for only some questions, and no pictures, so a building that appeared only in an unstored option or picture is not tagged. Not assignable from the stored data:
+- Picture questions with no recorded subject: 2013 Q41 (church by Palladio), 2014 Q28, 2015 Q37, 2016 Q32 (Le Corbusier work), 2016 Q33, 2017 Q34/Q37/Q40, 2017 Q38 (museum by Wright, probably Guggenheim New York, not confirmed), 2017 Q46 (Robie House; the row exists now but this picture is not tagged).
 - Option lists not stored: 2008 Q38 beyond Villa Foscari, 2010 Q41/Q48, 2012 Q36/Q39 (Bramante works in Rome), 2007 Q35.
-- 2011 and 2015 have no tagged building.
 - Assigned through the knowledge base without the building named in the stem: 2007 and 2012 "grotesque decoration" (Domus Aurea), 2013 Q31 (Casa del Fascio).
 - Named in options only: 2008 (Palladio villas, via Villa Foscari), 2010 (Villa Savoye, Schröder House, Paimio Sanatorium, Guggenheim Museum New York), 2007 (Musée d'Orsay, Guggenheim Museum Bilbao, Jewish Museum Berlin), 2017 (MAXXI and the Milan "twisted" tower, via the Zaha Hadid question).
 Complete coverage needs the original exam papers.

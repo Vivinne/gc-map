@@ -10,11 +10,14 @@ const P = (...a) => resolve(ROOT, ...a);
 
 // ---------- Era groups (5 colours) ----------
 export const ERAS = [
-  { id: 'ancient',  label: 'Ancient',            color: '#B5452E', styles: ['6.1', '6.2'] },
-  { id: 'medieval', label: 'Medieval',          color: '#2F5D8C', styles: ['6.3', '6.4', '6.5'] },
-  { id: 'renbar',   label: 'Renaissance and Baroque', color: '#9A6700', styles: ['6.6', '6.7'] },
-  { id: 'c19',      label: '19th Century',         color: '#2E7D5B', styles: ['6.8', '6.9', '6.10'] },
-  { id: 'modern',   label: 'Modern',            color: '#6B3FA0', styles: ['6.11', '6.12', '6.13'] },
+  { id: 'ancient',     label: 'Ancient',      color: '#B5452E', styles: ['6.1', '6.2'] },
+  { id: 'medieval',    label: 'Medieval',     color: '#2F5D8C', styles: ['6.3', '6.4', '6.5'] },
+  { id: 'renaissance', label: 'Renaissance',  color: '#9A6700', styles: ['6.6'] },
+  { id: 'baroque',     label: 'Baroque',      color: '#C2185B', styles: ['6.7'] },
+  { id: 'c19',         label: '19th Century', color: '#2E7D5B', styles: ['6.8', '6.9', '6.10'] },
+  { id: 'modern',      label: 'Modern',       color: '#6B3FA0', styles: ['6.11', '6.12', '6.13'] },
+  { id: 'beauxarts',   label: 'Beaux-Arts',   color: '#5D4037', styles: ['6.14'] },
+  { id: 'others',      label: 'Others',       color: '#546E7A', styles: ['6.15'] },
 ];
 const eraOfStyle = (sid) => ERAS.find((e) => e.styles.includes(sid))?.id;
 
@@ -90,6 +93,10 @@ const CITY = {
   Bilbao: [43.26, -2.93, 20], Tokyo: [35.68, 139.76, 30], 'Abu Dhabi': [24.47, 54.37, 40],
   // "Supplementary locations" for rows with no handout location, or where the source disagrees with the handout
   Marseille: [43.3, 5.37, 20], Altivole: [45.75, 11.91, 10], 'Weil am Rhein': [47.6, 7.61, 10], Wolfsburg: [52.42, 10.79, 15],
+  'Saint Petersburg': [59.94, 30.31, 20], Naples: [40.85, 14.27, 20], Padua: [45.41, 11.88, 15], Urbino: [43.72, 12.64, 10], Madrid: [40.42, -3.7, 20],
+  Glasgow: [55.86, -4.25, 20], Chicago: [41.88, -87.63, 30], Seattle: [47.61, -122.33, 25], 'Kuala Lumpur': [3.14, 101.69, 20], 'New Canaan': [41.15, -73.49, 10],
+  Pasadena: [34.15, -118.14, 15], 'Palm Springs': [33.83, -116.55, 15], 'Éveux': [45.82, 4.62, 10], Amsterdam: [52.37, 4.9, 20], Elciego: [42.51, -2.62, 10],
+  Noormarkku: [61.59, 21.88, 15], Vyborg: [60.71, 28.75, 20], Alfeld: [51.98, 9.82, 10],
   Columbus: [39.99, -83.0, 25], 'San Diego': [32.85, -117.2, 30], Philadelphia: [39.95, -75.17, 30], Imola: [44.36, 11.71, 15],
 };
 // Drop parenthesised qualifiers (ASCII or full-width) and any CJK words, e.g. a country suffix or a "near" qualifier
@@ -168,6 +175,15 @@ function main() {
     r.country = cmap.get(r.loc || r.name) ?? '';
     if (!COUNTRIES.includes(r.country)) errors.push(`countries.txt: no valid country for "${r.loc || r.name}" (${r.name})`);
   }
+  // Extra style tags (data/extra-styles.txt): a building whose source states several styles counts under all of them
+  const extraMap = new Map();
+  for (const l of dataLines('data/extra-styles.txt')) {
+    const [n, ids = ''] = l.split('|').map((x) => x.trim());
+    const list = ids.split(',').map((x) => x.trim()).filter(Boolean);
+    if (!list.length || list.some((id) => !ERAS.some((e) => e.id === id))) errors.push(`extra-styles.txt: bad era id for ${n}`);
+    extraMap.set(n, list);
+  }
+  for (const n of extraMap.keys()) if (!rows.some((r) => r.name === n)) errors.push(`extra-styles.txt: name matches no handout row: ${n}`);
   const exMap = new Map();
   for (const l of dataLines('data/exams.txt')) {
     const [n, ys] = l.split('|').map((x) => x.trim());
@@ -191,6 +207,7 @@ function main() {
     seen.set(r.id, r.name);
     r.era = eraOfStyle(r.style.id);
     if (!r.era) errors.push(`No era group: ${r.style.id}`);
+    r.eras = [...new Set([r.era, ...(extraMap.get(r.name) ?? [])])];
   }
   const byName = new Map(rows.map((r) => [r.name, r]));
   if (byName.size !== rows.length) errors.push('Duplicate building names; the coordinate files cannot map them uniquely');
@@ -268,7 +285,7 @@ function main() {
   // Assemble
   const places = rows.map((r) => ({
     id: r.id, name: r.name, loc: r.loc, year: r.year, who: r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
-    style: r.style.name, styleId: r.style.id, era: r.era,
+    style: r.style.name, styleId: r.style.id, era: r.era, eras: r.eras,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
   }));
   const unlocated = [];

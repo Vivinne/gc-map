@@ -57,7 +57,7 @@ assert.equal(await page.locator('.marker').count(), ancient.reduce((n, p) => n +
 await page.screenshot({ path: resolve(shots, 'desktop-style.png') });
 ok(`Ancient filter -> ${ancient.length} entries`);
 await page.click('.clear-tags');
-assert.equal(await page.locator('.tag-item').count(), 13 + 6 + 5);
+assert.equal(await page.locator('.tag-item').count(), 13 + 6 + 8);
 assert.equal(await page.locator('.list').count(), 0);
 ok('Clearing the filter restores all entries');
 
@@ -67,7 +67,7 @@ assert.deepEqual(titles, ['【Previous Years】', '【Country】', '【Styles】
 await page.click('.tag-item:has-text("2018")');
 const y18 = data.places.filter((p) => p.exams.includes(2018));
 assert.equal(await page.locator('.list .item').count(), y18.length);
-await page.click('.tag-item:has-text("Others")');
+await page.click('.tag-group:has(.tag-title:has-text("Country")) .tag-item:has-text("Others")');
 const y18o = y18.filter((p) => p.country === 'Others');
 assert.equal(await page.locator('.list .item').count(), y18o.length);
 assert.ok(y18o.length > 0 && y18o.length < y18.length);
@@ -93,6 +93,17 @@ assert.equal(await page.locator('[data-testid=detail] .exam').count(), 0);
 await page.fill('.search', '');
 await page.keyboard.press('Escape');
 ok('Exam-year line: last line of the context, italic small; absent when the building was not in an exam');
+
+// A newly added building: English title and location, year span, architect, exam year
+await page.fill('.search', 'Robie');
+await page.click('.list .item:has-text("Robie House")');
+assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Robie House');
+assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1909-1910, Chicago (United States)');
+assert.equal((await page.textContent('[data-testid=detail] .who')).trim(), 'Frank Lloyd Wright');
+assert.equal((await page.textContent('[data-testid=detail] .exam')).trim(), '【2016 TEST-ARCHED】');
+await page.fill('.search', '');
+await page.keyboard.press('Escape');
+ok('New building (Robie House): heading, architect and exam line');
 
 // Search (including diacritics)
 await page.fill('.search', 'pantheon');
@@ -156,11 +167,12 @@ if (unloc.length === 0) {
   assert.equal(await page.locator('.unloc').count(), 0);
   ok('No unlocated items -> the "Unlocated list" is not shown');
 } else {
-  await page.click('.unloc summary');
-  await page.click(`.unloc button:has-text("${unloc[0].name}")`);
-  await page.waitForSelector('[data-testid=detail] .gap');
-  assert.match(await page.textContent('[data-testid=detail] .gap'), /No coordinate yet/);
-  ok('Unlocated list -> detail shows the reason for the gap');
+  await page.fill('.search', unloc[0].name); // the list block only shows while a filter or search is active
+  await page.locator('.unloc summary').dispatchEvent('click');
+  await page.locator(`.unloc button:has-text("${unloc[0].name}")`).dispatchEvent('click');
+  await page.waitForSelector('[data-testid=detail]');
+  assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), unloc[0].name);
+  ok('Unlocated list -> opens the building detail (no marker for it)');
 }
 
 // Blank fields stay blank; missing years are filled

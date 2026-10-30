@@ -1,25 +1,72 @@
 # handout building name | years in which the building itself was a past-exam topic (comma separated, 2007-2019)
 # Sources: the question stem, the answer, an answer option, or the picture subject recorded in the knowledge base. Pictures and options that were not stored cannot be assigned (see README, Known gaps).
+AEG Turbine Factory | 2016
+Allianz Arena | 2012
+Barcelona Pavilion | 2012
+Bargello Museum | 2016
+Basilica di San Francesco d'Assisi | 2010
+Bauhaus Dessau 校舍 | 2014
+Capodimonte Museum | 2016
 Cappella della Sindone | 2016
 Casa del Fascio | 2013
+Chrysler Building | 2015
+Church of San Bernardino | 2010
+Crystal Palace | 2015
+Dancing House | 2013
 Domus Aurea | 2007, 2012, 2016
+Dutch Pavilion | 2010
+Eiffel Tower | 2015
+Fagus Factory | 2010
+Fallingwater | 2015
 Generali Tower（CityLife） | 2017
+Glasgow School of Art | 2016
+Glass House | 2012
 Guggenheim Museum Bilbao | 2007, 2018, 2019
 Guggenheim Museum New York | 2010
 Hagia Sophia | 2013
+Hermitage Museum | 2016
 Jewish Museum Berlin | 2007
+Kaufmann Desert House | 2010
+Louvre Museum | 2012
 MAXXI | 2017
+Marqués de Riscal Hotel | 2011
+Metropolitan Museum of Art | 2016
+Millard House | 2010
 Musée d'Orsay | 2007
+Nevsky Prospect | 2019
+North Doors, Florence Baptistery | 2018
 Paimio Sanatorium | 2010
 Palace of Versailles | 2014
+Palais Stoclet | 2012
+Palazzo Madama | 2017
+Palazzo Montecitorio | 2017
+Palazzo del Viminale | 2017
+Palazzo della Farnesina | 2017
 Palladio 的別墅群 | 2008
+Petronas Twin Towers | 2013
 Pisa Cathedral 與斜塔 | 2019
+Prado Museum | 2016
+Quirinal Palace | 2017
+Robie House | 2016
 Royal Palace of Caserta | 2017
+Sagrada Família 等 Gaudí 作品 | 2015
+Sainte Marie de La Tourette | 2010
 Sant'Ivo alla Sapienza | 2009
+Santa Croce | 2010
+Santa Maria Novella（立面） | 2010
 Santa Maria delle Grazie（Tribuna） | 2009
 Schröder House | 2010
+Scrovegni Chapel | 2010
+Secession Building | 2016
 Siena Cathedral | 2016
+Sommerfeld House | 2010
+Space Needle | 2013
 Tassel House | 2018
+Tate Modern | 2007
 Tempio Malatestiano | 2019
+Van Gogh Museum | 2010
+Viipuri Library | 2010
 Villa Capra（La Rotonda） | 2018
-Villa Savoye | 2010
+Villa Mairea | 2010
+Villa Savoye | 2010, 2016
+Weissenhof Double House | 2011

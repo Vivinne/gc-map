@@ -32,7 +32,7 @@ test('slug: diacritics, punctuation and names with no ASCII letters', () => {
 
 test('parseHandout: row count, styles, location split', () => {
   const { rows, styles } = parseHandout(readFileSync(new URL('../content/handout-c3-s6.md', import.meta.url), 'utf8'));
-  assert.equal(styles.length, 13);
+  assert.equal(styles.length, 15);
   assert.equal(rows.length, dataset.places.length);
   const pantheon = rows.find((r) => r.name === 'Pantheon')!;
   assert.equal(pantheon.loc, 'Rome');
@@ -44,8 +44,22 @@ test('data: ids are unique and eras are valid', () => {
   const ids = dataset.places.map((p) => p.id);
   assert.equal(new Set(ids).size, ids.length);
   const eraIds = new Set(dataset.eras.map((e) => e.id));
-  assert.equal(eraIds.size, 5);
-  for (const p of dataset.places) assert.ok(eraIds.has(p.era), p.name);
+  assert.equal(eraIds.size, 8);
+  for (const p of dataset.places) {
+    assert.ok(eraIds.has(p.era), p.name);
+    assert.ok(p.eras.includes(p.era) && p.eras.every((e) => eraIds.has(e)), p.name);
+  }
+});
+
+test('data: several-style buildings count under every stated style; non-buildings are Others', () => {
+  const by = (n: string) => dataset.places.find((p) => p.name === n)!;
+  assert.deepEqual([...by('Santa Croce').eras].sort(), ['c19', 'medieval', 'renaissance']);
+  assert.deepEqual([...by('Quirinal Palace').eras].sort(), ['baroque', 'renaissance']);
+  assert.deepEqual([...by('Capodimonte Museum').eras].sort(), ['baroque', 'c19']);
+  assert.equal(by('Metropolitan Museum of Art').era, 'beauxarts');
+  assert.equal(by('Nevsky Prospect').era, 'others');
+  assert.equal(by('North Doors, Florence Baptistery').era, 'others');
+  assert.ok(!dataset.places.some((p) => p.name === 'MART'));
 });
 
 test('data: no question IDs, knowledge-point IDs or to-be-confirmed marks leak through', () => {
@@ -119,8 +133,17 @@ test('data: every row has a span and a one- or two-sentence summary (Polimi Camp
   for (const p of dataset.places) {
     if (p.name === 'Polimi Campus Nord') { assert.equal(p.summary, ''); continue; }
     assert.ok(p.summary.length > 10, p.name);
+    // Only rows whose source states no year may be blank
+    if (p.name === 'Palazzo Montecitorio') { assert.equal(p.year, '—'); continue; }
     assert.match(p.year, /\d/, p.name);
   }
+});
+
+test('data: new building titles and locations contain no Han characters', () => {
+  const NEW = new Set(['Nevsky Prospect', 'North Doors, Florence Baptistery', 'Palazzo del Viminale', 'Palazzo della Farnesina', 'Quirinal Palace', 'Palazzo Montecitorio', 'Palazzo Madama', 'Hermitage Museum', 'Capodimonte Museum', 'Metropolitan Museum of Art', 'Bargello Museum', 'Prado Museum', 'Robie House', 'Glasgow School of Art', 'Space Needle', 'Petronas Twin Towers', 'Allianz Arena', 'Palais Stoclet', 'Glass House', 'Louvre Museum', 'Weissenhof Double House', 'Marqués de Riscal Hotel', 'Sainte Marie de La Tourette', 'Van Gogh Museum', 'Dutch Pavilion', 'Villa Mairea', 'Viipuri Library', 'Kaufmann Desert House', 'Millard House', 'Fagus Factory', 'Sommerfeld House', 'Church of San Bernardino', 'Santa Croce', 'Scrovegni Chapel', 'Tate Modern']);
+  const hits = dataset.places.filter((p) => NEW.has(p.name));
+  assert.equal(hits.length, NEW.size);
+  for (const p of hits) for (const f of [p.name, p.loc, p.who]) assert.ok(!/\p{Script=Han}/u.test(f), `${p.name}: ${f}`);
 });
 
 test('data: country tags and exam years are well formed', () => {

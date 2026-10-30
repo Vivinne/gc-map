@@ -46,9 +46,15 @@ The map marks the position given by the source; the handout text is unchanged. D
 
 (none)
 
-## No coordinate found and no estimate (0)
+## No coordinate found and no estimate (5)
 
-(none)
+| Building | Location | Explanation |
+|---|---|---|
+| Church of San Bernardino | Urbino | No coordinate shown on the page text read (en, de, it) |
+| Prado Museum | Madrid (Spain) | No coordinate shown on the page text read (en, es, fr, de) |
+| Dutch Pavilion | Venice | No coordinate shown on the page text read (en) |
+| Villa Mairea | Noormarkku (Finland) | No coordinate shown on the page text read (en) |
+| Allianz Arena | Munich (Germany) | No coordinate shown on the page text read (en, de, fr) |
 
 ## Some sub-items have no coordinate (0)
 

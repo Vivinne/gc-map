@@ -13,10 +13,14 @@ const eras: Era[] = [
 
 const groups = buildGroups(eras);
 
-const mk = (over: Partial<Place>): Place => ({
-  id: 'x', name: 'X', loc: 'Rome', year: '—', who: '—', note: '', style: 'Ancient Rome',
-  styleId: '6.2', era: 'ancient', country: 'Italy', exams: [], points: [], ...over,
-});
+const mk = (over: Partial<Place>): Place => {
+  const p: Place = {
+    id: 'x', name: 'X', loc: 'Rome', year: '—', who: '—', note: '', summary: '', style: 'Ancient Rome',
+    styleId: '6.2', era: 'ancient', eras: [], country: 'Italy', exams: [], points: [], ...over,
+  };
+  if (!over.eras) p.eras = [p.era];
+  return p;
+};
 
 const pt = (id: string, lng: number, lat: number, sub = '') => ({
   id, sub, lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '',
@@ -63,6 +67,10 @@ test('tags: several checked tags give the intersection; tags without a match giv
   assert.deepEqual(run('y:2016', 'y:2018'), ['maxxi']);
   assert.deepEqual(run('y:2016', 'c:France', 's:modern'), []);
   assert.deepEqual(run('c:Others'), []);
+  // a building with several style tags counts under each of them
+  const multi = [mk({ id: 'multi', name: 'Multi', era: 'ancient', eras: ['ancient', 'modern'] })];
+  const hit = (t: string) => filterPlaces(multi, { tags: new Set([t]), q: '', onlyLocated: false }, groups).length;
+  assert.equal(hit('s:ancient') + hit('s:modern'), 2);
   assert.ok(matchesTags(places[0]!, new Set(), groups));
   assert.equal(groups.map((g) => g.tags.length).join(','), '13,6,2');
 });
