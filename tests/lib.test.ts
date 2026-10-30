@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { filterPlaces, matchesQuery, norm } from '../src/lib/filter';
-import { SAME_SPOT_ZOOM, boundsOf, boundsOfCoords, clusterClickZoom, coordKey, isSameSpot, toFeatureCollection } from '../src/lib/geo';
+import { SAME_SPOT_ZOOM, boundsOf, boundsOfCoords, cityClickZoom, cityOf, coordKey, isSameSpot, toCityCollection, toFeatureCollection, CITY_TOP_ZOOM, WIDE_CITY_TOP_ZOOM } from '../src/lib/geo';
 import { formatHash, parseHash } from '../src/lib/hash';
 import { buildGroups, matchesTags } from '../src/lib/tags';
 import type { Era, Place } from '../src/lib/types';
@@ -101,15 +101,43 @@ test('hash: round-trips and ignores unknown tags', () => {
   assert.equal(formatHash({ p: '', t: [], q: '' }), '');
 });
 
-test('cluster click: bounds of the leaves, same-spot detection, target zoom stays above the clustered range', () => {
+test('same-spot detection and bounds of coordinates', () => {
   assert.equal(boundsOfCoords([]), null);
   const b = boundsOfCoords([[12.45, 41.9], [12.5, 41.88], [12.47, 41.95]]);
   assert.deepEqual(b, [[12.45, 41.88], [12.5, 41.95]]);
   assert.equal(isSameSpot(b!), false);
   assert.equal(isSameSpot(boundsOfCoords([[12.4533, 41.9022], [12.4533, 41.9022]])!), true);
   assert.equal(isSameSpot(boundsOfCoords([[12.4533, 41.9022], [12.4534, 41.9022]])!), false);
-  // A fit that is already deeper than the clustered range is kept; a shallower one is pushed past it so markers are drawn one by one
-  assert.equal(clusterClickZoom(9, 3.1), 9);
-  assert.equal(clusterClickZoom(2, 3.1), 3.6);
   assert.ok(SAME_SPOT_ZOOM > 17);
+});
+
+test('city circles: city from the handout location, count = buildings, wide flag, click zoom', () => {
+  const mk = (id: string, loc: string, pts: [number, number][], note = '') =>
+    ({ id, loc, points: pts.map(([lng, lat], i) => ({ id: `${id}${i}`, lng, lat, sub: '', note, precision: 'exact' })) }) as unknown as Place;
+  assert.equal(cityOf(mk('a', 'Rome（Italy）', [[12.5, 41.9]])), 'Rome');
+  assert.equal(cityOf(mk('b', 'Paris (France) 附近', [[2.3, 48.8]])), 'Paris');
+  assert.notEqual(cityOf(mk('c', 'Vatican City', [[12.45, 41.9]])), cityOf(mk('d', 'Rome', [[12.5, 41.9]])));
+  assert.equal(cityOf(mk('e', '', [[5.4, 43.3]], 'Supplementary location: Marseille; coordinates taken from X')), 'Marseille');
+  const places = [
+    mk('r1', 'Rome', [[12.49, 41.89]]),
+    mk('r2', 'Rome（Italy）', [[12.47, 41.9], [12.48, 41.91]]), // two points, one building
+    mk('v1', 'Veneto', [[11.5, 45.5]]),
+    mk('v2', 'Veneto', [[12.3, 45.7]]),
+    mk('z', 'Zurich', [[8.54, 47.37]]),
+  ];
+  const f = toCityCollection(places).features;
+  const by = Object.fromEntries(f.map((x) => [x.properties.city, x.properties]));
+  assert.equal(by.Rome.n, 2);
+  assert.equal(by.Rome.wide, false);
+  assert.equal(by.Zurich.n, 1);
+  assert.equal(by.Veneto.wide, true);
+  assert.deepEqual(JSON.parse(by.Rome.pids), ['r1', 'r2']);
+  assert.deepEqual([by.Rome.w, by.Rome.s, by.Rome.e, by.Rome.nn], [12.47, 41.89, 12.49, 41.91]);
+  // Markers of a wide city are in the wide group
+  const wideOf = Object.fromEntries(toFeatureCollection(places, []).features.map((x) => [x.properties.pid, x.properties.wide]));
+  assert.deepEqual([wideOf.r1, wideOf.v1, wideOf.z], [false, true, false]);
+  // The click lands just past the switch zoom, a deeper fit is kept
+  assert.equal(cityClickZoom(14, false), 14);
+  assert.equal(cityClickZoom(9, false), CITY_TOP_ZOOM + 0.5);
+  assert.equal(cityClickZoom(5, true), WIDE_CITY_TOP_ZOOM + 0.5);
 });

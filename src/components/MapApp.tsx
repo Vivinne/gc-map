@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { dataset, unlocated } from '../lib/data';
 import { filterPlaces } from '../lib/filter';
-import { HOME_BOUNDS, boundsOf, toFeatureCollection } from '../lib/geo';
+import { HOME_BOUNDS, boundsOf, toCityCollection, toFeatureCollection } from '../lib/geo';
 import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
@@ -13,8 +13,6 @@ import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf } from './Panels'
 type Tab = 'map' | 'list';
 
 const groups = buildGroups(dataset.eras);
-const ALL_BOUNDS = boundsOf(dataset.places);
-const FULL_VIEW = ALL_BOUNDS ? { all: ALL_BOUNDS, ref: HOME_BOUNDS } : null;
 const placesById = new Map(dataset.places.map((p) => [p.id, p]));
 
 export default function MapApp() {
@@ -31,6 +29,7 @@ export default function MapApp() {
 
   const visible = useMemo(() => filterPlaces(dataset.places, { tags, q }, groups), [tags, q]);
   const fc = useMemo(() => toFeatureCollection(visible, dataset.eras), [visible]);
+  const cities = useMemo(() => toCityCollection(visible), [visible]);
   const filtersActive = tags.size > 0 || q.trim() !== '';
   // With no filter, show a fixed view of Europe; with a filter, zoom to the results (which may include far-away points such as New York or Tokyo)
   const bounds = useMemo(() => (filtersActive ? boundsOf(visible) : HOME_BOUNDS), [filtersActive, visible]);
@@ -225,7 +224,7 @@ export default function MapApp() {
 
       <main className="stage">
         <button type="button" className="fullmap" onClick={showFullMap}>Full map</button>
-        <MapView fc={fc} selectedPid={selectedId} fullView={FULL_VIEW} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
+        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
         {selected && (
           <DetailPanel
             place={selected}

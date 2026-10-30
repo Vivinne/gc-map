@@ -3,16 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type Map as MLMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { SAME_SPOT_ZOOM, boundsOfCoords, clusterClickZoom, isSameSpot, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, SAME_SPOT_ZOOM, WIDE_CITY_TOP_ZOOM, cityClickZoom, isSameSpot, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
 const SOURCE = 'places';
-/** Same data, clustered; its layers are drawn only at the Full map zoom or further out */
-const CLUSTER_SOURCE = 'places-c';
-const CLUSTER_PADDING = 120;
-// Lets the Full map view itself (which lands on the exact blended zoom) fall inside the clustered range
-const CLUSTER_ZOOM_SLACK = 0.1;
+/** One numbered point per city; drawn below the city zoom, the single markers above it */
+const CITY_SOURCE = 'cities';
 const INK = '#111827';
 
 // Taken from MapLibre's own types, to avoid depending on the global namespace of @types/geojson
@@ -26,8 +23,8 @@ interface Props {
   fc: PointCollection;
   /** Currently selected building id; empty string = none */
   selectedPid: string;
-  /** The two views the Full map button blends: a fit of every marker, and the home view (the clustered range ends at their blend) */
-  fullView: { all: LngLatBounds; ref: LngLatBounds } | null;
+  /** One feature per city with the number of visible buildings in it */
+  cities: CityCollection;
   /** Bounding box of the currently visible buildings; null = no points */
   bounds: [[number, number], [number, number]] | null;
   focus: FocusTarget | null;
@@ -37,34 +34,16 @@ interface Props {
   onPick: (pids: string[]) => void;
 }
 
-/** Zoom of the Full map view: halfway between a fit of every marker and the home view (the same blend the Full map button flies to) */
-function fullMapZoom(map: MLMap, view: Props['fullView']): number {
-  const all = view && map.cameraForBounds(view.all, { padding: CLUSTER_PADDING });
-  const ref = view && map.cameraForBounds(view.ref, { padding: CLUSTER_PADDING });
-  return all?.zoom != null && ref?.zoom != null ? (all.zoom + ref.zoom) / 2 : 3;
-}
-
-/** Clusters are drawn below this zoom, single markers at or above it */
-function clusterTopZoom(map: MLMap, view: Props['fullView']): number {
-  return fullMapZoom(map, view) + CLUSTER_ZOOM_SLACK;
-}
-
-function applyClusterRange(map: MLMap, view: Props['fullView']) {
-  const top = clusterTopZoom(map, view);
-  for (const id of ['cluster-single', 'clusters', 'cluster-count']) if (map.getLayer(id)) map.setLayerZoomRange(id, 0, top);
-  if (map.getLayer('points')) map.setLayerZoomRange('points', top, 24);
-}
-
-export default function MapView({ fc, selectedPid, fullView, bounds, focus, active, onPick }: Props) {
+export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState('');
 
   // Event handlers must read the latest values; use refs to avoid rebinding
-  const latest = useRef({ fc, selectedPid, onPick, fullView });
+  const latest = useRef({ fc, cities, selectedPid, onPick });
   useEffect(() => {
-    latest.current = { fc, selectedPid, onPick, fullView };
+    latest.current = { fc, cities, selectedPid, onPick };
   });
 
   // Create the map (once only)
@@ -87,10 +66,8 @@ export default function MapView({ fc, selectedPid, fullView, bounds, focus, acti
     });
 
     map.on('load', () => {
-      const data = latest.current.fc as unknown as GeoData;
-      map.addSource(SOURCE, { type: 'geojson', data });
-      map.addSource(CLUSTER_SOURCE, { type: 'geojson', data, cluster: true, clusterRadius: 36, clusterMaxZoom: 14 });
-      const top = clusterTopZoom(map, latest.current.fullView);
+      map.addSource(SOURCE, { type: 'geojson', data: latest.current.fc as unknown as GeoData });
+      map.addSource(CITY_SOURCE, { type: 'geojson', data: latest.current.cities as unknown as GeoData });
       const dot = {
         'circle-color': ['get', 'color'],
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 5, 10, 7, 15, 10],
@@ -100,32 +77,22 @@ export default function MapView({ fc, selectedPid, fullView, bounds, focus, acti
         'circle-opacity': ['case', ['get', 'est'], 0.5, 1],
         'circle-stroke-opacity': ['case', ['get', 'est'], 0.5, 1],
       } as const;
-      // Zoomed out to the Full map view or further: overlapping markers merge into a numbered circle
-      map.addLayer({ id: 'cluster-single', type: 'circle', source: CLUSTER_SOURCE, filter: ['!', ['has', 'point_count']], maxzoom: top, paint: dot });
-      map.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: CLUSTER_SOURCE,
-        filter: ['has', 'point_count'],
-        maxzoom: top,
-        paint: {
-          'circle-color': INK,
-          'circle-radius': ['step', ['get', 'point_count'], 14, 5, 17, 15, 21],
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#ffffff',
-        },
-      });
-      map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: CLUSTER_SOURCE,
-        filter: ['has', 'point_count'],
-        maxzoom: top,
-        layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true },
-        paint: { 'text-color': '#ffffff' },
-      });
-      // Above that zoom every marker is drawn on its own
-      map.addLayer({ id: 'points', type: 'circle', source: SOURCE, minzoom: top, paint: dot });
+      // A city whose markers do not fit one screen at the normal switch zoom (wide) switches earlier, so a click can still show all of it
+      const cityPaint = {
+        'circle-color': INK,
+        'circle-radius': ['step', ['get', 'n'], 13, 2, 15, 6, 18, 16, 22],
+        'circle-stroke-width': 3,
+        'circle-stroke-color': '#ffffff',
+      } as const;
+      const countLayout = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true } as const;
+      for (const wide of [false, true]) {
+        const sfx = wide ? '-wide' : '';
+        const top = wide ? WIDE_CITY_TOP_ZOOM : CITY_TOP_ZOOM;
+        const only = ['==', ['get', 'wide'], wide];
+        map.addLayer({ id: `cities${sfx}`, type: 'circle', source: CITY_SOURCE, filter: only, maxzoom: top, layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] }, paint: cityPaint });
+        map.addLayer({ id: `city-count${sfx}`, type: 'symbol', source: CITY_SOURCE, filter: only, maxzoom: top, layout: countLayout, paint: { 'text-color': '#ffffff' } });
+        map.addLayer({ id: `points${sfx}`, type: 'circle', source: SOURCE, filter: ['==', ['get', 'wide'], wide], minzoom: top, paint: dot });
+      }
       map.addLayer({
         id: 'selected',
         type: 'circle',
@@ -146,42 +113,36 @@ export default function MapView({ fc, selectedPid, fullView, bounds, focus, acti
             [x - 10, y - 10],
             [x + 10, y + 10],
           ],
-          { layers: ['points', 'cluster-single'] },
+          { layers: ['points', 'points-wide'] },
         );
         const pids = [...new Set<string>(hits.map((h) => String(h.properties?.pid)))];
         if (pids.length) latest.current.onPick(pids);
       };
       map.on('click', 'points', pickAt);
-      map.on('click', 'cluster-single', pickAt);
+      map.on('click', 'points-wide', pickAt);
 
-      // Cluster click: zoom so that every marker of the cluster is in view and drawn on its own
-      map.on('click', 'clusters', async (e) => {
-        const hit = map.queryRenderedFeatures(e.point, { layers: ['clusters'] })[0];
-        const clusterId = Number(hit?.properties?.cluster_id);
-        const src = map.getSource(CLUSTER_SOURCE) as GeoJSONSource | undefined;
-        if (!hit || !src || Number.isNaN(clusterId)) return;
-        const leaves = await src.getClusterLeaves(clusterId, Infinity, 0);
-        const coords = leaves.map((l) => (l.geometry as { coordinates: [number, number] }).coordinates);
-        const b = boundsOfCoords(coords);
-        if (!b) return;
+      // City click: zoom so that every building of the city is in view and drawn on its own
+      const cityClick = (wide: boolean) => (e: { point: { x: number; y: number } }) => {
+        const hit = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: [`cities${wide ? '-wide' : ''}`] })[0];
+        const pr = hit?.properties;
+        if (!pr) return;
+        const b: LngLatBounds = [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
+        const pids = JSON.parse(String(pr.pids)) as string[];
         if (isSameSpot(b)) {
-          // Identical coordinates cannot be told apart by zooming: go to the deepest level and hand over to the chooser list
+          // Identical coordinates cannot be told apart by zooming: go to the deepest level; several buildings -> the chooser list
           map.easeTo({ center: [b[0][0], b[0][1]], zoom: SAME_SPOT_ZOOM, duration: 600 });
-          latest.current.onPick([...new Set(leaves.map((l) => String(l.properties?.pid)))]);
+          if (pids.length > 1) latest.current.onPick(pids);
           return;
         }
         const cam = map.cameraForBounds(b, { padding: 80, maxZoom: 17 });
-        const top = clusterTopZoom(map, latest.current.fullView);
-        map.easeTo({ center: cam?.center ?? [b[0][0], b[0][1]], zoom: clusterClickZoom(cam?.zoom ?? top, top), duration: 600 });
-      });
-      map.on('mouseenter', 'clusters', () => (map.getCanvas().style.cursor = 'pointer'));
-      map.on('mouseleave', 'clusters', () => (map.getCanvas().style.cursor = ''));
-      map.on('mouseenter', 'points', () => (map.getCanvas().style.cursor = 'pointer'));
-      map.on('mouseleave', 'points', () => (map.getCanvas().style.cursor = ''));
-      map.on('mouseenter', 'cluster-single', () => (map.getCanvas().style.cursor = 'pointer'));
-      map.on('mouseleave', 'cluster-single', () => (map.getCanvas().style.cursor = ''));
-      // The Full map zoom depends on the viewport size
-      map.on('resize', () => applyClusterRange(map, latest.current.fullView));
+        map.easeTo({ center: cam?.center ?? [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2], zoom: cityClickZoom(cam?.zoom ?? 0, wide), duration: 600 });
+      };
+      map.on('click', 'cities', cityClick(false));
+      map.on('click', 'cities-wide', cityClick(true));
+      for (const id of ['cities', 'cities-wide', 'points', 'points-wide']) {
+        map.on('mouseenter', id, () => (map.getCanvas().style.cursor = 'pointer'));
+        map.on('mouseleave', id, () => (map.getCanvas().style.cursor = ''));
+      }
       setReady(true);
     });
 
@@ -201,8 +162,8 @@ export default function MapView({ fc, selectedPid, fullView, bounds, focus, acti
     const map = mapRef.current;
     if (!map || !ready) return;
     (map.getSource(SOURCE) as GeoJSONSource | undefined)?.setData(fc as unknown as GeoData);
-    (map.getSource(CLUSTER_SOURCE) as GeoJSONSource | undefined)?.setData(fc as unknown as GeoData);
-  }, [fc, ready]);
+    (map.getSource(CITY_SOURCE) as GeoJSONSource | undefined)?.setData(cities as unknown as GeoData);
+  }, [fc, cities, ready]);
 
   // Selection ring
   useEffect(() => {
