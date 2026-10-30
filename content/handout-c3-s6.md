@@ -271,5 +271,5 @@
 
 | 建築 | 年份 | 建築師／人物 | 內容 |
 |---|---|---|---|
-| Nevsky Prospect<br><span class="loc">Saint Petersburg (Russia)</span> | 1710-1718 | Pyotr Yeropkin (Trident plan); Mikhail Zemtsov (model designs for the avenue's stone buildings) | — |
+| Nevsky Prospect<br><span class="loc">Saint Petersburg (Russia)</span> | 1710-1718 | — | — |
 | North Doors, Florence Baptistery<br><span class="loc">Florence</span> | 1424 | Lorenzo Ghiberti | — |
