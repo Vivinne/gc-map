@@ -19,6 +19,8 @@ execFileSync('node', [resolve(root, 'scripts/build-standalone.mjs')], { env: { .
 const data = JSON.parse(readFileSync(resolve(root, 'src/data/places.json'), 'utf8'));
 const totalPts = data.places.reduce((n, p) => n + p.points.length, 0);
 const idsCount = data.places.filter((p) => p.points.length).length;
+const span = (p) => { const x = p.points.map((q) => q.lng), y = p.points.map((q) => q.lat); return Math.max(Math.max(...x) - Math.min(...x), Math.max(...y) - Math.min(...y)); };
+const wideCount = data.places.filter((p) => p.points.length && span(p) > 0.25).length;
 const idOf = (name) => data.places.find((p) => p.name === name).id;
 const url = 'file://' + resolve(outDir, 'index.html');
 
@@ -80,19 +82,19 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 7);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 5);
   const f = await page.evaluate(() => ({
     
-    cityData: [...window.__fake.sources.cities.data.features, ...window.__fake.sources['cities-wide'].data.features].map((x) => x.properties),
-    cs: { a: window.__fake.sources.cities, b: window.__fake.sources['cities-wide'] },
+    cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
+    cs: { a: window.__fake.sources.cities },
     layers: window.__fake.layers.map((l) => l.id),
     layerById: Object.fromEntries(window.__fake.layers.map((l) => [l.id, l])),
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['cities', 'city-count', 'points', 'cities-wide', 'city-count-wide', 'points-wide', 'selected']);
+  assert.deepEqual(f.layers, ['points-wide', 'points', 'cities', 'city-count', 'selected']);
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
-  for (const cs of [f.cs.a, f.cs.b]) {
+  for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);
     assert.ok(cs.radius >= 44, String(cs.radius));
     assert.deepEqual(cs.props.n, ['+', ['get', 'n']]);
@@ -103,13 +105,14 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(rome && rome.n > 20, JSON.stringify(rome));
   assert.ok(f.cityData.find((c) => c.city === 'Vatican City' || /Vatican/.test(c.city)), 'Vatican is its own city');
   assert.ok(f.cityData.some((c) => c.n === 1), 'Single-building cities show 1');
-  assert.equal(f.cityData.reduce((a, c) => a + c.n, 0), idsCount, 'Every building belongs to one city');
-  // Circles below the switch zoom, single markers from there up; wide cities switch earlier
+  // Region places (Veneto villas) have no circle: counted buildings = located buildings minus the region places
+  assert.ok(!f.cityData.some((c) => c.city === 'Veneto'), 'No Veneto circle');
+  assert.equal(f.cityData.reduce((a, c) => a + c.n, 0), idsCount - wideCount, 'Every other building belongs to one city');
+  // Circles below the switch zoom, single markers from there up; region markers at every zoom
   const L = f.layerById;
   for (const id of ['cities', 'city-count']) assert.equal(L[id].maxzoom, 10.5, id);
   assert.equal(L.points.minzoom, 10.5);
-  for (const id of ['cities-wide', 'city-count-wide']) assert.equal(L[id].maxzoom, 7.5, id);
-  assert.equal(L['points-wide'].minzoom, 7.5);
+  assert.equal(L['points-wide'].minzoom, undefined);
   assert.deepEqual(L['city-count'].layout['text-field'], ['to-string', ['get', 'n']]);
   assert.deepEqual(f.pointsPaint['circle-opacity'], ['case', ['get', 'est'], 0.5, 1]);
   assert.equal(f.controls, 1);
@@ -139,7 +142,7 @@ async function open({ pinned = true, fallback = true } = {}) {
 
   // City click 1: zoom to the bounds of the city's buildings, just past the switch zoom; no chooser
   await page.keyboard.press('Escape');
-  const city = (o) => ({ properties: { city: 'X', n: 3, wide: false, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: JSON.stringify(['a', 'b', 'c']), ...o } });
+  const city = (o) => ({ properties: { city: 'X', n: 3, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: JSON.stringify(['a', 'b', 'c']), ...o } });
   await page.evaluate((h) => {
     window.__fake.hits = [h];
     window.__fake.ease = null;
@@ -151,17 +154,6 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(Math.abs(e1.center[0] - 12.475) < 1e-6 && Math.abs(e1.center[1] - 41.915) < 1e-6, JSON.stringify(e1.center));
   assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
   ok('City click -> zooms to the bounds of the city, past the switch zoom');
-
-  // City click 2: wide city uses its own switch zoom
-  await page.evaluate((h) => {
-    window.__fake.hits = [h];
-    window.__fake.ease = null;
-    window.__fake.map.fireLayer('click', 'cities-wide', { point: { x: 5, y: 5 } });
-  }, city({ wide: true, w: 11.5, s: 45.4, e: 12.3, nn: 45.8 }));
-  await page.waitForFunction(() => window.__fake.ease);
-  const e2 = await page.evaluate(() => window.__fake.ease);
-  assert.ok(e2.zoom >= 8 && e2.zoom < 10.5, String(e2.zoom));
-  ok('Wide city click -> fits the whole city at its earlier switch zoom');
 
   // City click: merged circle (several close cities) -> fit their united bounds and split them apart
   await page.evaluate((h) => {

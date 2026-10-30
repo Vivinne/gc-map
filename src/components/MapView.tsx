@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type Map as MLMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, SAME_SPOT_ZOOM, WIDE_CITY_TOP_ZOOM, cityClickZoom, isSameSpot, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, SAME_SPOT_ZOOM, cityClickZoom, isSameSpot, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
@@ -12,8 +12,7 @@ const SOURCE = 'places';
 const CITY_SOURCE = 'cities';
 /** City circles closer than this (screen px) are merged into one circle with the summed count */
 const CITY_MERGE_PX = 50;
-const citySource = (wide: boolean) => (wide ? `${CITY_SOURCE}-wide` : CITY_SOURCE);
-const cityData = (c: CityCollection, wide: boolean) => ({ type: 'FeatureCollection', features: c.features.filter((f) => f.properties.wide === wide) }) as unknown as GeoData;
+
 const INK = '#111827';
 
 // Taken from MapLibre's own types, to avoid depending on the global namespace of @types/geojson
@@ -80,7 +79,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         'circle-opacity': ['case', ['get', 'est'], 0.5, 1],
         'circle-stroke-opacity': ['case', ['get', 'est'], 0.5, 1],
       } as const;
-      // A city whose markers do not fit one screen at the normal switch zoom (wide) switches earlier, so a click can still show all of it
       const cityPaint = {
         'circle-color': INK,
         'circle-radius': ['step', ['get', 'n'], 13, 2, 15, 6, 18, 16, 22],
@@ -88,22 +86,20 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         'circle-stroke-color': '#ffffff',
       } as const;
       const countLayout = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true } as const;
-      for (const wide of [false, true]) {
-        const sfx = wide ? '-wide' : '';
-        const top = wide ? WIDE_CITY_TOP_ZOOM : CITY_TOP_ZOOM;
-        // Nearby cities merge into one circle (count summed, bounds united) so circles never overlap
-        map.addSource(citySource(wide), {
-          type: 'geojson',
-          data: cityData(latest.current.cities, wide),
-          cluster: true,
-          clusterRadius: CITY_MERGE_PX,
-          clusterMaxZoom: Math.ceil(top),
-          clusterProperties: { n: ['+', ['get', 'n']], w: ['min', ['get', 'w']], s: ['min', ['get', 's']], e: ['max', ['get', 'e']], nn: ['max', ['get', 'nn']] },
-        });
-        map.addLayer({ id: `cities${sfx}`, type: 'circle', source: citySource(wide), maxzoom: top, layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] }, paint: cityPaint });
-        map.addLayer({ id: `city-count${sfx}`, type: 'symbol', source: citySource(wide), maxzoom: top, layout: countLayout, paint: { 'text-color': '#ffffff' } });
-        map.addLayer({ id: `points${sfx}`, type: 'circle', source: SOURCE, filter: ['==', ['get', 'wide'], wide], minzoom: top, paint: dot });
-      }
+      // Markers of region-wide places (the Veneto villas) are drawn at every zoom: they have no city circle
+      map.addLayer({ id: 'points-wide', type: 'circle', source: SOURCE, filter: ['==', ['get', 'wide'], true], paint: dot });
+      map.addLayer({ id: 'points', type: 'circle', source: SOURCE, filter: ['==', ['get', 'wide'], false], minzoom: CITY_TOP_ZOOM, paint: dot });
+      // Nearby cities merge into one circle (count summed, bounds united) so circles never overlap
+      map.addSource(CITY_SOURCE, {
+        type: 'geojson',
+        data: latest.current.cities as unknown as GeoData,
+        cluster: true,
+        clusterRadius: CITY_MERGE_PX,
+        clusterMaxZoom: Math.ceil(CITY_TOP_ZOOM),
+        clusterProperties: { n: ['+', ['get', 'n']], w: ['min', ['get', 'w']], s: ['min', ['get', 's']], e: ['max', ['get', 'e']], nn: ['max', ['get', 'nn']] },
+      });
+      map.addLayer({ id: 'cities', type: 'circle', source: CITY_SOURCE, maxzoom: CITY_TOP_ZOOM, layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] }, paint: cityPaint });
+      map.addLayer({ id: 'city-count', type: 'symbol', source: CITY_SOURCE, maxzoom: CITY_TOP_ZOOM, layout: countLayout, paint: { 'text-color': '#ffffff' } });
       map.addLayer({
         id: 'selected',
         type: 'circle',
@@ -133,8 +129,8 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       map.on('click', 'points-wide', pickAt);
 
       // City click: zoom so that every building of the city is in view and drawn on its own
-      const cityClick = (wide: boolean) => (e: { point: { x: number; y: number } }) => {
-        const hit = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: [`cities${wide ? '-wide' : ''}`] })[0];
+      const cityClick = (e: { point: { x: number; y: number } }) => {
+        const hit = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: ['cities'] })[0];
         const pr = hit?.properties;
         if (!pr) return;
         const b: LngLatBounds = [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
@@ -148,15 +144,13 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         }
         const cam = map.cameraForBounds(b, { padding: 80, maxZoom: 17 });
         const center = cam?.center ?? [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2];
-        const go = (extra: number) => map.easeTo({ center, zoom: Math.max(cityClickZoom(cam?.zoom ?? 0, wide), extra), duration: 600 });
+        const go = (extra: number) => map.easeTo({ center, zoom: Math.max(cityClickZoom(cam?.zoom ?? 0), extra), duration: 600 });
         if (!merged) return go(0);
         // Merged circle: also zoom far enough that its cities separate into their own circles
-        const src = map.getSource(citySource(wide)) as GeoJSONSource;
-        src.getClusterExpansionZoom(Number(pr.cluster_id)).then((z) => go(z), () => go(0));
+        (map.getSource(CITY_SOURCE) as GeoJSONSource).getClusterExpansionZoom(Number(pr.cluster_id)).then((z) => go(z), () => go(0));
       };
-      map.on('click', 'cities', cityClick(false));
-      map.on('click', 'cities-wide', cityClick(true));
-      for (const id of ['cities', 'cities-wide', 'points', 'points-wide']) {
+      map.on('click', 'cities', cityClick);
+      for (const id of ['cities', 'points', 'points-wide']) {
         map.on('mouseenter', id, () => (map.getCanvas().style.cursor = 'pointer'));
         map.on('mouseleave', id, () => (map.getCanvas().style.cursor = ''));
       }
@@ -179,7 +173,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     const map = mapRef.current;
     if (!map || !ready) return;
     (map.getSource(SOURCE) as GeoJSONSource | undefined)?.setData(fc as unknown as GeoData);
-    for (const wide of [false, true]) (map.getSource(citySource(wide)) as GeoJSONSource | undefined)?.setData(cityData(cities, wide));
+    (map.getSource(CITY_SOURCE) as GeoJSONSource | undefined)?.setData(cities as unknown as GeoData);
   }, [fc, cities, ready]);
 
   // Selection ring

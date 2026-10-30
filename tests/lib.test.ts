@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { filterPlaces, matchesQuery, norm } from '../src/lib/filter';
-import { SAME_SPOT_ZOOM, boundsOf, boundsOfCoords, cityClickZoom, cityOf, coordKey, isSameSpot, toCityCollection, toFeatureCollection, CITY_TOP_ZOOM, WIDE_CITY_TOP_ZOOM } from '../src/lib/geo';
+import { SAME_SPOT_ZOOM, boundsOf, boundsOfCoords, cityClickZoom, cityOf, coordKey, isSameSpot, toCityCollection, toFeatureCollection, CITY_TOP_ZOOM } from '../src/lib/geo';
 import { formatHash, parseHash } from '../src/lib/hash';
 import { buildGroups, matchesTags } from '../src/lib/tags';
 import type { Era, Place } from '../src/lib/types';
@@ -111,7 +111,7 @@ test('same-spot detection and bounds of coordinates', () => {
   assert.ok(SAME_SPOT_ZOOM > 17);
 });
 
-test('city circles: city from the handout location, count = buildings, wide flag, click zoom', () => {
+test('city circles: city from the handout location, count = buildings, region places, click zoom', () => {
   const mk = (id: string, loc: string, pts: [number, number][], note = '') =>
     ({ id, loc, points: pts.map(([lng, lat], i) => ({ id: `${id}${i}`, lng, lat, sub: '', note, precision: 'exact' })) }) as unknown as Place;
   assert.equal(cityOf(mk('a', 'Rome（Italy）', [[12.5, 41.9]])), 'Rome');
@@ -121,23 +121,22 @@ test('city circles: city from the handout location, count = buildings, wide flag
   const places = [
     mk('r1', 'Rome', [[12.49, 41.89]]),
     mk('r2', 'Rome（Italy）', [[12.47, 41.9], [12.48, 41.91]]), // two points, one building
-    mk('v1', 'Veneto', [[11.5, 45.5]]),
-    mk('v2', 'Veneto', [[12.3, 45.7]]),
+    mk('v1', 'Venice', [[12.33, 45.43]]),
+    mk('g', 'Veneto', [[11.5, 45.0], [12.2, 45.8]]), // villas spread over a region
     mk('z', 'Zurich', [[8.54, 47.37]]),
   ];
   const f = toCityCollection(places).features;
   const by = Object.fromEntries(f.map((x) => [x.properties.city, x.properties]));
   assert.equal(by.Rome.n, 2);
-  assert.equal(by.Rome.wide, false);
   assert.equal(by.Zurich.n, 1);
-  assert.equal(by.Veneto.wide, true);
+  // A region-wide place (the Veneto villas) has no city circle; its markers are always drawn
+  assert.equal(by.Veneto, undefined);
   assert.deepEqual(JSON.parse(by.Rome.pids), ['r1', 'r2']);
   assert.deepEqual([by.Rome.w, by.Rome.s, by.Rome.e, by.Rome.nn], [12.47, 41.89, 12.49, 41.91]);
-  // Markers of a wide city are in the wide group
+  // Markers of the region place are flagged wide
   const wideOf = Object.fromEntries(toFeatureCollection(places, []).features.map((x) => [x.properties.pid, x.properties.wide]));
-  assert.deepEqual([wideOf.r1, wideOf.v1, wideOf.z], [false, true, false]);
+  assert.deepEqual([wideOf.r1, wideOf.v1, wideOf.g, wideOf.z], [false, false, true, false]);
   // The click lands just past the switch zoom, a deeper fit is kept
-  assert.equal(cityClickZoom(14, false), 14);
-  assert.equal(cityClickZoom(9, false), CITY_TOP_ZOOM + 0.5);
-  assert.equal(cityClickZoom(5, true), WIDE_CITY_TOP_ZOOM + 0.5);
+  assert.equal(cityClickZoom(14), 14);
+  assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });

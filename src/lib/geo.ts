@@ -14,10 +14,8 @@ export interface PointCollection {
 export function toFeatureCollection(places: readonly Place[], eras: readonly Era[]): PointCollection {
   const color = new Map(eras.map((e) => [e.id, e.color]));
   const features: PointFeature[] = [];
-  // A marker belongs to the wide group when its city is wide (see toCityCollection)
-  const wideCity = new Map(toCityCollection(places).features.map((f) => [f.properties.city, f.properties.wide]));
   for (const p of places) {
-    const wide = wideCity.get(cityOf(p)) ?? false;
+    const wide = isWidePlace(p);
     for (const pt of p.points) {
       features.push({
         type: 'Feature',
@@ -76,18 +74,18 @@ export function isSameSpot(b: LngLatBounds): boolean {
 
 /** Below this zoom each city is one numbered circle; from here up every marker is drawn on its own */
 export const CITY_TOP_ZOOM = 10.5;
-/** A city whose markers span more than this (degrees) does not fit one screen at CITY_TOP_ZOOM, so it switches earlier */
+/** A place whose own markers span more than this (degrees) is a region (the Veneto villas): it gets no city circle, its markers are always drawn */
 export const WIDE_SPAN_DEG = 0.25;
-export const WIDE_CITY_TOP_ZOOM = 7.5;
 /** After a city click the zoom ends this far above the switch zoom, so the markers are already drawn one by one */
 export const CITY_ZOOM_MARGIN = 0.5;
 
-export function cityTopZoom(wide: boolean): number {
-  return wide ? WIDE_CITY_TOP_ZOOM : CITY_TOP_ZOOM;
+export function isWidePlace(p: Place): boolean {
+  const b = boundsOf([p]);
+  return !!b && Math.max(b[1][0] - b[0][0], b[1][1] - b[0][1]) > WIDE_SPAN_DEG;
 }
 
-export function cityClickZoom(fitZoom: number, wide: boolean): number {
-  return Math.max(fitZoom, cityTopZoom(wide) + CITY_ZOOM_MARGIN);
+export function cityClickZoom(fitZoom: number): number {
+  return Math.max(fitZoom, CITY_TOP_ZOOM + CITY_ZOOM_MARGIN);
 }
 
 /**
@@ -106,7 +104,7 @@ export function cityOf(p: Place): string {
 export interface CityFeature {
   type: 'Feature';
   geometry: { type: 'Point'; coordinates: [number, number] };
-  properties: { city: string; n: number; wide: boolean; w: number; s: number; e: number; nn: number; pids: string };
+  properties: { city: string; n: number; w: number; s: number; e: number; nn: number; pids: string };
 }
 
 export interface CityCollection {
@@ -118,7 +116,7 @@ export interface CityCollection {
 export function toCityCollection(places: readonly Place[]): CityCollection {
   const by = new Map<string, Place[]>();
   for (const p of places) {
-    if (!p.points.length) continue;
+    if (!p.points.length || isWidePlace(p)) continue;
     const c = cityOf(p);
     if (!c) continue;
     by.set(c, [...(by.get(c) ?? []), p]);
@@ -132,7 +130,6 @@ export function toCityCollection(places: readonly Place[]): CityCollection {
       properties: {
         city,
         n: ps.length,
-        wide: Math.max(b[1][0] - b[0][0], b[1][1] - b[0][1]) > WIDE_SPAN_DEG,
         w: b[0][0],
         s: b[0][1],
         e: b[1][0],
