@@ -122,3 +122,13 @@ test('data: every row has a span and a one- or two-sentence summary (Polimi Camp
     assert.match(p.year, /\d/, p.name);
   }
 });
+
+test('data: country tags and exam years are well formed', () => {
+  const ok = new Set(['Italy', 'France', 'Germany', 'United Kingdom', 'United States', 'Others']);
+  for (const p of dataset.places) {
+    assert.ok(p.loc ? ok.has(p.country) : p.country === '', `${p.name}: ${p.country}`);
+    assert.deepEqual(p.exams, [...p.exams].sort((a, b) => a - b));
+    for (const y of p.exams) assert.ok(y >= 2007 && y <= 2019, `${p.name}: ${y}`);
+  }
+  assert.ok(dataset.places.some((p) => p.exams.length > 0));
+});

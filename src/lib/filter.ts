@@ -1,3 +1,4 @@
+import { matchesTags, type TagGroup } from './tags';
 import type { Filters, Place } from './types';
 
 /** Strip diacritics and lower-case, so "Panthéon" and "pantheon" match each other */
@@ -18,10 +19,10 @@ export function matchesQuery(p: Place, q: string): boolean {
   return tokens.every((t) => h.includes(t));
 }
 
-export function filterPlaces(places: readonly Place[], f: Filters): Place[] {
+export function filterPlaces(places: readonly Place[], f: Filters, groups: readonly TagGroup[]): Place[] {
   return places.filter(
     (p) =>
-      (f.eras.size === 0 || f.eras.has(p.era)) &&
+      matchesTags(p, f.tags, groups) &&
       (!f.onlyLocated || p.points.length > 0) &&
       matchesQuery(p, f.q),
   );

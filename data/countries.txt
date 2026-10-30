@@ -1,0 +1,61 @@
+# handout location | country tag (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location get no country. Vatican is listed as Others (a separate state).
+Agrigento（西西里） | Italy
+Athens（希臘） | Others
+Rome | Italy
+Milan | Italy
+Istanbul（土耳其） | Others
+Venice | Italy
+Mont-Saint-Michel（法） | France
+Parma | Italy
+Pisa | Italy
+Florence | Italy
+Saint-Denis（法） | France
+Mantes（法） | France
+Paris | France
+Chartres（法） | France
+Bourges（法） | France
+Reims（法） | France
+Amiens（法） | France
+Salisbury（英） | United Kingdom
+Strasbourg（法） | France
+Puglia | Italy
+Cologne（德） | Germany
+Orléans（法） | France
+Seville（西） | Others
+Siena | Italy
+Assisi | Italy
+Rimini | Italy
+Mantua | Italy
+Vatican | Others
+Fontainebleau（法） | France
+Vicenza | Italy
+Veneto | Italy
+Caprarola | Italy
+Pienza | Italy
+Rome（Piazza Navona） | Italy
+Versailles（法） | France
+Turin | Italy
+Caserta | Italy
+Rome（Santa Maria della Vittoria） | Italy
+Berlin | Germany
+Munich（德） | Germany
+London | United Kingdom
+Kent（英） | United Kingdom
+Vienna | Others
+Barcelona（西） | Others
+Brussels（比） | Others
+Utrecht（荷） | Others
+Dessau（德） | Germany
+Stuttgart（德） | Germany
+Poissy 附近（法） | France
+Pennsylvania（美） | United States
+Ronchamp（法） | France
+New York | United States
+Prague | Others
+Paimio（芬） | Others
+Cambridge（美） | United States
+Como | Italy
+Tokyo | Others
+Bilbao（西） | Others
+Verona | Italy
+Abu Dhabi | Others

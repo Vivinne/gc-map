@@ -112,7 +112,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   ok('Several entries at one location -> chooser');
 
   // Data and view update after filtering
-  await page.click('.era-item:has-text("Modern")');
+  await page.click('.tag-item:has-text("Modern")');
   await page.waitForFunction(() => window.__fake.setData.length >= 2);
   const lastCount = await page.evaluate(() => window.__fake.setData.at(-1));
   assert.ok(lastCount < totalPts && lastCount > 0, String(lastCount));

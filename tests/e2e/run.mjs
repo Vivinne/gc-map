@@ -42,25 +42,57 @@ ok('The building list is hidden while only the style tags are shown; marker coun
 // View: no filter = Europe; with a filter = zoom to the results
 const home = await page.evaluate(() => window.__map.bounds);
 assert.deepEqual(home, [[-8, 36], [29.5, 55]]);
-await page.click('.era-item:has-text("Modern")');
+await page.click('.tag-item:has-text("Modern")');
 const modernBounds = await page.evaluate(() => window.__map.bounds);
 assert.ok(modernBounds[0][0] < -70 && modernBounds[1][0] > 130, JSON.stringify(modernBounds)); // includes New York and Tokyo
-await page.click('.era-back');
+await page.click('.clear-tags');
 assert.deepEqual(await page.evaluate(() => window.__map.bounds), [[-8, 36], [29.5, 55]]);
 ok('View: fixed on Europe with no filter, zooms to the results with a filter, back to Europe once cleared');
 
 // Era filter
-await page.click('.era-item:has-text("Ancient")');
+await page.click('.tag-item:has-text("Ancient")');
 assert.equal(await page.locator('.list .item').count(), ancient.length);
-assert.equal(await page.locator('.era-item').count(), 0);
-assert.match(await page.textContent('.era-current'), /Ancient/);
+assert.equal(await page.locator('.tag-item[data-checked=true]').count(), 1);
 assert.equal(await page.locator('.marker').count(), ancient.reduce((n, p) => n + p.points.length, 0));
 await page.screenshot({ path: resolve(shots, 'desktop-style.png') });
 ok(`Ancient filter -> ${ancient.length} entries`);
-await page.click('.era-back');
-assert.equal(await page.locator('.era-item').count(), 5);
+await page.click('.clear-tags');
+assert.equal(await page.locator('.tag-item').count(), 13 + 6 + 5);
 assert.equal(await page.locator('.list').count(), 0);
 ok('Clearing the filter restores all entries');
+
+// Tag groups: titles, checkable, intersection
+const titles = await page.locator('.tag-title').allTextContents();
+assert.deepEqual(titles, ['【Previous Years】', '【Country】', '【Styles】']);
+await page.click('.tag-item:has-text("2018")');
+const y18 = data.places.filter((p) => p.exams.includes(2018));
+assert.equal(await page.locator('.list .item').count(), y18.length);
+await page.click('.tag-item:has-text("Others")');
+const y18o = y18.filter((p) => p.country === 'Others');
+assert.equal(await page.locator('.list .item').count(), y18o.length);
+assert.ok(y18o.length > 0 && y18o.length < y18.length);
+await page.click('.tag-item:has-text("2019")');
+const inter = y18o.filter((p) => p.exams.includes(2019));
+assert.equal(await page.locator('.list .item').count(), inter.length);
+assert.ok(inter.length > 0);
+await page.screenshot({ path: resolve(shots, 'desktop-tags.png') });
+await page.click('.clear-tags');
+assert.equal(await page.locator('.list').count(), 0);
+ok(`Tags: 2018 -> ${y18.length}; + Others -> ${y18o.length}; + 2019 -> ${inter.length} (intersection)`);
+
+// Exam-year line in the detail panel
+await page.fill('.search', 'Domus Aurea');
+await page.click('.list .item:has-text("Domus Aurea")');
+assert.equal((await page.textContent('[data-testid=detail] .exam')).trim(), '【2007 TEST-ARCHED】 【2012 TEST-ARCHED】 【2016 TEST-ARCHED】');
+const st = await page.$eval('[data-testid=detail] .exam', (e) => { const c = getComputedStyle(e); return [c.fontStyle, c.fontSize]; });
+assert.deepEqual(st, ['italic', '11px']);
+assert.equal(await page.locator('[data-testid=detail] .context > p:last-child.exam').count(), 1);
+await page.fill('.search', 'Colosseum');
+await page.click('.list .item:has-text("Colosseum")');
+assert.equal(await page.locator('[data-testid=detail] .exam').count(), 0);
+await page.fill('.search', '');
+await page.keyboard.press('Escape');
+ok('Exam-year line: last line of the context, italic small; absent when the building was not in an exam');
 
 // Search (including diacritics)
 await page.fill('.search', 'pantheon');
@@ -184,10 +216,10 @@ ok('No injected nodes');
 
 // URL restore
 const p2 = await newPage({ width: 1280, height: 800 });
-await p2.goto(page_url + '#p=maxxi-rome&e=modern&q=hadid&loc=1');
+await p2.goto(page_url + '#p=maxxi-rome&t=s:modern&q=hadid&loc=1');
 await p2.waitForSelector('[data-testid=detail]');
 assert.equal((await p2.textContent('[data-testid=detail] h2')).trim(), 'MAXXI');
-assert.match(await p2.textContent('.era-current'), /Modern/);
+assert.equal(await p2.locator('.tag-item[data-checked=true]').textContent().then((t) => /Modern/.test(t)), true);
 assert.equal(await p2.inputValue('.search'), 'hadid');
 assert.equal(await p2.isChecked('.check input'), true);
 ok('URL hash restores selection / era / search / located-only');

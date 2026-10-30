@@ -1,0 +1,15 @@
+# handout building name | years in which the building itself was a past-exam topic (comma separated, 2007-2019)
+# Only questions whose stem names the building, or that the knowledge base ties to it, are listed. Everything else is a gap (see GAPS.md).
+Domus Aurea | 2007, 2012, 2016
+Sant'Ivo alla Sapienza | 2009
+Santa Maria delle Grazie（Tribuna） | 2009
+Casa del Fascio | 2013
+Hagia Sophia | 2013
+Palace of Versailles | 2014
+Siena Cathedral | 2016
+Royal Palace of Caserta | 2017
+Villa Capra（La Rotonda） | 2018
+Tassel House | 2018
+Guggenheim Museum Bilbao | 2018, 2019
+Pisa Cathedral 與斜塔 | 2019
+Tempio Malatestiano | 2019

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { filterPlaces, matchesQuery, norm } from '../src/lib/filter';
 import { boundsOf, coordKey, toFeatureCollection } from '../src/lib/geo';
 import { formatHash, parseHash } from '../src/lib/hash';
+import { buildGroups, matchesTags } from '../src/lib/tags';
 import type { Era, Place } from '../src/lib/types';
 
 const eras: Era[] = [
@@ -10,9 +11,11 @@ const eras: Era[] = [
   { id: 'modern', label: 'Modern', color: '#6B3FA0' },
 ];
 
+const groups = buildGroups(eras);
+
 const mk = (over: Partial<Place>): Place => ({
   id: 'x', name: 'X', loc: 'Rome', year: '—', who: '—', note: '', style: 'Ancient Rome',
-  styleId: '6.2', era: 'ancient', points: [], ...over,
+  styleId: '6.2', era: 'ancient', country: 'Italy', exams: [], points: [], ...over,
 });
 
 const pt = (id: string, lng: number, lat: number, sub = '') => ({
@@ -21,9 +24,9 @@ const pt = (id: string, lng: number, lat: number, sub = '') => ({
 
 const places: Place[] = [
   mk({ id: 'pantheon-rome', name: 'Pantheon', points: [pt('a', 12.4768, 41.8986)] }),
-  mk({ id: 'pantheon-paris', name: 'Panthéon', loc: 'Paris', era: 'ancient', note: 'French version of the Pantheon', points: [pt('b', 2.3458, 48.846)] }),
-  mk({ id: 'maxxi', name: 'MAXXI', era: 'modern', who: 'Zaha Hadid', points: [pt('c', 12.466, 41.929)] }),
-  mk({ id: 'salk', name: 'Salk Institute', loc: '', era: 'modern', who: 'Louis Kahn', points: [] }),
+  mk({ id: 'pantheon-paris', name: 'Panthéon', loc: 'Paris', era: 'ancient', country: 'France', exams: [2016], note: 'French version of the Pantheon', points: [pt('b', 2.3458, 48.846)] }),
+  mk({ id: 'maxxi', name: 'MAXXI', era: 'modern', exams: [2016, 2018], who: 'Zaha Hadid', points: [pt('c', 12.466, 41.929)] }),
+  mk({ id: 'salk', name: 'Salk Institute', loc: '', era: 'modern', country: '', who: 'Louis Kahn', points: [] }),
 ];
 
 test('norm strips diacritics and lower-cases', () => {
@@ -43,14 +46,25 @@ test('matchesQuery: diacritics are ignored', () => {
 });
 
 test('filterPlaces: era, located-only and search can be combined', () => {
-  const all = filterPlaces(places, { eras: new Set(), q: '', onlyLocated: false });
+  const all = filterPlaces(places, { tags: new Set(), q: '', onlyLocated: false }, groups);
   assert.equal(all.length, 4);
-  const modern = filterPlaces(places, { eras: new Set(['modern'] as const), q: '', onlyLocated: false });
+  const modern = filterPlaces(places, { tags: new Set(['s:modern']), q: '', onlyLocated: false }, groups);
   assert.deepEqual(modern.map((p) => p.id), ['maxxi', 'salk']);
-  const modernLoc = filterPlaces(places, { eras: new Set(['modern'] as const), q: '', onlyLocated: true });
+  const modernLoc = filterPlaces(places, { tags: new Set(['s:modern']), q: '', onlyLocated: true }, groups);
   assert.deepEqual(modernLoc.map((p) => p.id), ['maxxi']);
-  const q = filterPlaces(places, { eras: new Set(), q: 'kahn', onlyLocated: false });
+  const q = filterPlaces(places, { tags: new Set(), q: 'kahn', onlyLocated: false }, groups);
   assert.deepEqual(q.map((p) => p.id), ['salk']);
+});
+
+test('tags: several checked tags give the intersection; tags without a match give nothing', () => {
+  const run = (...t: string[]) => filterPlaces(places, { tags: new Set(t), q: '', onlyLocated: false }, groups).map((p) => p.id);
+  assert.deepEqual(run('y:2016'), ['pantheon-paris', 'maxxi']);
+  assert.deepEqual(run('y:2016', 'c:France'), ['pantheon-paris']);
+  assert.deepEqual(run('y:2016', 'y:2018'), ['maxxi']);
+  assert.deepEqual(run('y:2016', 'c:France', 's:modern'), []);
+  assert.deepEqual(run('c:Others'), []);
+  assert.ok(matchesTags(places[0]!, new Set(), groups));
+  assert.equal(groups.map((g) => g.tags.length).join(','), '13,6,2');
 });
 
 test('toFeatureCollection: one Feature per point, coordinates are [lng, lat], colour follows the era', () => {
@@ -74,10 +88,9 @@ test('coordKey: points within about 10 m count as the same', () => {
   assert.equal(coordKey(12.45333, 41.90222), coordKey(12.453331, 41.902219));
 });
 
-test('hash: round-trips and ignores unknown eras', () => {
-  const s = { p: 'maxxi', e: ['ancient', 'modern'] as const, q: 'zaha hadid', loc: true };
-  const h = formatHash({ ...s, e: [...s.e] });
-  assert.deepEqual(parseHash(h), { ...s, e: [...s.e] });
-  assert.deepEqual(parseHash('#e=ancient,nope').e, ['ancient']);
-  assert.equal(formatHash({ p: '', e: [], q: '', loc: false }), '');
+test('hash: round-trips and ignores unknown tags', () => {
+  const s = { p: 'maxxi', t: ['y:2016', 'c:United Kingdom', 's:modern'], q: 'zaha hadid', loc: true };
+  assert.deepEqual(parseHash(formatHash(s)), s);
+  assert.deepEqual(parseHash('#t=y:2016,nope,c:Italy').t, ['y:2016', 'c:Italy']);
+  assert.equal(formatHash({ p: '', t: [], q: '', loc: false }), '');
 });

@@ -31,6 +31,10 @@ export interface Place {
   note: string;
   /** One- or two-sentence summary shown in the detail panel (data/entries.txt) */
   summary: string;
+  /** Country tag (data/countries.txt); empty when the handout gives no location */
+  country: string;
+  /** Past-exam years in which this building was a topic (data/exams.txt) */
+  exams: number[];
   style: string;
   styleId: string;
   era: EraId;
@@ -53,7 +57,8 @@ export interface Unlocated {
 }
 
 export interface Filters {
-  eras: ReadonlySet<EraId>;
+  /** Checked tag ids (see tags.ts); a building must match every one (intersection) */
+  tags: ReadonlySet<string>;
   q: string;
   onlyLocated: boolean;
 }

@@ -5,18 +5,20 @@ import { dataset, unlocated } from '../lib/data';
 import { filterPlaces } from '../lib/filter';
 import { HOME_BOUNDS, boundsOf, toFeatureCollection } from '../lib/geo';
 import { formatHash, parseHash } from '../lib/hash';
-import type { EraId, Place, Point } from '../lib/types';
+import { buildGroups, matchesTags } from '../lib/tags';
+import type { Place, Point } from '../lib/types';
 import MapView, { type FocusTarget } from './MapView';
 import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf } from './Panels';
 
 type Tab = 'map' | 'list';
 
+const groups = buildGroups(dataset.eras);
 const placesById = new Map(dataset.places.map((p) => [p.id, p]));
 
 export default function MapApp() {
   const [init] = useState(() => parseHash(typeof window === 'undefined' ? '' : window.location.hash));
   const [sideOpen, setSideOpen] = useState(true);
-  const [eras, setEras] = useState<ReadonlySet<EraId>>(() => new Set(init.e));
+  const [tags, setTags] = useState<ReadonlySet<string>>(() => new Set(init.t));
   const [q, setQ] = useState(init.q);
   const [onlyLocated, setOnlyLocated] = useState(init.loc);
   const [selectedId, setSelectedId] = useState(placesById.has(init.p) ? init.p : '');
@@ -25,30 +27,44 @@ export default function MapApp() {
   const [focus, setFocus] = useState<FocusTarget | null>(null);
   const nonce = useRef(0);
 
-  const visible = useMemo(() => filterPlaces(dataset.places, { eras, q, onlyLocated }), [eras, q, onlyLocated]);
+  const visible = useMemo(() => filterPlaces(dataset.places, { tags, q, onlyLocated }, groups), [tags, q, onlyLocated]);
   const fc = useMemo(() => toFeatureCollection(visible, dataset.eras), [visible]);
-  const filtersActive = eras.size > 0 || q.trim() !== '' || onlyLocated;
+  const filtersActive = tags.size > 0 || q.trim() !== '' || onlyLocated;
   // With no filter, show a fixed view of Europe; with a filter, zoom to the results (which may include far-away points such as New York or Tokyo)
   const bounds = useMemo(() => (filtersActive ? boundsOf(visible) : HOME_BOUNDS), [filtersActive, visible]);
   const selected: Place | undefined = placesById.get(selectedId);
 
-  const eraCounts = useMemo(() => {
-    const m = new Map<EraId, number>();
-    for (const p of dataset.places) m.set(p.era, (m.get(p.era) ?? 0) + 1);
+  // Count shown on each tag = buildings that match it together with the other checked tags
+  const tagCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const g of groups) for (const t of g.tags) {
+      const next = new Set(tags);
+      next.add(t.id);
+      m.set(t.id, dataset.places.filter((p) => matchesTags(p, next, groups)).length);
+    }
     return m;
+  }, [tags]);
+
+  const toggleTag = useCallback((id: string) => {
+    setTags((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
   }, []);
 
   // URL hash <-> state
   useEffect(() => {
-    const h = formatHash({ p: selectedId, e: [...eras], q, loc: onlyLocated });
+    const h = formatHash({ p: selectedId, t: [...tags], q, loc: onlyLocated });
     const url = `${window.location.pathname}${window.location.search}${h}`;
     window.history.replaceState(null, '', url);
-  }, [selectedId, eras, q, onlyLocated]);
+  }, [selectedId, tags, q, onlyLocated]);
 
   useEffect(() => {
     const onHash = () => {
       const s = parseHash(window.location.hash);
-      setEras(new Set(s.e));
+      setTags(new Set(s.t));
       setQ(s.q);
       setOnlyLocated(s.loc);
       setSelectedId(placesById.has(s.p) ? s.p : '');
@@ -140,32 +156,28 @@ export default function MapApp() {
             placeholder="Search building, place, architect, keyword"
             aria-label="Search"
           />
-          {eras.size === 1 ? (
-            <div className="era-focus" role="group" aria-label="Style">
-              <button type="button" className="era-back" aria-label="Back to all styles" onClick={() => setEras(new Set())}>←</button>
-              {dataset.eras.filter((e) => eras.has(e.id)).map((e) => (
-                <span key={e.id} className="chip era-current" aria-pressed="true" style={{ ['--c' as string]: e.color }}>
-                  {e.label}
-                  <small>{eraCounts.get(e.id) ?? 0}</small>
-                </span>
-              ))}
+          {groups.map((g) => (
+            <div key={g.id} className="tag-group" role="group" aria-label={g.label}>
+              <h2 className="tag-title">【{g.label}】</h2>
+              <div className="chips">
+                {g.tags.map((t) => (
+                  <label
+                    key={t.id}
+                    className="chip tag-item"
+                    style={t.color ? { ['--c' as string]: t.color } : undefined}
+                    data-checked={tags.has(t.id)}
+                    data-empty={(tagCounts.get(t.id) ?? 0) === 0 && !tags.has(t.id)}
+                  >
+                    <input type="checkbox" checked={tags.has(t.id)} onChange={() => toggleTag(t.id)} />
+                    <span>{t.label}</span>
+                    <small>{tagCounts.get(t.id) ?? 0}</small>
+                  </label>
+                ))}
+              </div>
             </div>
-          ) : (
-            <div className="chips" role="group" aria-label="Style">
-              {dataset.eras.map((e) => (
-                <button
-                  key={e.id}
-                  type="button"
-                  className="chip era-item"
-                  style={{ ['--c' as string]: e.color }}
-                  aria-pressed={eras.has(e.id)}
-                  onClick={() => setEras(new Set([e.id]))}
-                >
-                  {e.label}
-                  <small>{eraCounts.get(e.id) ?? 0}</small>
-                </button>
-              ))}
-            </div>
+          ))}
+          {tags.size > 0 && (
+            <button type="button" className="clear-tags" onClick={() => setTags(new Set())}>Clear tags ({tags.size})</button>
           )}
           <label className="check">
             <input type="checkbox" checked={onlyLocated} onChange={(e) => setOnlyLocated(e.target.checked)} />

@@ -63,6 +63,9 @@ export function DetailPanel({
           </>
         )}
         <p className="ctx">{blank(place.summary)}</p>
+        {place.exams.length > 0 && (
+          <p className="exam">{place.exams.map((y) => `【${y} TEST-ARCHED】`).join(' ')}</p>
+        )}
       </div>
     </section>
   );

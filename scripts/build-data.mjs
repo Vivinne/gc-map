@@ -162,6 +162,21 @@ function main() {
     r.year = e.span || r.year;
     r.summary = e.summary;
   }
+  const COUNTRIES = ['Italy', 'France', 'Germany', 'United Kingdom', 'United States', 'Others'];
+  const cmap = new Map(dataLines('data/countries.txt').map((l) => l.split('|').map((x) => x.trim())));
+  for (const r of rows) {
+    r.country = r.loc ? cmap.get(r.loc) ?? '' : '';
+    if (r.loc && !COUNTRIES.includes(r.country)) errors.push(`countries.txt: no valid country for location "${r.loc}" (${r.name})`);
+  }
+  const exMap = new Map();
+  for (const l of dataLines('data/exams.txt')) {
+    const [n, ys] = l.split('|').map((x) => x.trim());
+    const yrs = (ys ?? '').split(',').map((x) => Number(x.trim()));
+    if (!yrs.length || yrs.some((y) => !Number.isInteger(y) || y < 2007 || y > 2019)) errors.push(`exams.txt: bad years for ${n}`);
+    exMap.set(n, yrs.sort((a, c) => a - c));
+  }
+  for (const r of rows) r.exams = exMap.get(r.name) ?? [];
+  for (const n of exMap.keys()) if (!rows.some((r) => r.name === n)) errors.push(`exams.txt: name matches no handout row: ${n}`);
   const rowNames = new Set(rows.map((r) => r.name));
   for (const n of entries.keys()) if (!rowNames.has(n)) errors.push(`entries.txt: name matches no handout row: ${n}`);
 
@@ -252,7 +267,7 @@ function main() {
 
   // Assemble
   const places = rows.map((r) => ({
-    id: r.id, name: r.name, loc: r.loc, year: r.year, who: r.who, note: r.note, summary: r.summary ?? '',
+    id: r.id, name: r.name, loc: r.loc, year: r.year, who: r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
     style: r.style.name, styleId: r.style.id, era: r.era,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
   }));
