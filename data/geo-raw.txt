@@ -206,12 +206,12 @@ Hermitage Museum |  | en:Hermitage_Museum | 59°56′26″N 30°18′49″E |
 Capodimonte Museum |  | en:Museo_di_Capodimonte | 40°52′01″N 14°15′02″E | 
 Metropolitan Museum of Art |  | en:Metropolitan_Museum_of_Art | 40°46′46″N 73°57′47″W | 
 Bargello Museum |  | de:Bargello | 43°46′13.3″N 11°15′30.1″E | converted from the page string 43° 46′ 13,3″ N, 11° 15′ 30,1″ O
-Prado Museum |  | url:https://www.latlong.net/place/museo-del-prado-madrid-spain-23210.html | 40.413780,-3.692127 | coordinates taken from latlong.net (Wikipedia pages read show none)
+Prado Museum |  | url:https://www.latlong.net/place/museo-del-prado-madrid-spain-23210.html | 40.413780,-3.692127 | coordinates taken from latlong.net (Wikipedia pages read show none); checked on Google Maps by the project owner
 Robie House |  | en:Robie_House | 41°47′23.4″N 87°35′45.3″W | 
 Glasgow School of Art |  | de:Glasgow_School_of_Art | 55°51′57.7″N 4°15′49.6″W | converted from the page string 55° 51′ 57,7″ N, 4° 15′ 49,6″ W
 Space Needle |  | en:Space_Needle | 47°37′13″N 122°20′57″W | 
 Petronas Twin Towers |  | en:Petronas_Towers | 3°09′28″N 101°42′42″E | 
-Allianz Arena |  | url:https://www.latlong.net/place/allianz-arena-munich-germany-31644.html | 48.218967,11.623746 | coordinates taken from latlong.net (Wikipedia pages read show none)
+Allianz Arena |  | url:https://www.latlong.net/place/allianz-arena-munich-germany-31644.html | 48.218967,11.623746 | coordinates taken from latlong.net (Wikipedia pages read show none); checked on Google Maps by the project owner
 Palais Stoclet |  | en:Stoclet_Palace | 50°50′07″N 4°24′58″E | 
 Glass House |  | en:Glass_House_(New_Canaan,_Connecticut) | 41°08′32.7″N 73°31′45.8″W | 
 Louvre Museum |  | de:Louvre | 48°51′45″N 2°20′11″E | converted from the page string 48° 51′ 45″ N, 2° 20′ 11″ O
@@ -219,14 +219,14 @@ Weissenhof Double House |  | en:Weissenhof_Estate | 48°48.03′N 9°10.66′E |
 Marqués de Riscal Hotel |  | en:Marqu%C3%A9s_de_Riscal_Hotel | 42°30′42″N 2°37′05″W | 
 Sainte Marie de La Tourette |  | en:Sainte_Marie_de_La_Tourette | 45°49′10″N 4°37′21″E | 
 Van Gogh Museum |  | en:Van_Gogh_Museum | 52°21′30″N 4°52′52″E | 
-Dutch Pavilion |  | url:https://aroundus.com/p/8222083-dutch-pavilion | 45.42890,12.35860 | coordinates taken from aroundus.com (Wikipedia page read shows none)
-Villa Mairea |  | url:https://aroundus.com/p/11461113-villa-mairea | 61.59739,21.87460 | coordinates taken from aroundus.com (Wikipedia page read shows none)
+Dutch Pavilion |  | url:https://aroundus.com/p/8222083-dutch-pavilion | 45.42890,12.35860 | coordinates taken from aroundus.com (Wikipedia page read shows none); checked on Google Maps by the project owner
+Villa Mairea |  | url:https://aroundus.com/p/11461113-villa-mairea | 61.59739,21.87460 | coordinates taken from aroundus.com (Wikipedia page read shows none); checked on Google Maps by the project owner
 Viipuri Library |  | en:Vyborg_Library | 60°42′33″N 28°44′49″E | 
 Kaufmann Desert House |  | en:Kaufmann_Desert_House | 33°50′42″N 116°33′10″W | 
 Millard House |  | de:Millard_House | 34°9′19″N 118°9′39″W | converted from the page string 34° 9′ 19″ N, 118° 9′ 39″ W
 Fagus Factory |  | en:Fagus_Factory | 51°59′1″N 9°48′40″E | 
 Sommerfeld House |  | de:Haus_Sommerfeld | 52°27′0.6″N 13°18′9″E | original site (house destroyed); converted from the page string 52° 27′ 0,6″ N, 13° 18′ 9″ O
-Church of San Bernardino |  | url:https://www.komoot.com/highlight/4266733 | 43.722465,12.648267 | coordinates taken from Komoot (highlight "Church of San Bernardino degli Zoccolanti", from its map link)
+Church of San Bernardino |  | url:https://www.komoot.com/highlight/4266733 | 43.722465,12.648267 | coordinates taken from Komoot (highlight "Church of San Bernardino degli Zoccolanti", from its map link); checked on Google Maps by the project owner
 Santa Croce |  | en:Santa_Croce,_Florence | 43°46′6.3″N 11°15′45.8″E | 
 Scrovegni Chapel |  | en:Scrovegni_Chapel | 45°24′43″N 11°52′46″E | 
 Tate Modern |  | de:Tate_Modern | 51°30′28.5″N 0°5′57.7″W | converted from the page string 51° 30′ 28,5″ N, 0° 5′ 57,7″ W
