@@ -1,4 +1,4 @@
-# handout location | country tag (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location get no country. Vatican is listed as Others (a separate state).
+# handout location | country tag (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location are keyed by building name instead, using the 'Supplementary location' note in geo-raw.txt. Vatican is listed under Italy (user decision).
 Agrigento（西西里） | Italy
 Athens（希臘） | Others
 Rome | Italy
@@ -26,7 +26,7 @@ Siena | Italy
 Assisi | Italy
 Rimini | Italy
 Mantua | Italy
-Vatican | Others
+Vatican | Italy
 Fontainebleau（法） | France
 Vicenza | Italy
 Veneto | Italy
@@ -59,3 +59,10 @@ Tokyo | Others
 Bilbao（西） | Others
 Verona | Italy
 Abu Dhabi | Others
+Unité d'Habitation | France
+Tomba Brion | Italy
+Vitra Fire Station | Germany
+Phaeno Science Center | Germany
+Wexner Center | United States
+Salk Institute | United States
+Vanna Venturi House | United States

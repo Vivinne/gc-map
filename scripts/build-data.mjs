@@ -165,8 +165,8 @@ function main() {
   const COUNTRIES = ['Italy', 'France', 'Germany', 'United Kingdom', 'United States', 'Others'];
   const cmap = new Map(dataLines('data/countries.txt').map((l) => l.split('|').map((x) => x.trim())));
   for (const r of rows) {
-    r.country = r.loc ? cmap.get(r.loc) ?? '' : '';
-    if (r.loc && !COUNTRIES.includes(r.country)) errors.push(`countries.txt: no valid country for location "${r.loc}" (${r.name})`);
+    r.country = cmap.get(r.loc || r.name) ?? '';
+    if (!COUNTRIES.includes(r.country)) errors.push(`countries.txt: no valid country for "${r.loc || r.name}" (${r.name})`);
   }
   const exMap = new Map();
   for (const l of dataLines('data/exams.txt')) {

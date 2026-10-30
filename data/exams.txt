@@ -1,15 +1,25 @@
 # handout building name | years in which the building itself was a past-exam topic (comma separated, 2007-2019)
-# Only questions whose stem names the building, or that the knowledge base ties to it, are listed. Everything else is a gap (see GAPS.md).
+# Sources: the question stem, the answer, an answer option, or the picture subject recorded in the knowledge base. Pictures and options that were not stored cannot be assigned (see README, Known gaps).
+Cappella della Sindone | 2016
+Casa del Fascio | 2013
 Domus Aurea | 2007, 2012, 2016
+Generali Tower（CityLife） | 2017
+Guggenheim Museum Bilbao | 2007, 2018, 2019
+Guggenheim Museum New York | 2010
+Hagia Sophia | 2013
+Jewish Museum Berlin | 2007
+MAXXI | 2017
+Musée d'Orsay | 2007
+Paimio Sanatorium | 2010
+Palace of Versailles | 2014
+Palladio 的別墅群 | 2008
+Pisa Cathedral 與斜塔 | 2019
+Royal Palace of Caserta | 2017
 Sant'Ivo alla Sapienza | 2009
 Santa Maria delle Grazie（Tribuna） | 2009
-Casa del Fascio | 2013
-Hagia Sophia | 2013
-Palace of Versailles | 2014
+Schröder House | 2010
 Siena Cathedral | 2016
-Royal Palace of Caserta | 2017
-Villa Capra（La Rotonda） | 2018
 Tassel House | 2018
-Guggenheim Museum Bilbao | 2018, 2019
-Pisa Cathedral 與斜塔 | 2019
 Tempio Malatestiano | 2019
+Villa Capra（La Rotonda） | 2018
+Villa Savoye | 2010

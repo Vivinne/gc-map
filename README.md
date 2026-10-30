@@ -34,7 +34,7 @@ npm run site        # writes site/ (index.html, app.js, app.css, README.txt)
 | `data/geo-estimate.csv` | Memory estimates: `name,sub,lat,lng,conf,note`. No source, unverified; `conf` is h / m / l (about 300 m / 1 km / several km or more). Fills only points that `geo-raw.txt` lacks; rows with no handout location must not be estimated |
 | `data/entries.txt` | One line per handout row: `name`, built span, summary (vertical-bar separated). The span replaces the handout year in the display; the summary is shown in the detail panel. A missing row fails the build |
 | `data/architects.txt` | `handout value | full name`: the architect line in the detail panel shows the full name; unlisted values are shown as written |
-| `data/countries.txt` | `handout location | country tag` (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location get no country. Vatican is listed under Others (a separate state) |
+| `data/countries.txt` | `handout location | country tag` (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location are keyed by building name, using the supplementary location in `geo-raw.txt`. Vatican is listed under Italy |
 | `data/exams.txt` | `building name | years` (2007–2019): years in which the building itself was a past-exam topic. Shown as a grey italic last line, e.g. `【2016 TEST-ARCHED】`; only years are published, never question or knowledge-point IDs. Buildings not listed have no line |
 | `data/id-aliases.txt` | Fixed ids (`name | id`) for names that would otherwise get a hash-suffixed slug |
 | `data/leak-patterns.txt` | One `/regex/flags` per line: markers that must never appear in displayed fields (shared by the build and the tests) |
@@ -81,4 +81,10 @@ npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (
 The sidebar has three groups of checkable tags: **Previous Years** (2007–2019), **Country** and **Styles** (the five style groups). Checking several tags shows the intersection (a building must match every checked tag, also within one group). The number on a tag is how many buildings would remain if it were added to the checked ones; the checked tags are stored in the URL hash (`t=y:2016,c:Italy`).
 
 ### Known gaps in `data/exams.txt`
-Only 13 buildings are tagged. Past-exam questions that show an unnamed picture or ask about a group of works were not assigned to a building: 2007 Q34, 2008 Q38 (Palladio residences), 2010 Q45 and 2016 Q32 (Le Corbusier works), 2012 Q39 (Bramante works in Rome), 2014 Q28, 2015 Q37, 2017 Q34/Q37/Q38/Q46. The 2007 and 2012 "grotesque decoration" questions are assigned to Domus Aurea through the knowledge base, and 2013 Q31 to Casa del Fascio, but the question stems do not name the building.
+23 buildings carry exam years. They come from what the knowledge base stores for each 2007–2019 question: the stem, the answer, answer options that name a handout building, or the subject of a picture the knowledge base records. The knowledge base keeps stems truncated, options for only some questions, and no pictures, so a building that appeared only in an unstored option or picture is not tagged. Not assignable from the stored data:
+- Picture questions with no recorded subject: 2013 Q41 (church by Palladio), 2014 Q28, 2015 Q37, 2016 Q32 (Le Corbusier work), 2016 Q33, 2017 Q34/Q37/Q40, 2017 Q38 (museum by Wright, probably Guggenheim New York, not confirmed), 2017 Q46 (Robie House, not a handout row).
+- Option lists not stored: 2008 Q38 beyond Villa Foscari, 2010 Q41/Q48, 2012 Q36/Q39 (Bramante works in Rome), 2007 Q35.
+- 2011 and 2015 have no tagged building.
+- Assigned through the knowledge base without the building named in the stem: 2007 and 2012 "grotesque decoration" (Domus Aurea), 2013 Q31 (Casa del Fascio).
+- Named in options only: 2008 (Palladio villas, via Villa Foscari), 2010 (Villa Savoye, Schröder House, Paimio Sanatorium, Guggenheim Museum New York), 2007 (Musée d'Orsay, Guggenheim Museum Bilbao, Jewish Museum Berlin), 2017 (MAXXI and the Milan "twisted" tower, via the Zaha Hadid question).
+Complete coverage needs the original exam papers.
