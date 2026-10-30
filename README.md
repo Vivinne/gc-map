@@ -61,9 +61,9 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 ## Tests
 
 ```bash
-npm test     # 17 unit tests: filtering, geometry, hash, parsing, data validation
+npm test     # 23 unit tests: filtering, geometry, hash, parsing, data validation
 npm run typecheck
-npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (19 checks)
+npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (23 checks)
 ```
 
 `e2e` needs `esbuild` and `playwright` (listed as devDependencies); the first run needs `npx playwright install chromium`.
@@ -72,14 +72,18 @@ npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (
 
 - `npm install`, `next dev` and `next build` have not been run in a real environment.
 - Static build: whether `maplibre-gl@5.6.0` files exist on jsDelivr, and whether the basemap loads when `index.html` is opened directly from `file://`, are unverified (the fallback is `@5`).
-- The real MapLibre map has not been run: tile loading and click hit-testing (markers are not clustered; overlapping markers are resolved by the chooser list).
+- The real MapLibre map has not been run: tile loading and click hit-testing, cluster rendering (numbered circles, cluster text font "Noto Sans Bold" from the OpenFreeMap glyph server) and the cluster-click zoom (all checked only against a fake MapLibre; `npm run e2e` stubs the map entirely).
 - `tsc --noEmit` has only been run with a shim in place of `@types/react`; rerun `npm run typecheck` after `npm install`.
 - The coordinates were copied from source-page text summaries and have not been spot-checked by a human; Polimi Campus Nord is a station coordinate, not the campus itself.
 - All coordinates are sourced (Wikipedia or a named site); 5 of them were also checked on Google Maps by the project owner. The remaining non-Google-checked coordinates are "to be verified".
 
 ## Tags
 
-The sidebar has three groups of checkable tags: **Previous Years** (2007–2019), **Country** and **Styles** (Ancient, Medieval, Renaissance, Baroque, 19th Century, Modern, Beaux-Arts and Others; Others holds non-building items). A building whose source states several styles counts under each of them (`data/extra-styles.txt`). Checking several tags shows the intersection (a building must match every checked tag, also within one group). The number on a tag is how many buildings would remain if it were added to the checked ones; the checked tags are stored in the URL hash (`t=y:2016,c:Italy`).
+The sidebar has three group buttons; pressing one shows its sub tags (several groups can be open at once; a collapsed group shows how many of its tags are checked). The groups hold checkable tags: **Previous Years** (2007–2019), **Country** and **Styles** (Ancient, Medieval, Renaissance, Baroque, 19th Century, Modern, Beaux-Arts and Others; Others holds non-building items). A building whose source states several styles counts under each of them (`data/extra-styles.txt`). Checking several tags shows the intersection (a building must match every checked tag, also within one group). The number on a tag is how many buildings would remain if it were added to the checked ones; the checked tags are stored in the URL hash (`t=y:2016,c:Italy`); which groups are open is not stored.
+
+## Map clusters
+
+At the Full map zoom or further out (the Full map button's zoom, which depends on the window size), markers that overlap are merged into a numbered circle; the number is the count of markers (a building with several points counts once per point). Clicking a number zooms to the bounds of all its markers, deeper than the clustered range, so they are drawn one by one. If the markers share exactly one coordinate, the map goes to its deepest zoom and the chooser list opens. Above the clustered range every marker is drawn on its own.
 
 ### Known gaps in `data/exams.txt`
 70 buildings carry exam years. They come from what the knowledge base stores for each 2007–2019 question: the stem, the answer, answer options that name a handout building, or the subject of a picture the knowledge base records. The knowledge base keeps stems truncated, options for only some questions, and no pictures, so a building that appeared only in an unstored option or picture is not tagged. Not assignable from the stored data:

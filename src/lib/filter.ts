@@ -23,7 +23,6 @@ export function filterPlaces(places: readonly Place[], f: Filters, groups: reado
   return places.filter(
     (p) =>
       matchesTags(p, f.tags, groups) &&
-      (!f.onlyLocated || p.points.length > 0) &&
       matchesQuery(p, f.q),
   );
 }

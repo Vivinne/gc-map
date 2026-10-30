@@ -13,6 +13,8 @@ import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf } from './Panels'
 type Tab = 'map' | 'list';
 
 const groups = buildGroups(dataset.eras);
+const ALL_BOUNDS = boundsOf(dataset.places);
+const FULL_VIEW = ALL_BOUNDS ? { all: ALL_BOUNDS, ref: HOME_BOUNDS } : null;
 const placesById = new Map(dataset.places.map((p) => [p.id, p]));
 
 export default function MapApp() {
@@ -20,16 +22,16 @@ export default function MapApp() {
   const [sideOpen, setSideOpen] = useState(true);
   const [tags, setTags] = useState<ReadonlySet<string>>(() => new Set(init.t));
   const [q, setQ] = useState(init.q);
-  const [onlyLocated, setOnlyLocated] = useState(init.loc);
   const [selectedId, setSelectedId] = useState(placesById.has(init.p) ? init.p : '');
+  const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(new Set());
   const [choices, setChoices] = useState<string[]>([]);
   const [tab, setTab] = useState<Tab>('map');
   const [focus, setFocus] = useState<FocusTarget | null>(null);
   const nonce = useRef(0);
 
-  const visible = useMemo(() => filterPlaces(dataset.places, { tags, q, onlyLocated }, groups), [tags, q, onlyLocated]);
+  const visible = useMemo(() => filterPlaces(dataset.places, { tags, q }, groups), [tags, q]);
   const fc = useMemo(() => toFeatureCollection(visible, dataset.eras), [visible]);
-  const filtersActive = tags.size > 0 || q.trim() !== '' || onlyLocated;
+  const filtersActive = tags.size > 0 || q.trim() !== '';
   // With no filter, show a fixed view of Europe; with a filter, zoom to the results (which may include far-away points such as New York or Tokyo)
   const bounds = useMemo(() => (filtersActive ? boundsOf(visible) : HOME_BOUNDS), [filtersActive, visible]);
   const selected: Place | undefined = placesById.get(selectedId);
@@ -45,6 +47,15 @@ export default function MapApp() {
     return m;
   }, [tags]);
 
+  const toggleGroup = useCallback((id: string) => {
+    setOpenGroups((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  }, []);
+
   const toggleTag = useCallback((id: string) => {
     setTags((prev) => {
       const n = new Set(prev);
@@ -56,17 +67,16 @@ export default function MapApp() {
 
   // URL hash <-> state
   useEffect(() => {
-    const h = formatHash({ p: selectedId, t: [...tags], q, loc: onlyLocated });
+    const h = formatHash({ p: selectedId, t: [...tags], q });
     const url = `${window.location.pathname}${window.location.search}${h}`;
     window.history.replaceState(null, '', url);
-  }, [selectedId, tags, q, onlyLocated]);
+  }, [selectedId, tags, q]);
 
   useEffect(() => {
     const onHash = () => {
       const s = parseHash(window.location.hash);
       setTags(new Set(s.t));
       setQ(s.q);
-      setOnlyLocated(s.loc);
       setSelectedId(placesById.has(s.p) ? s.p : '');
     };
     window.addEventListener('hashchange', onHash);
@@ -156,33 +166,45 @@ export default function MapApp() {
             placeholder="Search building, place, architect, keyword"
             aria-label="Search"
           />
-          {groups.map((g) => (
-            <div key={g.id} className="tag-group" role="group" aria-label={g.label}>
-              <h2 className="tag-title">【{g.label}】</h2>
-              <div className="chips">
-                {g.tags.map((t) => (
-                  <label
-                    key={t.id}
-                    className="chip tag-item"
-                    style={t.color ? { ['--c' as string]: t.color } : undefined}
-                    data-checked={tags.has(t.id)}
-                    data-empty={(tagCounts.get(t.id) ?? 0) === 0 && !tags.has(t.id)}
-                  >
-                    <input type="checkbox" checked={tags.has(t.id)} onChange={() => toggleTag(t.id)} />
-                    <span>{t.label}</span>
-                    <small>{tagCounts.get(t.id) ?? 0}</small>
-                  </label>
-                ))}
+          {groups.map((g) => {
+            const isOpen = openGroups.has(g.id);
+            const nChecked = g.tags.filter((t) => tags.has(t.id)).length;
+            return (
+              <div key={g.id} className="tag-group" role="group" aria-label={g.label}>
+                <button
+                  type="button"
+                  className="tag-toggle"
+                  aria-expanded={isOpen}
+                  aria-controls={`chips-${g.id}`}
+                  data-open={isOpen}
+                  onClick={() => toggleGroup(g.id)}
+                >
+                  <span>【{g.label}】</span>
+                  {nChecked > 0 && <small data-testid={`checked-${g.id}`}>{nChecked}</small>}
+                </button>
+                {isOpen && (
+                  <div className="chips" id={`chips-${g.id}`}>
+                    {g.tags.map((t) => (
+                      <label
+                        key={t.id}
+                        className="chip tag-item"
+                        style={t.color ? { ['--c' as string]: t.color } : undefined}
+                        data-checked={tags.has(t.id)}
+                        data-empty={(tagCounts.get(t.id) ?? 0) === 0 && !tags.has(t.id)}
+                      >
+                        <input type="checkbox" checked={tags.has(t.id)} onChange={() => toggleTag(t.id)} />
+                        <span>{t.label}</span>
+                        <small>{tagCounts.get(t.id) ?? 0}</small>
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
           {tags.size > 0 && (
             <button type="button" className="clear-tags" onClick={() => setTags(new Set())}>Clear tags ({tags.size})</button>
           )}
-          <label className="check">
-            <input type="checkbox" checked={onlyLocated} onChange={(e) => setOnlyLocated(e.target.checked)} />
-            Located only
-          </label>
           <p className="count" data-testid="count">
             Showing {visible.length} / {dataset.places.length} entries | {fc.features.length} map markers
           </p>
@@ -203,7 +225,7 @@ export default function MapApp() {
 
       <main className="stage">
         <button type="button" className="fullmap" onClick={showFullMap}>Full map</button>
-        <MapView fc={fc} selectedPid={selectedId} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
+        <MapView fc={fc} selectedPid={selectedId} fullView={FULL_VIEW} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
         {selected && (
           <DetailPanel
             place={selected}

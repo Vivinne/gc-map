@@ -39,6 +39,19 @@ assert.equal(await page.locator('.list').count(), 0);
 assert.equal(await page.locator('.marker').count(), totalPts);
 ok('The building list is hidden while only the style tags are shown; marker count is correct');
 
+// Tag groups: three buttons; the sub tags appear only after a press
+assert.equal(await page.locator('.tag-toggle').count(), 3);
+assert.deepEqual(await page.locator('.tag-toggle').allTextContents(), ['【Previous Years】', '【Country】', '【Styles】']);
+assert.equal(await page.locator('.tag-item').count(), 0);
+for (const b of await page.locator('.tag-toggle').all()) assert.equal(await b.getAttribute('aria-expanded'), 'false');
+await page.click('.tag-toggle:has-text("Styles")');
+assert.equal(await page.locator('.tag-item').count(), 8);
+assert.equal(await page.locator('.tag-toggle:has-text("Styles")').getAttribute('aria-expanded'), 'true');
+await page.click('.tag-toggle:has-text("Country")');
+await page.click('.tag-toggle:has-text("Previous Years")');
+assert.equal(await page.locator('.tag-item').count(), 13 + 6 + 8);
+ok('Three group buttons; sub tags show only after a press, several groups can be open at once');
+
 // View: no filter = Europe; with a filter = zoom to the results
 const home = await page.evaluate(() => window.__map.bounds);
 assert.deepEqual(home, [[-8, 36], [29.5, 55]]);
@@ -62,12 +75,12 @@ assert.equal(await page.locator('.list').count(), 0);
 ok('Clearing the filter restores all entries');
 
 // Tag groups: titles, checkable, intersection
-const titles = await page.locator('.tag-title').allTextContents();
+const titles = (await page.locator('.tag-toggle span').allTextContents());
 assert.deepEqual(titles, ['【Previous Years】', '【Country】', '【Styles】']);
 await page.click('.tag-item:has-text("2018")');
 const y18 = data.places.filter((p) => p.exams.includes(2018));
 assert.equal(await page.locator('.list .item').count(), y18.length);
-await page.click('.tag-group:has(.tag-title:has-text("Country")) .tag-item:has-text("Others")');
+await page.click('.tag-group:has(.tag-toggle:has-text("Country")) .tag-item:has-text("Others")');
 const y18o = y18.filter((p) => p.country === 'Others');
 assert.equal(await page.locator('.list .item').count(), y18o.length);
 assert.ok(y18o.length > 0 && y18o.length < y18.length);
@@ -114,13 +127,6 @@ await page.fill('.search', 'zzzzzz');
 assert.equal(await page.locator('.empty').count(), 1);
 ok('No results shows the empty state');
 await page.fill('.search', '');
-
-// Located only
-await page.check('.check input');
-const located = data.places.filter((p) => p.points.length).length;
-assert.equal(await page.locator('.list .item').count(), located);
-await page.uncheck('.check input');
-ok(`Located only -> ${located} entries`);
 
 // Select -> detail
 await page.fill('.search', 'Colosseum');
@@ -228,13 +234,16 @@ ok('No injected nodes');
 
 // URL restore
 const p2 = await newPage({ width: 1280, height: 800 });
-await p2.goto(page_url + '#p=maxxi-rome&t=s:modern&q=hadid&loc=1');
+await p2.goto(page_url + '#p=maxxi-rome&t=s:modern&q=hadid');
 await p2.waitForSelector('[data-testid=detail]');
 assert.equal((await p2.textContent('[data-testid=detail] h2')).trim(), 'MAXXI');
+// Groups start collapsed; the checked count shows on the button and opening it shows the checked tag
+assert.equal(await p2.locator('.tag-item').count(), 0);
+assert.equal((await p2.textContent('[data-testid=checked-styles]')).trim(), '1');
+await p2.click('.tag-toggle:has-text("Styles")');
 assert.equal(await p2.locator('.tag-item[data-checked=true]').textContent().then((t) => /Modern/.test(t)), true);
 assert.equal(await p2.inputValue('.search'), 'hadid');
-assert.equal(await p2.isChecked('.check input'), true);
-ok('URL hash restores selection / era / search / located-only');
+ok('URL hash restores selection / era / search; a collapsed group shows its checked count');
 await p2.close();
 
 // ---------- Mobile ----------

@@ -6,6 +6,7 @@ import { coordKey } from '../../src/lib/geo';
 
 interface Props {
   fc: PointCollection;
+  fullView?: unknown;
   selectedPid: string;
   bounds: [[number, number], [number, number]] | null;
   focus: unknown;

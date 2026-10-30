@@ -47,3 +47,31 @@ export function boundsOf(places: readonly Place[]): [[number, number], [number, 
 export function coordKey(lng: number, lat: number): string {
   return `${lng.toFixed(4)},${lat.toFixed(4)}`;
 }
+
+export type LngLatBounds = [[number, number], [number, number]];
+
+/** [[west, south], [east, north]] of a coordinate list; null when empty */
+export function boundsOfCoords(coords: readonly (readonly [number, number])[]): LngLatBounds | null {
+  let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
+  for (const [lng, lat] of coords) {
+    w = Math.min(w, lng);
+    e = Math.max(e, lng);
+    s = Math.min(s, lat);
+    n = Math.max(n, lat);
+  }
+  return Number.isFinite(w) ? [[w, s], [e, n]] : null;
+}
+
+/** About 1 m: a box this small cannot be separated by zooming, so the chooser list has to take over */
+export const SAME_SPOT_DEG = 1e-5;
+export const SAME_SPOT_ZOOM = 18;
+
+export function isSameSpot(b: LngLatBounds): boolean {
+  return b[1][0] - b[0][0] < SAME_SPOT_DEG && b[1][1] - b[0][1] < SAME_SPOT_DEG;
+}
+
+/** Clusters exist only at or below this zoom; the zoom after a cluster click must be above it so the points are drawn one by one */
+export const CLUSTER_ZOOM_MARGIN = 0.5;
+export function clusterClickZoom(fitZoom: number, clusterTopZoom: number): number {
+  return Math.max(fitZoom, clusterTopZoom + CLUSTER_ZOOM_MARGIN);
+}

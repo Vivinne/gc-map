@@ -62,5 +62,4 @@ export interface Filters {
   /** Checked tag ids (see tags.ts); a building must match every one (intersection) */
   tags: ReadonlySet<string>;
   q: string;
-  onlyLocated: boolean;
 }

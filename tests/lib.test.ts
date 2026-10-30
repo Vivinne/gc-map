@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { filterPlaces, matchesQuery, norm } from '../src/lib/filter';
-import { boundsOf, coordKey, toFeatureCollection } from '../src/lib/geo';
+import { SAME_SPOT_ZOOM, boundsOf, boundsOfCoords, clusterClickZoom, coordKey, isSameSpot, toFeatureCollection } from '../src/lib/geo';
 import { formatHash, parseHash } from '../src/lib/hash';
 import { buildGroups, matchesTags } from '../src/lib/tags';
 import type { Era, Place } from '../src/lib/types';
@@ -49,19 +49,17 @@ test('matchesQuery: diacritics are ignored', () => {
   assert.ok(matchesQuery(places[0]!, 'panthéon'));
 });
 
-test('filterPlaces: era, located-only and search can be combined', () => {
-  const all = filterPlaces(places, { tags: new Set(), q: '', onlyLocated: false }, groups);
+test('filterPlaces: era and search can be combined', () => {
+  const all = filterPlaces(places, { tags: new Set(), q: '' }, groups);
   assert.equal(all.length, 4);
-  const modern = filterPlaces(places, { tags: new Set(['s:modern']), q: '', onlyLocated: false }, groups);
+  const modern = filterPlaces(places, { tags: new Set(['s:modern']), q: '' }, groups);
   assert.deepEqual(modern.map((p) => p.id), ['maxxi', 'salk']);
-  const modernLoc = filterPlaces(places, { tags: new Set(['s:modern']), q: '', onlyLocated: true }, groups);
-  assert.deepEqual(modernLoc.map((p) => p.id), ['maxxi']);
-  const q = filterPlaces(places, { tags: new Set(), q: 'kahn', onlyLocated: false }, groups);
+  const q = filterPlaces(places, { tags: new Set(), q: 'kahn' }, groups);
   assert.deepEqual(q.map((p) => p.id), ['salk']);
 });
 
 test('tags: several checked tags give the intersection; tags without a match give nothing', () => {
-  const run = (...t: string[]) => filterPlaces(places, { tags: new Set(t), q: '', onlyLocated: false }, groups).map((p) => p.id);
+  const run = (...t: string[]) => filterPlaces(places, { tags: new Set(t), q: '' }, groups).map((p) => p.id);
   assert.deepEqual(run('y:2016'), ['pantheon-paris', 'maxxi']);
   assert.deepEqual(run('y:2016', 'c:France'), ['pantheon-paris']);
   assert.deepEqual(run('y:2016', 'y:2018'), ['maxxi']);
@@ -69,7 +67,7 @@ test('tags: several checked tags give the intersection; tags without a match giv
   assert.deepEqual(run('c:Others'), []);
   // a building with several style tags counts under each of them
   const multi = [mk({ id: 'multi', name: 'Multi', era: 'ancient', eras: ['ancient', 'modern'] })];
-  const hit = (t: string) => filterPlaces(multi, { tags: new Set([t]), q: '', onlyLocated: false }, groups).length;
+  const hit = (t: string) => filterPlaces(multi, { tags: new Set([t]), q: '' }, groups).length;
   assert.equal(hit('s:ancient') + hit('s:modern'), 2);
   assert.ok(matchesTags(places[0]!, new Set(), groups));
   assert.equal(groups.map((g) => g.tags.length).join(','), '13,6,2');
@@ -97,8 +95,21 @@ test('coordKey: points within about 10 m count as the same', () => {
 });
 
 test('hash: round-trips and ignores unknown tags', () => {
-  const s = { p: 'maxxi', t: ['y:2016', 'c:United Kingdom', 's:modern'], q: 'zaha hadid', loc: true };
+  const s = { p: 'maxxi', t: ['y:2016', 'c:United Kingdom', 's:modern'], q: 'zaha hadid' };
   assert.deepEqual(parseHash(formatHash(s)), s);
   assert.deepEqual(parseHash('#t=y:2016,nope,c:Italy').t, ['y:2016', 'c:Italy']);
-  assert.equal(formatHash({ p: '', t: [], q: '', loc: false }), '');
+  assert.equal(formatHash({ p: '', t: [], q: '' }), '');
+});
+
+test('cluster click: bounds of the leaves, same-spot detection, target zoom stays above the clustered range', () => {
+  assert.equal(boundsOfCoords([]), null);
+  const b = boundsOfCoords([[12.45, 41.9], [12.5, 41.88], [12.47, 41.95]]);
+  assert.deepEqual(b, [[12.45, 41.88], [12.5, 41.95]]);
+  assert.equal(isSameSpot(b!), false);
+  assert.equal(isSameSpot(boundsOfCoords([[12.4533, 41.9022], [12.4533, 41.9022]])!), true);
+  assert.equal(isSameSpot(boundsOfCoords([[12.4533, 41.9022], [12.4534, 41.9022]])!), false);
+  // A fit that is already deeper than the clustered range is kept; a shallower one is pushed past it so markers are drawn one by one
+  assert.equal(clusterClickZoom(9, 3.1), 9);
+  assert.equal(clusterClickZoom(2, 3.1), 3.6);
+  assert.ok(SAME_SPOT_ZOOM > 17);
 });

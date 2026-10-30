@@ -4,8 +4,6 @@ export interface UrlState {
   /** Checked tag ids (y:2016, c:Italy, s:ancient) */
   t: string[];
   q: string;
-  /** Show located entries only */
-  loc: boolean;
 }
 
 const TAG_RE = /^(y:\d{4}|c:[A-Za-z ]+|s:[a-z0-9]+)$/;
@@ -13,7 +11,7 @@ const TAG_RE = /^(y:\d{4}|c:[A-Za-z ]+|s:[a-z0-9]+)$/;
 export function parseHash(hash: string): UrlState {
   const sp = new URLSearchParams(hash.replace(/^#/, ''));
   const t = (sp.get('t') ?? '').split(',').filter((x) => TAG_RE.test(x));
-  return { p: sp.get('p') ?? '', t, q: sp.get('q') ?? '', loc: sp.get('loc') === '1' };
+  return { p: sp.get('p') ?? '', t, q: sp.get('q') ?? '' };
 }
 
 export function formatHash(s: UrlState): string {
@@ -21,7 +19,6 @@ export function formatHash(s: UrlState): string {
   if (s.p) sp.set('p', s.p);
   if (s.t.length) sp.set('t', s.t.join(','));
   if (s.q) sp.set('q', s.q);
-  if (s.loc) sp.set('loc', '1');
   const out = sp.toString();
   return out ? `#${out}` : '';
 }

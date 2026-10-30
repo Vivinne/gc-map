@@ -29,9 +29,12 @@ const FAKE = `(function(){
   Map.prototype.fire=function(ev,e){ (this.h[ev]||[]).forEach(function(x){ if(!x.layer) x.fn(e||{}); }); };
   Map.prototype.fireLayer=function(ev,layer,e){ (this.h[ev]||[]).forEach(function(x){ if(x.layer===layer) x.fn(e); }); };
   Map.prototype.addControl=function(){ calls.controls++; };
-  Map.prototype.addSource=function(id,s){ calls.sources[id]=s; this._src={ setData:function(d){ calls.setData.push(d.features.length); }, getClusterExpansionZoom:function(){ return Promise.resolve(8); } }; };
-  Map.prototype.getSource=function(){ return this._src; };
+  Map.prototype.addSource=function(id,s){ calls.sources[id]=s; this._src=this._src||{}; this._src[id]={ setData:function(d){ calls.setData.push([id,d.features.length]); }, getClusterLeaves:function(){ return Promise.resolve(calls.leaves); } }; };
+  Map.prototype.getSource=function(id){ return this._src&&this._src[id]; };
   Map.prototype.addLayer=function(l){ calls.layers.push(l); };
+  Map.prototype.getLayer=function(id){ return calls.layers.find(function(l){ return l.id===id; }); };
+  Map.prototype.setLayerZoomRange=function(id,a,b){ calls.ranges=calls.ranges||[]; calls.ranges.push([id,a,b]); };
+  Map.prototype.cameraForBounds=function(b){ var w=Math.abs(b[1][0]-b[0][0]), h=Math.abs(b[1][1]-b[0][1]); var z=Math.max(0,Math.min(16,Math.log2(360/Math.max(w,h,0.0001)))); return { center:[(b[0][0]+b[1][0])/2,(b[0][1]+b[1][1])/2], zoom:z }; };
   Map.prototype.setFilter=function(id,f){ calls.filters.push([id,f]); };
   Map.prototype.fitBounds=function(b){ calls.fit.push(b); };
   Map.prototype.flyTo=function(o){ calls.fly.push(o); };
@@ -76,20 +79,29 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 2);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 5);
   const f = await page.evaluate(() => ({
-    src: window.__fake.sources.places && { cluster: window.__fake.sources.places.cluster },
+    plain: window.__fake.sources.places && { cluster: window.__fake.sources.places.cluster },
+    clustered: window.__fake.sources['places-c'],
     layers: window.__fake.layers.map((l) => l.id),
+    layerById: Object.fromEntries(window.__fake.layers.map((l) => [l.id, l])),
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['points', 'selected']);
-  assert.ok(!f.src.cluster, 'No clustering');
+  assert.deepEqual(f.layers, ['cluster-single', 'clusters', 'cluster-count', 'points', 'selected']);
+  assert.ok(!f.plain.cluster, 'The marker source stays unclustered');
+  assert.equal(f.clustered.cluster, true);
+  // Clusters only up to the Full map zoom, single markers from there up
+  const top = f.layerById.clusters.maxzoom;
+  assert.ok(top > 0 && top < 6, String(top));
+  for (const id of ['cluster-single', 'clusters', 'cluster-count']) assert.equal(f.layerById[id].maxzoom, top, id);
+  assert.equal(f.layerById.points.minzoom, top);
+  assert.deepEqual(f.layerById['cluster-count'].layout['text-field'], ['get', 'point_count_abbreviated']);
   assert.deepEqual(f.pointsPaint['circle-opacity'], ['case', ['get', 'est'], 0.5, 1]);
   assert.equal(f.controls, 1);
-  ok('Source without clustering and 2 layers created; semi-transparent expression for estimates; navigation control');
+  ok('Plain and clustered sources, cluster / count / single / points / selected layers with the zoom split at the Full map zoom; navigation control');
 
-  await page.waitForFunction((n) => window.__fake.setData.includes(n), totalPts);
+  await page.waitForFunction((n) => window.__fake.setData.some((x) => x[1] === n), totalPts);
   assert.equal((await page.textContent('[data-testid=count]')).includes(`${totalPts} map markers`), true);
   const fit = await page.evaluate(() => window.__fake.fit[0]);
   assert.deepEqual(fit, [[-8, 36], [29.5, 55]]);
@@ -111,10 +123,41 @@ async function open({ pinned = true, fallback = true } = {}) {
   await page.waitForSelector('[data-testid=chooser]');
   ok('Several entries at one location -> chooser');
 
+  // Cluster click 1: leaves spread over a small area -> zoom to fit them, deeper than the clustered range; no chooser
+  await page.keyboard.press('Escape');
+  const clusterTop = await page.evaluate(() => window.__fake.layers.find((l) => l.id === 'clusters').maxzoom);
+  await page.evaluate(() => {
+    const leaf = (pid, c) => ({ geometry: { coordinates: c }, properties: { pid } });
+    window.__fake.leaves = [leaf('a', [12.45, 41.9]), leaf('b', [12.5, 41.88]), leaf('c', [12.47, 41.95])];
+    window.__fake.hits = [{ properties: { cluster_id: 7 } }];
+    window.__fake.ease = null;
+    window.__fake.map.fireLayer('click', 'clusters', { point: { x: 5, y: 5 } });
+  });
+  await page.waitForFunction(() => window.__fake.ease);
+  const e1 = await page.evaluate(() => window.__fake.ease);
+  assert.ok(e1.zoom > clusterTop + 0.4, `${e1.zoom} vs ${clusterTop}`);
+  assert.ok(Math.abs(e1.center[0] - 12.475) < 1e-6 && Math.abs(e1.center[1] - 41.915) < 1e-6, JSON.stringify(e1.center));
+  assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
+  ok('Cluster click -> zooms to the bounds of all its markers, deeper than the clustered range');
+
+  // Cluster click 2: identical coordinates -> deepest zoom and the chooser list
+  await page.evaluate(() => {
+    const leaf = (pid) => ({ geometry: { coordinates: [12.4533, 41.9022] }, properties: { pid } });
+    window.__fake.leaves = [leaf('st-peters-dome-vatican'), leaf('st-peters-facade-nave-vatican')];
+    window.__fake.ease = null;
+    window.__fake.map.fireLayer('click', 'clusters', { point: { x: 5, y: 5 } });
+  });
+  await page.waitForFunction(() => window.__fake.ease);
+  assert.equal((await page.evaluate(() => window.__fake.ease)).zoom, 18);
+  await page.waitForSelector('[data-testid=chooser]');
+  ok('Cluster of identical coordinates -> deepest zoom and the chooser list');
+  await page.keyboard.press('Escape');
+
   // Data and view update after filtering
+  await page.click('.tag-toggle:has-text("Styles")');
   await page.click('.tag-item:has-text("Modern")');
-  await page.waitForFunction(() => window.__fake.setData.length >= 2);
-  const lastCount = await page.evaluate(() => window.__fake.setData.at(-1));
+  await page.waitForFunction(() => window.__fake.setData.length >= 4);
+  const lastCount = await page.evaluate(() => window.__fake.setData.at(-1)[1]);
   assert.ok(lastCount < totalPts && lastCount > 0, String(lastCount));
   ok(`Era filter -> setData updated (${lastCount} points)`);
   await page.close();

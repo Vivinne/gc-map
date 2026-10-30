@@ -45,7 +45,10 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .search { width: 100%; padding: 10px 12px; font: inherit; background: #fff; border: 3px solid var(--ink); border-radius: 0; }
 /* style tags: colour blocks */
 .tag-group { display: flex; flex-direction: column; gap: 6px; }
-.tag-title { margin: 0; font-size: 13px; font-weight: 700; color: var(--ink); }
+.tag-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 6px 10px; font: inherit; font-size: 14px; font-weight: 700; color: #fff; background: var(--ink); border: 3px solid var(--ink); border-radius: 0; cursor: pointer; text-align: left; }
+.tag-toggle::after { content: '+'; font-size: 16px; line-height: 1; }
+.tag-toggle[data-open='true']::after { content: '\2212'; }
+.tag-toggle small { margin-left: auto; padding: 0 7px; font-size: 12px; color: var(--ink); background: #fff; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { --c: var(--ink); position: relative; display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 9px; font: inherit; font-size: 13px; font-weight: 700; color: var(--c); background: #fff; border: 3px solid var(--c); border-radius: 0; cursor: pointer; }
 .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
@@ -54,8 +57,6 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .chip[data-empty='true'] { opacity: 0.4; }
 .chip:focus-within { outline: 2px solid var(--ink); outline-offset: 2px; }
 .clear-tags { justify-self: start; padding: 3px 10px; font: inherit; font-size: 13px; font-weight: 700; color: #fff; background: var(--ink); border: 0; border-radius: 0; cursor: pointer; }
-.check { display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; }
-.check input { width: 18px; height: 18px; accent-color: var(--ink); }
 .count { margin: 0; font-size: 13px; color: var(--muted); }
 
 .list { flex: 1; min-height: 120px; margin: 0; padding: 8px 16px 8px 36px; overflow: auto; list-style: disc; }
