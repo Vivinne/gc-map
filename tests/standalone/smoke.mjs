@@ -30,7 +30,7 @@ const FAKE = `(function(){
   Map.prototype.fire=function(ev,e){ (this.h[ev]||[]).forEach(function(x){ if(!x.layer) x.fn(e||{}); }); };
   Map.prototype.fireLayer=function(ev,layer,e){ (this.h[ev]||[]).forEach(function(x){ if(x.layer===layer) x.fn(e); }); };
   Map.prototype.addControl=function(){ calls.controls++; };
-  Map.prototype.addSource=function(id,s){ calls.sources[id]={cluster:s.cluster,data:s.data}; this._src=this._src||{}; this._src[id]={ setData:function(d){ calls.setData.push([id,d.features.length]); }, getClusterLeaves:function(){ return Promise.resolve(calls.leaves); } }; };
+  Map.prototype.addSource=function(id,s){ calls.sources[id]={cluster:s.cluster,data:s.data,radius:s.clusterRadius,props:s.clusterProperties}; this._src=this._src||{}; this._src[id]={ setData:function(d){ calls.setData.push([id,d.features.length]); }, getClusterExpansionZoom:function(){ return Promise.resolve(calls.expansion); } }; };
   Map.prototype.getSource=function(id){ return this._src&&this._src[id]; };
   Map.prototype.addLayer=function(l){ calls.layers.push(l); };
   Map.prototype.getLayer=function(id){ return calls.layers.find(function(l){ return l.id===id; }); };
@@ -82,15 +82,22 @@ async function open({ pinned = true, fallback = true } = {}) {
 
   await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 7);
   const f = await page.evaluate(() => ({
-    sources: Object.fromEntries(Object.entries(window.__fake.sources).map(([k, v]) => [k, { cluster: !!v.cluster, n: v.data.features.length }])),
-    cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
+    
+    cityData: [...window.__fake.sources.cities.data.features, ...window.__fake.sources['cities-wide'].data.features].map((x) => x.properties),
+    cs: { a: window.__fake.sources.cities, b: window.__fake.sources['cities-wide'] },
     layers: window.__fake.layers.map((l) => l.id),
     layerById: Object.fromEntries(window.__fake.layers.map((l) => [l.id, l])),
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
   assert.deepEqual(f.layers, ['cities', 'city-count', 'points', 'cities-wide', 'city-count-wide', 'points-wide', 'selected']);
-  assert.ok(!f.sources.places.cluster && !f.sources.cities.cluster, 'No spatial clustering any more');
+  // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
+  for (const cs of [f.cs.a, f.cs.b]) {
+    assert.equal(cs.cluster, true);
+    assert.ok(cs.radius >= 44, String(cs.radius));
+    assert.deepEqual(cs.props.n, ['+', ['get', 'n']]);
+    assert.deepEqual(Object.keys(cs.props).sort(), ['e', 'n', 'nn', 's', 'w']);
+  }
   // One circle per city, number = buildings
   const rome = f.cityData.find((c) => c.city === 'Rome');
   assert.ok(rome && rome.n > 20, JSON.stringify(rome));
@@ -155,6 +162,17 @@ async function open({ pinned = true, fallback = true } = {}) {
   const e2 = await page.evaluate(() => window.__fake.ease);
   assert.ok(e2.zoom >= 8 && e2.zoom < 10.5, String(e2.zoom));
   ok('Wide city click -> fits the whole city at its earlier switch zoom');
+
+  // City click: merged circle (several close cities) -> fit their united bounds and split them apart
+  await page.evaluate((h) => {
+    window.__fake.expansion = 13;
+    window.__fake.hits = [h];
+    window.__fake.ease = null;
+    window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } });
+  }, city({ cluster: true, cluster_id: 4, point_count: 2, n: 41 }));
+  await page.waitForFunction(() => window.__fake.ease);
+  assert.equal((await page.evaluate(() => window.__fake.ease)).zoom, 13);
+  ok('Merged circle click -> zooms far enough for the merged cities to split');
 
   // City click 3: identical coordinates -> deepest zoom and the chooser list
   await page.evaluate((h) => {
