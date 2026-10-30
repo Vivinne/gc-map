@@ -2338,7 +2338,18 @@
    "eras": [
     "renaissance"
    ],
-   "points": []
+   "points": [
+    {
+     "id": "church-of-san-bernardino-urbino~0",
+     "sub": "",
+     "lat": 43.722465,
+     "lng": 12.648267,
+     "precision": "page",
+     "note": "coordinates taken from Komoot (highlight \"Church of San Bernardino degli Zoccolanti\", from its map link)",
+     "sourceUrl": "https://www.komoot.com/highlight/4266733",
+     "status": "Supplementary - to be verified"
+    }
+   ]
   },
   {
    "id": "quirinal-palace-rome",
@@ -3525,7 +3536,18 @@
    "eras": [
     "c19"
    ],
-   "points": []
+   "points": [
+    {
+     "id": "prado-museum-madrid~0",
+     "sub": "",
+     "lat": 40.41378,
+     "lng": -3.692127,
+     "precision": "page",
+     "note": "coordinates taken from latlong.net (Wikipedia pages read show none)",
+     "sourceUrl": "https://www.latlong.net/place/museo-del-prado-madrid-spain-23210.html",
+     "status": "Supplementary - to be verified"
+    }
+   ]
   },
   {
    "id": "bibliotheque-sainte-genevieve-paris",
@@ -4605,7 +4627,18 @@
    "eras": [
     "modern"
    ],
-   "points": []
+   "points": [
+    {
+     "id": "dutch-pavilion-venice~0",
+     "sub": "",
+     "lat": 45.4289,
+     "lng": 12.3586,
+     "precision": "page",
+     "note": "coordinates taken from aroundus.com (Wikipedia page read shows none)",
+     "sourceUrl": "https://aroundus.com/p/8222083-dutch-pavilion",
+     "status": "Supplementary - to be verified"
+    }
+   ]
   },
   {
    "id": "villa-mairea-noormarkku",
@@ -4625,7 +4658,18 @@
    "eras": [
     "modern"
    ],
-   "points": []
+   "points": [
+    {
+     "id": "villa-mairea-noormarkku~0",
+     "sub": "",
+     "lat": 61.59739,
+     "lng": 21.8746,
+     "precision": "page",
+     "note": "coordinates taken from aroundus.com (Wikipedia page read shows none)",
+     "sourceUrl": "https://aroundus.com/p/11461113-villa-mairea",
+     "status": "Supplementary - to be verified"
+    }
+   ]
   },
   {
    "id": "viipuri-library-vyborg",
@@ -5835,7 +5879,18 @@
    "eras": [
     "modern"
    ],
-   "points": []
+   "points": [
+    {
+     "id": "allianz-arena-munich~0",
+     "sub": "",
+     "lat": 48.218967,
+     "lng": 11.623746,
+     "precision": "page",
+     "note": "coordinates taken from latlong.net (Wikipedia pages read show none)",
+     "sourceUrl": "https://www.latlong.net/place/allianz-arena-munich-germany-31644.html",
+     "status": "Supplementary - to be verified"
+    }
+   ]
   },
   {
    "id": "marques-de-riscal-hotel-elciego",

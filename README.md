@@ -54,7 +54,7 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 - Memory estimates (`estimate`) are marked "Memory estimate - unverified" with a confidence level and have no source link; they are semi-transparent on the map.
 - For the 7 rows where the handout gives no location, the coordinate is supplied by a source and the note starts with `Supplementary location: City`; the heading omits the location. These rows must not use estimates.
 - Polimi Campus Nord: only the coordinate of Milano Bovisa station (which serves the Bovisa campus) was found, so it stands in as an approximate position; it is not the campus itself.
-- 5 rows have no sourced coordinate (Prado Museum, Allianz Arena, Villa Mairea, Dutch Pavilion, Church of San Bernardino: the Wikipedia pages read showed none); they appear in the sidebar "Unlocated list" while a filter or search is active. They must not be given estimates.
+- Every row has a coordinate (a building that exists always has one). Where Wikipedia shows none, the coordinate comes from another named web page (latlong.net, aroundus.com, Komoot), cited in the point's source link; the sidebar "Unlocated list" appears only if a gap ever exists.
 - Plain-text rendering; no `dangerouslySetInnerHTML`.
 - Private use: `<meta robots noindex>` and `public/robots.txt` (disallow all). This is not confidentiality: anyone who knows the URL of a published copy can open it.
 
