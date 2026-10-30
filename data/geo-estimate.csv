@@ -1,20 +1,3 @@
 name,sub,lat,lng,conf,note
 # Memory estimates, not checked against any source. conf: h = high (within about 300 m), m = medium (within about 1 km), l = low (may be several km off, or a linear / grouped item).
 # When geo-raw.txt or geo-manual.csv has a point with the same name and sub, those win and the row here is skipped. Do not use commas inside note.
-Aqua Appia,,41.8885,12.4800,l,Linear remains; this point is only the aqueduct terminus (Forum Boarium area)
-Notre-Dame de Mantes-la-Jolie,,48.9903,1.7170,m,
-Basilica di San Francesco d'Assisi,,43.0749,12.6064,h,
-Palazzo Gondi,,43.7703,11.2571,m,Via dei Gondi
-Palazzina di Caccia di Stupinigi,,45.0040,7.6045,m,Stupinigi (Nichelino)
-Santa Susanna,,41.9042,12.4953,m,Via XX Settembre
-Ecstasy of Saint Teresa,,41.9047,12.4957,m,Santa Maria della Vittoria
-Bibliothèque Sainte-Geneviève,,48.8469,2.3461,m,North side of Place du Panthéon
-Casa Galimberti／Palazzo Castiglioni,,45.4735,9.2040,l,Both buildings are in the Porta Venezia area; one point represents both
-Notre-Dame-du-Haut（Ronchamp）,,47.7033,6.6205,h,
-Paimio Sanatorium,,60.4515,22.6840,m,
-MIT Baker House,,42.3571,-71.0960,h,
-QT8,,45.4850,9.1400,l,Northwest Milan; the housing district is very large
-Asilo Sant'Elia,,45.8070,9.0770,l,Southwest of Como old town
-Gallaratese Quarter,,45.5030,9.1270,l,Gallaratese district in northwest Milan
-Palazzo dell'Arte（Triennale）,,45.4725,9.1722,m,Parco Sempione
-Museo Castelvecchio,,45.4391,10.9894,h,

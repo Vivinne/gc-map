@@ -65,9 +65,9 @@
 | Santa Maria del Fiore（主體）<br><span class="loc">Florence</span> | 1436 | — | Brunelleschi 圓頂之前的哥德大教堂 |
 | Siena Cathedral<br><span class="loc">Siena</span> | 1263 | — | 鑲嵌大理石地面；Gate of Heaven 屋頂步道；Gothic |
 | Basilica di San Francesco d'Assisi<br><span class="loc">Assisi</span> | 1253 | — | Giotto 壁畫；少用飛扶壁 |
-| Bargello Museum<br><span class="loc">Florence</span> | 1255-1865 | — | — |
+| Bargello Museum<br><span class="loc">Florence</span> | 1255-1367 | Neri di Fioravante (Great Council Hall and courtyard staircase); Tone di Giovanni (verone) | — |
 | Santa Croce<br><span class="loc">Florence</span> | 1294- | Niccolò Matas (facade) | — |
-| Scrovegni Chapel<br><span class="loc">Padua</span> | 1303 | Giotto (frescoes) | — |
+| Scrovegni Chapel<br><span class="loc">Padua</span> | 1303 | Giotto | — |
 
 ### 6.6 文藝復興與矯飾主義建築（Renaissance and Mannerism）
 
@@ -108,7 +108,7 @@
 | Pienza Cathedral<br><span class="loc">Pienza</span> | 1462 | B. Rossellino | — |
 | Church of San Bernardino<br><span class="loc">Urbino</span> | 1482-1491 | Francesco di Giorgio Martini | — |
 | Quirinal Palace<br><span class="loc">Rome</span> | 1583 | Domenico Fontana (facade); Carlo Maderno (Great Chapel) | — |
-| Louvre Museum<br><span class="loc">Paris</span> | 12th-1793 | Louis Visconti and Hector Lefuel (1850s expansion); I. M. Pei (pyramid and master plan) | — |
+| Louvre Museum<br><span class="loc">Paris</span> | 12th-1857 | Louis Visconti and Hector Lefuel (1850s expansion); I. M. Pei (pyramid and master plan) | — |
 
 ### 6.7 巴洛克與洛可可建築（Baroque and Rococo）
 
@@ -138,7 +138,7 @@
 | Ecstasy of Saint Teresa<br><span class="loc">Rome（Santa Maria della Vittoria）</span> | 1652 | Bernini | Bel Composto 美妙融合 |
 | Sant'Ignazio di Loyola<br><span class="loc">Rome</span> | 1685 | Andrea Pozzo | 畫出立體穹頂（trompe l'oeil） |
 | Palazzo Montecitorio<br><span class="loc">Rome</span> | — | Gian Lorenzo Bernini (design); Carlo Fontana (completion) | — |
-| Palazzo Madama<br><span class="loc">Rome</span> | 15th-1505 | — | — |
+| Palazzo Madama<br><span class="loc">Rome</span> | 15th-1505 | Giuliano da Sangallo (restoration for Giovanni de' Medici); Paolo Maruscelli (Baroque facade) | — |
 | Hermitage Museum<br><span class="loc">Saint Petersburg (Russia)</span> | 1852 | Bartolomeo Rastrelli (Winter Palace) | — |
 | Capodimonte Museum<br><span class="loc">Naples</span> | 1957 | Giovanni Antonio Medrano | — |
 
@@ -271,5 +271,5 @@
 
 | 建築 | 年份 | 建築師／人物 | 內容 |
 |---|---|---|---|
-| Nevsky Prospect<br><span class="loc">Saint Petersburg (Russia)</span> | 1710-1718 | — | — |
+| Nevsky Prospect<br><span class="loc">Saint Petersburg (Russia)</span> | 1710-1718 | Pyotr Yeropkin (Trident plan); Mikhail Zemtsov (model designs for the avenue's stone buildings) | — |
 | North Doors, Florence Baptistery<br><span class="loc">Florence</span> | 1424 | Lorenzo Ghiberti | — |

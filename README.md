@@ -31,7 +31,7 @@ npm run site        # writes site/ (index.html, app.js, app.css, README.txt)
 | `content/handout-c3-s6.md` | Display content: the fifteen style tables of handout §6, without question IDs, knowledge-point IDs or to-be-confirmed marks. This is the author's study notes and is kept in the original language (Chinese with English terms); it is data, not code. The parser does not depend on the language |
 | `data/geo-raw.txt` | Coordinate overlay, five fields per line (key, sub, lang:title, coordinate, note; fields separated by a vertical bar). A page field of `lang:Title` means a Wikipedia page; `url:https://…` means another web page. A coordinate of `NONE` records that no coordinate was found. For a row with no handout location, the note must start with `Supplementary location: City` |
 | `data/geo-manual.csv` | Manual coordinates or overrides: `name,sub,lat,lng,source_url,note`. Overrides `geo-raw.txt` for the same `name` + `sub`; rows with empty lat/lng are skipped |
-| `data/geo-estimate.csv` | Memory estimates: `name,sub,lat,lng,conf,note`. No source, unverified; `conf` is h / m / l (about 300 m / 1 km / several km or more). Fills only points that `geo-raw.txt` lacks; rows with no handout location must not be estimated |
+| `data/geo-estimate.csv` | Intentionally empty (header only). Memory estimates are forbidden; every coordinate must come from a source |
 | `data/entries.txt` | One line per handout row: `name`, built span, summary (vertical-bar separated). The span replaces the handout year in the display; the summary is shown in the detail panel. A missing row fails the build |
 | `data/architects.txt` | `handout value | full name`: the architect line in the detail panel shows the full name; unlisted values are shown as written |
 | `data/countries.txt` | `handout location | country tag` (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location are keyed by building name, using the supplementary location in `geo-raw.txt`. Vatican is listed under Italy |
@@ -51,7 +51,7 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 ## How the rules map to the data
 
 - Sourced coordinates (mostly Wikipedia; 3 points come from Structurae, latitude.to and Komoot, named in the note) are marked "Supplementary - to be verified" and carry a source link. Precision is one of `page` (page coordinate), `contained` (taken from the containing building or complex), `approx` (approximate) or `manual`.
-- Memory estimates (`estimate`) are marked "Memory estimate - unverified" with a confidence level and have no source link; they are semi-transparent on the map.
+- There are no memory estimates; every marker has a source link. Non-Wikipedia sources are named in the note ("coordinates taken from ...").
 - For the 7 rows where the handout gives no location, the coordinate is supplied by a source and the note starts with `Supplementary location: City`; the heading omits the location. These rows must not use estimates.
 - Polimi Campus Nord: only the coordinate of Milano Bovisa station (which serves the Bovisa campus) was found, so it stands in as an approximate position; it is not the campus itself.
 - Every row has a coordinate (a building that exists always has one). Where Wikipedia shows none, the coordinate comes from another named web page (latlong.net, aroundus.com, Komoot), cited in the point's source link; the sidebar "Unlocated list" appears only if a gap ever exists.
@@ -75,7 +75,7 @@ npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (
 - The real MapLibre map has not been run: tile loading and click hit-testing (markers are not clustered; overlapping markers are resolved by the chooser list).
 - `tsc --noEmit` has only been run with a shim in place of `@types/react`; rerun `npm run typecheck` after `npm install`.
 - The coordinates were copied from source-page text summaries and have not been spot-checked by a human; Polimi Campus Nord is a station coordinate, not the campus itself.
-- The 17 remaining estimated points come from model memory and were checked against no source (no coordinate could be retrieved for them); those with low confidence may be several km off. Check each one before use. 18 earlier estimates were replaced by de.wikipedia page coordinates.
+- All coordinates are sourced (Wikipedia or a named site); 5 of them were also checked on Google Maps by the project owner. The remaining non-Google-checked coordinates are "to be verified".
 
 ## Tags
 

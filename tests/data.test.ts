@@ -95,7 +95,7 @@ test('data: every row either has a point or is in the unlocated list (nothing is
   for (const u of unlocated) assert.ok(dataset.places.some((p) => p.id === u.id), u.id);
 });
 
-test('data: estimates have no source, a confidence label and an unverified status; all other points have a source URL (non-Wikipedia sources are named in the note)', () => {
+test('data: no memory estimates; every point has a source URL (non-Wikipedia sources are named in the note)', () => {
   let est = 0;
   for (const p of dataset.places) {
     for (const pt of p.points) {
@@ -112,7 +112,7 @@ test('data: estimates have no source, a confidence label and an unverified statu
       }
     }
   }
-  assert.ok(est > 0);
+  assert.equal(est, 0, 'memory estimates are not allowed: every coordinate needs a source');
 });
 
 test('data: rows with no handout location need a sourced coordinate, never an estimate; a source location that disagrees with the handout must be flagged', () => {

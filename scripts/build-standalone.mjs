@@ -98,7 +98,7 @@ Opening
 Contents
   Handout C3 §6 has ${data.places.length} rows and ${pts.length} map markers.
   ${nWiki} markers come from Wikipedia and ${nOther} from other web pages (named in the note); all are marked "Supplementary - to be verified" and the detail panel links to the source.
-  ${nEst} markers are memory estimates (semi-transparent on the map, marked "unverified" in the detail panel) with no source; check each one.
+  ${nEst ? `${nEst} markers are memory estimates with no source; check each one.` : 'No marker is a memory estimate; every coordinate has a source.'}
   ${nGap ? `${nGap} rows have no coordinate and are listed in the sidebar "Unlocated list".` : 'Every row has a coordinate.'}
 
 Publishing

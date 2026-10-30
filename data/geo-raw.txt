@@ -131,39 +131,40 @@ Mediolanum 皇宮區、Circo、Thermae Herculeae |  | en:Milan | 45.46694°N 9.1
 Dancing House |  | en:Dancing_House | 50.07556°N 14.41417°E | 
 Basilica di San Marco |  | en:Piazza_San_Marco | 45.43389°N 12.33806°E | Coordinates taken from the containing square page
 Valle dei Templi |  | en:Temple_of_Concordia | NONE | Page has no coordinates
-Aqua Appia |  | en:Aqua_Appia | NONE | Page has no coordinates
-Santa Susanna |  | en:Santa_Susanna | NONE | Page has no coordinates
-Ecstasy of Saint Teresa |  | en:Santa_Maria_della_Vittoria | NONE | Page has no coordinates
+Aqua Appia |  | url:https://aroundus.com/p/8123240-aqua-appia | 41.88785,12.48097 | coordinates taken from Aroundus
+Santa Susanna |  | url:https://travel.sygic.com/cs/poi/church-of-saint-susanna-poi:54849 | 41°54′15.47″N 12°29′37.044″E | coordinates taken from Sygic Travel
+Ecstasy of Saint Teresa |  | url:https://latitude.to/articles-by-country/it/italy/11535/santa-maria-della-vittoria | 41.9028,12.4898 | coordinates taken from latitude.to (Santa Maria della Vittoria, which houses the work)
 Ca' Granda |  | en:Ca'_Granda | NONE | Page has no coordinates
 Camera degli Sposi |  | en:Ducal_Palace,_Mantua | NONE | Page has no coordinates
 Palazzo Te |  | en:Palazzo_Te | NONE | Page has no coordinates
 Arco della Pace |  | en:Arco_della_Pace | NONE | Page has no coordinates
-Casa Galimberti／Palazzo Castiglioni |  | en:Palazzo_Castiglioni | NONE | Page has no coordinates
-Asilo Sant'Elia |  | en:Asilo_Sant'Elia | NONE | Page does not exist
-QT8 |  | en:QT8 | NONE | Page has no coordinates
-Gallaratese Quarter |  | — | NONE | Not searched
-Palazzo dell'Arte（Triennale） |  | en:Triennale_Milano | NONE | Page does not exist
+Casa Galimberti／Palazzo Castiglioni | Casa Galimberti | url:https://aroundus.com/p/8123249-casa-galimberti | 45.47467,9.20706 | coordinates taken from Aroundus
+Casa Galimberti／Palazzo Castiglioni | Palazzo Castiglioni | url:https://travel.sygic.com/ko/poi/palazzo-castiglioni-poi:5069624 | 45°28′16.206″N 9°12′4.212″E | coordinates taken from Sygic Travel
+Asilo Sant'Elia |  | url:https://aroundus.com/p/8132223-asilo-sant-elia | 45.79849,9.08866 | coordinates taken from Aroundus
+QT8 |  | url:https://audiala.com/en/italy/milan/qt8 | 45.486,9.13718 | coordinates taken from Audiala (map link of the QT8 page)
+Gallaratese Quarter |  | url:https://bamwor.com/en/countries/italy/cities/gallaratese | 45.4959,9.1121 | coordinates taken from Bamwor (Gallaratese district)
+Palazzo dell'Arte（Triennale） |  | url:https://aroundus.com/p/8130801- | 45.47216,9.17350 | coordinates taken from Aroundus (Triennale di Milano)
 Ospedale degli Innocenti（Foundling Hospital） |  | en:Ospedale_degli_Innocenti | NONE | Page has no coordinates
 Palazzo Rucellai |  | en:Palazzo_Rucellai | NONE | Page has no coordinates
-Palazzo Gondi |  | en:Palazzo_Gondi | NONE | Page has no coordinates
+Palazzo Gondi |  | url:https://aroundus.com/p/8125110-palazzo-gondi | 43.76972,11.25722 | coordinates taken from Aroundus
 Laurentian Library |  | en:Laurentian_Library | NONE | Page has no coordinates
 Palladio 的別墅群 | Villa Pojana | en:Villa_Pojana | NONE | Page has no coordinates
-Museo Castelvecchio |  | en:Castelvecchio_Museum | NONE | Page has no coordinates
-Basilica di San Francesco d'Assisi |  | en:Basilica_of_San_Francesco_d'Assisi | NONE | Page has no coordinates
+Museo Castelvecchio |  | url:https://latitude.to/articles-by-country/it/italy/32594/castelvecchio-museum | 45.4373,10.9860 | coordinates taken from latitude.to
+Basilica di San Francesco d'Assisi |  | url:https://latitude.to/articles-by-country/it/italy/6702/basilica-of-san-francesco-dassisi | 43.0715,12.6033 | coordinates taken from latitude.to
 Villa Farnese |  | en:Villa_Farnese | NONE | Page has no coordinates
-Palazzina di Caccia di Stupinigi |  | en:Palazzina_di_caccia_di_Stupinigi | NONE | Page has no coordinates
+Palazzina di Caccia di Stupinigi |  | url:https://latitude.to/articles-by-country/it/italy/39287/palazzina-di-caccia-of-stupinigi | 44.9903,7.6023 | coordinates taken from latitude.to
 Mole Antonelliana |  | en:Mole_Antonelliana | NONE | Page has no coordinates
 Basilica of Saint-Denis |  | en:Basilica_of_St_Denis | NONE | Page has no coordinates
-Notre-Dame de Mantes-la-Jolie |  | fr:Collégiale_Notre-Dame_de_Mantes-la-Jolie | NONE | Page has no coordinates
+Notre-Dame de Mantes-la-Jolie |  | url:https://travel.sygic.com/en/poi/notre-dame-de-mantes-poi:4841495 | 48°59′25.14″N 1°43′13.201″E | coordinates taken from Sygic Travel
 Basilique du Sacré-Cœur |  | en:Sacré-Cœur,_Paris | NONE | Page has no coordinates
-Bibliothèque Sainte-Geneviève |  | en:Sainte-Geneviève_Library | NONE | Page has no coordinates
-Notre-Dame-du-Haut（Ronchamp） |  | en:Notre_Dame_du_Haut | NONE | Page has no coordinates
+Bibliothèque Sainte-Geneviève |  | url:https://travel.sygic.com/en/poi/sainte-genevieve-library-poi:54976 | 48°50′49.738″N 2°20′45.576″E | coordinates taken from Sygic Travel
+Notre-Dame-du-Haut（Ronchamp） |  | url:https://latitude.to/articles-by-country/fr/france/7548/notre-dame-du-haut | 47.7023,6.6193 | coordinates taken from latitude.to
 Centre Pompidou |  | en:Centre_Pompidou | NONE | Page has no coordinates
 Bibliothèque nationale de France |  | en:Bibliothèque_nationale_de_France | NONE | Page has no coordinates
 Louvre Abu Dhabi |  | en:Louvre_Abu_Dhabi | NONE | Page has no coordinates
 Sagrada Família 等 Gaudí 作品 | Colònia Güell | en:Colònia_Güell | NONE | Page does not exist
-Paimio Sanatorium |  | en:Paimio_Sanatorium | NONE | Page has no coordinates
-MIT Baker House |  | en:Baker_House | NONE | Page has no coordinates
+Paimio Sanatorium |  | url:https://latitude.to/articles-by-country/fi/finland/28486/paimio-sanatorium | 60.4590,22.7342 | coordinates taken from latitude.to
+MIT Baker House |  | url:https://exhibits.lib.ttu.edu/s/archlib/item/41850 | 42°21′24.3″N 71°05′45.0″W | coordinates taken from Texas Tech University Libraries (362 Memorial Dr, Cambridge, MA)
 London City Hall |  | en:City_Hall,_London | NONE | Page coordinates point to The Crystal (GLA moved there in 2021, Royal Docks), not the Southwark building designed by Foster; not used
 
 # ---- Follow-up lookup for unlocated rows (user instruction, 2026-10-29) ----

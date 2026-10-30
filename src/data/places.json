@@ -240,12 +240,12 @@
     {
      "id": "aqua-appia-rome~0",
      "sub": "",
-     "lat": 41.8885,
-     "lng": 12.48,
-     "precision": "estimate",
-     "note": "Low confidence (may be several km off, or a linear / grouped item); Linear remains; this point is only the aqueduct terminus (Forum Boarium area)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 41.88785,
+     "lng": 12.48097,
+     "precision": "page",
+     "note": "coordinates taken from Aroundus",
+     "sourceUrl": "https://aroundus.com/p/8123240-aqua-appia",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -751,12 +751,12 @@
     {
      "id": "notre-dame-de-mantes-la-jolie-mantes~0",
      "sub": "",
-     "lat": 48.9903,
-     "lng": 1.717,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 48.990317,
+     "lng": 1.720334,
+     "precision": "page",
+     "note": "coordinates taken from Sygic Travel",
+     "sourceUrl": "https://travel.sygic.com/en/poi/notre-dame-de-mantes-poi:4841495",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -1219,12 +1219,12 @@
     {
      "id": "basilica-di-san-francesco-d-assisi-assisi~0",
      "sub": "",
-     "lat": 43.0749,
-     "lng": 12.6064,
-     "precision": "estimate",
-     "note": "High confidence (within about 300 m)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 43.0715,
+     "lng": 12.6033,
+     "precision": "page",
+     "note": "coordinates taken from latitude.to",
+     "sourceUrl": "https://latitude.to/articles-by-country/it/italy/6702/basilica-of-san-francesco-dassisi",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -1232,8 +1232,8 @@
    "id": "bargello-museum-florence",
    "name": "Bargello Museum",
    "loc": "Florence",
-   "year": "1255-1865",
-   "who": "—",
+   "year": "1255-1367",
+   "who": "Neri di Fioravante (Great Council Hall and courtyard staircase); Tone di Giovanni (verone)",
    "note": "—",
    "summary": "原為 Capitano del Popolo 與 podestà 官署，為佛羅倫斯最古老的公共建築；1865 年成為國立博物館，藏有義大利最大宗的哥德與文藝復興雕刻。",
    "country": "Italy",
@@ -1297,7 +1297,7 @@
    "name": "Scrovegni Chapel",
    "loc": "Padua",
    "year": "1303",
-   "who": "Giotto (frescoes)",
+   "who": "Giotto",
    "note": "—",
    "summary": "為銀行家 Enrico Scrovegni 的家族禮拜堂與陵墓；Giotto 壁畫覆蓋整個內部，西牆為〈最後審判〉。",
    "country": "Italy",
@@ -1666,12 +1666,12 @@
     {
      "id": "palazzo-gondi-florence~0",
      "sub": "",
-     "lat": 43.7703,
-     "lng": 11.2571,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km); Via dei Gondi",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 43.76972,
+     "lng": 11.25722,
+     "precision": "page",
+     "note": "coordinates taken from Aroundus",
+     "sourceUrl": "https://aroundus.com/p/8125110-palazzo-gondi",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -2387,7 +2387,7 @@
    "id": "louvre-museum-paris",
    "name": "Louvre Museum",
    "loc": "Paris",
-   "year": "12th-1793",
+   "year": "12th-1857",
    "who": "Louis Visconti and Hector Lefuel (1850s expansion); I. M. Pei (pyramid and master plan)",
    "note": "—",
    "summary": "12th century 末由 Philip II 始建為要塞；1546 年 Francis I 起以 French Renaissance 風格重建；1793 年 8 月 10 日成為博物館。",
@@ -2817,12 +2817,12 @@
     {
      "id": "palazzina-di-caccia-di-stupinigi-turin~0",
      "sub": "",
-     "lat": 45.004,
-     "lng": 7.6045,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km); Stupinigi (Nichelino)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 44.9903,
+     "lng": 7.6023,
+     "precision": "page",
+     "note": "coordinates taken from latitude.to",
+     "sourceUrl": "https://latitude.to/articles-by-country/it/italy/39287/palazzina-di-caccia-of-stupinigi",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -3022,12 +3022,12 @@
     {
      "id": "santa-susanna-rome~0",
      "sub": "",
-     "lat": 41.9042,
-     "lng": 12.4953,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km); Via XX Settembre",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 41.904297,
+     "lng": 12.493623,
+     "precision": "page",
+     "note": "coordinates taken from Sygic Travel",
+     "sourceUrl": "https://travel.sygic.com/cs/poi/church-of-saint-susanna-poi:54849",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -3051,12 +3051,12 @@
     {
      "id": "ecstasy-of-saint-teresa-rome~0",
      "sub": "",
-     "lat": 41.9047,
-     "lng": 12.4957,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km); Santa Maria della Vittoria",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 41.9028,
+     "lng": 12.4898,
+     "precision": "page",
+     "note": "coordinates taken from latitude.to (Santa Maria della Vittoria, which houses the work)",
+     "sourceUrl": "https://latitude.to/articles-by-country/it/italy/11535/santa-maria-della-vittoria",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -3125,7 +3125,7 @@
    "name": "Palazzo Madama",
    "loc": "Rome",
    "year": "15th-1505",
-   "who": "—",
+   "who": "Giuliano da Sangallo (restoration for Giovanni de' Medici); Paolo Maruscelli (Baroque facade)",
    "note": "—",
    "summary": "業主為 Medici 家族，現為共和國參議院所在。",
    "country": "Italy",
@@ -3569,12 +3569,12 @@
     {
      "id": "bibliotheque-sainte-genevieve-paris~0",
      "sub": "",
-     "lat": 48.8469,
-     "lng": 2.3461,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km); North side of Place du Panthéon",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 48.847149,
+     "lng": 2.345993,
+     "precision": "page",
+     "note": "coordinates taken from Sygic Travel",
+     "sourceUrl": "https://travel.sygic.com/en/poi/sainte-genevieve-library-poi:54976",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -3719,13 +3719,23 @@
    "points": [
     {
      "id": "casa-galimberti-palazzo-castiglioni-milan~0",
-     "sub": "",
-     "lat": 45.4735,
-     "lng": 9.204,
-     "precision": "estimate",
-     "note": "Low confidence (may be several km off, or a linear / grouped item); Both buildings are in the Porta Venezia area; one point represents both",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "sub": "Casa Galimberti",
+     "lat": 45.47467,
+     "lng": 9.20706,
+     "precision": "page",
+     "note": "coordinates taken from Aroundus",
+     "sourceUrl": "https://aroundus.com/p/8123249-casa-galimberti",
+     "status": "Supplementary - to be verified"
+    },
+    {
+     "id": "casa-galimberti-palazzo-castiglioni-milan~1",
+     "sub": "Palazzo Castiglioni",
+     "lat": 45.471168,
+     "lng": 9.20117,
+     "precision": "page",
+     "note": "coordinates taken from Sygic Travel",
+     "sourceUrl": "https://travel.sygic.com/ko/poi/palazzo-castiglioni-poi:5069624",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -4176,12 +4186,12 @@
     {
      "id": "notre-dame-du-haut-ronchamp-ronchamp~0",
      "sub": "",
-     "lat": 47.7033,
-     "lng": 6.6205,
-     "precision": "estimate",
-     "note": "High confidence (within about 300 m)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 47.7023,
+     "lng": 6.6193,
+     "precision": "page",
+     "note": "coordinates taken from latitude.to",
+     "sourceUrl": "https://latitude.to/articles-by-country/fr/france/7548/notre-dame-du-haut",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -4416,12 +4426,12 @@
     {
      "id": "paimio-sanatorium-paimio~0",
      "sub": "",
-     "lat": 60.4515,
-     "lng": 22.684,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 60.459,
+     "lng": 22.7342,
+     "precision": "page",
+     "note": "coordinates taken from latitude.to",
+     "sourceUrl": "https://latitude.to/articles-by-country/fi/finland/28486/paimio-sanatorium",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -4445,12 +4455,12 @@
     {
      "id": "mit-baker-house-cambridge~0",
      "sub": "",
-     "lat": 42.3571,
-     "lng": -71.096,
-     "precision": "estimate",
-     "note": "High confidence (within about 300 m)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 42.35675,
+     "lng": -71.095833,
+     "precision": "page",
+     "note": "coordinates taken from Texas Tech University Libraries (362 Memorial Dr, Cambridge, MA)",
+     "sourceUrl": "https://exhibits.lib.ttu.edu/s/archlib/item/41850",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -4877,12 +4887,12 @@
     {
      "id": "qt8-milan~0",
      "sub": "",
-     "lat": 45.485,
-     "lng": 9.14,
-     "precision": "estimate",
-     "note": "Low confidence (may be several km off, or a linear / grouped item); Northwest Milan; the housing district is very large",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 45.486,
+     "lng": 9.13718,
+     "precision": "page",
+     "note": "coordinates taken from Audiala (map link of the QT8 page)",
+     "sourceUrl": "https://audiala.com/en/italy/milan/qt8",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -4906,12 +4916,12 @@
     {
      "id": "asilo-sant-elia-como~0",
      "sub": "",
-     "lat": 45.807,
-     "lng": 9.077,
-     "precision": "estimate",
-     "note": "Low confidence (may be several km off, or a linear / grouped item); Southwest of Como old town",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 45.79849,
+     "lng": 9.08866,
+     "precision": "page",
+     "note": "coordinates taken from Aroundus",
+     "sourceUrl": "https://aroundus.com/p/8132223-asilo-sant-elia",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -5144,12 +5154,12 @@
     {
      "id": "gallaratese-quarter-milan~0",
      "sub": "",
-     "lat": 45.503,
-     "lng": 9.127,
-     "precision": "estimate",
-     "note": "Low confidence (may be several km off, or a linear / grouped item); Gallaratese district in northwest Milan",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 45.4959,
+     "lng": 9.1121,
+     "precision": "page",
+     "note": "coordinates taken from Bamwor (Gallaratese district)",
+     "sourceUrl": "https://bamwor.com/en/countries/italy/cities/gallaratese",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -5204,12 +5214,12 @@
     {
      "id": "palazzo-dell-arte-triennale-milan~0",
      "sub": "",
-     "lat": 45.4725,
-     "lng": 9.1722,
-     "precision": "estimate",
-     "note": "Medium confidence (within about 1 km); Parco Sempione",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 45.47216,
+     "lng": 9.1735,
+     "precision": "page",
+     "note": "coordinates taken from Aroundus (Triennale di Milano)",
+     "sourceUrl": "https://aroundus.com/p/8130801-",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -5262,12 +5272,12 @@
     {
      "id": "museo-castelvecchio-verona~0",
      "sub": "",
-     "lat": 45.4391,
-     "lng": 10.9894,
-     "precision": "estimate",
-     "note": "High confidence (within about 300 m)",
-     "sourceUrl": "",
-     "status": "Memory estimate - unverified"
+     "lat": 45.4373,
+     "lng": 10.986,
+     "precision": "page",
+     "note": "coordinates taken from latitude.to",
+     "sourceUrl": "https://latitude.to/articles-by-country/it/italy/32594/castelvecchio-museum",
+     "status": "Supplementary - to be verified"
     }
    ]
   },
@@ -5990,7 +6000,7 @@
    "name": "Nevsky Prospect",
    "loc": "Saint Petersburg (Russia)",
    "year": "1710-1718",
-   "who": "—",
+   "who": "Pyotr Yeropkin (Trident plan); Mikhail Zemtsov (model designs for the avenue's stone buildings)",
    "note": "—",
    "summary": "1710–1715 年先建 Moika 至 Fontanka 一段；1723 年成為俄國第一條有街燈的街道。",
    "country": "Others",
