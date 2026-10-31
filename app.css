@@ -91,25 +91,30 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .credits { flex: none; margin-top: auto; padding: 4px 12px; font-size: 10px; line-height: 1.35; color: var(--muted); background: var(--paper); border-top: 1px solid var(--rule); }
 
 /* ---------- Detail panel ---------- */
-.detail, .chooser { position: absolute; top: 16px; right: 56px; z-index: 7; width: min(400px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; background: #fff; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
-.detail .head { position: relative; padding: 14px 96px 14px 16px; color: #fff; background: var(--c); cursor: grab; touch-action: none; user-select: none; }
+.detail, .chooser { position: absolute; top: 16px; right: 56px; z-index: 7; background: #fff; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
+.chooser { width: min(400px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; }
+/* The detail panel scales with --k (1 = full size, set by the resize handle): width, type, buttons and spacing follow it */
+.detail { --k: 1; display: flex; flex-direction: column; width: calc(400px * var(--k)); max-width: calc(100% - 32px); max-height: calc(100% - 32px); overflow: hidden; font-size: calc(15px * var(--k)); }
+.detail .head { position: relative; flex: none; padding: calc(14px * var(--k)) calc(96px * var(--k)) calc(14px * var(--k)) calc(16px * var(--k)); color: #fff; background: var(--c); cursor: grab; touch-action: none; user-select: none; }
 .detail .head:active { cursor: grabbing; }
-.detail .kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
-.detail h2 { margin: 0 0 2px; font-size: 24px; font-weight: 800; line-height: 1.2; text-transform: uppercase; overflow-wrap: anywhere; }
+.detail .kicker { margin: 0; font-size: calc(12px * var(--k)); font-weight: 700; letter-spacing: 0.06em; }
+.detail h2 { margin: 0 0 calc(2px * var(--k)); font-size: calc(24px * var(--k)); font-weight: 800; line-height: 1.2; text-transform: uppercase; overflow-wrap: anywhere; }
 .detail .loc { margin: 0; font-weight: 400; text-transform: lowercase; }
-.context { padding: 14px 16px 16px; }
+.context { flex: 1; min-height: 0; padding: calc(14px * var(--k, 1)) calc(16px * var(--k, 1)) calc(16px * var(--k, 1)); overflow: auto; }
 .context p { margin: 0; }
 .context .who { font-weight: 700; min-height: 1.4em; }
 .context .dash { margin: 6px 0; }
 .context .ctx { min-height: 1.4em; line-height: 1.5; }
 .close, .minimize { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; font-size: 24px; line-height: 1; color: var(--ink); background: #fff; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
-.minimize { right: 50px; }
-.detail .head { padding-right: 96px; }
+.detail .close, .detail .minimize { top: calc(8px * var(--k)); right: calc(8px * var(--k)); width: calc(36px * var(--k)); height: calc(36px * var(--k)); font-size: calc(24px * var(--k)); border-width: calc(3px * var(--k)); }
+.detail .minimize { right: calc(50px * var(--k)); font-size: calc(20px * var(--k)); }
+/* Resize handle: bottom-left corner (the panel is anchored at its right edge) */
+.detail .resize { position: absolute; left: 0; bottom: 0; z-index: 2; width: 18px; height: 18px; cursor: nesw-resize; touch-action: none; background: linear-gradient(45deg, var(--ink) 0 50%, transparent 50%); }
 /* Minimized: only the building name and the two buttons */
-.detail[data-min='true'] .kicker, .detail[data-min='true'] .loc, .detail[data-min='true'] .context { display: none; }
-.detail[data-min='true'] .head { padding-top: 6px; padding-bottom: 6px; min-height: 52px; display: flex; align-items: center; }
-.detail[data-min='true'] h2 { margin: 0; font-size: 17px; }
-.detail[data-min='true'] .close, .detail[data-min='true'] .minimize { top: 6px; }
+.detail[data-min='true'] .kicker, .detail[data-min='true'] .loc, .detail[data-min='true'] .context, .detail[data-min='true'] .resize { display: none; }
+.detail[data-min='true'] .head { display: flex; align-items: center; min-height: calc(52px * var(--k)); padding-top: calc(6px * var(--k)); padding-bottom: calc(6px * var(--k)); }
+.detail[data-min='true'] h2 { margin: 0; font-size: calc(17px * var(--k)); }
+.detail[data-min='true'] .close, .detail[data-min='true'] .minimize { top: calc(6px * var(--k)); }
 .rows { margin: 0; }
 .row { display: grid; grid-template-columns: 7.5em 1fr; border-bottom: 1px solid var(--rule); }
 .row dt { padding: 8px 12px; font-size: 13px; font-weight: 700; background: var(--paper); }
@@ -151,7 +156,10 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   .tabs button { padding: 12px; font-weight: 700; background: #fff; border: 0; border-radius: 0; cursor: pointer; }
   .tabs button + button { border-left: 3px solid var(--ink); }
   .tabs button[aria-pressed='true'] { color: #fff; background: var(--ink); }
-  .detail, .chooser { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 55%; border-width: 3px 0 0; box-shadow: none; transform: none !important; }
+  .detail, .chooser { top: auto; left: 0; right: 0; bottom: 0; width: auto !important; max-width: none; max-height: 55%; border-width: 3px 0 0; box-shadow: none; transform: none !important; }
+  .detail { --k: 1 !important; }
+  .detail .resize { display: none; }
+  .chooser { overflow: auto; }
   .detail .head { cursor: default; touch-action: auto; }
   .map-note { bottom: 60%; }
 }
