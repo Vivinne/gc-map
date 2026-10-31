@@ -26,6 +26,7 @@ export default function MapApp() {
   const [tab, setTab] = useState<Tab>('map');
   const [focus, setFocus] = useState<FocusTarget | null>(null);
   const [detailOffset, setDetailOffset] = useState<Offset>({ x: 0, y: 0 });
+  const [detailMin, setDetailMin] = useState(false);
   const nonce = useRef(0);
 
   // Checkbox state updates immediately; the heavy parts (list, map data, counts) follow from the deferred values so the tags stay responsive
@@ -232,7 +233,10 @@ export default function MapApp() {
             place={selected}
             era={eraOf(dataset.eras, selected.era)}
             offset={detailOffset}
+            minimized={detailMin}
+            layoutKey={sideOpen ? 'open' : 'closed'}
             onMoved={setDetailOffset}
+            onMinimize={() => setDetailMin((v) => !v)}
             onClose={() => setSelectedId('')}
           />
         )}

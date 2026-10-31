@@ -22,7 +22,7 @@ npm run site        # writes site/ (index.html, app.js, app.css, README.txt)
 ```
 
 `site/` opens by double-clicking `index.html`, or the whole folder can go on any static host. The React and TypeScript code is shared with the Next.js build (`src/components`); only the entry point (`src/standalone/main.tsx`) differs, and MapLibre is loaded from jsDelivr through a `<script>` tag.
-`npm run site:test` uses a fake `window.maplibregl` to verify the loading flow, the fallback and the calls MapView makes (16 checks); it is not real MapLibre.
+`npm run site:test` uses a fake `window.maplibregl` to verify the loading flow, the fallback and the calls MapView makes (17 checks); it is not real MapLibre.
 
 ## Data flow
 
@@ -63,7 +63,7 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 ```bash
 npm test     # 24 unit tests: filtering, geometry, hash, parsing, data validation
 npm run typecheck
-npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (24 checks)
+npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (25 checks)
 ```
 
 `e2e` needs `esbuild` and `playwright` (listed as devDependencies); the first run needs `npx playwright install chromium`.
@@ -95,3 +95,6 @@ Below zoom 10.5 each city is one dark numbered circle; the number is the count o
 - The tag panel floats over the map (desktop); the three-line button collapses it to just that button. On phones it stays the List tab.
 - The building detail panel can be dragged by its coloured heading block (desktop; at least 60 px stays on the map; the position is kept for the next building). On phones it stays a bottom sheet.
 - Tag/search input updates the checkboxes at once; the list, tag counts and map data follow through React's deferred values, and tag matching no longer rebuilds its lookup per building.
+- Figure ground: selecting a building fills its footprint on the map with its style colour (and a dark outline). The footprint is not stored data: it is taken from the basemap's building polygons (OpenFreeMap / OpenMapTiles `building` layer) that are drawn at the selected point, so it appears once the map is zoomed in far enough for buildings to be drawn (the 1 km view is) and the tiles have loaded. A polygon containing the point is used; if the coordinate falls just beside a building, the building polygons within about 8 px are used. Not verified in real MapLibre: buildings missing from OpenStreetMap, ruins, and large complexes cut at tile edges may be unfilled or partly filled.
+- Detail panel: the [-] button (same size as [x], left of it) shrinks it to the building name, [-] and [x]; pressing [-] again restores it. The panel stays fully inside the map and at least 14 px away from the three-line button; the position is checked again on window resize and when the tag panel opens or closes.
+- The Back and Full map buttons have the same width.

@@ -32,7 +32,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .app[data-side='closed'] .side-top { border-bottom: 0; }
 .app[data-side='closed'] .menu-btn { width: 48px; min-height: 48px; }
 .side-body { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-.fullmap, .map-back { position: absolute; right: 10px; z-index: 5; padding: 8px 12px; font-weight: 700; color: #fff; background: var(--ink); border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
+.fullmap, .map-back { position: absolute; right: 10px; z-index: 5; width: 104px; padding: 8px 0; text-align: center; font-weight: 700; color: #fff; background: var(--ink); border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
 .fullmap { bottom: 40px; }
 .map-back { bottom: 92px; }
 .map-back:disabled { background: #9ca3af; border-color: #9ca3af; cursor: default; }
@@ -91,8 +91,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .credits { flex: none; margin-top: auto; padding: 4px 12px; font-size: 10px; line-height: 1.35; color: var(--muted); background: var(--paper); border-top: 1px solid var(--rule); }
 
 /* ---------- Detail panel ---------- */
-.detail, .chooser { position: absolute; top: 16px; right: 56px; z-index: 5; width: min(400px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; background: #fff; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
-.detail .head { position: relative; padding: 14px 52px 14px 16px; color: #fff; background: var(--c); cursor: grab; touch-action: none; user-select: none; }
+.detail, .chooser { position: absolute; top: 16px; right: 56px; z-index: 7; width: min(400px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; background: #fff; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
+.detail .head { position: relative; padding: 14px 96px 14px 16px; color: #fff; background: var(--c); cursor: grab; touch-action: none; user-select: none; }
 .detail .head:active { cursor: grabbing; }
 .detail .kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
 .detail h2 { margin: 0 0 2px; font-size: 24px; font-weight: 800; line-height: 1.2; text-transform: uppercase; overflow-wrap: anywhere; }
@@ -102,7 +102,14 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .context .who { font-weight: 700; min-height: 1.4em; }
 .context .dash { margin: 6px 0; }
 .context .ctx { min-height: 1.4em; line-height: 1.5; }
-.close { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; font-size: 24px; line-height: 1; color: var(--ink); background: #fff; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
+.close, .minimize { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; font-size: 24px; line-height: 1; color: var(--ink); background: #fff; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
+.minimize { right: 50px; }
+.detail .head { padding-right: 96px; }
+/* Minimized: only the building name and the two buttons */
+.detail[data-min='true'] .kicker, .detail[data-min='true'] .loc, .detail[data-min='true'] .context { display: none; }
+.detail[data-min='true'] .head { padding-top: 6px; padding-bottom: 6px; min-height: 52px; display: flex; align-items: center; }
+.detail[data-min='true'] h2 { margin: 0; font-size: 17px; }
+.detail[data-min='true'] .close, .detail[data-min='true'] .minimize { top: 6px; }
 .rows { margin: 0; }
 .row { display: grid; grid-template-columns: 7.5em 1fr; border-bottom: 1px solid var(--rule); }
 .row dt { padding: 8px 12px; font-size: 13px; font-weight: 700; background: var(--paper); }

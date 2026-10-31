@@ -21,6 +21,22 @@ const UNION_PAD = 0.2;
 const CITY_MERGE_PX = CITY_RADIUS * 2 + 4;
 
 const INK = '#111827';
+const FOOTPRINT_SOURCE = 'footprint';
+const EMPTY_FC = { type: 'FeatureCollection', features: [] } as const;
+
+type Ring = number[][];
+type Geom = { type: string; coordinates: unknown };
+/** Outer rings of a (Multi)Polygon */
+const outerRings = (g: Geom): Ring[] => (g.type === 'Polygon' ? [(g.coordinates as Ring[])[0] as Ring] : g.type === 'MultiPolygon' ? (g.coordinates as Ring[][]).map((p) => p[0] as Ring) : []);
+const ringHas = (ring: Ring, x: number, y: number): boolean => {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i] as [number, number];
+    const [xj, yj] = ring[j] as [number, number];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+};
 
 // Taken from MapLibre's own types, to avoid depending on the global namespace of @types/geojson
 type GeoData = Parameters<GeoJSONSource['setData']>[0];
@@ -117,6 +133,10 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         'circle-stroke-color': '#ffffff',
       } as const;
       const countLayout = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true } as const;
+      // Figure ground: the basemap footprint of the selected building, filled with its style colour
+      map.addSource(FOOTPRINT_SOURCE, { type: 'geojson', data: EMPTY_FC as unknown as GeoData });
+      map.addLayer({ id: 'footprint', type: 'fill', source: FOOTPRINT_SOURCE, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.9 } });
+      map.addLayer({ id: 'footprint-line', type: 'line', source: FOOTPRINT_SOURCE, paint: { 'line-color': INK, 'line-width': 2 } });
       map.addLayer({ id: 'points', type: 'circle', source: SOURCE, minzoom: CITY_TOP_ZOOM, paint: dot });
       // Below the switch zoom: markers of the circles with fewer than MIN_NUMBER buildings (list kept up to date by refreshFew)
       map.addLayer({ id: 'points-few', type: 'circle', source: SOURCE, maxzoom: CITY_TOP_ZOOM, filter: ['in', ['get', 'pid'], ['literal', []]], paint: dot });
@@ -225,7 +245,35 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         fewKey = key;
         map.setFilter('points-few', ['in', ['get', 'pid'], ['literal', list]]);
       };
-      map.on('idle', () => void refreshFew());
+      // The footprint comes from the basemap's building polygons that are drawn at the selected point; tiles may still be loading, so this retries on idle
+      let footKey = '';
+      const refreshFootprint = () => {
+        const src = map.getSource(FOOTPRINT_SOURCE) as GeoJSONSource | undefined;
+        if (!src) return;
+        const sel = latest.current.selectedPid;
+        const pts = sel ? latest.current.fc.features.filter((f) => f.properties.pid === sel) : [];
+        const layers = (map.getStyle()?.layers ?? []).filter((l) => (l as { 'source-layer'?: string })['source-layer'] === 'building').map((l) => l.id);
+        const out: { type: 'Feature'; geometry: Geom; properties: { color: string } }[] = [];
+        if (layers.length) {
+          for (const f of pts) {
+            const [lng, lat] = f.geometry.coordinates;
+            const px = map.project([lng, lat]);
+            const hits = map.queryRenderedFeatures([[px.x - 8, px.y - 8], [px.x + 8, px.y + 8]], { layers }).filter((h) => outerRings(h.geometry as Geom).length > 0);
+            // Buildings that contain the point; when the coordinate falls just beside one, take those within the small box
+            const within = hits.filter((h) => outerRings(h.geometry as Geom).some((r) => ringHas(r, lng, lat)));
+            for (const h of within.length ? within : hits) out.push({ type: 'Feature', geometry: h.geometry as Geom, properties: { color: f.properties.color } });
+          }
+        }
+        const key = sel + '|' + JSON.stringify(out.map((o) => o.geometry));
+        if (key === footKey) return;
+        footKey = key;
+        src.setData({ type: 'FeatureCollection', features: out } as unknown as GeoData);
+      };
+      map.on('idle', () => {
+        void refreshFew();
+        refreshFootprint();
+      });
+      map.on('moveend', refreshFootprint);
       setReady(true);
     });
 

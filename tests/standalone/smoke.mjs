@@ -32,7 +32,7 @@ const FAKE = `(function(){
   Map.prototype.fire=function(ev,e){ (this.h[ev]||[]).forEach(function(x){ if(!x.layer) x.fn(e||{}); }); };
   Map.prototype.fireLayer=function(ev,layer,e){ (this.h[ev]||[]).forEach(function(x){ if(x.layer===layer) x.fn(e); }); };
   Map.prototype.addControl=function(){ calls.controls++; };
-  Map.prototype.addSource=function(id,s){ calls.sources[id]={cluster:s.cluster,data:s.data,radius:s.clusterRadius,props:s.clusterProperties}; this._src=this._src||{}; this._src[id]={ setData:function(d){ calls.setData.push([id,d.features.length]); }, getClusterExpansionZoom:function(){ return Promise.resolve(calls.expansion); }, getClusterLeaves:function(){ return Promise.resolve(calls.leaves||[]); } }; };
+  Map.prototype.addSource=function(id,s){ calls.sources[id]={cluster:s.cluster,data:s.data,radius:s.clusterRadius,props:s.clusterProperties}; this._src=this._src||{}; this._src[id]={ setData:function(d){ calls.setData.push([id,d.features.length]); if(id==='footprint') calls.footprint=d; }, getClusterExpansionZoom:function(){ return Promise.resolve(calls.expansion); }, getClusterLeaves:function(){ return Promise.resolve(calls.leaves||[]); } }; };
   Map.prototype.getSource=function(id){ return this._src&&this._src[id]; };
   Map.prototype.addLayer=function(l){ calls.layers.push(l); };
   Map.prototype.getLayer=function(id){ return calls.layers.find(function(l){ return l.id===id; }); };
@@ -43,6 +43,8 @@ const FAKE = `(function(){
   Map.prototype.flyTo=function(o){ calls.fly.push(o); };
   Map.prototype.easeTo=function(o){ calls.ease=o; };
   Map.prototype.getZoom=function(){ return this.zoom; };
+  Map.prototype.getStyle=function(){ return { layers: [{ id: 'building', 'source-layer': 'building' }, { id: 'water', 'source-layer': 'water' }] }; };
+  Map.prototype.project=function(c){ return { x: c[0], y: c[1] }; };
   Map.prototype.getCenter=function(){ return this.center||{lng:12.5,lat:43.5}; };
   Map.prototype.querySourceFeatures=function(){ return calls.srcFeatures||[]; };
   window.__fakeLeaves=[];
@@ -87,7 +89,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 5);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 7);
   const f = await page.evaluate(() => ({
     
     cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
@@ -97,7 +99,7 @@ async function open({ pinned = true, fallback = true } = {}) {
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['points', 'points-few', 'cities', 'city-count', 'selected']);
+  assert.deepEqual(f.layers, ['footprint', 'footprint-line', 'points', 'points-few', 'cities', 'city-count', 'selected']);
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
   for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);
@@ -141,6 +143,23 @@ async function open({ pinned = true, fallback = true } = {}) {
   const fly = await page.evaluate(() => window.__fake.fly.at(-1));
   assert.ok(Math.abs(fly.zoom - 14.5) < 0.15, `1 km around the point: ${fly.zoom}`);
   ok('Marker click -> detail panel, selection-ring filter, flyTo');
+
+  // Figure ground: the basemap building polygon at the selected point is sent to the footprint source
+  const colo = data.places.find((p) => p.id === colosseum).points[0];
+  await page.evaluate(([lng, lat]) => {
+    const e = 0.0005;
+    window.__fake.hits = [
+      { properties: { pid: 'x' }, geometry: { type: 'Polygon', coordinates: [[[lng - e, lat - e], [lng + e, lat - e], [lng + e, lat + e], [lng - e, lat + e], [lng - e, lat - e]]] } },
+      { properties: { pid: 'y' }, geometry: { type: 'Polygon', coordinates: [[[lng + 1, lat], [lng + 1.1, lat], [lng + 1.1, lat + 0.1], [lng + 1, lat]]] } },
+    ];
+    window.__fake.setData.length = 0;
+    window.__fake.map.fire('idle');
+  }, [colo.lng, colo.lat]);
+  await page.waitForFunction(() => window.__fake.setData.some((x) => x[0] === 'footprint'));
+  const foot = await page.evaluate(() => window.__fake.footprint);
+  assert.equal(foot.features.length, 1, 'Only the building that contains the point');
+  assert.match(foot.features[0].properties.color, /^#/);
+  ok('Selecting a building -> its basemap footprint is filled with the style colour');
 
   // Several entries at one spot -> chooser
   await page.keyboard.press('Escape');

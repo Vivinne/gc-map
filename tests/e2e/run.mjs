@@ -224,7 +224,7 @@ ok('The "Full map" button zooms out to halfway between the Europe view and a fit
 await page.fill('.search', 'Colosseum');
 await page.click('.list .item');
 await page.waitForSelector('[data-testid=detail]');
-const dRect = () => page.evaluate(() => { const r = document.querySelector('.detail').getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width }; });
+const dRect = () => page.evaluate(() => { const r = document.querySelector('.detail').getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height, r: r.right, b: r.bottom }; });
 const d0 = await dRect();
 const hb = await page.locator('.detail .head h2').boundingBox();
 await page.mouse.move(hb.x + 10, hb.y + 10);
@@ -240,9 +240,22 @@ await page.mouse.down();
 await page.mouse.move(5000, 5000, { steps: 4 });
 await page.mouse.up();
 const d2 = await dRect();
-assert.ok(d2.x < 1280 && d2.x > 1100 && d2.y < 800, JSON.stringify(d2));
+assert.ok(d2.r <= 1280.5 && d2.b <= 800.5 && d2.x >= 0 && d2.y >= 0, 'Fully inside the window: ' + JSON.stringify(d2));
+assert.ok(d2.r > 1270 && d2.b > 790, 'Pushed to the bottom-right corner: ' + JSON.stringify(d2));
+// Dragged to the top-left corner: it keeps its distance from the three-line button and stays inside the window
+const hb3 = await page.locator('.detail .head h2').boundingBox();
+await page.mouse.move(hb3.x + 10, hb3.y + 10);
+await page.mouse.down();
+await page.mouse.move(0, 0, { steps: 6 });
+await page.mouse.up();
+const d4 = await dRect();
+const menuR = await page.evaluate(() => { const r = document.querySelector('.menu-btn').getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
+const apart = d4.x >= menuR.r + 13 || d4.y >= menuR.b + 13;
+assert.ok(apart && d4.x >= 0 && d4.y >= 0, JSON.stringify({ d4, menuR }));
+ok('Detail panel keeps at least 13 px away from the three-line button');
 // Back where it was; the position survives choosing another building
-await page.mouse.move(d2.x + 20, d2.y + 20);
+const dNow = await dRect();
+await page.mouse.move(dNow.x + 20, dNow.y + 20);
 await page.mouse.down();
 await page.mouse.move(d1.x + 20, d1.y + 20, { steps: 4 });
 await page.mouse.up();
@@ -251,6 +264,20 @@ await page.click('.list .item');
 await page.waitForSelector('[data-testid=detail]');
 const d3 = await dRect();
 assert.ok(Math.abs(d3.x - d1.x) < 2 && Math.abs(d3.y - d1.y) < 2, JSON.stringify([d1, d3]));
+// Minimize: only the name, the [-] and the [x] remain; the [-] restores
+const full = await dRect();
+assert.equal(await page.locator('.detail .minimize').count(), 1);
+const bm = await page.locator('.detail .minimize').boundingBox();
+const bc = await page.locator('.detail .close').boundingBox();
+assert.ok(Math.abs(bm.width - bc.width) < 0.5 && Math.abs(bm.height - bc.height) < 0.5 && bm.x < bc.x, 'Same size, left of the x');
+await page.click('.detail .minimize');
+assert.equal(await page.locator('.detail .context').isVisible(), false);
+assert.equal(await page.locator('.detail .loc').isVisible(), false);
+assert.equal(await page.locator('.detail h2').isVisible(), true);
+assert.ok((await dRect()).h < full.h / 2, 'Smaller');
+await page.click('[data-testid=detail-min]');
+assert.equal(await page.locator('.detail .context').isVisible(), true);
+// Back and Full map buttons have the same size is checked in the map stub below
 // The close button is not a drag handle
 await page.click('.detail .close');
 assert.equal(await page.locator('[data-testid=detail]').count(), 0);
