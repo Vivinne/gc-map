@@ -70,7 +70,7 @@ test('tags: several checked tags give the intersection; tags without a match giv
   const hit = (t: string) => filterPlaces(multi, { tags: new Set([t]), q: '' }, groups).length;
   assert.equal(hit('s:ancient') + hit('s:modern'), 2);
   assert.ok(matchesTags(places[0]!, new Set(), groups));
-  assert.equal(groups.map((g) => g.tags.length).join(','), '13,6,2');
+  assert.equal(groups.map((g) => g.tags.length).join(','), '6,2,13');
 });
 
 test('toFeatureCollection: one Feature per point, coordinates are [lng, lat], colour follows the era', () => {
@@ -137,6 +137,8 @@ test('city circles: city from the handout location, count = buildings, region pl
   const ven = by.Venice;
   assert.equal(ven.n, 1);
   assert.deepEqual([ven.w, ven.e], [12.33, 12.33]);
+  assert.equal(ven.vpids, JSON.stringify(['g']));
+  assert.equal(by.Rome.vpids, '[]');
   assert.deepEqual([ven.xw, ven.xs, ven.xe, ven.xn], [11.5, 45, 12.33, 45.8]);
   assert.deepEqual([by.Rome.xw, by.Rome.xs, by.Rome.xe, by.Rome.xn], [by.Rome.w, by.Rome.s, by.Rome.e, by.Rome.nn]);
   // The click lands just past the switch zoom, a deeper fit is kept

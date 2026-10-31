@@ -41,7 +41,7 @@ ok('The building list is hidden while only the style tags are shown; marker coun
 
 // Tag groups: three buttons; the sub tags appear only after a press
 assert.equal(await page.locator('.tag-toggle').count(), 3);
-assert.deepEqual(await page.locator('.tag-toggle').allTextContents(), ['【Previous Years】', '【Country】', '【Styles】']);
+assert.deepEqual(await page.locator('.tag-toggle').allTextContents(), ['【Country】', '【Styles】', '【Previous Years】']);
 assert.equal(await page.locator('.tag-item').count(), 0);
 for (const b of await page.locator('.tag-toggle').all()) assert.equal(await b.getAttribute('aria-expanded'), 'false');
 await page.click('.tag-toggle:has-text("Styles")');
@@ -76,7 +76,7 @@ ok('Clearing the filter restores all entries');
 
 // Tag groups: titles, checkable, intersection
 const titles = (await page.locator('.tag-toggle span').allTextContents());
-assert.deepEqual(titles, ['【Previous Years】', '【Country】', '【Styles】']);
+assert.deepEqual(titles, ['【Country】', '【Styles】', '【Previous Years】']);
 await page.click('.tag-item:has-text("2018")');
 const y18 = data.places.filter((p) => p.exams.includes(2018));
 assert.equal(await page.locator('.list .item').count(), y18.length);

@@ -86,7 +86,7 @@ export default function MapApp() {
     nonce.current += 1;
     if (p.points.length === 1) {
       const pt = p.points[0] as Point;
-      setFocus({ kind: 'point', lng: pt.lng, lat: pt.lat, zoom: 15, nonce: nonce.current });
+      setFocus({ kind: 'point', lng: pt.lng, lat: pt.lat, radiusKm: 1, nonce: nonce.current });
     } else if (p.points.length > 1) {
       const b = boundsOf([p]);
       if (b) setFocus({ kind: 'bounds', bounds: b, nonce: nonce.current });

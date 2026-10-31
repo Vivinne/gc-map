@@ -32,7 +32,7 @@ const FAKE = `(function(){
   Map.prototype.fire=function(ev,e){ (this.h[ev]||[]).forEach(function(x){ if(!x.layer) x.fn(e||{}); }); };
   Map.prototype.fireLayer=function(ev,layer,e){ (this.h[ev]||[]).forEach(function(x){ if(x.layer===layer) x.fn(e); }); };
   Map.prototype.addControl=function(){ calls.controls++; };
-  Map.prototype.addSource=function(id,s){ calls.sources[id]={cluster:s.cluster,data:s.data,radius:s.clusterRadius,props:s.clusterProperties}; this._src=this._src||{}; this._src[id]={ setData:function(d){ calls.setData.push([id,d.features.length]); }, getClusterExpansionZoom:function(){ return Promise.resolve(calls.expansion); } }; };
+  Map.prototype.addSource=function(id,s){ calls.sources[id]={cluster:s.cluster,data:s.data,radius:s.clusterRadius,props:s.clusterProperties}; this._src=this._src||{}; this._src[id]={ setData:function(d){ calls.setData.push([id,d.features.length]); }, getClusterExpansionZoom:function(){ return Promise.resolve(calls.expansion); }, getClusterLeaves:function(){ return Promise.resolve(calls.leaves||[]); } }; };
   Map.prototype.getSource=function(id){ return this._src&&this._src[id]; };
   Map.prototype.addLayer=function(l){ calls.layers.push(l); };
   Map.prototype.getLayer=function(id){ return calls.layers.find(function(l){ return l.id===id; }); };
@@ -43,12 +43,16 @@ const FAKE = `(function(){
   Map.prototype.flyTo=function(o){ calls.fly.push(o); };
   Map.prototype.easeTo=function(o){ calls.ease=o; };
   Map.prototype.getZoom=function(){ return this.zoom; };
+  Map.prototype.getCenter=function(){ return this.center||{lng:12.5,lat:43.5}; };
+  Map.prototype.querySourceFeatures=function(){ return calls.srcFeatures||[]; };
+  window.__fakeLeaves=[];
   Map.prototype.getContainer=function(){ return { clientWidth: 1000, clientHeight: 800 }; };
   Map.prototype.getCanvas=function(){ return { style:{} }; };
   Map.prototype.queryRenderedFeatures=function(){ return calls.hits; };
   Map.prototype.resize=function(){};
   Map.prototype.remove=function(){ calls.removed=true; };
-  window.maplibregl={ Map:Map, NavigationControl:function(){} };
+  window.maplibregl={ Map:Map, NavigationControl:function(){}, ScaleControl:function(o){ calls.scale=o; } };
+  Map.prototype.addControl=function(c,pos){ calls.controls++; (calls.controlPos=calls.controlPos||[]).push(pos); };
 })();`;
 
 const browser = await chromium.launch();
@@ -83,7 +87,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 4);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 5);
   const f = await page.evaluate(() => ({
     
     cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
@@ -93,7 +97,7 @@ async function open({ pinned = true, fallback = true } = {}) {
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['points', 'cities', 'city-count', 'selected']);
+  assert.deepEqual(f.layers, ['points', 'points-few', 'cities', 'city-count', 'selected']);
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
   for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);
@@ -113,9 +117,12 @@ async function open({ pinned = true, fallback = true } = {}) {
   const L = f.layerById;
   for (const id of ['cities', 'city-count']) assert.equal(L[id].maxzoom, 10.5, id);
   assert.equal(L.points.minzoom, 10.5);
+  assert.deepEqual(L.cities.filter, ['>=', ['get', 'n'], 5], 'Circles only from 5 buildings');
+  assert.deepEqual(L['city-count'].filter, ['>=', ['get', 'n'], 5]);
+  assert.equal(L['points-few'].maxzoom, 10.5);
   assert.deepEqual(L['city-count'].layout['text-field'], ['to-string', ['get', 'n']]);
   assert.deepEqual(f.pointsPaint['circle-opacity'], ['case', ['get', 'est'], 0.5, 1]);
-  assert.equal(f.controls, 1);
+  assert.equal(f.controls, 2, 'Navigation + scale bar');
   ok('Marker and city sources; city circle / count / points layers with the switch zoom (wide cities earlier); navigation control');
 
   await page.waitForFunction((n) => window.__fake.setData.some((x) => x[0] === 'places' && x[1] === n), totalPts);
@@ -131,7 +138,8 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Colosseum');
   const sel = await page.evaluate(() => window.__fake.filters.at(-1));
   assert.deepEqual(sel, ['selected', ['==', ['get', 'pid'], colosseum]]);
-  assert.ok((await page.evaluate(() => window.__fake.fly.length)) >= 1);
+  const fly = await page.evaluate(() => window.__fake.fly.at(-1));
+  assert.ok(Math.abs(fly.zoom - 14.5) < 0.15, `1 km around the point: ${fly.zoom}`);
   ok('Marker click -> detail panel, selection-ring filter, flyTo');
 
   // Several entries at one spot -> chooser
@@ -139,6 +147,47 @@ async function open({ pinned = true, fallback = true } = {}) {
   await page.evaluate((ids) => { window.__fake.hits = ids.map((pid) => ({ properties: { pid } })); window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); }, ['st-peters-dome-vatican', 'st-peters-facade-nave-vatican']);
   await page.waitForSelector('[data-testid=chooser]');
   ok('Several entries at one location -> chooser');
+  await page.keyboard.press('Escape');
+
+  // Overlapping dots at different places: no chooser, zoom to the range that separates them
+  await page.evaluate(() => {
+    const h = (pid, c) => ({ properties: { pid }, geometry: { coordinates: c } });
+    window.__fake.hits = [h('a', [12.49, 41.89]), h('b', [12.5, 41.9])];
+    window.__fake.ease = null;
+    window.__fake.map.zoom = 9;
+    window.__fake.map.fireLayer('click', 'points-few', { point: { x: 1, y: 1 } });
+  });
+  const eo = await page.evaluate(() => window.__fake.ease);
+  assert.ok(eo && eo.zoom >= 10, JSON.stringify(eo));
+  assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
+  ok('Click on overlapping coloured dots -> zooms to their range (no chooser)');
+
+  // Circles under 5 buildings become coloured dots: the idle handler lists their pids in the points-few filter
+  await page.evaluate(() => {
+    window.__fake.srcFeatures = [{ properties: { n: 2, pids: JSON.stringify(['colosseum']), vpids: '[]' } }, { properties: { cluster: true, cluster_id: 3, n: 4 } }];
+    window.__fake.leaves = [{ properties: { pids: JSON.stringify(['x1']), vpids: JSON.stringify(['villa1']) } }];
+    window.__fake.filters.length = 0;
+    window.__fake.map.fire('idle');
+  });
+  await page.waitForFunction(() => window.__fake.filters.some((f) => f[0] === 'points-few'));
+  const ff = await page.evaluate(() => window.__fake.filters.find((f) => f[0] === 'points-few')[1]);
+  assert.deepEqual(ff, ['in', ['get', 'pid'], ['literal', ['colosseum', 'villa1', 'x1']]]);
+  ok('Circles with fewer than 5 buildings -> their buildings (and attached villa markers) are drawn as dots');
+
+  // Back button: disabled at first, enabled after a zoom change, returns to the earlier view
+  assert.equal(await page.locator('[data-testid=map-back]').isDisabled(), true);
+  await page.evaluate(() => { const m = window.__fake.map; m.zoom = 5; m.center = { lng: 10, lat: 45 }; m.fire('moveend'); m.zoom = 9; m.center = { lng: 12.4, lat: 41.9 }; m.fire('moveend'); });
+  await page.waitForFunction(() => !document.querySelector('[data-testid=map-back]').disabled);
+  await page.evaluate(() => { window.__fake.ease = null; });
+  await page.click('[data-testid=map-back]');
+  const back = await page.evaluate(() => window.__fake.ease);
+  assert.equal(back.zoom, 5);
+  assert.deepEqual(back.center, [10, 45]);
+  assert.equal(await page.locator('[data-testid=map-back]').isDisabled(), true);
+  ok('Back button returns to the previous zoom and view');
+  assert.ok(await page.evaluate(() => window.__fake.scale && window.__fake.scale.unit === 'metric'));
+  ok('Scale bar (metric) added');
+  await page.evaluate(() => { window.__fake.map.zoom = 4; });
 
   // City click 1: zoom to the bounds of the city's buildings, just past the switch zoom; no chooser
   await page.keyboard.press('Escape');

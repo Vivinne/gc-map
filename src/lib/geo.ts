@@ -103,7 +103,7 @@ export function cityOf(p: Place): string {
 export interface CityFeature {
   type: 'Feature';
   geometry: { type: 'Point'; coordinates: [number, number] };
-  properties: { city: string; n: number; w: number; s: number; e: number; nn: number; xw: number; xs: number; xe: number; xn: number; pids: string };
+  properties: { city: string; n: number; w: number; s: number; e: number; nn: number; xw: number; xs: number; xe: number; xn: number; pids: string; vpids: string };
 }
 
 export interface CityCollection {
@@ -138,10 +138,12 @@ export function toCityCollection(places: readonly Place[]): CityCollection {
         xe: b[1][0],
         xn: b[1][1],
         pids: JSON.stringify(ps.map((p) => p.id)),
+        vpids: '[]',
       },
     });
   }
   // Markers of region places join the nearest city: only the union bounds (x*) grow, the number and the circle position stay
+  const attached = new Map<CityFeature, string[]>();
   for (const p of places) {
     if (!isWidePlace(p) || !features.length) continue;
     for (const pt of p.points) {
@@ -155,6 +157,7 @@ export function toCityCollection(places: readonly Place[]): CityCollection {
           best = f;
         }
       }
+      attached.set(best, [...new Set([...(attached.get(best) ?? []), p.id])]);
       const q = best.properties;
       q.xw = Math.min(q.xw, pt.lng);
       q.xe = Math.max(q.xe, pt.lng);
@@ -162,5 +165,6 @@ export function toCityCollection(places: readonly Place[]): CityCollection {
       q.xn = Math.max(q.xn, pt.lat);
     }
   }
+  for (const [f, ids] of attached) f.properties.vpids = JSON.stringify(ids);
   return { type: 'FeatureCollection', features };
 }
