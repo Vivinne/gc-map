@@ -10,8 +10,9 @@ const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
 const SOURCE = 'places';
 /** One numbered point per city; drawn below the city zoom, the single markers above it */
 const CITY_SOURCE = 'cities';
-/** City circles closer than this (screen px) are merged into one circle with the summed count */
-const CITY_MERGE_PX = 50;
+/** City circle radius (px, fixed); circles whose centres are closer than the diameter overlap, so they are merged (counts summed) */
+const CITY_RADIUS = 15;
+const CITY_MERGE_PX = CITY_RADIUS * 2 + 4;
 
 const INK = '#111827';
 
@@ -81,7 +82,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       } as const;
       const cityPaint = {
         'circle-color': INK,
-        'circle-radius': ['step', ['get', 'n'], 13, 2, 15, 6, 18, 16, 22],
+        'circle-radius': CITY_RADIUS,
         'circle-stroke-width': 3,
         'circle-stroke-color': '#ffffff',
       } as const;
@@ -144,10 +145,10 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         }
         const cam = map.cameraForBounds(b, { padding: 80, maxZoom: 17 });
         const center = cam?.center ?? [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2];
-        const go = (extra: number) => map.easeTo({ center, zoom: Math.max(cityClickZoom(cam?.zoom ?? 0), extra), duration: 600 });
-        if (!merged) return go(0);
-        // Merged circle: also zoom far enough that its cities separate into their own circles
-        (map.getSource(CITY_SOURCE) as GeoJSONSource).getClusterExpansionZoom(Number(pr.cluster_id)).then((z) => go(z), () => go(0));
+        if (!merged) return map.easeTo({ center, zoom: cityClickZoom(cam?.zoom ?? 0), duration: 600 });
+        // Merged circle: show the union of its cities (no minimum zoom, the members may be far apart); always zoom in at least a little
+        const zoom = Math.max(cam?.zoom ?? 0, map.getZoom() + 0.5);
+        map.easeTo({ center, zoom, duration: 600 });
       };
       map.on('click', 'cities', cityClick);
       for (const id of ['cities', 'points', 'points-wide']) {

@@ -96,7 +96,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
   for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);
-    assert.ok(cs.radius >= 44, String(cs.radius));
+    assert.equal(cs.radius, 34);
     assert.deepEqual(cs.props.n, ['+', ['get', 'n']]);
     assert.deepEqual(Object.keys(cs.props).sort(), ['e', 'n', 'nn', 's', 'w']);
   }
@@ -161,10 +161,12 @@ async function open({ pinned = true, fallback = true } = {}) {
     window.__fake.hits = [h];
     window.__fake.ease = null;
     window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } });
-  }, city({ cluster: true, cluster_id: 4, point_count: 2, n: 41 }));
+  }, city({ cluster: true, cluster_id: 4, point_count: 4, n: 29, w: 7.6, s: 45.15, e: 10.8, nn: 47.6 }));
   await page.waitForFunction(() => window.__fake.ease);
-  assert.equal((await page.evaluate(() => window.__fake.ease)).zoom, 13);
-  ok('Merged circle click -> zooms far enough for the merged cities to split');
+  const e3 = await page.evaluate(() => window.__fake.ease);
+  assert.ok(e3.zoom > 4.4 && e3.zoom < 8, String(e3.zoom));
+  assert.ok(Math.abs(e3.center[0] - 9.2) < 1e-6 && Math.abs(e3.center[1] - 46.375) < 1e-6, JSON.stringify(e3.center));
+  ok('Merged circle click -> fits the union of its cities (no minimum zoom of a single city)');
 
   // City click 3: identical coordinates -> deepest zoom and the chooser list
   await page.evaluate((h) => {
