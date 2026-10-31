@@ -95,7 +95,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .chooser { box-shadow: 6px 6px 0 var(--ink); }
 .chooser { width: min(400px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; }
 /* The detail panel scales with --k (1 = full size, set by the resize handle): width, type, buttons and spacing follow it */
-.detail { --k: 1; display: flex; flex-direction: column; width: calc(400px * var(--k)); max-width: calc(100% - 32px); max-height: calc(100% - 32px); font-size: calc(15px * var(--k)); }
+.detail { --k: 1; display: flex; flex-direction: column; width: var(--w, calc(400px * var(--k))); height: var(--h, auto); max-width: 66.6667%; max-height: calc(100% - 28px); font-size: calc(15px * var(--k)); }
 .detail .head { position: relative; flex: none; padding: calc(14px * var(--k)) calc(96px * var(--k)) calc(14px * var(--k)) calc(16px * var(--k)); color: #fff; background: var(--c); cursor: grab; touch-action: none; user-select: none; }
 .detail .head:active { cursor: grabbing; }
 .detail .kicker { margin: 0; font-size: calc(12px * var(--k)); font-weight: 700; letter-spacing: 0.06em; }
@@ -167,7 +167,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   .tabs button + button { border-left: 3px solid var(--ink); }
   .tabs button[aria-pressed='true'] { color: #fff; background: var(--ink); }
   .detail, .chooser { top: auto; left: 0; right: 0; bottom: 0; width: auto !important; max-width: none; max-height: 55%; border-width: 3px 0 0; box-shadow: none; transform: none !important; }
-  .detail { --k: 1 !important; }
+  .detail { --k: 1 !important; height: auto !important; max-width: none; }
   .detail .rz { display: none; }
   .chooser { overflow: auto; }
   .detail .head { cursor: default; touch-action: auto; }

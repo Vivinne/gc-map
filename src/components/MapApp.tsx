@@ -8,7 +8,7 @@ import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
 import MapView, { type FocusTarget } from './MapView';
-import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf, type Offset } from './Panels';
+import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf, type DetailSize, type Offset } from './Panels';
 
 type Tab = 'map' | 'list';
 
@@ -27,7 +27,7 @@ export default function MapApp() {
   const [focus, setFocus] = useState<FocusTarget | null>(null);
   const [detailOffset, setDetailOffset] = useState<Offset>({ x: 0, y: 0 });
   const [detailMin, setDetailMin] = useState(false);
-  const [detailScale, setDetailScale] = useState(1);
+  const [detailSize, setDetailSize] = useState<DetailSize>({ k: 1, w: null, h: null });
   const nonce = useRef(0);
 
   // Checkbox state updates immediately; the heavy parts (list, map data, counts) follow from the deferred values so the tags stay responsive
@@ -236,9 +236,9 @@ export default function MapApp() {
             place={selected}
             era={eraOf(dataset.eras, selected.era)}
             offset={detailOffset}
-            scale={detailScale}
+            size={detailSize}
             minimized={detailMin}
-            onScale={setDetailScale}
+            onSize={setDetailSize}
             layoutKey={sideOpen ? 'open' : 'closed'}
             onMoved={setDetailOffset}
             onMinimize={() => setDetailMin((v) => !v)}

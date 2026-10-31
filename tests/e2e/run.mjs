@@ -280,46 +280,66 @@ assert.equal(await page.locator('.detail h2').isVisible(), true);
 assert.ok((await dRect()).h < full.h / 2, 'Smaller');
 await page.click('[data-testid=detail-min]');
 assert.equal(await page.locator('.detail .context').isVisible(), true);
-// Resize: full size is the upper limit; the heading may shrink down to 11 pt, everything else follows
-const fs = () => page.evaluate(() => { const d = document.querySelector('.detail'); const r = d.getBoundingClientRect(); return { w: r.width, h2: parseFloat(getComputedStyle(d.querySelector('h2')).fontSize), body: parseFloat(getComputedStyle(d.querySelector('.ctx')).fontSize), btn: d.querySelector('.close').getBoundingClientRect().width }; });
-const rs0 = await fs();
-assert.ok(Math.abs(rs0.w - 400) < 1 && rs0.h2 === 24, JSON.stringify(rs0));
-// Handle at (fx, fy) of the panel (0..1), dragged by (dx, dy)
+// Resize: corners keep the proportions (type scales), edges move only their own edge; limits keep 14 px from the map edges and the tag panel
+const fs = () => page.evaluate(() => { const d = document.querySelector('.detail'); const r = d.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom, w: r.width, h: r.height, h2: parseFloat(getComputedStyle(d.querySelector('h2')).fontSize), body: parseFloat(getComputedStyle(d.querySelector('.ctx')).fontSize), btn: d.querySelector('.close').getBoundingClientRect().width }; });
 const dragHandle = async (dir, dx, dy) => {
   const hb = await page.locator(`[data-testid=detail-resize-${dir}]`).boundingBox();
   const x = hb.x + hb.width / 2, y = hb.y + hb.height / 2;
   await page.mouse.move(x, y);
   await page.mouse.down();
-  await page.mouse.move(x + dx, y + dy, { steps: 5 });
+  await page.mouse.move(x + dx, y + dy, { steps: 6 });
   await page.mouse.up();
   await page.waitForTimeout(60);
 };
 assert.equal(await page.locator('.detail .rz').count(), 8, 'Four edges and four corners');
-const panelBox = () => page.evaluate(() => { const r = document.querySelector('.detail').getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
-await dragHandle('sw', 120, 0); // bottom-left corner: the top-right corner stays
-const rs1 = await fs();
-assert.ok(rs1.w < 300 && rs1.w > 270 && rs1.h2 < 24 && rs1.h2 > 14.7 && rs1.body < 15 && rs1.btn < 36, JSON.stringify(rs1));
-await dragHandle('sw', 2000, 0);
-const rs2 = await fs();
-assert.ok(Math.abs(rs2.h2 - 14.667) < 0.05 && Math.abs(rs2.w - 244.4) < 1, 'Smallest: heading 11 pt ' + JSON.stringify(rs2));
-await dragHandle('sw', -2000, 0);
-const rs3 = await fs();
-assert.ok(Math.abs(rs3.w - 400) < 1 && rs3.h2 === 24, 'Largest: the original size ' + JSON.stringify(rs3));
-// Every edge and corner works, and keeps the opposite side in place
-for (const [dir, dx, dy] of [['e', -80, 0], ['w', 80, 0], ['n', 0, 40], ['s', 0, -40], ['ne', -60, 30], ['nw', 60, 30], ['se', -60, -30]]) {
-  await dragHandle('sw', -2000, 0); // back to full size
-  const b0 = await panelBox();
-  const k0 = (await fs()).w;
+const near = (a, b, m, tol = 2) => assert.ok(Math.abs(a - b) <= tol, `${m}: ${a} vs ${b}`);
+// Corner: proportional, the opposite corner stays, type and buttons scale
+let c0 = await fs();
+await dragHandle('sw', 100, 0);
+let c1 = await fs();
+assert.ok(c1.w < c0.w - 50, JSON.stringify([c0.w, c1.w]));
+near(c1.w / c1.h, c0.w / c0.h, 'same proportions', 0.02);
+near(c1.r, c0.r, 'right stays'); near(c1.t, c0.t, 'top stays');
+assert.ok(c1.h2 < c0.h2 && c1.body < c0.body && c1.btn < c0.btn, 'type and buttons scale');
+await dragHandle('se', -3000, 0); // as small as the 11 pt heading allows
+let c2 = await fs();
+near(c2.h2, 14.667, '11 pt heading is the smallest', 0.1);
+// Edges: only the dragged edge moves, the type size does not change
+await dragHandle('sw', -3000, 0); // grow the corner back as far as it can go
+const big = await fs();
+for (const [dir, dx, dy] of [['e', -60, 0], ['w', 60, 0], ['n', 0, 40], ['s', 0, -40]]) {
+  const b0 = await fs();
   await dragHandle(dir, dx, dy);
-  const b1 = await panelBox();
-  const k1 = (await fs()).w;
-  assert.ok(k1 < k0 - 5, `${dir}: smaller ${k0} -> ${k1}`);
-  const fixed = { e: [b0.l], w: [b0.r], n: [b0.b], s: [b0.t], ne: [b0.l, b0.b], nw: [b0.r, b0.b], se: [b0.l, b0.t] }[dir];
-  const now = { e: [b1.l], w: [b1.r], n: [b1.b], s: [b1.t], ne: [b1.l, b1.b], nw: [b1.r, b1.b], se: [b1.l, b1.t] }[dir];
-  fixed.forEach((v, i) => assert.ok(Math.abs(v - now[i]) < 3, `${dir}: opposite side stays (${fixed} vs ${now})`));
+  const b1 = await fs();
+  near(b1.h2, b0.h2, `${dir}: type unchanged`, 0.01);
+  const fixed = { e: ['l', 't', 'b'], w: ['r', 't', 'b'], n: ['l', 'r', 'b'], s: ['l', 'r', 't'] }[dir];
+  for (const f of fixed) near(b1[f], b0[f], `${dir}: ${f} stays`);
+  const moved = { e: 'r', w: 'l', n: 't', s: 'b' }[dir];
+  assert.ok(Math.abs(b1[moved] - b0[moved]) > 20, `${dir}: its edge moves`);
 }
-await dragHandle('sw', -2000, 0);
-ok('Detail panel resizes from all four edges and corners between its full size and an 11 pt heading; body text and buttons scale with it');
+// Limits. Narrowest: title + the two buttons; widest: 2/3 of the map; always 14 px from the map edges
+await dragHandle('w', 3000, 0);
+let e1 = await fs();
+near(e1.w, 184 * (e1.h2 / 24), 'Narrowest width = padding + short title + the two buttons', 3);
+await dragHandle('w', -3000, 0);
+e1 = await fs();
+const sideR = await page.evaluate(() => document.querySelector('.side').getBoundingClientRect().right);
+assert.ok(e1.w <= 1280 * 2 / 3 + 1, 'Widest: 2/3 of the map ' + e1.w);
+assert.ok(e1.w > 1280 * 2 / 3 - 2 || Math.abs(e1.l - (sideR + 14)) <= 1.5 || e1.l <= 14 + 1, 'Stops at 2/3, or 14 px from the tag panel / the map edge ' + JSON.stringify(e1));
+assert.ok(e1.l >= 14 - 1 && (e1.t > 330 || e1.l >= sideR + 14 - 1), 'Clear of the tag panel');
+await dragHandle('s', 0, 3000);
+e1 = await fs();
+assert.ok(Math.abs(e1.b - (800 - 14)) <= 1, 'Longest: the whole map height less the edge distance ' + JSON.stringify(e1));
+await dragHandle('n', 0, -3000);
+e1 = await fs();
+assert.ok(e1.t >= 14 - 1, 'Top keeps 14 px ' + e1.t);
+await dragHandle('n', 0, 3000);
+await dragHandle('s', 0, -3000);
+e1 = await fs();
+const expectH = await page.evaluate(() => { const d = document.querySelector('.detail'); const cs = getComputedStyle(d.querySelector('.context')); return d.querySelector('.head').offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(getComputedStyle(d.querySelector('.ctx')).lineHeight) + 2 * parseFloat(getComputedStyle(d).borderTopWidth); });
+near(e1.h, expectH, 'Shortest: heading + one line of text', 2);
+await dragHandle('se', 3000, 3000);
+ok('Detail panel: corners resize proportionally, edges move only themselves, limits (title + buttons ... 2/3 width; title + one line ... full height) keep 14 px from the edges');
 for (const sel of ['.side', '.detail']) assert.equal(await page.evaluate((q) => getComputedStyle(document.querySelector(q)).boxShadow, sel), 'none', sel + ' has no shadow');
 ok('No shadow on the tag panel and the detail panel');
 // Back and Full map buttons have the same size is checked in the map stub below

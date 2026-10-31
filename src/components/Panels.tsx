@@ -41,6 +41,12 @@ export const PlaceList = memo(function PlaceList({
 
 const blank = (v: string): string => (v.trim() === '—' ? '' : v.trim());
 
+export interface DetailSize {
+  k: number;
+  w: number | null;
+  h: number | null;
+}
+
 export interface Offset {
   x: number;
   y: number;
@@ -48,8 +54,7 @@ export interface Offset {
 
 /** Free space kept between the dragged panel and the window edges / the tag panel (or its three-line button) */
 const GAP = 14;
-/** Full panel width (px) and the smallest scale: the heading is 24 px at full size and may shrink to 11 pt */
-const FULL_W = 400;
+/** The heading is 24 px at full size and may shrink to 11 pt (the smallest scale k) */
 export const K_MIN = ((11 * 96) / 72) / 24;
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), Math.max(lo, hi));
@@ -80,19 +85,19 @@ export function constrainOffset(base: DOMRect, stage: DOMRect, menu: DOMRect | n
 }
 
 export function DetailPanel({
-  place, era, offset, scale, minimized, layoutKey, onMoved, onScale, onMinimize, onClose,
+  place, era, offset, size, minimized, layoutKey, onMoved, onSize, onMinimize, onClose,
 }: {
   place: Place;
   era: Era | undefined;
   /** Position relative to the default spot; kept by the parent so it survives switching buildings */
   offset: Offset;
-  /** 1 = full size; the panel can be made smaller with the resize handle (down to K_MIN) */
-  scale: number;
+  /** Scale of type and buttons (1 = full), and the panel's width / height in px (null = the default size) */
+  size: DetailSize;
   minimized: boolean;
   /** Changes when the surroundings change (tag panel opened / closed), so the position is checked again */
   layoutKey: string;
   onMoved: (o: Offset) => void;
-  onScale: (k: number) => void;
+  onSize: (z: DetailSize) => void;
   onMinimize: () => void;
   onClose: () => void;
 }) {
@@ -130,7 +135,7 @@ export function DetailPanel({
     window.addEventListener('resize', fit);
     return () => window.removeEventListener('resize', fit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layoutKey, minimized, place.id, scale]);
+  }, [layoutKey, minimized, place.id, size.k, size.w, size.h]);
 
   // Drag by the coloured heading block; the DOM is moved directly while dragging (no re-render), the parent is told at the end
   const down = (e: PointerEvent<HTMLElement>) => {
@@ -150,10 +155,11 @@ export function DetailPanel({
     if (d && (cur.current.x !== offset.x || cur.current.y !== offset.y)) onMoved(cur.current);
   };
 
-  const scaleNow = useRef(scale);
-  // Resize from any of the four edges and four corners. Size is one scale k (width = 400 k, type and buttons follow it): an east/west handle sets k from the width,
-  // a north/south handle from the height, a corner from whichever changed more. The side opposite to the handle stays where it is.
-  const rz = useRef<{ dir: string; x: number; y: number; k: number; r: DOMRect; s: DOMRect; side: DOMRect | null; kMax: number } | null>(null);
+  // Resize. Corners keep the proportions (type and buttons scale with it, k); edges move only that edge, the other three stay where they are (k unchanged).
+  // Limits, always keeping GAP from the map edges and from the tag panel: width from "title + the two buttons" to 2/3 of the map;
+  // height from "title + one line of text" to the whole map height.
+  const rz = useRef<{ dir: string; x: number; y: number; k: number; r: DOMRect; s: DOMRect; side: DOMRect | null; zone: DOMRect | null } | null>(null);
+  const sizeNow = useRef<DetailSize>(size);
   const rdown = (e: PointerEvent<HTMLElement>) => {
     const f = frame();
     const dir = e.currentTarget.dataset.dir;
@@ -161,7 +167,10 @@ export function DetailPanel({
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     const r = f.el.getBoundingClientRect();
-    rz.current = { dir, x: e.clientX, y: e.clientY, k: scaleNow.current, r, s: f.s, side: f.menu, kMax: Math.min(1, (f.s.width - 2 * GAP) / FULL_W) };
+    f.el.style.setProperty('--h', `${r.height}px`); // the height stops following the text: the box keeps its size and the text scrolls
+    sizeNow.current = { k: size.k, w: r.width, h: r.height };
+    const z = f.menu && f.menu.width ? new DOMRect(f.menu.left - GAP, f.menu.top - GAP, f.menu.width + 2 * GAP, f.menu.height + 2 * GAP) : null;
+    rz.current = { dir, x: e.clientX, y: e.clientY, k: size.k, r, s: f.s, side: f.menu, zone: z };
   };
   const rmove = (e: PointerEvent<HTMLElement>) => {
     const d = rz.current;
@@ -169,23 +178,62 @@ export function DetailPanel({
     if (!d || !el) return;
     const dx = e.clientX - d.x;
     const dy = e.clientY - d.y;
-    const kw = d.dir.includes('e') ? (d.r.width + dx) / FULL_W : d.dir.includes('w') ? (d.r.width - dx) / FULL_W : null;
-    const kh = d.dir.includes('s') ? d.k * ((d.r.height + dy) / d.r.height) : d.dir.includes('n') ? d.k * ((d.r.height - dy) / d.r.height) : null;
-    const want = kw !== null && kh !== null ? (Math.abs(kw - d.k) >= Math.abs(kh - d.k) ? kw : kh) : (kw ?? kh ?? d.k);
-    const k = clamp(want, K_MIN, d.kMax);
-    scaleNow.current = k;
+    const { r: R, s: S, zone } = d;
+    const maxW = Math.min((S.width * 2) / 3, S.width - 2 * GAP);
+    const maxH = S.height - 2 * GAP;
+    let L = R.left, T = R.top, Rt = R.right, B = R.bottom, k = d.k;
+    if (d.dir.length === 2) {
+      // corner: same proportions, opposite corner fixed
+      const sx = d.dir.includes('e') ? 1 : -1;
+      const sy = d.dir.includes('s') ? 1 : -1;
+      const rw = (R.width + sx * dx) / R.width;
+      const rh = (R.height + sy * dy) / R.height;
+      let q = Math.abs(rw - 1) >= Math.abs(rh - 1) ? rw : rh;
+      const roomX = sx > 0 ? S.right - GAP - R.left : R.right - (S.left + GAP);
+      const roomY = sy > 0 ? S.bottom - GAP - R.top : R.bottom - (S.top + GAP);
+      const qMin = K_MIN / d.k;
+      const qMax = Math.min(maxW / R.width, maxH / R.height, roomX / R.width, roomY / R.height);
+      q = clamp(q, qMin, qMax);
+      const place = (qq: number) => {
+        const w = R.width * qq, h = R.height * qq;
+        return new DOMRect(sx > 0 ? R.left : R.right - w, sy > 0 ? R.top : R.bottom - h, w, h);
+      };
+      while (zone && q > qMin && hits(place(q).left, place(q).top, place(q).right, place(q).bottom, zone)) q -= 0.01;
+      const n = place(q);
+      L = n.left; T = n.top; Rt = n.right; B = n.bottom; k = d.k * q;
+    } else {
+      const head = el.querySelector('.head') as HTMLElement | null;
+      const ctx = el.querySelector('.context') as HTMLElement | null;
+      const line = el.querySelector('.ctx') as HTMLElement | null;
+      const cs = ctx ? getComputedStyle(ctx) : null;
+      const bw = parseFloat(getComputedStyle(el).borderTopWidth) || 0;
+      const minW = (16 + 96 + 72) * k; // left padding + a short title + the two buttons
+      const minH = (head?.offsetHeight ?? 0) + (cs ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : 0) + (line ? parseFloat(getComputedStyle(line).lineHeight) || 20 * k : 20 * k) + 2 * bw;
+      if (d.dir === 'e') Rt = clamp(R.right + dx, L + minW, Math.min(L + maxW, S.right - GAP));
+      if (d.dir === 'w') L = clamp(R.left + dx, Math.max(Rt - maxW, S.left + GAP), Rt - minW);
+      if (d.dir === 's') B = clamp(R.bottom + dy, T + minH, Math.min(T + maxH, S.bottom - GAP));
+      if (d.dir === 'n') T = clamp(R.top + dy, Math.max(B - maxH, S.top + GAP), B - minH);
+      // do not run into the tag panel: stop the moving edge at its boundary
+      if (zone && hits(L, T, Rt, B, zone)) {
+        if (d.dir === 'w') L = Math.max(L, zone.right);
+        if (d.dir === 'n') T = Math.max(T, zone.bottom);
+        if (d.dir === 'e') Rt = Math.min(Rt, zone.left);
+        if (d.dir === 's') B = Math.min(B, zone.top);
+      }
+    }
+    const w = Rt - L, h = B - T;
     el.style.setProperty('--k', String(k));
-    // Keep the opposite side fixed: the panel is anchored top-right, so work out where its rect would be at offset 0 and choose the offset from that
-    const r = el.getBoundingClientRect();
-    const base = new DOMRect(r.left - cur.current.x, r.top - cur.current.y, r.width, r.height);
-    const left = d.dir.includes('w') ? d.r.right - r.width : d.dir.includes('e') ? d.r.left : d.r.left + (d.r.width - r.width) / 2;
-    const top = d.dir.includes('n') ? d.r.bottom - r.height : d.r.top;
-    apply(constrainOffset(base, d.s, d.side, { x: left - base.left, y: top - base.top }));
+    el.style.setProperty('--w', `${w}px`);
+    el.style.setProperty('--h', `${h}px`);
+    sizeNow.current = { k, w, h };
+    // The panel is anchored top-right: measure where it sits at offset 0 with the new size, then choose the offset that puts it on the wanted rect
+    const m = el.getBoundingClientRect();
+    apply({ x: L - (m.left - cur.current.x), y: T - (m.top - cur.current.y) });
   };
   const rup = () => {
     if (!rz.current) return;
     rz.current = null;
-    onScale(scaleNow.current);
+    onSize(sizeNow.current);
     onMoved(cur.current);
   };
   return (
@@ -193,7 +241,7 @@ export function DetailPanel({
       ref={ref}
       className="detail"
       data-min={minimized}
-      style={{ ['--c' as string]: era?.color, ['--k' as string]: scale, transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      style={{ ['--c' as string]: era?.color, ['--k' as string]: size.k, ...(size.w ? { ['--w' as string]: `${size.w}px` } : {}), ...(size.h && !minimized ? { ['--h' as string]: `${size.h}px` } : {}), transform: `translate(${offset.x}px, ${offset.y}px)` }}
       aria-label={`${place.name} details`}
       data-testid="detail"
     >
