@@ -147,7 +147,7 @@ export function toCityCollection(places: readonly Place[]): CityCollection {
   for (const p of places) {
     if (!isWidePlace(p) || !features.length) continue;
     for (const pt of p.points) {
-      let best = features[0];
+      let best = features[0]!;
       let bd = Infinity;
       for (const f of features) {
         const dx = (f.geometry.coordinates[0] - pt.lng) * Math.cos((pt.lat * Math.PI) / 180);

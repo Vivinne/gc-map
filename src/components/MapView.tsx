@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import maplibregl, { type GeoJSONSource, type Map as MLMap } from 'maplibre-gl';
+import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { CITY_TOP_ZOOM, SAME_SPOT_ZOOM, boundsOfCoords, cityClickZoom, coordKey, isSameSpot, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
 
@@ -22,6 +22,7 @@ const CITY_MERGE_PX = CITY_RADIUS * 2 + 4;
 
 const INK = '#111827';
 const FOOTPRINT_SOURCE = 'footprint';
+type GeoData = Parameters<GeoJSONSource['setData']>[0];
 const EMPTY_FC = { type: 'FeatureCollection', features: [] } as const;
 
 type Ring = number[][];
@@ -120,7 +121,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
 
     map.on('load', () => {
       map.addSource(SOURCE, { type: 'geojson', data: latest.current.fc as unknown as GeoData });
-      const dot = {
+      const dot: NonNullable<CircleLayerSpecification['paint']> = {
         'circle-color': ['get', 'color'],
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 5, 10, 7, 15, 10],
         'circle-stroke-width': 2,
@@ -128,14 +129,14 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         // Memory estimates (unverified) are semi-transparent
         'circle-opacity': ['case', ['get', 'est'], 0.5, 1],
         'circle-stroke-opacity': ['case', ['get', 'est'], 0.5, 1],
-      } as const;
-      const cityPaint = {
+      };
+      const cityPaint: NonNullable<CircleLayerSpecification['paint']> = {
         'circle-color': INK,
         'circle-radius': CITY_RADIUS,
         'circle-stroke-width': 3,
         'circle-stroke-color': '#ffffff',
-      } as const;
-      const countLayout = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true } as const;
+      };
+      const countLayout: NonNullable<SymbolLayerSpecification['layout']> = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true };
       // Figure ground: the basemap footprint of the selected building, filled with its style colour
       map.addSource(FOOTPRINT_SOURCE, { type: 'geojson', data: EMPTY_FC as unknown as GeoData });
       map.addLayer({ id: 'footprint', type: 'fill', source: FOOTPRINT_SOURCE, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.9 } });
