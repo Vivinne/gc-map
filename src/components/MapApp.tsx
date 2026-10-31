@@ -44,9 +44,11 @@ export default function MapApp() {
   // Count shown on each tag = buildings that match it together with the other checked tags
   const tagCounts = useMemo(() => {
     const m = new Map<string, number>();
-    const matching = dataset.places.filter((p) => matchesTags(p, dTags, groups));
-    // A tag that is already checked leaves the matching set unchanged, so one pass per tag over the matching set is enough
-    for (const g of groups) for (const t of g.tags) m.set(t.id, matching.reduce((n, p) => n + (t.test(p) ? 1 : 0), 0));
+    for (const g of groups) for (const t of g.tags) {
+      // Buildings that would match with this tag added (unchanged when it is already checked)
+      const next = dTags.has(t.id) ? dTags : new Set([...dTags, t.id]);
+      m.set(t.id, dataset.places.reduce((n, p) => n + (matchesTags(p, next, groups) ? 1 : 0), 0));
+    }
     return m;
   }, [dTags]);
 

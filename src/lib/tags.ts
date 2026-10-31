@@ -24,23 +24,26 @@ export function buildGroups(eras: readonly Era[]): TagGroup[] {
 }
 
 /** Tag lookup per groups array, built once (matchesTags runs for every building on every change) */
-const DEFS = new WeakMap<readonly TagGroup[], Map<string, TagDef>>();
-function defsOf(groups: readonly TagGroup[]): Map<string, TagDef> {
+const DEFS = new WeakMap<readonly TagGroup[], Map<string, { t: TagDef; g: string }>>();
+function defsOf(groups: readonly TagGroup[]): Map<string, { t: TagDef; g: string }> {
   let m = DEFS.get(groups);
   if (!m) {
-    m = new Map(groups.flatMap((g) => g.tags).map((t) => [t.id, t]));
+    m = new Map(groups.flatMap((g) => g.tags.map((t) => [t.id, { t, g: g.id }] as const)));
     DEFS.set(groups, m);
   }
   return m;
 }
 
-/** Intersection: every checked tag must match */
+/** Union inside each group (any checked tag of the group matches), intersection across groups (every group with a checked tag must match) */
 export function matchesTags(p: Place, tags: ReadonlySet<string>, groups: readonly TagGroup[]): boolean {
   if (tags.size === 0) return true;
   const defs = defsOf(groups);
+  const ok = new Map<string, boolean>(); // group id -> some checked tag matched
   for (const id of tags) {
-    const t = defs.get(id);
-    if (!t || !t.test(p)) return false;
+    const d = defs.get(id);
+    if (!d) return false; // an unknown tag matches nothing
+    ok.set(d.g, (ok.get(d.g) ?? false) || d.t.test(p));
   }
+  for (const v of ok.values()) if (!v) return false;
   return true;
 }

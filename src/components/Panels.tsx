@@ -151,30 +151,42 @@ export function DetailPanel({
   };
 
   const scaleNow = useRef(scale);
-  // Resize by the bottom-left corner: the right edge stays put, width goes from the current full size down to the 11 pt heading size
-  const rz = useRef<{ x: number; w: number; right: number; s: DOMRect } | null>(null);
+  // Resize from any of the four edges and four corners. Size is one scale k (width = 400 k, type and buttons follow it): an east/west handle sets k from the width,
+  // a north/south handle from the height, a corner from whichever changed more. The side opposite to the handle stays where it is.
+  const rz = useRef<{ dir: string; x: number; y: number; k: number; r: DOMRect; s: DOMRect; side: DOMRect | null; kMax: number } | null>(null);
   const rdown = (e: PointerEvent<HTMLElement>) => {
     const f = frame();
-    if (!f || e.button !== 0 || isPhone()) return;
+    const dir = e.currentTarget.dataset.dir;
+    if (!f || !dir || e.button !== 0 || isPhone()) return;
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     const r = f.el.getBoundingClientRect();
-    rz.current = { x: e.clientX, w: r.width, right: r.right, s: f.s };
+    rz.current = { dir, x: e.clientX, y: e.clientY, k: scaleNow.current, r, s: f.s, side: f.menu, kMax: Math.min(1, (f.s.width - 2 * GAP) / FULL_W) };
   };
   const rmove = (e: PointerEvent<HTMLElement>) => {
     const d = rz.current;
     const el = ref.current;
     if (!d || !el) return;
-    const wMax = Math.min(FULL_W, d.s.width - 32);
-    const w = clamp(d.w + (d.x - e.clientX), FULL_W * K_MIN, Math.min(wMax, d.right - d.s.left - GAP));
-    const k = w / FULL_W;
+    const dx = e.clientX - d.x;
+    const dy = e.clientY - d.y;
+    const kw = d.dir.includes('e') ? (d.r.width + dx) / FULL_W : d.dir.includes('w') ? (d.r.width - dx) / FULL_W : null;
+    const kh = d.dir.includes('s') ? d.k * ((d.r.height + dy) / d.r.height) : d.dir.includes('n') ? d.k * ((d.r.height - dy) / d.r.height) : null;
+    const want = kw !== null && kh !== null ? (Math.abs(kw - d.k) >= Math.abs(kh - d.k) ? kw : kh) : (kw ?? kh ?? d.k);
+    const k = clamp(want, K_MIN, d.kMax);
     scaleNow.current = k;
     el.style.setProperty('--k', String(k));
+    // Keep the opposite side fixed: the panel is anchored top-right, so work out where its rect would be at offset 0 and choose the offset from that
+    const r = el.getBoundingClientRect();
+    const base = new DOMRect(r.left - cur.current.x, r.top - cur.current.y, r.width, r.height);
+    const left = d.dir.includes('w') ? d.r.right - r.width : d.dir.includes('e') ? d.r.left : d.r.left + (d.r.width - r.width) / 2;
+    const top = d.dir.includes('n') ? d.r.bottom - r.height : d.r.top;
+    apply(constrainOffset(base, d.s, d.side, { x: left - base.left, y: top - base.top }));
   };
   const rup = () => {
     if (!rz.current) return;
     rz.current = null;
     onScale(scaleNow.current);
+    onMoved(cur.current);
   };
   return (
     <section
@@ -186,7 +198,7 @@ export function DetailPanel({
       data-testid="detail"
     >
       <header className="head" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
-        <button type="button" className="minimize" onClick={onMinimize} aria-label={minimized ? 'Restore details' : 'Minimize details'} aria-pressed={minimized} data-testid="detail-min">{minimized ? '▢' : '−'}</button>
+        <button type="button" className="minimize" onClick={onMinimize} aria-label={minimized ? 'Restore details' : 'Minimize details'} aria-pressed={minimized} data-testid="detail-min">{minimized ? <span className="sq" aria-hidden="true" /> : '−'}</button>
         <button type="button" className="close" onClick={onClose} aria-label="Close">×</button>
         <h2>{place.name}</h2>
         <p className="loc">{sub}</p>
@@ -203,7 +215,10 @@ export function DetailPanel({
           <p className="exam">{place.exams.map((y) => `【${y} TEST-ARCHED】`).join(' ')}</p>
         )}
       </div>
-      {!minimized && <div className="resize" role="separator" aria-label="Resize details" data-testid="detail-resize" onPointerDown={rdown} onPointerMove={rmove} onPointerUp={rup} onPointerCancel={rup} />}
+      {!minimized &&
+        ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map((dir) => (
+          <div key={dir} className={`rz rz-${dir}`} data-dir={dir} role="separator" aria-label={`Resize details (${dir})`} data-testid={`detail-resize-${dir}`} onPointerDown={rdown} onPointerMove={rmove} onPointerUp={rup} onPointerCancel={rup} />
+        ))}
     </section>
   );
 }

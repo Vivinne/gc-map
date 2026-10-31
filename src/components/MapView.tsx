@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type Map as MLMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { CITY_TOP_ZOOM, SAME_SPOT_ZOOM, boundsOfCoords, cityClickZoom, coordKey, isSameSpot, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
@@ -26,8 +26,8 @@ const EMPTY_FC = { type: 'FeatureCollection', features: [] } as const;
 
 type Ring = number[][];
 type Geom = { type: string; coordinates: unknown };
-/** Outer rings of a (Multi)Polygon */
-const outerRings = (g: Geom): Ring[] => (g.type === 'Polygon' ? [(g.coordinates as Ring[])[0] as Ring] : g.type === 'MultiPolygon' ? (g.coordinates as Ring[][]).map((p) => p[0] as Ring) : []);
+/** Polygons of a (Multi)Polygon as [outer ring, ...holes] */
+const polygonsOf = (g: Geom): Ring[][] => (g.type === 'Polygon' ? [g.coordinates as Ring[]] : g.type === 'MultiPolygon' ? (g.coordinates as Ring[][]) : []);
 const ringHas = (ring: Ring, x: number, y: number): boolean => {
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -37,9 +37,18 @@ const ringHas = (ring: Ring, x: number, y: number): boolean => {
   }
   return inside;
 };
-
-// Taken from MapLibre's own types, to avoid depending on the global namespace of @types/geojson
-type GeoData = Parameters<GeoJSONSource['setData']>[0];
+/** The point is inside a polygon's outer ring and not inside one of its holes (courtyards) */
+const coversPoint = (g: Geom, x: number, y: number): boolean => polygonsOf(g).some(([outer, ...holes]) => !!outer && ringHas(outer, x, y) && !holes.some((h) => ringHas(h, x, y)));
+const ringArea = (ring: Ring, lat: number): number => {
+  const kx = 111320 * Math.cos((lat * Math.PI) / 180);
+  const ky = 110574;
+  let a = 0;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) a += ((ring[j]![0]! * kx) * (ring[i]![1]! * ky)) - ((ring[i]![0]! * kx) * (ring[j]![1]! * ky));
+  return Math.abs(a) / 2;
+};
+const geomArea = (g: Geom, lat: number): number => polygonsOf(g).reduce((n, [outer, ...holes]) => n + (outer ? ringArea(outer, lat) : 0) - holes.reduce((m, h) => m + ringArea(h, lat), 0), 0);
+/** A single building is never larger than this; anything bigger is a block, campus or land-use shape, not the building itself */
+const MAX_FOOTPRINT_M2 = 150000;
 
 export type FocusTarget =
   | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; nonce: number }
@@ -66,8 +75,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState('');
   const history = useRef<{ center: [number, number]; zoom: number }[]>([]);
-  const lastView = useRef<{ center: [number, number]; zoom: number } | null>(null);
-  const restoring = useRef(false);
   const [canBack, setCanBack] = useState(false);
 
   // Event handlers must read the latest values; use refs to avoid rebinding
@@ -75,6 +82,21 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   useEffect(() => {
     latest.current = { fc, cities, selectedPid, onPick };
   });
+
+  // Back button history: the view as it was before each click that moves the map (a map click, a list selection, Full map); wheel zooming and panning are not recorded
+  const pushView = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const c = map.getCenter();
+    const v = { center: [c.lng, c.lat] as [number, number], zoom: map.getZoom() };
+    const last = history.current.at(-1);
+    if (last && Math.abs(last.zoom - v.zoom) < 0.01 && Math.abs(last.center[0] - v.center[0]) < 1e-6 && Math.abs(last.center[1] - v.center[1]) < 1e-6) return;
+    history.current.push(v);
+    if (history.current.length > HISTORY_MAX) history.current.shift();
+    setCanBack(true);
+  }, []);
+  const pushRef = useRef(pushView);
+  pushRef.current = pushView;
 
   // Create the map (once only)
   useEffect(() => {
@@ -89,25 +111,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'metric' }), 'bottom-left');
-
-    // Back button history: remember the view before every notable move (zoom change or a pan of half a screen)
-    map.on('moveend', () => {
-      const c = map.getCenter();
-      const cur = { center: [c.lng, c.lat] as [number, number], zoom: map.getZoom() };
-      const prev = lastView.current;
-      lastView.current = cur;
-      if (restoring.current) {
-        restoring.current = false;
-        return;
-      }
-      if (!prev) return; // the first view (the initial fit) is the start of the history
-      const span = 360 / 2 ** cur.zoom;
-      const moved = Math.max(Math.abs(prev.center[0] - cur.center[0]), Math.abs(prev.center[1] - cur.center[1])) > span * 0.5;
-      if (Math.abs(prev.zoom - cur.zoom) < 0.4 && !moved) return;
-      history.current.push(prev);
-      if (history.current.length > HISTORY_MAX) history.current.shift();
-      setCanBack(true);
-    });
 
     map.on('error', (e) => {
       const msg = e.error?.message ?? '';
@@ -183,6 +186,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         const distinct = new Set(coords.map((c) => coordKey(c[0], c[1])));
         if (pids.length > 1 && distinct.size > 1) {
           // Overlapping dots at different places: zoom to the range that pulls them apart
+          pushRef.current();
           const b = boundsOfCoords(coords) as LngLatBounds;
           const cam = map.cameraForBounds(b, { padding: 80, maxZoom: 17 });
           map.easeTo({ center: cam?.center ?? [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2], zoom: Math.max(cam?.zoom ?? 0, map.getZoom() + 1), duration: 600 });
@@ -201,6 +205,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         const merged = pr.cluster === true || pr.cluster === 'true';
         // A merged circle shows the union of its cities plus the region-place markers attached to them; a single city only its buildings
         const b: LngLatBounds = merged ? [[Number(pr.xw), Number(pr.xs)], [Number(pr.xe), Number(pr.xn)]] : [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
+        pushRef.current();
         if (isSameSpot(b)) {
           // Identical coordinates cannot be told apart by zooming: go to the deepest level; several buildings -> the chooser list
           map.easeTo({ center: [b[0][0], b[0][1]], zoom: SAME_SPOT_ZOOM, duration: 600 });
@@ -258,10 +263,12 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
           for (const f of pts) {
             const [lng, lat] = f.geometry.coordinates;
             const px = map.project([lng, lat]);
-            const hits = map.queryRenderedFeatures([[px.x - 8, px.y - 8], [px.x + 8, px.y + 8]], { layers }).filter((h) => outerRings(h.geometry as Geom).length > 0);
-            // Buildings that contain the point; when the coordinate falls just beside one, take those within the small box
-            const within = hits.filter((h) => outerRings(h.geometry as Geom).some((r) => ringHas(r, lng, lat)));
-            for (const h of within.length ? within : hits) out.push({ type: 'Feature', geometry: h.geometry as Geom, properties: { color: f.properties.color } });
+            // Only the basemap building polygons that contain the point itself (not their neighbours); courtyards (holes) do not count; oversized shapes are skipped
+            const hits = map.queryRenderedFeatures([[px.x - 2, px.y - 2], [px.x + 2, px.y + 2]], { layers }).filter((h) => {
+              const g = h.geometry as Geom;
+              return coversPoint(g, lng, lat) && geomArea(g, lat) <= MAX_FOOTPRINT_M2;
+            });
+            for (const h of hits) out.push({ type: 'Feature', geometry: h.geometry as Geom, properties: { color: f.properties.color } });
           }
         }
         const key = sel + '|' + JSON.stringify(out.map((o) => o.geometry));
@@ -316,6 +323,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready || !focus) return;
+    pushView();
     if (focus.kind === 'point') {
       // Zoom so that the view reaches radiusKm from the point along the shorter map side
       const el = map.getContainer();
@@ -346,7 +354,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     const map = mapRef.current;
     const prev = history.current.pop();
     if (!map || !prev) return;
-    restoring.current = true;
     map.easeTo({ center: prev.center, zoom: prev.zoom, duration: 500 });
     setCanBack(history.current.length > 0);
   };

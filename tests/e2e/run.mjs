@@ -82,7 +82,7 @@ assert.equal(await page.locator('.tag-item').count(), 13 + 6 + 8);
 assert.equal(await page.locator('.list').count(), 0);
 ok('Clearing the filter restores all entries');
 
-// Tag groups: titles, checkable, intersection
+// Tag groups: titles, checkable; union inside a group, intersection across groups
 const titles = (await page.locator('.tag-toggle span').allTextContents());
 assert.deepEqual(titles, ['【Country】', '【Styles】', '【Previous Years】']);
 await page.click('.tag-item:has-text("2018")');
@@ -93,7 +93,7 @@ const y18o = y18.filter((p) => p.country === 'Others');
 assert.equal(await page.locator('.list .item').count(), y18o.length);
 assert.ok(y18o.length > 0 && y18o.length < y18.length);
 await page.click('.tag-item:has-text("2019")');
-const inter = y18o.filter((p) => p.exams.includes(2019));
+const inter = data.places.filter((p) => p.country === 'Others' && (p.exams.includes(2018) || p.exams.includes(2019))); // union inside Previous Years, intersection with Country
 assert.equal(await page.locator('.list .item').count(), inter.length);
 assert.ok(inter.length > 0);
 await page.screenshot({ path: resolve(shots, 'desktop-tags.png') });
@@ -271,7 +271,9 @@ const bm = await page.locator('.detail .minimize').boundingBox();
 const bc = await page.locator('.detail .close').boundingBox();
 assert.ok(Math.abs(bm.width - bc.width) < 0.5 && Math.abs(bm.height - bc.height) < 0.5 && bm.x < bc.x, 'Same size, left of the x');
 await page.click('.detail .minimize');
-assert.equal((await page.textContent('[data-testid=detail-min]')).trim(), '▢');
+assert.equal(await page.locator('[data-testid=detail-min] .sq').count(), 1, 'Minimized: the [-] turns into a square');
+const sqc = await page.evaluate(() => { const b = document.querySelector('[data-testid=detail-min]').getBoundingClientRect(); const q = document.querySelector('[data-testid=detail-min] .sq').getBoundingClientRect(); return { dx: (q.left + q.width / 2) - (b.left + b.width / 2), dy: (q.top + q.height / 2) - (b.top + b.height / 2), bw: getComputedStyle(document.querySelector('[data-testid=detail-min] .sq')).borderTopWidth }; });
+assert.ok(Math.abs(sqc.dx) < 1 && Math.abs(sqc.dy) < 1 && parseFloat(sqc.bw) >= 3, 'Square centred and bold: ' + JSON.stringify(sqc));
 assert.equal(await page.locator('.detail .context').isVisible(), false);
 assert.equal(await page.locator('.detail .loc').isVisible(), false);
 assert.equal(await page.locator('.detail h2').isVisible(), true);
@@ -282,25 +284,44 @@ assert.equal(await page.locator('.detail .context').isVisible(), true);
 const fs = () => page.evaluate(() => { const d = document.querySelector('.detail'); const r = d.getBoundingClientRect(); return { w: r.width, h2: parseFloat(getComputedStyle(d.querySelector('h2')).fontSize), body: parseFloat(getComputedStyle(d.querySelector('.ctx')).fontSize), btn: d.querySelector('.close').getBoundingClientRect().width }; });
 const rs0 = await fs();
 assert.ok(Math.abs(rs0.w - 400) < 1 && rs0.h2 === 24, JSON.stringify(rs0));
-const dragCorner = async (dx) => {
-  const hb = await page.locator('.detail .resize').boundingBox();
-  await page.mouse.move(hb.x + 5, hb.y + hb.height - 5);
+// Handle at (fx, fy) of the panel (0..1), dragged by (dx, dy)
+const dragHandle = async (dir, dx, dy) => {
+  const hb = await page.locator(`[data-testid=detail-resize-${dir}]`).boundingBox();
+  const x = hb.x + hb.width / 2, y = hb.y + hb.height / 2;
+  await page.mouse.move(x, y);
   await page.mouse.down();
-  await page.mouse.move(hb.x + 5 + dx, hb.y + hb.height - 5, { steps: 5 });
+  await page.mouse.move(x + dx, y + dy, { steps: 5 });
   await page.mouse.up();
   await page.waitForTimeout(60);
 };
-await dragCorner(120);
+assert.equal(await page.locator('.detail .rz').count(), 8, 'Four edges and four corners');
+const panelBox = () => page.evaluate(() => { const r = document.querySelector('.detail').getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
+await dragHandle('sw', 120, 0); // bottom-left corner: the top-right corner stays
 const rs1 = await fs();
 assert.ok(rs1.w < 300 && rs1.w > 270 && rs1.h2 < 24 && rs1.h2 > 14.7 && rs1.body < 15 && rs1.btn < 36, JSON.stringify(rs1));
-await dragCorner(2000);
+await dragHandle('sw', 2000, 0);
 const rs2 = await fs();
 assert.ok(Math.abs(rs2.h2 - 14.667) < 0.05 && Math.abs(rs2.w - 244.4) < 1, 'Smallest: heading 11 pt ' + JSON.stringify(rs2));
-await dragCorner(-2000);
+await dragHandle('sw', -2000, 0);
 const rs3 = await fs();
 assert.ok(Math.abs(rs3.w - 400) < 1 && rs3.h2 === 24, 'Largest: the original size ' + JSON.stringify(rs3));
-await dragCorner(200);
-ok('Detail panel resizes between its full size and an 11 pt heading; body text and buttons scale with it');
+// Every edge and corner works, and keeps the opposite side in place
+for (const [dir, dx, dy] of [['e', -80, 0], ['w', 80, 0], ['n', 0, 40], ['s', 0, -40], ['ne', -60, 30], ['nw', 60, 30], ['se', -60, -30]]) {
+  await dragHandle('sw', -2000, 0); // back to full size
+  const b0 = await panelBox();
+  const k0 = (await fs()).w;
+  await dragHandle(dir, dx, dy);
+  const b1 = await panelBox();
+  const k1 = (await fs()).w;
+  assert.ok(k1 < k0 - 5, `${dir}: smaller ${k0} -> ${k1}`);
+  const fixed = { e: [b0.l], w: [b0.r], n: [b0.b], s: [b0.t], ne: [b0.l, b0.b], nw: [b0.r, b0.b], se: [b0.l, b0.t] }[dir];
+  const now = { e: [b1.l], w: [b1.r], n: [b1.b], s: [b1.t], ne: [b1.l, b1.b], nw: [b1.r, b1.b], se: [b1.l, b1.t] }[dir];
+  fixed.forEach((v, i) => assert.ok(Math.abs(v - now[i]) < 3, `${dir}: opposite side stays (${fixed} vs ${now})`));
+}
+await dragHandle('sw', -2000, 0);
+ok('Detail panel resizes from all four edges and corners between its full size and an 11 pt heading; body text and buttons scale with it');
+for (const sel of ['.side', '.detail']) assert.equal(await page.evaluate((q) => getComputedStyle(document.querySelector(q)).boxShadow, sel), 'none', sel + ' has no shadow');
+ok('No shadow on the tag panel and the detail panel');
 // Back and Full map buttons have the same size is checked in the map stub below
 // The close button is not a drag handle
 await page.click('.detail .close');

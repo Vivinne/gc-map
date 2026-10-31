@@ -151,13 +151,16 @@ async function open({ pinned = true, fallback = true } = {}) {
     window.__fake.hits = [
       { properties: { pid: 'x' }, geometry: { type: 'Polygon', coordinates: [[[lng - e, lat - e], [lng + e, lat - e], [lng + e, lat + e], [lng - e, lat + e], [lng - e, lat - e]]] } },
       { properties: { pid: 'y' }, geometry: { type: 'Polygon', coordinates: [[[lng + 1, lat], [lng + 1.1, lat], [lng + 1.1, lat + 0.1], [lng + 1, lat]]] } },
+      { properties: { pid: 'next' }, geometry: { type: 'Polygon', coordinates: [[[lng + 0.0001, lat - e], [lng + 3 * e, lat - e], [lng + 3 * e, lat - 0.0002], [lng + 0.0001, lat - 0.0002], [lng + 0.0001, lat - e]]] } }, // a neighbour beside the point
+      { properties: { pid: 'ring' }, geometry: { type: 'Polygon', coordinates: [[[lng - 3 * e, lat - 3 * e], [lng + 3 * e, lat - 3 * e], [lng + 3 * e, lat + 3 * e], [lng - 3 * e, lat + 3 * e], [lng - 3 * e, lat - 3 * e]], [[lng - e / 2, lat - e / 2], [lng + e / 2, lat - e / 2], [lng + e / 2, lat + e / 2], [lng - e / 2, lat + e / 2], [lng - e / 2, lat - e / 2]]] } }, // the point is in its courtyard (hole)
+      { properties: { pid: 'block' }, geometry: { type: 'Polygon', coordinates: [[[lng - 0.01, lat - 0.01], [lng + 0.01, lat - 0.01], [lng + 0.01, lat + 0.01], [lng - 0.01, lat + 0.01], [lng - 0.01, lat - 0.01]]] } }, // far larger than a building
     ];
     window.__fake.setData.length = 0;
     window.__fake.map.fire('idle');
   }, [colo.lng, colo.lat]);
   await page.waitForFunction(() => window.__fake.setData.some((x) => x[0] === 'footprint'));
   const foot = await page.evaluate(() => window.__fake.footprint);
-  assert.equal(foot.features.length, 1, 'Only the building that contains the point');
+  assert.equal(foot.features.length, 1, 'Only the building itself: not neighbours, courtyards or block-sized shapes');
   assert.match(foot.features[0].properties.color, /^#/);
   ok('Selecting a building -> its basemap footprint is filled with the style colour');
 
@@ -193,17 +196,27 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.deepEqual(ff, ['in', ['get', 'pid'], ['literal', ['colosseum', 'villa1', 'x1']]]);
   ok('Circles with fewer than 5 buildings -> their buildings (and attached villa markers) are drawn as dots');
 
-  // Back button: disabled at first, enabled after a zoom change, returns to the earlier view
-  assert.equal(await page.locator('[data-testid=map-back]').isDisabled(), true);
-  await page.evaluate(() => { const m = window.__fake.map; m.zoom = 5; m.center = { lng: 10, lat: 45 }; m.fire('moveend'); m.zoom = 9; m.center = { lng: 12.4, lat: 41.9 }; m.fire('moveend'); });
+  // Back button: returns to the view before the last click that moved the map; wheel zooming and panning are not recorded
+  await page.evaluate(() => {
+    const m = window.__fake.map;
+    m.zoom = 5; m.center = { lng: 10, lat: 45 };
+    window.__fake.hits = [{ properties: { city: 'X', n: 6, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: '[]' } }];
+    m.fireLayer('click', 'cities', { point: { x: 5, y: 5 } }); // the click moves the map: the view before it is remembered
+    m.zoom = 9.37; m.center = { lng: 12.4, lat: 41.9 }; m.fire('moveend'); // mouse wheel / drag afterwards: not remembered
+    m.zoom = 11.37; m.fire('moveend');
+  });
   await page.waitForFunction(() => !document.querySelector('[data-testid=map-back]').disabled);
-  await page.evaluate(() => { window.__fake.ease = null; });
-  await page.click('[data-testid=map-back]');
-  const back = await page.evaluate(() => window.__fake.ease);
-  assert.equal(back.zoom, 5);
-  assert.deepEqual(back.center, [10, 45]);
+  const eases = [];
+  for (let i = 0; i < 60 && !(await page.locator('[data-testid=map-back]').isDisabled()); i++) {
+    await page.evaluate(() => { window.__fake.ease = null; });
+    await page.click('[data-testid=map-back]');
+    eases.push(await page.evaluate(() => window.__fake.ease));
+  }
+  assert.equal(eases[0].zoom, 5);
+  assert.deepEqual(eases[0].center, [10, 45]);
+  assert.ok(eases.every((e) => e.zoom !== 9.37 && e.zoom !== 11.37), 'Wheel zooms are not history steps');
   assert.equal(await page.locator('[data-testid=map-back]').isDisabled(), true);
-  ok('Back button returns to the previous zoom and view');
+  ok('Back button returns to the view before the last map click (wheel zoom does not count)');
   assert.ok(await page.evaluate(() => window.__fake.scale && window.__fake.scale.unit === 'metric'));
   ok('Scale bar (metric) added');
   await page.evaluate(() => { window.__fake.map.zoom = 4; });

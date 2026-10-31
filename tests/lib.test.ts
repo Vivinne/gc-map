@@ -58,11 +58,14 @@ test('filterPlaces: era and search can be combined', () => {
   assert.deepEqual(q.map((p) => p.id), ['salk']);
 });
 
-test('tags: several checked tags give the intersection; tags without a match give nothing', () => {
+test('tags: union inside a group, intersection across groups; tags without a match give nothing', () => {
   const run = (...t: string[]) => filterPlaces(places, { tags: new Set(t), q: '' }, groups).map((p) => p.id);
   assert.deepEqual(run('y:2016'), ['pantheon-paris', 'maxxi']);
   assert.deepEqual(run('y:2016', 'c:France'), ['pantheon-paris']);
-  assert.deepEqual(run('y:2016', 'y:2018'), ['maxxi']);
+  assert.deepEqual(run('y:2016', 'y:2018'), places.filter((p) => p.exams.includes(2016) || p.exams.includes(2018)).map((p) => p.id), 'same group = union');
+  assert.ok(run('y:2016', 'y:2018').length >= run('y:2016').length);
+  assert.deepEqual(run('y:2016', 'y:2018', 'c:France'), ['pantheon-paris'], 'groups are intersected');
+  assert.deepEqual(run('c:France', 'c:Italy').sort(), places.filter((p) => p.country === 'France' || p.country === 'Italy').map((p) => p.id).sort());
   assert.deepEqual(run('y:2016', 'c:France', 's:modern'), []);
   assert.deepEqual(run('c:Others'), []);
   // a building with several style tags counts under each of them
