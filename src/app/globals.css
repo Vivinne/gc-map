@@ -102,7 +102,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .detail .head { position: relative; flex: none; padding: calc(14px * var(--k)) calc(96px * var(--k)) calc(14px * var(--k)) calc(16px * var(--k)); color: #fff; background: var(--c); cursor: grab; touch-action: none; user-select: none; }
 .detail .head:active { cursor: grabbing; }
 .detail .kicker { margin: 0; font-size: calc(12px * var(--k)); font-weight: 700; letter-spacing: 0.06em; }
-.detail h2 { margin: 0 0 calc(2px * var(--k)); font-size: calc(24px * var(--k)); font-weight: 800; line-height: 1.2; text-transform: uppercase; overflow-wrap: anywhere; }
+.detail h2 { margin: 0 0 calc(2px * var(--k)); font-size: calc((24px - 2pt) * var(--k)); font-weight: 800; line-height: 1.2; text-transform: uppercase; overflow-wrap: anywhere; }
 .detail .loc { margin: 0; font-weight: 400; text-transform: lowercase; }
 .context { flex: 1 1 auto; min-height: 0; overflow-wrap: anywhere; padding: calc(14px * var(--k, 1)) calc(16px * var(--k, 1)) calc(16px * var(--k, 1)); overflow: auto; }
 .context p { margin: 0; }
@@ -127,7 +127,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .detail[data-min='true'] .kicker, .detail[data-min='true'] .loc, .detail[data-min='true'] .context { display: none; }
 .detail[data-min='true'] { height: var(--mh, auto); }
 .detail[data-min='true'] .head { flex: 1; display: flex; align-items: center; min-height: calc(52px * var(--k)); padding-top: calc(6px * var(--k)); padding-bottom: calc(6px * var(--k)); }
-.detail[data-min='true'] h2 { margin: 0; font-size: calc(17px * var(--k)); }
+.detail[data-min='true'] h2 { margin: 0; font-size: calc((17px - 2pt) * var(--k)); }
 .detail[data-min='true'] .close, .detail[data-min='true'] .minimize { top: calc(6px * var(--k)); }
 .rows { margin: 0; }
 .row { display: grid; grid-template-columns: 7.5em 1fr; border-bottom: 1px solid var(--rule); }

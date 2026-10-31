@@ -57,7 +57,7 @@ export interface Offset {
 /** Free space kept between the dragged panel and the window edges / the tag panel (or its three-line button) */
 const GAP = 14;
 /** The heading is 24 px at full size and may shrink to 11 pt (the smallest scale k) */
-export const K_MIN = ((11 * 96) / 72) / 24;
+export const K_MIN = ((11 * 96) / 72) / (24 - (2 * 96) / 72); // 11 pt floor for the heading, whose base size is 24 px - 2 pt
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), Math.max(lo, hi));
 const hits = (l: number, t: number, r: number, b: number, z: DOMRect) => l < z.right && r > z.left && t < z.bottom && b > z.top;
@@ -172,7 +172,8 @@ export function DetailPanel({
     const el = ref.current;
     const stage = el?.offsetParent as HTMLElement | null;
     if (!el || !stage || isPhone()) return;
-    const maxW = Math.min((stage.clientWidth * 2) / 3, stage.clientWidth - 2 * GAP);
+    // one-line heading first, 2/3 width second: the panel may pass 2/3 of the map when the heading needs it, never the map edges
+    const maxW = stage.clientWidth - 2 * GAP;
     const need = Math.min(titleLineWidth(el) + (16 + 96) * size.k + 2 * borderOf(el), maxW);
     const now = el.getBoundingClientRect().width;
     if (now < need - 0.5) {
@@ -268,10 +269,10 @@ export function DetailPanel({
       // Narrowest: the heading stays on one line, plus the padding that holds the two buttons. A width that would wrap the heading is never allowed.
       const bw = borderOf(el);
       const minW = titleLineWidth(el) + (16 + 96) * k + 2 * bw;
-      if (minW > maxW) return; // the heading cannot fit on one line at this scale: the panel stays as it is
+      if (minW > S.width - 2 * GAP) return; // the heading cannot fit on one line even across the whole map: the panel stays as it is
       const minH = minHeightOf(el, k, minimized);
-      if (d.dir === 'e') Rt = clamp(R.right + dx, L + minW, Math.min(L + maxW, S.right - GAP));
-      if (d.dir === 'w') L = clamp(R.left + dx, Math.max(Rt - maxW, S.left + GAP), Rt - minW);
+      if (d.dir === 'e') Rt = clamp(R.right + dx, L + minW, Math.min(L + Math.max(maxW, minW), S.right - GAP));
+      if (d.dir === 'w') L = clamp(R.left + dx, Math.max(Rt - Math.max(maxW, minW), S.left + GAP), Rt - minW);
       if (d.dir === 's') B = clamp(R.bottom + dy, T + minH, Math.min(T + maxH, S.bottom - GAP));
       if (d.dir === 'n') T = clamp(R.top + dy, Math.max(B - maxH, S.top + GAP), B - minH);
       // A narrower box wraps the text more and the heading may get taller: the bottom edge follows so the heading always fits
