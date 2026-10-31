@@ -122,7 +122,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .detail .minimize .sq { display: block; width: calc(14px * var(--k)); height: calc(14px * var(--k)); border: calc(3.5px * var(--k)) solid var(--ink); }
 /* Minimized: only the building name and the two buttons */
 .detail[data-min='true'] .kicker, .detail[data-min='true'] .loc, .detail[data-min='true'] .context, .detail[data-min='true'] .resize { display: none; }
-.detail[data-min='true'] .head { display: flex; align-items: center; min-height: calc(52px * var(--k)); padding-top: calc(6px * var(--k)); padding-bottom: calc(6px * var(--k)); }
+.detail[data-min='true'] { height: var(--mh, auto); }
+.detail[data-min='true'] .head { flex: 1; display: flex; align-items: center; min-height: calc(52px * var(--k)); padding-top: calc(6px * var(--k)); padding-bottom: calc(6px * var(--k)); }
 .detail[data-min='true'] h2 { margin: 0; font-size: calc(17px * var(--k)); }
 .detail[data-min='true'] .close, .detail[data-min='true'] .minimize { top: calc(6px * var(--k)); }
 .rows { margin: 0; }
@@ -167,7 +168,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   .tabs button + button { border-left: 3px solid var(--ink); }
   .tabs button[aria-pressed='true'] { color: #fff; background: var(--ink); }
   .detail, .chooser { top: auto; left: 0; right: 0; bottom: 0; width: auto !important; max-width: none; max-height: 55%; border-width: 3px 0 0; box-shadow: none; transform: none !important; }
-  .detail { --k: 1 !important; height: auto !important; max-width: none; }
+  .detail, .detail[data-min='true'] { --k: 1 !important; height: auto !important; max-width: none; }
   .detail .rz { display: none; }
   .chooser { overflow: auto; }
   .detail .head { cursor: default; touch-action: auto; }
