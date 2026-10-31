@@ -337,8 +337,13 @@ assert.ok(e1.t >= 14 - 1, 'Top keeps 14 px ' + e1.t);
 await dragHandle('n', 0, 3000);
 await dragHandle('s', 0, -3000);
 e1 = await fs();
-const expectH = await page.evaluate(() => { const d = document.querySelector('.detail'); const cs = getComputedStyle(d.querySelector('.context')); return d.querySelector('.head').offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(getComputedStyle(d.querySelector('.ctx')).lineHeight) + 2 * parseFloat(getComputedStyle(d).borderTopWidth); });
+const expectH = await page.evaluate(() => { const d = document.querySelector('.detail'); const cs = getComputedStyle(d.querySelector('.context')); return d.querySelector('.head').offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(getComputedStyle(d.querySelector('.ctx')).lineHeight) + 2 * parseFloat(getComputedStyle(d.querySelector('.detail-box')).borderTopWidth); });
 near(e1.h, expectH, 'Shortest: heading + one line of text', 2);
+// Nothing spills out of the black frame, the heading stays on one line, and the white ground is there
+const inside = await page.evaluate(() => { const b = document.querySelector('.detail-box').getBoundingClientRect(); const h = document.querySelector('.detail h2'); const r = h.getBoundingClientRect(); const hd = document.querySelector('.detail .head').getBoundingClientRect(); return { within: r.left >= b.left - 0.5 && r.right <= b.right + 0.5 && r.top >= b.top - 0.5 && hd.bottom <= b.bottom + 0.5, oneLine: r.height <= parseFloat(getComputedStyle(h).fontSize) * 1.2 * 1.5, bg: getComputedStyle(document.querySelector('.detail-box')).backgroundColor }; });
+assert.ok(inside.within, 'Heading inside the frame ' + JSON.stringify(inside));
+assert.ok(inside.oneLine, 'Heading on one line ' + JSON.stringify(inside));
+assert.equal(inside.bg, 'rgb(255, 255, 255)', 'White ground');
 await dragHandle('se', 3000, 3000);
 // Minimized: the same eight handles work (corners proportional, edges move one edge), heading never wraps, height at least one heading line
 await page.click('[data-testid=detail-min]');
