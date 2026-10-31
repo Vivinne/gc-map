@@ -254,8 +254,8 @@ export function DetailPanel({
       // the heading must stay on one line: width(q) = q * R.width must cover q * (heading + buttons) + borders
       const bw = borderOf(el);
       const spare = R.width - (titleLineWidth(el) + (16 + 96) * d.k);
-      if (spare <= 2 * bw) return; // already too narrow for a one-line heading: no corner scaling
-      const qMin = Math.max(K_MIN / d.k, (2 * bw) / spare);
+      if (spare < 2 * bw - 2) return; // already too narrow for a one-line heading (2 px of rounding allowed): no corner scaling
+      const qMin = Math.max(K_MIN / d.k, (2 * bw) / Math.max(spare, 2 * bw));
       const qMax = Math.min(maxW / R.width, maxH / R.height, roomX / R.width, roomY / R.height);
       q = clamp(q, qMin, qMax);
       const place = (qq: number) => {
