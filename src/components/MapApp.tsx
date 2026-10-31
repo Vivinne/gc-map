@@ -7,12 +7,24 @@ import { HOME_BOUNDS, boundsOf, toCityCollection, toFeatureCollection } from '..
 import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
-import MapView, { type FocusTarget } from './MapView';
+import { FgCheck, type Mark } from './FgCheck';
+import { toCsv, type FgRow } from '../lib/fgcheck';
+import MapView, { type FocusTarget, type FootprintInfo } from './MapView';
 import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf, type DetailSize, type Offset } from './Panels';
 
 type Tab = 'map' | 'list';
 
 const groups = buildGroups(dataset.eras);
+const checkList = dataset.places.filter((p) => p.points.length > 0);
+const MARKS_KEY = 'gc-fg-marks';
+const loadMarks = (): Record<string, Mark> => {
+  try {
+    const v = JSON.parse(window.localStorage.getItem(MARKS_KEY) ?? '{}') as Record<string, unknown>;
+    return Object.fromEntries(Object.entries(v).filter(([, m]) => m === 'Y' || m === 'N')) as Record<string, Mark>;
+  } catch {
+    return {};
+  }
+};
 const placesById = new Map(dataset.places.map((p) => [p.id, p]));
 
 export default function MapApp() {
@@ -29,6 +41,11 @@ export default function MapApp() {
   const [detailMin, setDetailMin] = useState(false);
   const [detailSize, setDetailSize] = useState<DetailSize>({ k: 1, w: null, h: null, mh: null });
   const nonce = useRef(0);
+  // Figure ground check: step through every building, look at the drawn footprint, mark Y / N, export the doubtful ones as CSV
+  const [check, setCheck] = useState(false);
+  const [checkIdx, setCheckIdx] = useState(0);
+  const [marks, setMarks] = useState<Record<string, Mark>>({});
+  const [fp, setFp] = useState<Record<string, FootprintInfo>>({});
 
   // Checkbox state updates immediately; the heavy parts (list, map data, counts) follow from the deferred values so the tags stay responsive
   const dTags = useDeferredValue(tags);
@@ -118,6 +135,69 @@ export default function MapApp() {
     },
     [flyToPlace],
   );
+
+  const onFootprint = useCallback((i: FootprintInfo) => {
+    setFp((prev) => {
+      const o = prev[i.pid];
+      return o && o.found === i.found && o.area === i.area && o.ready === i.ready ? prev : { ...prev, [i.pid]: i };
+    });
+  }, []);
+
+  const startCheck = useCallback(() => {
+    setMarks(loadMarks());
+    setCheckIdx(0);
+    setCheck(true);
+  }, []);
+
+  // Each step selects that building (the map flies there, the footprint is drawn)
+  useEffect(() => {
+    const p = checkList[checkIdx];
+    if (check && p) select(p.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [check, checkIdx]);
+
+  const markCurrent = useCallback(
+    (m: Mark) => {
+      const p = checkList[checkIdx];
+      if (!p) return;
+      setMarks((prev) => {
+        const next = { ...prev, [p.id]: m };
+        try {
+          window.localStorage.setItem(MARKS_KEY, JSON.stringify(next));
+        } catch {
+          /* storage unavailable: the marks stay for this visit only */
+        }
+        return next;
+      });
+      setCheckIdx((i) => Math.min(checkList.length - 1, i + 1));
+    },
+    [checkIdx],
+  );
+
+  const exportCsv = useCallback(() => {
+    const rows: FgRow[] = checkList.map((p) => {
+      const i = fp[p.id];
+      const pt = p.points[0];
+      return {
+        id: p.id,
+        name: p.name,
+        loc: p.loc,
+        lat: pt ? pt.lat : '',
+        lng: pt ? pt.lng : '',
+        mark: marks[p.id] ?? '',
+        footprint: !i || !i.ready ? 'not viewed' : i.found === 0 ? 'not found' : 'found',
+        area_m2: i && i.ready && i.found > 0 ? i.area : '',
+      };
+    });
+    const url = URL.createObjectURL(new Blob([toCsv(rows)], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'figure-ground-check.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, [fp, marks]);
 
   const onPick = useCallback(
     (pids: string[]) => {
@@ -222,6 +302,7 @@ export default function MapApp() {
           </>
         )}
 
+        <button type="button" className="fg-open" data-testid="fg-open" onClick={startCheck}>Figure ground check</button>
         <footer className="credits">
           Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.
         </footer>
@@ -230,7 +311,7 @@ export default function MapApp() {
 
       <main className="stage">
         <button type="button" className="fullmap" onClick={showFullMap}>Full map</button>
-        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
+        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onFootprint={onFootprint} />
         {selected && (
           <DetailPanel
             place={selected}
@@ -243,6 +324,18 @@ export default function MapApp() {
             onMoved={setDetailOffset}
             onMinimize={() => setDetailMin((v) => !v)}
             onClose={() => setSelectedId('')}
+          />
+        )}
+        {check && (
+          <FgCheck
+            places={checkList}
+            idx={checkIdx}
+            marks={marks}
+            info={fp[checkList[checkIdx]?.id ?? '']}
+            onIdx={setCheckIdx}
+            onMark={markCurrent}
+            onExport={exportCsv}
+            onClose={() => setCheck(false)}
           />
         )}
         {!selected && choicePlaces.length > 1 && (
