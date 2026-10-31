@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useEffect, useRef, type PointerEvent } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef, type PointerEvent } from 'react';
 import type { Era, Place, Unlocated } from '../lib/types';
 
 const KIND_LABEL: Record<Unlocated['kind'], string> = {
@@ -86,6 +86,20 @@ export function constrainOffset(base: DOMRect, stage: DOMRect, menu: DOMRect | n
   return cands.reduce((best, c) => (Math.hypot(c.x - x, c.y - y) < Math.hypot(best.x - x, best.y - y) ? c : best));
 }
 
+/** Shortest the panel may be at its current width: expanded = heading + one line of text, minimized = one heading line with the buttons */
+function minHeightOf(el: HTMLElement, k: number, minimized: boolean): number {
+  const bw = parseFloat(getComputedStyle(el.querySelector('.detail-box') ?? el).borderTopWidth) || 0;
+  if (minimized) {
+    const h2 = el.querySelector('h2') as HTMLElement | null;
+    return Math.max(52 * k, (h2?.offsetHeight ?? 24 * k) + 12 * k) + 2 * bw;
+  }
+  const head = el.querySelector('.head') as HTMLElement | null;
+  const ctx = el.querySelector('.context') as HTMLElement | null;
+  const line = el.querySelector('.ctx') as HTMLElement | null;
+  const cs = ctx ? getComputedStyle(ctx) : null;
+  return (head?.offsetHeight ?? 0) + (cs ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : 0) + (line ? parseFloat(getComputedStyle(line).lineHeight) || 20 * k : 20 * k) + 2 * bw;
+}
+
 export function DetailPanel({
   place, era, offset, size, minimized, layoutKey, onMoved, onSize, onMinimize, onClose,
 }: {
@@ -138,6 +152,20 @@ export function DetailPanel({
     return () => window.removeEventListener('resize', fit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, minimized, place.id, size.k, size.w, size.h, size.mh]);
+
+  // A stored height that is too short for this building's heading (another building, another scale) is raised: the heading and one line of text always fit inside the frame
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || isPhone()) return;
+    const cur2 = minimized ? size.mh : size.h;
+    if (!cur2) return;
+    const need = minHeightOf(el, size.k, minimized);
+    if (cur2 < need - 0.5) {
+      el.style.setProperty(minimized ? '--mh' : '--h', `${need}px`);
+      onSize(minimized ? { ...size, mh: need } : { ...size, h: need });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [place.id, minimized, size.k, size.w, size.h, size.mh]);
 
   // Drag by the coloured heading block; the DOM is moved directly while dragging (no re-render), the parent is told at the end
   const down = (e: PointerEvent<HTMLElement>) => {
@@ -204,12 +232,8 @@ export function DetailPanel({
       const n = place(q);
       L = n.left; T = n.top; Rt = n.right; B = n.bottom; k = d.k * q;
     } else {
-      const head = el.querySelector('.head') as HTMLElement | null;
-      const ctx = el.querySelector('.context') as HTMLElement | null;
-      const line = el.querySelector('.ctx') as HTMLElement | null;
       const h2 = el.querySelector('h2') as HTMLElement | null;
-      const cs = ctx ? getComputedStyle(ctx) : null;
-      const bw = parseFloat(getComputedStyle(el).borderTopWidth) || 0;
+      const bw = parseFloat(getComputedStyle(el.querySelector('.detail-box') ?? el).borderTopWidth) || 0;
       // Narrowest: the heading stays on one line, plus the padding that holds the two buttons (never wider than the panel already is: a heading that already wraps cannot get narrower)
       let titleW = 0;
       if (h2) {
@@ -219,13 +243,13 @@ export function DetailPanel({
         h2.style.width = prev;
       }
       const minW = Math.min(titleW + (16 + 96) * k + 2 * bw, R.width);
-      const minH = minimized
-        ? 52 * k + 2 * bw // one heading line with the buttons
-        : (head?.offsetHeight ?? 0) + (cs ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : 0) + (line ? parseFloat(getComputedStyle(line).lineHeight) || 20 * k : 20 * k) + 2 * bw;
+      const minH = minHeightOf(el, k, minimized);
       if (d.dir === 'e') Rt = clamp(R.right + dx, L + minW, Math.min(L + maxW, S.right - GAP));
       if (d.dir === 'w') L = clamp(R.left + dx, Math.max(Rt - maxW, S.left + GAP), Rt - minW);
       if (d.dir === 's') B = clamp(R.bottom + dy, T + minH, Math.min(T + maxH, S.bottom - GAP));
       if (d.dir === 'n') T = clamp(R.top + dy, Math.max(B - maxH, S.top + GAP), B - minH);
+      // A narrower box wraps the text more and the heading may get taller: the bottom edge follows so the heading always fits
+      if ((d.dir === 'e' || d.dir === 'w') && B - T < minH) B = Math.min(T + minH, S.bottom - GAP);
       // do not run into the tag panel: stop the moving edge at its boundary
       if (zone && hits(L, T, Rt, B, zone)) {
         if (d.dir === 'w') L = Math.max(L, zone.right);
@@ -258,6 +282,7 @@ export function DetailPanel({
       aria-label={`${place.name} details`}
       data-testid="detail"
     >
+      <div className="detail-box">
       <header className="head" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
         <button type="button" className="minimize" onClick={onMinimize} aria-label={minimized ? 'Restore details' : 'Minimize details'} aria-pressed={minimized} data-testid="detail-min">{minimized ? <span className="sq" aria-hidden="true" /> : '−'}</button>
         <button type="button" className="close" onClick={onClose} aria-label="Close">×</button>
@@ -275,6 +300,7 @@ export function DetailPanel({
         {place.exams.length > 0 && (
           <p className="exam">{place.exams.map((y) => `【${y} TEST-ARCHED】`).join(' ')}</p>
         )}
+      </div>
       </div>
       {['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map((dir) => (
           <div key={dir} className={`rz rz-${dir}`} data-dir={dir} role="separator" aria-label={`Resize details (${dir})`} data-testid={`detail-resize-${dir}`} onPointerDown={rdown} onPointerMove={rmove} onPointerUp={rup} onPointerCancel={rup} />
