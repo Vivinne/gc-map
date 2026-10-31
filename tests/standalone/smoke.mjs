@@ -43,6 +43,7 @@ const FAKE = `(function(){
   Map.prototype.flyTo=function(o){ calls.fly.push(o); };
   Map.prototype.easeTo=function(o){ calls.ease=o; };
   Map.prototype.getZoom=function(){ return this.zoom; };
+  Map.prototype.getContainer=function(){ return { clientWidth: 1000, clientHeight: 800 }; };
   Map.prototype.getCanvas=function(){ return { style:{} }; };
   Map.prototype.queryRenderedFeatures=function(){ return calls.hits; };
   Map.prototype.resize=function(){};
@@ -82,7 +83,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 5);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 4);
   const f = await page.evaluate(() => ({
     
     cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
@@ -92,13 +93,13 @@ async function open({ pinned = true, fallback = true } = {}) {
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['points-wide', 'points', 'cities', 'city-count', 'selected']);
+  assert.deepEqual(f.layers, ['points', 'cities', 'city-count', 'selected']);
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
   for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);
     assert.equal(cs.radius, 34);
     assert.deepEqual(cs.props.n, ['+', ['get', 'n']]);
-    assert.deepEqual(Object.keys(cs.props).sort(), ['e', 'n', 'nn', 's', 'w']);
+    assert.deepEqual(Object.keys(cs.props).sort(), ['e', 'n', 'nn', 's', 'w', 'xe', 'xn', 'xs', 'xw']);
   }
   // One circle per city, number = buildings
   const rome = f.cityData.find((c) => c.city === 'Rome');
@@ -112,7 +113,6 @@ async function open({ pinned = true, fallback = true } = {}) {
   const L = f.layerById;
   for (const id of ['cities', 'city-count']) assert.equal(L[id].maxzoom, 10.5, id);
   assert.equal(L.points.minzoom, 10.5);
-  assert.equal(L['points-wide'].minzoom, undefined);
   assert.deepEqual(L['city-count'].layout['text-field'], ['to-string', ['get', 'n']]);
   assert.deepEqual(f.pointsPaint['circle-opacity'], ['case', ['get', 'est'], 0.5, 1]);
   assert.equal(f.controls, 1);
@@ -161,7 +161,7 @@ async function open({ pinned = true, fallback = true } = {}) {
     window.__fake.hits = [h];
     window.__fake.ease = null;
     window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } });
-  }, city({ cluster: true, cluster_id: 4, point_count: 4, n: 29, w: 7.6, s: 45.15, e: 10.8, nn: 47.6 }));
+  }, city({ cluster: true, cluster_id: 4, point_count: 4, n: 29, w: 7.6, s: 45.15, e: 10.8, nn: 47.6, xw: 7.6, xs: 45.15, xe: 10.8, xn: 47.6 }));
   await page.waitForFunction(() => window.__fake.ease);
   const e3 = await page.evaluate(() => window.__fake.ease);
   assert.ok(e3.zoom > 4.4 && e3.zoom < 8, String(e3.zoom));

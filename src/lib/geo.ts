@@ -3,7 +3,7 @@ import type { Era, EraId, Place } from './types';
 export interface PointFeature {
   type: 'Feature';
   geometry: { type: 'Point'; coordinates: [number, number] };
-  properties: { pid: string; id: string; name: string; sub: string; color: string; era: EraId; est: boolean; wide: boolean };
+  properties: { pid: string; id: string; name: string; sub: string; color: string; era: EraId; est: boolean };
 }
 
 export interface PointCollection {
@@ -15,12 +15,11 @@ export function toFeatureCollection(places: readonly Place[], eras: readonly Era
   const color = new Map(eras.map((e) => [e.id, e.color]));
   const features: PointFeature[] = [];
   for (const p of places) {
-    const wide = isWidePlace(p);
     for (const pt of p.points) {
       features.push({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [pt.lng, pt.lat] },
-        properties: { pid: p.id, id: pt.id, name: p.name, sub: pt.sub, color: color.get(p.era) ?? '#111827', era: p.era, est: pt.precision === 'estimate', wide },
+        properties: { pid: p.id, id: pt.id, name: p.name, sub: pt.sub, color: color.get(p.era) ?? '#111827', era: p.era, est: pt.precision === 'estimate' },
       });
     }
   }
@@ -74,7 +73,7 @@ export function isSameSpot(b: LngLatBounds): boolean {
 
 /** Below this zoom each city is one numbered circle; from here up every marker is drawn on its own */
 export const CITY_TOP_ZOOM = 10.5;
-/** A place whose own markers span more than this (degrees) is a region (the Veneto villas): it gets no city circle, its markers are always drawn */
+/** A place whose own markers span more than this (degrees) is a region (the Veneto villas): it gets no city circle of its own; each of its markers joins the nearest city circle's union bounds (count unchanged) */
 export const WIDE_SPAN_DEG = 0.25;
 /** After a city click the zoom ends this far above the switch zoom, so the markers are already drawn one by one */
 export const CITY_ZOOM_MARGIN = 0.5;
@@ -104,7 +103,7 @@ export function cityOf(p: Place): string {
 export interface CityFeature {
   type: 'Feature';
   geometry: { type: 'Point'; coordinates: [number, number] };
-  properties: { city: string; n: number; w: number; s: number; e: number; nn: number; pids: string };
+  properties: { city: string; n: number; w: number; s: number; e: number; nn: number; xw: number; xs: number; xe: number; xn: number; pids: string };
 }
 
 export interface CityCollection {
@@ -134,9 +133,34 @@ export function toCityCollection(places: readonly Place[]): CityCollection {
         s: b[0][1],
         e: b[1][0],
         nn: b[1][1],
+        xw: b[0][0],
+        xs: b[0][1],
+        xe: b[1][0],
+        xn: b[1][1],
         pids: JSON.stringify(ps.map((p) => p.id)),
       },
     });
+  }
+  // Markers of region places join the nearest city: only the union bounds (x*) grow, the number and the circle position stay
+  for (const p of places) {
+    if (!isWidePlace(p) || !features.length) continue;
+    for (const pt of p.points) {
+      let best = features[0];
+      let bd = Infinity;
+      for (const f of features) {
+        const dx = (f.geometry.coordinates[0] - pt.lng) * Math.cos((pt.lat * Math.PI) / 180);
+        const dy = f.geometry.coordinates[1] - pt.lat;
+        if (dx * dx + dy * dy < bd) {
+          bd = dx * dx + dy * dy;
+          best = f;
+        }
+      }
+      const q = best.properties;
+      q.xw = Math.min(q.xw, pt.lng);
+      q.xe = Math.max(q.xe, pt.lng);
+      q.xs = Math.min(q.xs, pt.lat);
+      q.xn = Math.max(q.xn, pt.lat);
+    }
   }
   return { type: 'FeatureCollection', features };
 }

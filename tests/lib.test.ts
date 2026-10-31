@@ -111,7 +111,7 @@ test('same-spot detection and bounds of coordinates', () => {
   assert.ok(SAME_SPOT_ZOOM > 17);
 });
 
-test('city circles: city from the handout location, count = buildings, region places, click zoom', () => {
+test('city circles: city from the handout location, count = buildings, region places join the nearest city, click zoom', () => {
   const mk = (id: string, loc: string, pts: [number, number][], note = '') =>
     ({ id, loc, points: pts.map(([lng, lat], i) => ({ id: `${id}${i}`, lng, lat, sub: '', note, precision: 'exact' })) }) as unknown as Place;
   assert.equal(cityOf(mk('a', 'Rome（Italy）', [[12.5, 41.9]])), 'Rome');
@@ -129,13 +129,16 @@ test('city circles: city from the handout location, count = buildings, region pl
   const by = Object.fromEntries(f.map((x) => [x.properties.city, x.properties]));
   assert.equal(by.Rome.n, 2);
   assert.equal(by.Zurich.n, 1);
-  // A region-wide place (the Veneto villas) has no city circle; its markers are always drawn
+  // A region-wide place (the Veneto villas) has no city circle of its own
   assert.equal(by.Veneto, undefined);
   assert.deepEqual(JSON.parse(by.Rome.pids), ['r1', 'r2']);
   assert.deepEqual([by.Rome.w, by.Rome.s, by.Rome.e, by.Rome.nn], [12.47, 41.89, 12.49, 41.91]);
-  // Markers of the region place are flagged wide
-  const wideOf = Object.fromEntries(toFeatureCollection(places, []).features.map((x) => [x.properties.pid, x.properties.wide]));
-  assert.deepEqual([wideOf.r1, wideOf.v1, wideOf.g, wideOf.z], [false, false, true, false]);
+  // The region place's markers join the nearest city's union bounds (x*); number, circle bounds and position stay
+  const ven = by.Venice;
+  assert.equal(ven.n, 1);
+  assert.deepEqual([ven.w, ven.e], [12.33, 12.33]);
+  assert.deepEqual([ven.xw, ven.xs, ven.xe, ven.xn], [11.5, 45, 12.33, 45.8]);
+  assert.deepEqual([by.Rome.xw, by.Rome.xs, by.Rome.xe, by.Rome.xn], [by.Rome.w, by.Rome.s, by.Rome.e, by.Rome.nn]);
   // The click lands just past the switch zoom, a deeper fit is kept
   assert.equal(cityClickZoom(14), 14);
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
