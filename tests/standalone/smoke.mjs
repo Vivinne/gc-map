@@ -141,7 +141,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   const sel = await page.evaluate(() => window.__fake.filters.at(-1));
   assert.deepEqual(sel, ['selected', ['==', ['get', 'pid'], colosseum]]);
   const fly = await page.evaluate(() => window.__fake.fly.at(-1));
-  assert.ok(Math.abs(fly.zoom - 14.5) < 0.15, `1 km around the point: ${fly.zoom}`);
+  assert.ok(Math.abs(fly.zoom - 15.5) < 0.15, `500 m around the point: ${fly.zoom}`);
   ok('Marker click -> detail panel, selection-ring filter, flyTo');
 
   // Figure ground: the basemap building polygon at the selected point is sent to the footprint source

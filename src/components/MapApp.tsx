@@ -27,6 +27,7 @@ export default function MapApp() {
   const [focus, setFocus] = useState<FocusTarget | null>(null);
   const [detailOffset, setDetailOffset] = useState<Offset>({ x: 0, y: 0 });
   const [detailMin, setDetailMin] = useState(false);
+  const [detailScale, setDetailScale] = useState(1);
   const nonce = useRef(0);
 
   // Checkbox state updates immediately; the heavy parts (list, map data, counts) follow from the deferred values so the tags stay responsive
@@ -89,7 +90,7 @@ export default function MapApp() {
     nonce.current += 1;
     if (p.points.length === 1) {
       const pt = p.points[0] as Point;
-      setFocus({ kind: 'point', lng: pt.lng, lat: pt.lat, radiusKm: 1, nonce: nonce.current });
+      setFocus({ kind: 'point', lng: pt.lng, lat: pt.lat, radiusKm: 0.5, nonce: nonce.current });
     } else if (p.points.length > 1) {
       const b = boundsOf([p]);
       if (b) setFocus({ kind: 'bounds', bounds: b, nonce: nonce.current });
@@ -233,7 +234,9 @@ export default function MapApp() {
             place={selected}
             era={eraOf(dataset.eras, selected.era)}
             offset={detailOffset}
+            scale={detailScale}
             minimized={detailMin}
+            onScale={setDetailScale}
             layoutKey={sideOpen ? 'open' : 'closed'}
             onMoved={setDetailOffset}
             onMinimize={() => setDetailMin((v) => !v)}

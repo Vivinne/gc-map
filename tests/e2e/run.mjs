@@ -240,8 +240,8 @@ await page.mouse.down();
 await page.mouse.move(5000, 5000, { steps: 4 });
 await page.mouse.up();
 const d2 = await dRect();
-assert.ok(d2.r <= 1280.5 && d2.b <= 800.5 && d2.x >= 0 && d2.y >= 0, 'Fully inside the window: ' + JSON.stringify(d2));
-assert.ok(d2.r > 1270 && d2.b > 790, 'Pushed to the bottom-right corner: ' + JSON.stringify(d2));
+assert.ok(d2.r <= 1266.5 && d2.b <= 786.5 && d2.x >= 13.5 && d2.y >= 13.5, '14 px inside the window: ' + JSON.stringify(d2));
+assert.ok(d2.r > 1255 && d2.b > 775, 'Pushed to the bottom-right corner: ' + JSON.stringify(d2));
 // Dragged to the top-left corner: it keeps its distance from the three-line button and stays inside the window
 const hb3 = await page.locator('.detail .head h2').boundingBox();
 await page.mouse.move(hb3.x + 10, hb3.y + 10);
@@ -249,10 +249,10 @@ await page.mouse.down();
 await page.mouse.move(0, 0, { steps: 6 });
 await page.mouse.up();
 const d4 = await dRect();
-const menuR = await page.evaluate(() => { const r = document.querySelector('.menu-btn').getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
-const apart = d4.x >= menuR.r + 13 || d4.y >= menuR.b + 13;
+const menuR = await page.evaluate(() => { const r = document.querySelector('.side').getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
+const apart = d4.x >= menuR.r + 13.5 || d4.y >= menuR.b + 13.5;
 assert.ok(apart && d4.x >= 0 && d4.y >= 0, JSON.stringify({ d4, menuR }));
-ok('Detail panel keeps at least 13 px away from the three-line button');
+ok('Detail panel keeps 14 px from the window edges and from the open tag panel');
 // Back where it was; the position survives choosing another building
 const dNow = await dRect();
 await page.mouse.move(dNow.x + 20, dNow.y + 20);
@@ -271,12 +271,36 @@ const bm = await page.locator('.detail .minimize').boundingBox();
 const bc = await page.locator('.detail .close').boundingBox();
 assert.ok(Math.abs(bm.width - bc.width) < 0.5 && Math.abs(bm.height - bc.height) < 0.5 && bm.x < bc.x, 'Same size, left of the x');
 await page.click('.detail .minimize');
+assert.equal((await page.textContent('[data-testid=detail-min]')).trim(), '▢');
 assert.equal(await page.locator('.detail .context').isVisible(), false);
 assert.equal(await page.locator('.detail .loc').isVisible(), false);
 assert.equal(await page.locator('.detail h2').isVisible(), true);
 assert.ok((await dRect()).h < full.h / 2, 'Smaller');
 await page.click('[data-testid=detail-min]');
 assert.equal(await page.locator('.detail .context').isVisible(), true);
+// Resize: full size is the upper limit; the heading may shrink down to 11 pt, everything else follows
+const fs = () => page.evaluate(() => { const d = document.querySelector('.detail'); const r = d.getBoundingClientRect(); return { w: r.width, h2: parseFloat(getComputedStyle(d.querySelector('h2')).fontSize), body: parseFloat(getComputedStyle(d.querySelector('.ctx')).fontSize), btn: d.querySelector('.close').getBoundingClientRect().width }; });
+const rs0 = await fs();
+assert.ok(Math.abs(rs0.w - 400) < 1 && rs0.h2 === 24, JSON.stringify(rs0));
+const dragCorner = async (dx) => {
+  const hb = await page.locator('.detail .resize').boundingBox();
+  await page.mouse.move(hb.x + 5, hb.y + hb.height - 5);
+  await page.mouse.down();
+  await page.mouse.move(hb.x + 5 + dx, hb.y + hb.height - 5, { steps: 5 });
+  await page.mouse.up();
+  await page.waitForTimeout(60);
+};
+await dragCorner(120);
+const rs1 = await fs();
+assert.ok(rs1.w < 300 && rs1.w > 270 && rs1.h2 < 24 && rs1.h2 > 14.7 && rs1.body < 15 && rs1.btn < 36, JSON.stringify(rs1));
+await dragCorner(2000);
+const rs2 = await fs();
+assert.ok(Math.abs(rs2.h2 - 14.667) < 0.05 && Math.abs(rs2.w - 244.4) < 1, 'Smallest: heading 11 pt ' + JSON.stringify(rs2));
+await dragCorner(-2000);
+const rs3 = await fs();
+assert.ok(Math.abs(rs3.w - 400) < 1 && rs3.h2 === 24, 'Largest: the original size ' + JSON.stringify(rs3));
+await dragCorner(200);
+ok('Detail panel resizes between its full size and an 11 pt heading; body text and buttons scale with it');
 // Back and Full map buttons have the same size is checked in the map stub below
 // The close button is not a drag handle
 await page.click('.detail .close');

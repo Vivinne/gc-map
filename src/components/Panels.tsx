@@ -46,23 +46,26 @@ export interface Offset {
   y: number;
 }
 
-/** Free space kept between the dragged panel and the three-line button */
-const MENU_GAP = 14;
+/** Free space kept between the dragged panel and the window edges / the tag panel (or its three-line button) */
+const GAP = 14;
+/** Full panel width (px) and the smallest scale: the heading is 24 px at full size and may shrink to 11 pt */
+const FULL_W = 400;
+export const K_MIN = ((11 * 96) / 72) / 24;
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), Math.max(lo, hi));
 const hits = (l: number, t: number, r: number, b: number, z: DOMRect) => l < z.right && r > z.left && t < z.bottom && b > z.top;
 
 /**
- * Offset to use for the panel: fully inside the map, and not touching the three-line button (plus MENU_GAP around it).
+ * Offset to use for the panel: GAP px inside the map edges, and GAP px away from the tag panel (`menu`: the whole panel when open, just the button when collapsed).
  * `base` is the panel's rect at offset 0, `stage` the map's rect; `want` the offset asked for.
  */
 export function constrainOffset(base: DOMRect, stage: DOMRect, menu: DOMRect | null, want: Offset): Offset {
-  const lo = { x: stage.left - base.left, y: stage.top - base.top };
-  const hi = { x: stage.right - base.right, y: stage.bottom - base.bottom };
+  const lo = { x: stage.left + GAP - base.left, y: stage.top + GAP - base.top };
+  const hi = { x: stage.right - GAP - base.right, y: stage.bottom - GAP - base.bottom };
   const x = clamp(want.x, lo.x, hi.x);
   const y = clamp(want.y, lo.y, hi.y);
   if (!menu || menu.width === 0) return { x, y };
-  const z = new DOMRect(menu.left - MENU_GAP, menu.top - MENU_GAP, menu.width + 2 * MENU_GAP, menu.height + 2 * MENU_GAP);
+  const z = new DOMRect(menu.left - GAP, menu.top - GAP, menu.width + 2 * GAP, menu.height + 2 * GAP);
   const clear = (px: number, py: number) => !hits(base.left + px, base.top + py, base.right + px, base.bottom + py, z);
   if (clear(x, y)) return { x, y };
   // Slide out of the zone in the direction that moves the panel least and stays inside the map
@@ -77,16 +80,19 @@ export function constrainOffset(base: DOMRect, stage: DOMRect, menu: DOMRect | n
 }
 
 export function DetailPanel({
-  place, era, offset, minimized, layoutKey, onMoved, onMinimize, onClose,
+  place, era, offset, scale, minimized, layoutKey, onMoved, onScale, onMinimize, onClose,
 }: {
   place: Place;
   era: Era | undefined;
   /** Position relative to the default spot; kept by the parent so it survives switching buildings */
   offset: Offset;
+  /** 1 = full size; the panel can be made smaller with the resize handle (down to K_MIN) */
+  scale: number;
   minimized: boolean;
   /** Changes when the surroundings change (tag panel opened / closed), so the position is checked again */
   layoutKey: string;
   onMoved: (o: Offset) => void;
+  onScale: (k: number) => void;
   onMinimize: () => void;
   onClose: () => void;
 }) {
@@ -102,7 +108,7 @@ export function DetailPanel({
     if (!el || !stage) return null;
     const r = el.getBoundingClientRect();
     const base = new DOMRect(r.left - cur.current.x, r.top - cur.current.y, r.width, r.height);
-    return { el, base, s: stage.getBoundingClientRect(), menu: document.querySelector('.menu-btn')?.getBoundingClientRect() ?? null };
+    return { el, base, s: stage.getBoundingClientRect(), menu: document.querySelector('.side')?.getBoundingClientRect() ?? null };
   };
   const apply = (o: Offset) => {
     cur.current = o;
@@ -124,7 +130,7 @@ export function DetailPanel({
     window.addEventListener('resize', fit);
     return () => window.removeEventListener('resize', fit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layoutKey, minimized, place.id]);
+  }, [layoutKey, minimized, place.id, scale]);
 
   // Drag by the coloured heading block; the DOM is moved directly while dragging (no re-render), the parent is told at the end
   const down = (e: PointerEvent<HTMLElement>) => {
@@ -144,17 +150,43 @@ export function DetailPanel({
     if (d && (cur.current.x !== offset.x || cur.current.y !== offset.y)) onMoved(cur.current);
   };
 
+  const scaleNow = useRef(scale);
+  // Resize by the bottom-left corner: the right edge stays put, width goes from the current full size down to the 11 pt heading size
+  const rz = useRef<{ x: number; w: number; right: number; s: DOMRect } | null>(null);
+  const rdown = (e: PointerEvent<HTMLElement>) => {
+    const f = frame();
+    if (!f || e.button !== 0 || isPhone()) return;
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const r = f.el.getBoundingClientRect();
+    rz.current = { x: e.clientX, w: r.width, right: r.right, s: f.s };
+  };
+  const rmove = (e: PointerEvent<HTMLElement>) => {
+    const d = rz.current;
+    const el = ref.current;
+    if (!d || !el) return;
+    const wMax = Math.min(FULL_W, d.s.width - 32);
+    const w = clamp(d.w + (d.x - e.clientX), FULL_W * K_MIN, Math.min(wMax, d.right - d.s.left - GAP));
+    const k = w / FULL_W;
+    scaleNow.current = k;
+    el.style.setProperty('--k', String(k));
+  };
+  const rup = () => {
+    if (!rz.current) return;
+    rz.current = null;
+    onScale(scaleNow.current);
+  };
   return (
     <section
       ref={ref}
       className="detail"
       data-min={minimized}
-      style={{ ['--c' as string]: era?.color, transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      style={{ ['--c' as string]: era?.color, ['--k' as string]: scale, transform: `translate(${offset.x}px, ${offset.y}px)` }}
       aria-label={`${place.name} details`}
       data-testid="detail"
     >
       <header className="head" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
-        <button type="button" className="minimize" onClick={onMinimize} aria-label={minimized ? 'Restore details' : 'Minimize details'} aria-pressed={minimized} data-testid="detail-min">−</button>
+        <button type="button" className="minimize" onClick={onMinimize} aria-label={minimized ? 'Restore details' : 'Minimize details'} aria-pressed={minimized} data-testid="detail-min">{minimized ? '▢' : '−'}</button>
         <button type="button" className="close" onClick={onClose} aria-label="Close">×</button>
         <h2>{place.name}</h2>
         <p className="loc">{sub}</p>
@@ -171,6 +203,7 @@ export function DetailPanel({
           <p className="exam">{place.exams.map((y) => `【${y} TEST-ARCHED】`).join(' ')}</p>
         )}
       </div>
+      {!minimized && <div className="resize" role="separator" aria-label="Resize details" data-testid="detail-resize" onPointerDown={rdown} onPointerMove={rmove} onPointerUp={rup} onPointerCancel={rup} />}
     </section>
   );
 }
