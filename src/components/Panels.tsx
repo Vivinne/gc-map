@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useRef, type PointerEvent } from 'react';
 import type { Era, Place, Unlocated } from '../lib/types';
 
 const KIND_LABEL: Record<Unlocated['kind'], string> = {
@@ -12,7 +13,7 @@ export function eraOf(eras: readonly Era[], id: string): Era | undefined {
   return eras.find((e) => e.id === id);
 }
 
-export function PlaceList({
+export const PlaceList = memo(function PlaceList({
   places, eras, selectedId, onSelect,
 }: {
   places: readonly Place[];
@@ -36,21 +37,66 @@ export function PlaceList({
       ))}
     </ul>
   );
-}
+});
 
 const blank = (v: string): string => (v.trim() === '—' ? '' : v.trim());
 
+export interface Offset {
+  x: number;
+  y: number;
+}
+
+/** Grab at least this much of the panel (px) must stay inside the map */
+const KEEP_PX = 60;
+
 export function DetailPanel({
-  place, era, onClose,
+  place, era, offset, onMoved, onClose,
 }: {
   place: Place;
   era: Era | undefined;
+  /** Position relative to the default spot; kept by the parent so it survives switching buildings */
+  offset: Offset;
+  onMoved: (o: Offset) => void;
   onClose: () => void;
 }) {
   const sub = [blank(place.year), place.loc].filter(Boolean).join(', ');
+  const ref = useRef<HTMLElement>(null);
+  const drag = useRef<{ x: number; y: number; ox: number; oy: number; r: DOMRect; s: DOMRect; cur: Offset } | null>(null);
+
+  // Drag by the coloured heading block; the DOM is moved directly while dragging (no re-render), the parent is told at the end
+  const down = (e: PointerEvent<HTMLElement>) => {
+    const el = ref.current;
+    const stage = el?.offsetParent as HTMLElement | null;
+    if (!el || !stage || e.button !== 0 || (e.target as HTMLElement).closest('button')) return;
+    if (window.matchMedia('(max-width: 900px)').matches) return; // bottom sheet on phones
+    e.currentTarget.setPointerCapture(e.pointerId);
+    drag.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y, r: el.getBoundingClientRect(), s: stage.getBoundingClientRect(), cur: offset };
+  };
+  const move = (e: PointerEvent<HTMLElement>) => {
+    const d = drag.current;
+    const el = ref.current;
+    if (!d || !el) return;
+    const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
+    const dx = clamp(e.clientX - d.x, d.s.left + KEEP_PX - d.r.right, d.s.right - KEEP_PX - d.r.left);
+    const dy = clamp(e.clientY - d.y, d.s.top - d.r.top, d.s.bottom - KEEP_PX - d.r.top);
+    d.cur = { x: d.ox + dx, y: d.oy + dy };
+    el.style.transform = `translate(${d.cur.x}px, ${d.cur.y}px)`;
+  };
+  const up = () => {
+    const d = drag.current;
+    drag.current = null;
+    if (d && (d.cur.x !== offset.x || d.cur.y !== offset.y)) onMoved(d.cur);
+  };
+
   return (
-    <section className="detail" style={{ ['--c' as string]: era?.color }} aria-label={`${place.name} details`} data-testid="detail">
-      <header className="head">
+    <section
+      ref={ref}
+      className="detail"
+      style={{ ['--c' as string]: era?.color, transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      aria-label={`${place.name} details`}
+      data-testid="detail"
+    >
+      <header className="head" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
         <button type="button" className="close" onClick={onClose} aria-label="Close">×</button>
         <h2>{place.name}</h2>
         <p className="loc">{sub}</p>

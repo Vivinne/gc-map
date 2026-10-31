@@ -23,10 +23,21 @@ export function buildGroups(eras: readonly Era[]): TagGroup[] {
   ];
 }
 
+/** Tag lookup per groups array, built once (matchesTags runs for every building on every change) */
+const DEFS = new WeakMap<readonly TagGroup[], Map<string, TagDef>>();
+function defsOf(groups: readonly TagGroup[]): Map<string, TagDef> {
+  let m = DEFS.get(groups);
+  if (!m) {
+    m = new Map(groups.flatMap((g) => g.tags).map((t) => [t.id, t]));
+    DEFS.set(groups, m);
+  }
+  return m;
+}
+
 /** Intersection: every checked tag must match */
 export function matchesTags(p: Place, tags: ReadonlySet<string>, groups: readonly TagGroup[]): boolean {
   if (tags.size === 0) return true;
-  const defs = new Map(groups.flatMap((g) => g.tags).map((t) => [t.id, t]));
+  const defs = defsOf(groups);
   for (const id of tags) {
     const t = defs.get(id);
     if (!t || !t.test(p)) return false;

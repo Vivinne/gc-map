@@ -22,7 +22,7 @@ npm run site        # writes site/ (index.html, app.js, app.css, README.txt)
 ```
 
 `site/` opens by double-clicking `index.html`, or the whole folder can go on any static host. The React and TypeScript code is shared with the Next.js build (`src/components`); only the entry point (`src/standalone/main.tsx`) differs, and MapLibre is loaded from jsDelivr through a `<script>` tag.
-`npm run site:test` uses a fake `window.maplibregl` to verify the loading flow, the fallback and the calls MapView makes (9 checks); it is not real MapLibre.
+`npm run site:test` uses a fake `window.maplibregl` to verify the loading flow, the fallback and the calls MapView makes (16 checks); it is not real MapLibre.
 
 ## Data flow
 
@@ -63,7 +63,7 @@ Build-time checks: ids are unique, coordinate ranges are valid, coordinates (inc
 ```bash
 npm test     # 24 unit tests: filtering, geometry, hash, parsing, data validation
 npm run typecheck
-npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (23 checks)
+npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (24 checks)
 ```
 
 `e2e` needs `esbuild` and `playwright` (listed as devDependencies); the first run needs `npx playwright install chromium`.
@@ -87,8 +87,11 @@ Below zoom 10.5 each city is one dark numbered circle; the number is the count o
 
 ## Map controls and zoom behaviour
 
-- Back button (`<`, top-left of the map): returns to the view before the last notable move (a zoom change of 0.4 or more, or a pan of half a screen); up to 30 steps are kept. The first (initial) view is the start of the history.
+- Back button (`< Back`, above the Full map button, bottom-right of the map): returns to the view before the last notable move (a zoom change of 0.4 or more, or a pan of half a screen); up to 30 steps are kept. The first (initial) view is the start of the history.
 - Scale bar (metric, bottom-left).
 - Selecting a building (map or list) flies to a view that reaches 1 km from the point along the shorter map side, whatever the previous zoom.
 - A circle is drawn only when it stands for 5 or more buildings. Below that (single cities and merged circles alike) the buildings of the circle are drawn as their own coloured dots, overlapping if need be; the region-place markers attached to such a circle (see above) are drawn with them. The dot list is refreshed when the map goes idle.
 - Clicking overlapping dots at different places zooms to the range that pulls them apart (at least one level deeper); clicking dots at one coordinate opens the chooser list; a single dot selects the building.
+- The tag panel floats over the map (desktop); the three-line button collapses it to just that button. On phones it stays the List tab.
+- The building detail panel can be dragged by its coloured heading block (desktop; at least 60 px stays on the map; the position is kept for the next building). On phones it stays a bottom sheet.
+- Tag/search input updates the checkboxes at once; the list, tag counts and map data follow through React's deferred values, and tag matching no longer rebuilds its lookup per building.

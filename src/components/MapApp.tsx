@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { dataset, unlocated } from '../lib/data';
 import { filterPlaces } from '../lib/filter';
 import { HOME_BOUNDS, boundsOf, toCityCollection, toFeatureCollection } from '../lib/geo';
@@ -8,7 +8,7 @@ import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
 import MapView, { type FocusTarget } from './MapView';
-import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf } from './Panels';
+import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf, type Offset } from './Panels';
 
 type Tab = 'map' | 'list';
 
@@ -25,12 +25,16 @@ export default function MapApp() {
   const [choices, setChoices] = useState<string[]>([]);
   const [tab, setTab] = useState<Tab>('map');
   const [focus, setFocus] = useState<FocusTarget | null>(null);
+  const [detailOffset, setDetailOffset] = useState<Offset>({ x: 0, y: 0 });
   const nonce = useRef(0);
 
-  const visible = useMemo(() => filterPlaces(dataset.places, { tags, q }, groups), [tags, q]);
+  // Checkbox state updates immediately; the heavy parts (list, map data, counts) follow from the deferred values so the tags stay responsive
+  const dTags = useDeferredValue(tags);
+  const dQ = useDeferredValue(q);
+  const visible = useMemo(() => filterPlaces(dataset.places, { tags: dTags, q: dQ }, groups), [dTags, dQ]);
   const fc = useMemo(() => toFeatureCollection(visible, dataset.eras), [visible]);
   const cities = useMemo(() => toCityCollection(visible), [visible]);
-  const filtersActive = tags.size > 0 || q.trim() !== '';
+  const filtersActive = dTags.size > 0 || dQ.trim() !== '';
   // With no filter, show a fixed view of Europe; with a filter, zoom to the results (which may include far-away points such as New York or Tokyo)
   const bounds = useMemo(() => (filtersActive ? boundsOf(visible) : HOME_BOUNDS), [filtersActive, visible]);
   const selected: Place | undefined = placesById.get(selectedId);
@@ -38,13 +42,11 @@ export default function MapApp() {
   // Count shown on each tag = buildings that match it together with the other checked tags
   const tagCounts = useMemo(() => {
     const m = new Map<string, number>();
-    for (const g of groups) for (const t of g.tags) {
-      const next = new Set(tags);
-      next.add(t.id);
-      m.set(t.id, dataset.places.filter((p) => matchesTags(p, next, groups)).length);
-    }
+    const matching = dataset.places.filter((p) => matchesTags(p, dTags, groups));
+    // A tag that is already checked leaves the matching set unchanged, so one pass per tag over the matching set is enough
+    for (const g of groups) for (const t of g.tags) m.set(t.id, matching.reduce((n, p) => n + (t.test(p) ? 1 : 0), 0));
     return m;
-  }, [tags]);
+  }, [dTags]);
 
   const toggleGroup = useCallback((id: string) => {
     setOpenGroups((prev) => {
@@ -162,7 +164,7 @@ export default function MapApp() {
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search building, place, architect, keyword"
+            placeholder="Search building, place, architect"
             aria-label="Search"
           />
           {groups.map((g) => {
@@ -229,6 +231,8 @@ export default function MapApp() {
           <DetailPanel
             place={selected}
             era={eraOf(dataset.eras, selected.era)}
+            offset={detailOffset}
+            onMoved={setDetailOffset}
             onClose={() => setSelectedId('')}
           />
         )}

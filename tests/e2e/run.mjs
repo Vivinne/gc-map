@@ -26,6 +26,12 @@ async function newPage(viewport) {
   const page = await ctx.newPage();
   page.on('pageerror', (e) => problems.push('pageerror: ' + e.message));
   page.on('console', (m) => { if (m.type() === 'error') problems.push('console.error: ' + m.text()); });
+  // The list, counts and map data follow the tag/search input through useDeferredValue: let React finish that render after each input
+  const settle = () => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 40)))));
+  for (const fn of ['click', 'fill']) {
+    const orig = page[fn].bind(page);
+    page[fn] = async (...a) => { const r = await orig(...a); await settle(); return r; };
+  }
   return page;
 }
 
@@ -56,9 +62,11 @@ ok('Three group buttons; sub tags show only after a press, several groups can be
 const home = await page.evaluate(() => window.__map.bounds);
 assert.deepEqual(home, [[-8, 36], [29.5, 55]]);
 await page.click('.tag-item:has-text("Modern")');
+await page.waitForFunction(() => window.__map.bounds[0][0] < -70); // the list/map follow the deferred filter
 const modernBounds = await page.evaluate(() => window.__map.bounds);
 assert.ok(modernBounds[0][0] < -70 && modernBounds[1][0] > 130, JSON.stringify(modernBounds)); // includes New York and Tokyo
 await page.click('.clear-tags');
+await page.waitForFunction(() => window.__map.bounds[0][0] === -8);
 assert.deepEqual(await page.evaluate(() => window.__map.bounds), [[-8, 36], [29.5, 55]]);
 ok('View: fixed on Europe with no filter, zooms to the results with a filter, back to Europe once cleared');
 
@@ -212,19 +220,58 @@ assert.deepEqual(fullB.blendWith, [[-8, 36], [29.5, 55]]);
 assert.ok(fullB.bounds[0][0] < -70 && fullB.bounds[1][0] > 130, JSON.stringify(fullB.bounds));
 ok('The "Full map" button zooms out to halfway between the Europe view and a fit of every marker');
 
+// Detail panel: drag by the coloured heading block
+await page.fill('.search', 'Colosseum');
+await page.click('.list .item');
+await page.waitForSelector('[data-testid=detail]');
+const dRect = () => page.evaluate(() => { const r = document.querySelector('.detail').getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width }; });
+const d0 = await dRect();
+const hb = await page.locator('.detail .head h2').boundingBox();
+await page.mouse.move(hb.x + 10, hb.y + 10);
+await page.mouse.down();
+await page.mouse.move(hb.x - 190, hb.y + 110, { steps: 6 });
+await page.mouse.up();
+const d1 = await dRect();
+assert.ok(Math.abs(d1.x - d0.x + 200) < 2 && Math.abs(d1.y - d0.y - 100) < 2, JSON.stringify([d0, d1]));
+// Dragging far outside keeps part of the panel on the map
+const hb2 = await page.locator('.detail .head h2').boundingBox();
+await page.mouse.move(hb2.x + 10, hb2.y + 10);
+await page.mouse.down();
+await page.mouse.move(5000, 5000, { steps: 4 });
+await page.mouse.up();
+const d2 = await dRect();
+assert.ok(d2.x < 1280 && d2.x > 1100 && d2.y < 800, JSON.stringify(d2));
+// Back where it was; the position survives choosing another building
+await page.mouse.move(d2.x + 20, d2.y + 20);
+await page.mouse.down();
+await page.mouse.move(d1.x + 20, d1.y + 20, { steps: 4 });
+await page.mouse.up();
+await page.fill('.search', 'Pantheon');
+await page.click('.list .item');
+await page.waitForSelector('[data-testid=detail]');
+const d3 = await dRect();
+assert.ok(Math.abs(d3.x - d1.x) < 2 && Math.abs(d3.y - d1.y) < 2, JSON.stringify([d1, d3]));
+// The close button is not a drag handle
+await page.click('.detail .close');
+assert.equal(await page.locator('[data-testid=detail]').count(), 0);
+await page.fill('.search', '');
+ok('Detail panel drags by its heading block, stays within the map, keeps its position for the next building');
+
 // Collapsible building list (desktop)
 const sideW = () => page.evaluate(() => document.querySelector('.side').getBoundingClientRect().width);
-assert.ok((await sideW()) > 300);
+assert.ok((await sideW()) > 250);
+assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.side')).position), 'absolute', 'The tag panel floats over the map');
 await page.click('.menu-btn');
 await page.waitForTimeout(100);
 assert.ok((await sideW()) > 40 && (await sideW()) < 80);
+assert.ok((await page.evaluate(() => document.querySelector('.side').getBoundingClientRect().height)) < 80, 'Collapsed = just the button');
 assert.equal(await page.locator('.side .list').isVisible(), false);
 await page.screenshot({ path: resolve(shots, 'desktop-collapsed.png') });
 const stageW = await page.evaluate(() => document.querySelector('.stage').getBoundingClientRect().width);
 assert.ok(stageW >= 1200, String(stageW));
 await page.click('.menu-btn');
 await page.waitForTimeout(100);
-assert.ok((await sideW()) > 300);
+assert.ok((await sideW()) > 250);
 ok('Building list collapses to give the map the full width, and expands again');
 
 // Plain-text rendering (HTML is not executed)

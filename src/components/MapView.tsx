@@ -307,7 +307,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     <>
       <div ref={box} className="map" data-testid="map" />
       <button type="button" className="map-back" data-testid="map-back" aria-label="Back to the previous view" title="Previous view" disabled={!canBack} onClick={goBack}>
-        &lt;
+        &lt; Back
       </button>
       {err && <div className="map-note" role="status">{err}</div>}
     </>
