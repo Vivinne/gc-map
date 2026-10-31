@@ -51,17 +51,6 @@ const geomArea = (g: Geom, lat: number): number => polygonsOf(g).reduce((n, [out
 /** A single building is never larger than this; anything bigger is a block, campus or land-use shape, not the building itself */
 const MAX_FOOTPRINT_M2 = 150000;
 
-/** What the basemap offered as the footprint of the selected building (for the figure ground check) */
-export interface FootprintInfo {
-  pid: string;
-  /** Number of basemap building shapes drawn as the footprint (0 = none found) */
-  found: number;
-  /** Their summed ground area in m2 */
-  area: number;
-  /** The basemap's building layers are loaded (false = the tiles are still coming, "found: 0" is not final) */
-  ready: boolean;
-}
-
 export type FocusTarget =
   | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; nonce: number }
   | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; nonce: number };
@@ -79,11 +68,9 @@ interface Props {
   active: boolean;
   /** Marker clicked: returns all building ids at that spot (several can share a coordinate) */
   onPick: (pids: string[]) => void;
-  /** Reports the footprint found for the selected building each time it changes */
-  onFootprint?: (info: FootprintInfo) => void;
 }
 
-export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick, onFootprint }: Props) {
+export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
   const [ready, setReady] = useState(false);
@@ -92,9 +79,9 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   const [canBack, setCanBack] = useState(false);
 
   // Event handlers must read the latest values; use refs to avoid rebinding
-  const latest = useRef({ fc, cities, selectedPid, onPick, onFootprint });
+  const latest = useRef({ fc, cities, selectedPid, onPick });
   useEffect(() => {
-    latest.current = { fc, cities, selectedPid, onPick, onFootprint };
+    latest.current = { fc, cities, selectedPid, onPick };
   });
 
   // Back button history: the view as it was before each click that moves the map (a map click, a list selection, Full map); wheel zooming and panning are not recorded
@@ -266,7 +253,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       };
       // The footprint comes from the basemap's building polygons that are drawn at the selected point; tiles may still be loading, so this retries on idle
       let footKey = '';
-      let reported = '';
       const refreshFootprint = () => {
         const src = map.getSource(FOOTPRINT_SOURCE) as GeoJSONSource | undefined;
         if (!src) return;
@@ -274,7 +260,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         const pts = sel ? latest.current.fc.features.filter((f) => f.properties.pid === sel) : [];
         const layers = (map.getStyle()?.layers ?? []).filter((l) => (l as { 'source-layer'?: string })['source-layer'] === 'building').map((l) => l.id);
         const out: { type: 'Feature'; geometry: Geom; properties: { color: string } }[] = [];
-        let area = 0;
         if (layers.length) {
           for (const f of pts) {
             const [lng, lat] = f.geometry.coordinates;
@@ -284,20 +269,9 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
               const g = h.geometry as Geom;
               return coversPoint(g, lng, lat) && geomArea(g, lat) <= MAX_FOOTPRINT_M2;
             });
-            for (const h of hits) {
-              out.push({ type: 'Feature', geometry: h.geometry as Geom, properties: { color: f.properties.color } });
-              area += geomArea(h.geometry as Geom, lat);
-            }
+            for (const h of hits) out.push({ type: 'Feature', geometry: h.geometry as Geom, properties: { color: f.properties.color } });
           }
         }
-        if (sel) {
-          const rep = { pid: sel, found: out.length, area: Math.round(area), ready: layers.length > 0 };
-          const rk = JSON.stringify(rep);
-          if (rk !== reported) {
-            reported = rk;
-            latest.current.onFootprint?.(rep);
-          }
-        } else reported = '';
         const key = sel + '|' + JSON.stringify(out.map((o) => o.geometry));
         if (key === footKey) return;
         footKey = key;

@@ -184,20 +184,3 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 }
 
 .context .exam { margin: calc(10px * var(--k, 1)) 0 0; font-size: calc(11px * var(--k, 1)); font-style: italic; color: #777; }
-
-/* Figure ground check */
-.fg-open { flex: none; margin: 6px 12px; padding: 6px 10px; font-size: 12px; font-weight: 700; color: var(--ink); background: #fff; border: 2px solid var(--ink); border-radius: 0; cursor: pointer; }
-.fgbar { position: absolute; z-index: 8; left: 50%; bottom: 10px; transform: translateX(-50%); width: min(760px, calc(100% - 340px)); color: #fff; background: var(--ink); border: 3px solid var(--ink); }
-.fg-line { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; padding: 8px 12px 4px; }
-.fg-pos { font-size: 16px; }
-.fg-name { font-weight: 800; text-transform: uppercase; overflow-wrap: anywhere; }
-.fg-state { font-size: 13px; }
-.fg-state[data-mark='Y'] { color: #86efac; }
-.fg-state[data-mark='N'] { color: #fca5a5; }
-.fg-btns { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 4px 12px 10px; }
-.fg-btns button { padding: 6px 12px; font-weight: 700; color: var(--ink); background: #fff; border: 2px solid #fff; border-radius: 0; cursor: pointer; }
-.fg-btns button:disabled { opacity: 0.4; cursor: default; }
-.fg-btns .fg-y { background: #86efac; border-color: #86efac; }
-.fg-btns .fg-n { background: #fca5a5; border-color: #fca5a5; }
-.fg-sum { margin-left: auto; font-size: 13px; }
-@media (max-width: 900px) { .fgbar { width: calc(100% - 20px); bottom: 56px; } }
