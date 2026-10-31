@@ -27,7 +27,7 @@ export default function MapApp() {
   const [focus, setFocus] = useState<FocusTarget | null>(null);
   const [detailOffset, setDetailOffset] = useState<Offset>({ x: 0, y: 0 });
   const [detailMin, setDetailMin] = useState(false);
-  const [detailSize, setDetailSize] = useState<DetailSize>({ k: 1, w: null, h: null });
+  const [detailSize, setDetailSize] = useState<DetailSize>({ k: 1, w: null, h: null, mh: null });
   const nonce = useRef(0);
 
   // Checkbox state updates immediately; the heavy parts (list, map data, counts) follow from the deferred values so the tags stay responsive

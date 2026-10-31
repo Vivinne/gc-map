@@ -44,7 +44,9 @@ const blank = (v: string): string => (v.trim() === '—' ? '' : v.trim());
 export interface DetailSize {
   k: number;
   w: number | null;
+  /** Height when expanded / when minimized (null = follows the content) */
   h: number | null;
+  mh: number | null;
 }
 
 export interface Offset {
@@ -135,7 +137,7 @@ export function DetailPanel({
     window.addEventListener('resize', fit);
     return () => window.removeEventListener('resize', fit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layoutKey, minimized, place.id, size.k, size.w, size.h]);
+  }, [layoutKey, minimized, place.id, size.k, size.w, size.h, size.mh]);
 
   // Drag by the coloured heading block; the DOM is moved directly while dragging (no re-render), the parent is told at the end
   const down = (e: PointerEvent<HTMLElement>) => {
@@ -167,8 +169,8 @@ export function DetailPanel({
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     const r = f.el.getBoundingClientRect();
-    f.el.style.setProperty('--h', `${r.height}px`); // the height stops following the text: the box keeps its size and the text scrolls
-    sizeNow.current = { k: size.k, w: r.width, h: r.height };
+    f.el.style.setProperty(minimized ? '--mh' : '--h', `${r.height}px`); // the height stops following the text: the box keeps its size and the text scrolls
+    sizeNow.current = minimized ? { ...size, w: r.width, mh: r.height } : { ...size, w: r.width, h: r.height };
     const z = f.menu && f.menu.width ? new DOMRect(f.menu.left - GAP, f.menu.top - GAP, f.menu.width + 2 * GAP, f.menu.height + 2 * GAP) : null;
     rz.current = { dir, x: e.clientX, y: e.clientY, k: size.k, r, s: f.s, side: f.menu, zone: z };
   };
@@ -205,10 +207,21 @@ export function DetailPanel({
       const head = el.querySelector('.head') as HTMLElement | null;
       const ctx = el.querySelector('.context') as HTMLElement | null;
       const line = el.querySelector('.ctx') as HTMLElement | null;
+      const h2 = el.querySelector('h2') as HTMLElement | null;
       const cs = ctx ? getComputedStyle(ctx) : null;
       const bw = parseFloat(getComputedStyle(el).borderTopWidth) || 0;
-      const minW = (16 + 96 + 72) * k; // left padding + a short title + the two buttons
-      const minH = (head?.offsetHeight ?? 0) + (cs ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : 0) + (line ? parseFloat(getComputedStyle(line).lineHeight) || 20 * k : 20 * k) + 2 * bw;
+      // Narrowest: the heading stays on one line, plus the padding that holds the two buttons (never wider than the panel already is: a heading that already wraps cannot get narrower)
+      let titleW = 0;
+      if (h2) {
+        const prev = h2.style.width;
+        h2.style.width = 'max-content';
+        titleW = Math.ceil(h2.getBoundingClientRect().width) + 2; // a little slack so rounding never wraps the heading
+        h2.style.width = prev;
+      }
+      const minW = Math.min(titleW + (16 + 96) * k + 2 * bw, R.width);
+      const minH = minimized
+        ? 52 * k + 2 * bw // one heading line with the buttons
+        : (head?.offsetHeight ?? 0) + (cs ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : 0) + (line ? parseFloat(getComputedStyle(line).lineHeight) || 20 * k : 20 * k) + 2 * bw;
       if (d.dir === 'e') Rt = clamp(R.right + dx, L + minW, Math.min(L + maxW, S.right - GAP));
       if (d.dir === 'w') L = clamp(R.left + dx, Math.max(Rt - maxW, S.left + GAP), Rt - minW);
       if (d.dir === 's') B = clamp(R.bottom + dy, T + minH, Math.min(T + maxH, S.bottom - GAP));
@@ -224,8 +237,8 @@ export function DetailPanel({
     const w = Rt - L, h = B - T;
     el.style.setProperty('--k', String(k));
     el.style.setProperty('--w', `${w}px`);
-    el.style.setProperty('--h', `${h}px`);
-    sizeNow.current = { k, w, h };
+    el.style.setProperty(minimized ? '--mh' : '--h', `${h}px`);
+    sizeNow.current = minimized ? { ...size, k, w, mh: h } : { ...size, k, w, h };
     // The panel is anchored top-right: measure where it sits at offset 0 with the new size, then choose the offset that puts it on the wanted rect
     const m = el.getBoundingClientRect();
     apply({ x: L - (m.left - cur.current.x), y: T - (m.top - cur.current.y) });
@@ -241,7 +254,7 @@ export function DetailPanel({
       ref={ref}
       className="detail"
       data-min={minimized}
-      style={{ ['--c' as string]: era?.color, ['--k' as string]: size.k, ...(size.w ? { ['--w' as string]: `${size.w}px` } : {}), ...(size.h && !minimized ? { ['--h' as string]: `${size.h}px` } : {}), transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      style={{ ['--c' as string]: era?.color, ['--k' as string]: size.k, ...(size.w ? { ['--w' as string]: `${size.w}px` } : {}), ...(size.h && !minimized ? { ['--h' as string]: `${size.h}px` } : {}), ...(size.mh && minimized ? { ['--mh' as string]: `${size.mh}px` } : {}), transform: `translate(${offset.x}px, ${offset.y}px)` }}
       aria-label={`${place.name} details`}
       data-testid="detail"
     >
@@ -263,8 +276,7 @@ export function DetailPanel({
           <p className="exam">{place.exams.map((y) => `【${y} TEST-ARCHED】`).join(' ')}</p>
         )}
       </div>
-      {!minimized &&
-        ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map((dir) => (
+      {['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map((dir) => (
           <div key={dir} className={`rz rz-${dir}`} data-dir={dir} role="separator" aria-label={`Resize details (${dir})`} data-testid={`detail-resize-${dir}`} onPointerDown={rdown} onPointerMove={rmove} onPointerUp={rup} onPointerCancel={rup} />
         ))}
     </section>
