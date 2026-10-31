@@ -100,6 +100,20 @@ function minHeightOf(el: HTMLElement, k: number, minimized: boolean): number {
   return (head?.offsetHeight ?? 0) + (cs ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : 0) + (line ? parseFloat(getComputedStyle(line).lineHeight) || 20 * k : 20 * k) + 2 * bw;
 }
 
+/** Width of the heading on one line plus the room for the two buttons: the panel is never narrower than this, so the heading never wraps */
+function titleLineWidth(el: HTMLElement): number {
+  const h2 = el.querySelector('h2') as HTMLElement | null;
+  if (!h2) return 0;
+  const prev = h2.style.width;
+  h2.style.width = 'max-content';
+  const w = Math.ceil(h2.getBoundingClientRect().width) + 2; // a little slack so rounding never wraps the heading
+  h2.style.width = prev;
+  return w;
+}
+function borderOf(el: HTMLElement): number {
+  return parseFloat(getComputedStyle(el.querySelector('.detail-box') ?? el).borderTopWidth) || 0;
+}
+
 export function DetailPanel({
   place, era, offset, size, minimized, layoutKey, onMoved, onSize, onMinimize, onClose,
 }: {
@@ -152,6 +166,21 @@ export function DetailPanel({
     return () => window.removeEventListener('resize', fit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, minimized, place.id, size.k, size.w, size.h, size.mh]);
+
+  // The heading is always on one line: a building with a longer title (or a new scale) widens the panel to what that line needs
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const stage = el?.offsetParent as HTMLElement | null;
+    if (!el || !stage || isPhone()) return;
+    const maxW = Math.min((stage.clientWidth * 2) / 3, stage.clientWidth - 2 * GAP);
+    const need = Math.min(titleLineWidth(el) + (16 + 96) * size.k + 2 * borderOf(el), maxW);
+    const now = el.getBoundingClientRect().width;
+    if (now < need - 0.5) {
+      el.style.setProperty('--w', `${need}px`);
+      onSize({ ...size, w: need });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [place.id, minimized, size.k, size.w]);
 
   // A stored height that is too short for this building's heading (another building, another scale) is raised: the heading and one line of text always fit inside the frame
   useLayoutEffect(() => {
@@ -221,7 +250,11 @@ export function DetailPanel({
       let q = Math.abs(rw - 1) >= Math.abs(rh - 1) ? rw : rh;
       const roomX = sx > 0 ? S.right - GAP - R.left : R.right - (S.left + GAP);
       const roomY = sy > 0 ? S.bottom - GAP - R.top : R.bottom - (S.top + GAP);
-      const qMin = K_MIN / d.k;
+      // the heading must stay on one line: width(q) = q * R.width must cover q * (heading + buttons) + borders
+      const bw = borderOf(el);
+      const spare = R.width - (titleLineWidth(el) + (16 + 96) * d.k);
+      if (spare <= 2 * bw) return; // already too narrow for a one-line heading: no corner scaling
+      const qMin = Math.max(K_MIN / d.k, (2 * bw) / spare);
       const qMax = Math.min(maxW / R.width, maxH / R.height, roomX / R.width, roomY / R.height);
       q = clamp(q, qMin, qMax);
       const place = (qq: number) => {
@@ -232,17 +265,10 @@ export function DetailPanel({
       const n = place(q);
       L = n.left; T = n.top; Rt = n.right; B = n.bottom; k = d.k * q;
     } else {
-      const h2 = el.querySelector('h2') as HTMLElement | null;
-      const bw = parseFloat(getComputedStyle(el.querySelector('.detail-box') ?? el).borderTopWidth) || 0;
-      // Narrowest: the heading stays on one line, plus the padding that holds the two buttons (never wider than the panel already is: a heading that already wraps cannot get narrower)
-      let titleW = 0;
-      if (h2) {
-        const prev = h2.style.width;
-        h2.style.width = 'max-content';
-        titleW = Math.ceil(h2.getBoundingClientRect().width) + 2; // a little slack so rounding never wraps the heading
-        h2.style.width = prev;
-      }
-      const minW = Math.min(titleW + (16 + 96) * k + 2 * bw, R.width);
+      // Narrowest: the heading stays on one line, plus the padding that holds the two buttons. A width that would wrap the heading is never allowed.
+      const bw = borderOf(el);
+      const minW = titleLineWidth(el) + (16 + 96) * k + 2 * bw;
+      if (minW > maxW) return; // the heading cannot fit on one line at this scale: the panel stays as it is
       const minH = minHeightOf(el, k, minimized);
       if (d.dir === 'e') Rt = clamp(R.right + dx, L + minW, Math.min(L + maxW, S.right - GAP));
       if (d.dir === 'w') L = clamp(R.left + dx, Math.max(Rt - maxW, S.left + GAP), Rt - minW);
