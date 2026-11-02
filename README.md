@@ -90,7 +90,7 @@ Below zoom 10.5 each city is one dark numbered circle; the number is the count o
 - Back button (`< Back`, above the Full map button, bottom-right of the map): returns to the view as it was before the last click that moved the map (a circle or dot click, selecting a building, Full map). Mouse-wheel zooming and dragging are not steps. Up to 30 steps are kept. Back also closes the building panel.
 - Scale bar (metric, bottom-left).
 - The map never shows the polar regions: latitude is limited to the polar circles (66.5 degrees north and south).
-- Full map: on a computer, halfway between the Europe view and a fit of every marker; on a phone (width up to 900 px) a fixed view of Europe: top = half of the Scandinavian peninsula (63 N), bottom = Algeria (30 N), left = Spain and a little open sea (12 W), right = the middle of Ukraine (32 E), Europe centred.
+- Full map: on a computer, centred on a fit of every marker with the scale bar at 500 km; on a phone (width up to 900 px) a fixed view of Europe: top = half of the Scandinavian peninsula (63 N), bottom = Algeria (30 N), left = Spain and a little open sea (12 W), right = the middle of Ukraine (32 E), Europe centred.
 - A reload closes the building panel (the address keeps the tags and the search text, not the selection).
 - Selecting a building (map or list) flies to a view that reaches 500 m from the point along the shorter map side, whatever the previous zoom.
 - A circle is drawn only when it stands for 5 or more buildings. Below that (single cities and merged circles alike) the buildings of the circle are drawn as their own coloured dots, overlapping if need be; the region-place markers attached to such a circle (see above) are drawn with them. The dot list is refreshed when the map goes idle.

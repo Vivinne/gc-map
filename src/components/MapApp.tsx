@@ -102,7 +102,7 @@ export default function MapApp() {
     const b = boundsOf(dataset.places);
     if (!b) return;
     nonce.current += 1;
-    // Phone: a fixed view of Europe (Scandinavia to Algeria, Spain to Ukraine); desktop: halfway between the Europe view and a fit of every marker
+    // Phone: a fixed view of Europe (Scandinavia to Algeria, Spain to Ukraine); desktop: centre of a fit of every marker, zoomed so the scale bar reads 500 km
     if (window.matchMedia('(max-width: 900px)').matches) setFocus({ kind: 'bounds', bounds: PHONE_FULL_BOUNDS, exact: true, nonce: nonce.current });
     else setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, nonce: nonce.current });
     setSelectedId(''); // the building panel closes

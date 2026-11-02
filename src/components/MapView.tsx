@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, SCALE_1KM_MPP, densestCenter, edgeMarkers, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, edgeMarkers, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
@@ -372,11 +372,12 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     }
     else if (focus.exact) map.fitBounds(focus.bounds, { padding: 4, maxZoom: 16, duration: 700 });
     else if (focus.blendWith && map.cameraForBounds) {
-      // Halfway between "fit everything" and the given reference view (less zoomed out than a full fit)
+      // Centre of "fit everything", zoomed so that the scale bar reads 500 km
       const all = map.cameraForBounds(focus.bounds, { padding: 120 });
       const ref = map.cameraForBounds(focus.blendWith, { padding: 120 });
       if (all?.center && ref && all.zoom != null && ref.zoom != null) {
-        map.flyTo({ center: all.center, zoom: (all.zoom + ref.zoom) / 2, essential: true, duration: 700 });
+        const lat = Array.isArray(all.center) ? all.center[1] : (all.center as { lat: number }).lat;
+        map.flyTo({ center: all.center, zoom: zoomForMetersPerPixel(lat, FULL_MAP_MPP), essential: true, duration: 700 });
         return;
       }
       map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });

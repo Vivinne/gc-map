@@ -36,6 +36,8 @@ export const PHONE_FULL_BOUNDS: [[number, number], [number, number]] = [[-12, 30
 export const POLAR_LAT = 66.5;
 
 /** Metres per CSS pixel at which the scale bar (100 px wide at most) reads exactly 1 km */
+/** Desktop Full map: metres per pixel at which the scale bar (max 120 px) reads 500 km (a 500 km bar spans 104 px) */
+export const FULL_MAP_MPP = 4800;
 export const SCALE_1KM_MPP = 9.8;
 
 /** Zoom level (512 px tiles) that shows `mpp` metres per CSS pixel at the given latitude */
