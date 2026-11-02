@@ -411,7 +411,14 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     const mine = latest.current.cities.features.filter((f) => keys.includes(f.properties.city));
     const top = mine.reduce<(typeof mine)[number] | undefined>((t, f) => (!t || f.properties.n > t.properties.n ? f : t), undefined);
     if (!top) return;
-    const set = new Set<string>(JSON.parse(top.properties.pids) as string[]);
+    const all = JSON.parse(top.properties.pids) as string[];
+    // A button that stands for exactly one building opens that building's panel (and flies to it) directly
+    if (mine.reduce((n, f) => n + f.properties.n, 0) === 1 && all.length === 1) {
+      pushRef.current();
+      latest.current.onPick([all[0] as string]);
+      return;
+    }
+    const set = new Set<string>(all);
     const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
     const c = densestCenter(pts);
     if (!c) return;

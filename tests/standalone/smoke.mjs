@@ -283,6 +283,19 @@ async function open({ pinned = true, fallback = true } = {}) {
   const mc = await page.evaluate(() => window.__fake.ease.center);
   assert.ok(mc[1] < 42.5, 'The merged direction goes to the city with the most buildings (Rome), not the nearer one: ' + JSON.stringify(mc));
   ok('Merged direction button -> the city with the most buildings, even if another is nearer');
+  // A direction button that shows 1 opens that building's panel directly
+  await page.evaluate(() => {
+    window.__fake.map.center = { lng: 12.5, lat: 41.9 };
+    window.__proj = (c) => (c[1] < 38 ? { x: 3000, y: 300 } : { x: 500, y: 300 }); // only Agrigento (one building) is outside the view
+    window.__fake.map.zoom = 12;
+    window.__fake.map.fire('move');
+  });
+  await page.waitForFunction(() => document.querySelector('[data-testid=edge-dot]')?.textContent.trim() === '1');
+  await page.locator('[data-testid=edge-dot]').first().click();
+  await page.waitForSelector('[data-testid=detail]');
+  assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Valle dei Templi');
+  ok('Direction button showing 1 -> the building panel opens directly');
+  await page.keyboard.press('Escape');
   await page.evaluate(() => { window.__proj = () => ({ x: 3000, y: 300 }); window.__fake.map.center = { lng: 12.5, lat: 43.5 }; window.__fake.map.fire('move'); });
 
   // Zooming far in does not remove the markers (the range is real distance, not pixels)
