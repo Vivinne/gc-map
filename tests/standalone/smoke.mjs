@@ -90,7 +90,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 5);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 7);
   const f = await page.evaluate(() => ({
     
     cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
@@ -100,7 +100,15 @@ async function open({ pinned = true, fallback = true } = {}) {
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['points', 'points-few', 'cities', 'city-count', 'selected']);
+  assert.deepEqual(f.layers, ['points', 'points-few', 'cities', 'city-count', 'regions', 'region-count', 'selected']);
+  // Phone Full map: one circle per region (Italy north / centre / south, France, the United Kingdom ...), not merged by distance
+  const reg = await page.evaluate(() => ({ src: window.__fake.sources.regions, layers: window.__fake.layers.filter((l) => l.id === 'regions' || l.id === 'region-count' || l.id === 'cities').map((l) => [l.id, l.minzoom ?? null, l.maxzoom ?? null]) }));
+  assert.ok(!reg.src.cluster, 'Regions are fixed groups, not distance clusters');
+  const names = reg.src.data.features.map((x) => x.properties.region);
+  for (const n of ['Italy North', 'Italy Centre', 'Italy South', 'France', 'United Kingdom']) assert.ok(names.includes(n), n);
+  assert.deepEqual(reg.layers.find((l) => l[0] === 'regions').slice(1), [null, 3]);
+  assert.deepEqual(reg.layers.find((l) => l[0] === 'cities').slice(1), [3, 10.5]);
+  ok('Below zoom 3 each region (Italy N/C/S, France, UK ...) has its own number; cities take over from zoom 3');
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
   for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);

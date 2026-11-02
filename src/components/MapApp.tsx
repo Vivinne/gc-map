@@ -3,7 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { dataset, unlocated } from '../lib/data';
 import { filterPlaces } from '../lib/filter';
-import { HOME_BOUNDS, PHONE_FULL_BOUNDS, boundsOf, toCityCollection, toFeatureCollection } from '../lib/geo';
+import { HOME_BOUNDS, PHONE_FULL_BOUNDS, boundsOf, toCityCollection, toFeatureCollection, toRegionCollection } from '../lib/geo';
 import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
@@ -37,6 +37,7 @@ export default function MapApp() {
   const visible = useMemo(() => filterPlaces(dataset.places, { tags: dTags, q: dQ }, groups), [dTags, dQ]);
   const fc = useMemo(() => toFeatureCollection(visible, dataset.eras), [visible]);
   const cities = useMemo(() => toCityCollection(visible), [visible]);
+  const regions = useMemo(() => toRegionCollection(visible), [visible]);
   const filtersActive = dTags.size > 0 || dQ.trim() !== '';
   // With no filter, show a fixed view of Europe; with a filter, zoom to the results (which may include far-away points such as New York or Tokyo)
   const bounds = useMemo(() => (filtersActive ? boundsOf(visible) : HOME_BOUNDS), [filtersActive, visible]);
@@ -237,7 +238,7 @@ export default function MapApp() {
           <span>Hide Direction</span>
         </label>
         <button type="button" className="fullmap" onClick={() => showFullMap()}>Full map</button>
-        <MapView hideEdges={hideEdges} fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} onDeselect={() => setSelectedId('')} />
+        <MapView hideEdges={hideEdges} fc={fc} selectedPid={selectedId} cities={cities} regions={regions} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} onDeselect={() => setSelectedId('')} />
         {selected && (
           <DetailPanel
             place={selected}

@@ -2,6 +2,7 @@
 // No Next.js needed. Needs a network: MapLibre script and style come from jsDelivr, basemap tiles from OpenFreeMap.
 import { createRequire } from 'node:module';
 import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -43,6 +44,9 @@ await esbuild.build({
 copyFileSync(P('src/app/globals.css'), resolve(out, 'app.css'));
 copyFileSync(P('public/robots.txt'), resolve(out, 'robots.txt'));
 
+// Cache buster: a phone browser keeps app.js / app.css for a while, so their URLs carry a hash of their content and change with every build
+const V = createHash('md5').update(readFileSync(resolve(out, 'app.js'))).update(readFileSync(resolve(out, 'app.css'))).digest('hex').slice(0, 10);
+
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -51,7 +55,7 @@ const html = `<!doctype html>
 <meta name="robots" content="noindex,nofollow">
 <title>GC Buildings Map</title>
 <link id="ml-css" rel="stylesheet" href="${CDN(MAPLIBRE, 'maplibre-gl.css')}">
-<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="app.css?v=${V}">
 </head>
 <body>
 <div id="root"><p class="boot">Loading…</p></div>
@@ -65,7 +69,7 @@ const html = `<!doctype html>
     s.src = src; s.onload = ok; s.onerror = fail;
     document.head.appendChild(s);
   }
-  function app() { add('app.js', function () {}, function () { root.innerHTML = '<p class="boot">app.js failed to load.</p>'; }); }
+  function app() { add('app.js?v=${V}', function () {}, function () { root.innerHTML = '<p class="boot">app.js failed to load.</p>'; }); }
   function giveUp() {
     root.innerHTML = '<p class="boot">Could not load MapLibre (jsDelivr). Check your network connection and refresh.</p>';
   }

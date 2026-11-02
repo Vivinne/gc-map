@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { dataset } from '../lib/data';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, pointsOutside, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, REGION_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, pointsOutside, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type RegionCollection, type PointCollection } from '../lib/geo';
 
 /** The coordinates of the buildings listed in a city feature's `pids` */
 const cityPoints = (pids: string, byPid: Map<string, [number, number]>): { pid: string; lng: number; lat: number }[] =>
@@ -22,6 +22,7 @@ const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
 const SOURCE = 'places';
 /** One numbered point per city; drawn below the city zoom, the single markers above it */
 const CITY_SOURCE = 'cities';
+const REGION_SOURCE = 'regions';
 /** City circle radius (px, fixed); circles whose centres are closer than the diameter overlap, so they are merged (counts summed) */
 const CITY_RADIUS = 15;
 /** Circles stand for at least this many buildings; fewer are drawn as their own coloured dots (overlapping is fine) */
@@ -47,6 +48,7 @@ interface Props {
   selectedPid: string;
   /** One feature per city with the number of visible buildings in it */
   cities: CityCollection;
+  regions: RegionCollection;
   /** Bounding box of the currently visible buildings; null = no points */
   bounds: [[number, number], [number, number]] | null;
   focus: FocusTarget | null;
@@ -60,7 +62,7 @@ interface Props {
   onDeselect?: () => void;
 }
 
-export default function MapView({ hideEdges = false, fc, cities, selectedPid, bounds, focus, active, onPick, onBack, onDeselect }: Props) {
+export default function MapView({ hideEdges = false, fc, cities, regions, selectedPid, bounds, focus, active, onPick, onBack, onDeselect }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
   const [ready, setReady] = useState(false);
@@ -68,9 +70,9 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
   const [edges, setEdges] = useState<EdgeMarker[]>([]);
 
   // Event handlers must read the latest values; use refs to avoid rebinding
-  const latest = useRef({ fc, cities, selectedPid, onPick, onDeselect });
+  const latest = useRef({ fc, cities, regions, selectedPid, onPick, onDeselect });
   useEffect(() => {
-    latest.current = { fc, cities, selectedPid, onPick, onDeselect };
+    latest.current = { fc, cities, regions, selectedPid, onPick, onDeselect };
   });
 
   // A number (city circle or direction button) moves the view to centre/zoom: when the new view no longer shows the selected building, its panel closes
@@ -183,7 +185,7 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
       const countLayout: NonNullable<SymbolLayerSpecification['layout']> = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true };
       map.addLayer({ id: 'points', type: 'circle', source: SOURCE, minzoom: CITY_TOP_ZOOM, paint: dot });
       // Below the switch zoom: markers of the circles with fewer than MIN_NUMBER buildings (list kept up to date by refreshFew)
-      map.addLayer({ id: 'points-few', type: 'circle', source: SOURCE, maxzoom: CITY_TOP_ZOOM, filter: ['in', ['get', 'pid'], ['literal', []]], paint: dot });
+      map.addLayer({ id: 'points-few', type: 'circle', source: SOURCE, minzoom: REGION_TOP_ZOOM, maxzoom: CITY_TOP_ZOOM, filter: ['in', ['get', 'pid'], ['literal', []]], paint: dot });
       // Nearby cities merge into one circle (count summed, bounds united) so circles never overlap
       map.addSource(CITY_SOURCE, {
         type: 'geojson',
@@ -197,8 +199,12 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
           xw: ['min', ['get', 'xw']], xs: ['min', ['get', 'xs']], xe: ['max', ['get', 'xe']], xn: ['max', ['get', 'xn']],
         },
       });
-      map.addLayer({ id: 'cities', type: 'circle', source: CITY_SOURCE, maxzoom: CITY_TOP_ZOOM, filter: ['>=', ['get', 'n'], MIN_NUMBER], layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] }, paint: cityPaint });
-      map.addLayer({ id: 'city-count', type: 'symbol', source: CITY_SOURCE, maxzoom: CITY_TOP_ZOOM, filter: ['>=', ['get', 'n'], MIN_NUMBER], layout: countLayout, paint: { 'text-color': '#ffffff' } });
+      map.addLayer({ id: 'cities', type: 'circle', source: CITY_SOURCE, minzoom: REGION_TOP_ZOOM, maxzoom: CITY_TOP_ZOOM, filter: ['>=', ['get', 'n'], MIN_NUMBER], layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] }, paint: cityPaint });
+      map.addLayer({ id: 'city-count', type: 'symbol', source: CITY_SOURCE, minzoom: REGION_TOP_ZOOM, maxzoom: CITY_TOP_ZOOM, filter: ['>=', ['get', 'n'], MIN_NUMBER], layout: countLayout, paint: { 'text-color': '#ffffff' } });
+      // Phone Full map (below REGION_TOP_ZOOM): one circle per region (Italy north / centre / south, France, the United Kingdom ...), no merging by distance
+      map.addSource(REGION_SOURCE, { type: 'geojson', data: latest.current.regions as unknown as GeoData });
+      map.addLayer({ id: 'regions', type: 'circle', source: REGION_SOURCE, maxzoom: REGION_TOP_ZOOM, paint: cityPaint });
+      map.addLayer({ id: 'region-count', type: 'symbol', source: REGION_SOURCE, maxzoom: REGION_TOP_ZOOM, layout: countLayout, paint: { 'text-color': '#ffffff' } });
       map.addLayer({
         id: 'selected',
         type: 'circle',
@@ -276,7 +282,16 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
         src.getClusterLeaves(Number(pr.cluster_id), 1000, 0).then((ls) => goDensest(ls.flatMap((l) => pidsOf((l.properties as Record<string, unknown> | null)?.pids)))).catch(() => goDensest([]));
       };
       map.on('click', 'cities', cityClick);
-      for (const id of ['cities', 'points', 'points-few']) {
+      // A region was clicked: zoom to all its buildings (the cities inside then appear)
+      map.on('click', 'regions', (e: { point: { x: number; y: number } }) => {
+        const pr = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: ['regions'] })[0]?.properties;
+        if (!pr) return;
+        const b: LngLatBounds = [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
+        if (isSameSpot(b)) return easeAwayRef.current([b[0][0], b[0][1]], SAME_SPOT_ZOOM);
+        const cam = map.cameraForBounds(b, { padding: 40, maxZoom: 9 });
+        if (cam?.center) easeAwayRef.current(cam.center as [number, number], Math.max(cam.zoom ?? REGION_TOP_ZOOM, REGION_TOP_ZOOM + 0.2));
+      });
+      for (const id of ['cities', 'regions', 'points', 'points-few']) {
         map.on('mouseenter', id, () => (map.getCanvas().style.cursor = 'pointer'));
         map.on('mouseleave', id, () => (map.getCanvas().style.cursor = ''));
       }
@@ -326,7 +341,8 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     if (!map || !ready) return;
     (map.getSource(SOURCE) as GeoJSONSource | undefined)?.setData(fc as unknown as GeoData);
     (map.getSource(CITY_SOURCE) as GeoJSONSource | undefined)?.setData(cities as unknown as GeoData);
-  }, [fc, cities, ready]);
+    (map.getSource(REGION_SOURCE) as GeoJSONSource | undefined)?.setData(regions as unknown as GeoData);
+  }, [fc, cities, regions, ready]);
 
   // Selection ring
   useEffect(() => {

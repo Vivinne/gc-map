@@ -165,6 +165,66 @@ export function cityOf(p: Place): string {
   return raw.replace(/[（(].*?[）)]/g, '').replace(/附近/g, '').trim();
 }
 
+/** Below this zoom (the phone's Full map) the circles are regions, not cities: Italy north / centre / south, France, the United Kingdom ... each get one number */
+export const REGION_TOP_ZOOM = 3;
+
+export interface RegionFeature {
+  type: 'Feature';
+  geometry: { type: 'Point'; coordinates: [number, number] };
+  properties: { region: string; n: number; w: number; s: number; e: number; nn: number; pids: string };
+}
+export interface RegionCollection {
+  type: 'FeatureCollection';
+  features: RegionFeature[];
+}
+
+/** Region of a building: Italy is split by latitude, France / UK / Germany / US by country tag; the rest (tag Others) is grouped by distance in toRegionCollection */
+export function regionKey(p: Place): string {
+  const lat = p.points[0]?.lat ?? 0;
+  if (p.country === 'Italy') return lat >= 44 ? 'Italy North' : lat >= 41.5 ? 'Italy Centre' : 'Italy South';
+  return p.country === 'Others' ? '' : p.country;
+}
+
+/** Others (Spain, Greece, Belgium ...): buildings joined into one region when a chain of them is never more than this far apart (m) */
+export const OTHERS_LINK_M = 400_000;
+
+/** One feature per region at the mean position of its buildings; n = buildings, w/s/e/nn = bounds */
+export function toRegionCollection(places: readonly Place[]): RegionCollection {
+  const groups = new Map<string, Place[]>();
+  const others: Place[] = [];
+  for (const p of places) {
+    if (!p.points.length) continue;
+    const k = regionKey(p);
+    if (k) groups.set(k, [...(groups.get(k) ?? []), p]);
+    else others.push(p);
+  }
+  // Single-link grouping of the "Others"
+  const parent = others.map((_, i) => i);
+  const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i] as number)));
+  for (let i = 0; i < others.length; i++) {
+    for (let j = i + 1; j < others.length; j++) {
+      const a = (others[i] as Place).points[0]!;
+      const b = (others[j] as Place).points[0]!;
+      if (distanceM({ lng: a.lng, lat: a.lat }, { lng: b.lng, lat: b.lat }) <= OTHERS_LINK_M) parent[find(i)] = find(j);
+    }
+  }
+  const chains = new Map<number, Place[]>();
+  others.forEach((p, i) => chains.set(find(i), [...(chains.get(find(i)) ?? []), p]));
+  let k = 0;
+  for (const ps of chains.values()) groups.set(`Others ${(ps[0] as Place).name} #${++k}`, ps);
+  const features: RegionFeature[] = [];
+  for (const [region, ps] of groups) {
+    const b = boundsOf(ps) as LngLatBounds;
+    const pts = ps.map((p) => p.points[0]!);
+    features.push({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [pts.reduce((n, q) => n + q.lng, 0) / pts.length, pts.reduce((n, q) => n + q.lat, 0) / pts.length] },
+      properties: { region, n: ps.length, w: b[0][0], s: b[0][1], e: b[1][0], nn: b[1][1], pids: JSON.stringify(ps.map((p) => p.id)) },
+    });
+  }
+  return { type: 'FeatureCollection', features };
+}
+
 export interface CityFeature {
   type: 'Feature';
   geometry: { type: 'Point'; coordinates: [number, number] };

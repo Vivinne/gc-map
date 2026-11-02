@@ -234,3 +234,23 @@ test('pointsOutside: only the buildings out of the view count for a direction bu
   assert.deepEqual(pointsOutside(pts, { lng: 2.175, lat: 41.395 }, 13, 390, 640), [pts[2]]);
   assert.deepEqual(pointsOutside(pts.slice(0, 2), { lng: 2.175, lat: 41.395 }, 13, 390, 640), []);
 });
+
+test('toRegionCollection: Italy north / centre / south, France and the UK are separate numbers', async () => {
+  const { toRegionCollection } = await import('../src/lib/geo');
+  const pt = (lat: number, lng: number) => [{ id: 'p', sub: '', lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '' }];
+  const ps = [
+    mk({ id: 'milan', country: 'Italy', points: pt(45.5, 9.2) }), mk({ id: 'turin', country: 'Italy', points: pt(45.1, 7.7) }),
+    mk({ id: 'rome', country: 'Italy', points: pt(41.9, 12.5) }), mk({ id: 'florence', country: 'Italy', points: pt(43.8, 11.3) }),
+    mk({ id: 'naples', country: 'Italy', points: pt(40.9, 14.3) }),
+    mk({ id: 'paris', country: 'France', points: pt(48.9, 2.4) }), mk({ id: 'london', country: 'United Kingdom', points: pt(51.4, -0.1) }),
+    mk({ id: 'madrid', country: 'Others', points: pt(40.4, -3.7) }), mk({ id: 'seville', country: 'Others', points: pt(37.4, -6) }),
+    mk({ id: 'athens', country: 'Others', points: pt(38, 23.7) }),
+  ];
+  const by = Object.fromEntries(toRegionCollection(ps).features.map((f) => [f.properties.region, f.properties.n]));
+  assert.equal(by['Italy North'], 2);
+  assert.equal(by['Italy Centre'], 2);
+  assert.equal(by['Italy South'], 1);
+  assert.equal(by['France'], 1);
+  assert.equal(by['United Kingdom'], 1);
+  assert.equal(Object.keys(by).filter((k) => k.startsWith('Others')).length, 2, 'Madrid and Seville join, Athens stays apart');
+});
