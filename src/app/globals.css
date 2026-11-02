@@ -179,4 +179,4 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .context .exam { margin: calc(10px * var(--k, 1)) 0 0; font-size: calc(11px * var(--k, 1)); font-style: italic; color: #777; }
 
 /* Markers for cities outside the view: small dot on the map edge with the building count */
-.edge-dot { position: absolute; z-index: 4; transform: translate(-50%, -50%); min-width: 26px; height: 26px; padding: 0 5px; font: 700 12px/1 system-ui, sans-serif; color: #fff; background: var(--ink); border: 2px solid #fff; border-radius: 13px; cursor: pointer; }
+.edge-dot { position: absolute; z-index: 4; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transform: translate(-50%, -50%); min-width: 32px; height: 32px; padding: 0 6px; font: 700 13px/1 system-ui, sans-serif; color: #fff; background: var(--ink); border: 2px solid #fff; border-radius: 16px; cursor: pointer; }

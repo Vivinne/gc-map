@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, edgeMarkers, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, EDGE_RANGE_M, distanceM, edgeMarkers, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
@@ -130,7 +130,10 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       const el = map.getContainer();
       const w = el.clientWidth;
       const h = el.clientHeight;
-      const items = latest.current.cities.features.map((f) => {
+      const mc = map.getCenter();
+      // Real distance, not pixels: the markers stay however far the map is zoomed in
+      const near = latest.current.cities.features.filter((f) => distanceM({ lng: mc.lng, lat: mc.lat }, { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }) <= EDGE_RANGE_M);
+      const items = near.map((f) => {
         const p = map.project(f.geometry.coordinates);
         return { key: f.properties.city, n: f.properties.n, x: p.x, y: p.y };
       });
@@ -371,16 +374,9 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       map.flyTo({ center: [focus.lng, focus.lat], zoom: Math.min(Math.max(zoom, 1), 19), essential: true });
     }
     else if (focus.exact) map.fitBounds(focus.bounds, { padding: 4, maxZoom: 16, duration: 700 });
-    else if (focus.blendWith && map.cameraForBounds) {
-      // Centre of "fit everything", zoomed so that the scale bar reads 500 km
-      const all = map.cameraForBounds(focus.bounds, { padding: 120 });
-      const ref = map.cameraForBounds(focus.blendWith, { padding: 120 });
-      if (all?.center && ref && all.zoom != null && ref.zoom != null) {
-        const lat = Array.isArray(all.center) ? all.center[1] : (all.center as { lat: number }).lat;
-        map.flyTo({ center: all.center, zoom: zoomForMetersPerPixel(lat, FULL_MAP_MPP), essential: true, duration: 700 });
-        return;
-      }
-      map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });
+    else if (focus.blendWith) {
+      // Centred on Switzerland, zoomed so that the scale bar reads 500 km
+      map.flyTo({ center: FULL_MAP_CENTER, zoom: zoomForMetersPerPixel(FULL_MAP_CENTER[1], FULL_MAP_MPP), essential: true, duration: 700 });
     } else map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus?.nonce, ready]);

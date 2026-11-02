@@ -3767,66 +3767,6 @@
      "note": "",
      "sourceUrl": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia",
      "status": "Supplementary - to be verified"
-    },
-    {
-     "id": "sagrada-familia-gaudi-53a7-barcelona~1",
-     "sub": "Casa Vicens",
-     "lat": 41.40358,
-     "lng": 2.15079,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Vicens",
-     "status": "Supplementary - to be verified"
-    },
-    {
-     "id": "sagrada-familia-gaudi-53a7-barcelona~2",
-     "sub": "Palau Güell",
-     "lat": 41.37889,
-     "lng": 2.17417,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Palau_G%C3%BCell",
-     "status": "Supplementary - to be verified"
-    },
-    {
-     "id": "sagrada-familia-gaudi-53a7-barcelona~3",
-     "sub": "Casa Batlló",
-     "lat": 41.39158,
-     "lng": 2.16492,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Batll%C3%B3",
-     "status": "Supplementary - to be verified"
-    },
-    {
-     "id": "sagrada-familia-gaudi-53a7-barcelona~4",
-     "sub": "Casa Milà",
-     "lat": 41.39528,
-     "lng": 2.16167,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Mil%C3%A0",
-     "status": "Supplementary - to be verified"
-    },
-    {
-     "id": "sagrada-familia-gaudi-53a7-barcelona~5",
-     "sub": "Park Güell",
-     "lat": 41.41361,
-     "lng": 2.15278,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Park_G%C3%BCell",
-     "status": "Supplementary - to be verified"
-    },
-    {
-     "id": "sagrada-familia-gaudi-53a7-barcelona~6",
-     "sub": "Colònia Güell",
-     "lat": 41.3611,
-     "lng": 2.0294,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://de.wikipedia.org/wiki/Col%C3%B2nia_G%C3%BCell",
-     "status": "Supplementary - to be verified"
     }
    ]
   },

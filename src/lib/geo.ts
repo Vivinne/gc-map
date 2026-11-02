@@ -35,9 +35,11 @@ export const PHONE_FULL_BOUNDS: [[number, number], [number, number]] = [[-12, 30
 /** The map never shows the polar regions: latitude is limited to the polar circles */
 export const POLAR_LAT = 66.5;
 
-/** Metres per CSS pixel at which the scale bar (100 px wide at most) reads exactly 1 km */
 /** Desktop Full map: metres per pixel at which the scale bar (max 120 px) reads 500 km (a 500 km bar spans 104 px) */
 export const FULL_MAP_MPP = 4800;
+/** Desktop Full map is centred on Switzerland (lng, lat) */
+export const FULL_MAP_CENTER: [number, number] = [8.2, 46.8];
+/** Metres per CSS pixel at which the scale bar (100 px wide at most) reads exactly 1 km */
 export const SCALE_1KM_MPP = 9.8;
 
 /** Zoom level (512 px tiles) that shows `mpp` metres per CSS pixel at the given latitude */
@@ -229,9 +231,9 @@ export interface EdgeMarker {
 
 /**
  * Markers for cities outside the view: one per direction on the viewport edge (inset px inside it), labelled with the number of buildings.
- * Cities farther than `range` px from the view centre are left out; cities whose edge spots are closer than `cell` px are summed into one marker.
+ * Cities farther than `range` px from the view centre (default: no limit; the caller limits by real distance) are left out; cities whose edge spots are closer than `cell` px are summed into one marker.
  */
-export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 22, range = 8 * Math.max(w, h), cell = 40): EdgeMarker[] {
+export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 24, range = Infinity, cell = 40): EdgeMarker[] {
   const cx = w / 2;
   const cy = h / 2;
   const out = new Map<string, EdgeMarker & { d: number }>();
@@ -240,7 +242,7 @@ export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, in
     const dx = it.x - cx;
     const dy = it.y - cy;
     const d = Math.hypot(dx, dy);
-    if (d > range || d === 0) continue;
+    if (!Number.isFinite(d) || d > range || d === 0) continue;
     const hx = cx - inset;
     const hy = cy - inset;
     const k = Math.min(hx / Math.abs(dx || 1e-9), hy / Math.abs(dy || 1e-9));
@@ -260,4 +262,17 @@ export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, in
     }
   }
   return [...out.values()].map(({ key, n, x, y }) => ({ key, n, x, y }));
+}
+
+/** Cities farther than this (metres, straight line from the view centre) get no edge marker, however far the map is zoomed in */
+export const EDGE_RANGE_M = 150_000;
+
+/** Straight-line distance in metres between two lng/lat points (haversine) */
+export function distanceM(a: { lng: number; lat: number }, b: { lng: number; lat: number }): number {
+  const R = 6371008.8;
+  const rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad;
+  const dLng = (b.lng - a.lng) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }

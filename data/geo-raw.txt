@@ -100,11 +100,6 @@ Alte Pinakothek |  | en:Alte_Pinakothek | 48.14833°N 11.57000°E |
 Crystal Palace |  | en:The_Crystal_Palace | 51.4226°N 0.0756°W | Original building burned down in 1936; the coordinates are the original site, Crystal Palace Park
 Red House |  | en:Red_House,_Bexleyheath | 51.45556°N 0.13028°E | 
 Sagrada Família 等 Gaudí 作品 | Sagrada Família | en:Sagrada_Família | 41.40369°N 2.17433°E | 
-Sagrada Família 等 Gaudí 作品 | Casa Vicens | en:Casa_Vicens | 41.40358°N 2.15079°E | 
-Sagrada Família 等 Gaudí 作品 | Palau Güell | en:Palau_Güell | 41.37889°N 2.17417°E | 
-Sagrada Família 等 Gaudí 作品 | Casa Batlló | en:Casa_Batlló | 41.39158°N 2.16492°E | 
-Sagrada Família 等 Gaudí 作品 | Casa Milà | en:Casa_Milà | 41.39528°N 2.16167°E | 
-Sagrada Família 等 Gaudí 作品 | Park Güell | en:Park_Güell | 41.41361°N 2.15278°E | 
 Tassel House |  | en:Hôtel_Tassel | 50.82778°N 4.362028°E | 
 Weissenhof Estate |  | en:Weissenhof_Estate | 48.80050°N 9.17767°E | 
 Schröder House |  | en:Rietveld_Schröder_House | 52.08528°N 5.14722°E | 
@@ -162,7 +157,6 @@ Notre-Dame-du-Haut（Ronchamp） |  | url:https://latitude.to/articles-by-countr
 Centre Pompidou |  | en:Centre_Pompidou | NONE | Page has no coordinates
 Bibliothèque nationale de France |  | en:Bibliothèque_nationale_de_France | NONE | Page has no coordinates
 Louvre Abu Dhabi |  | en:Louvre_Abu_Dhabi | NONE | Page has no coordinates
-Sagrada Família 等 Gaudí 作品 | Colònia Güell | en:Colònia_Güell | NONE | Page does not exist
 Paimio Sanatorium |  | url:https://latitude.to/articles-by-country/fi/finland/28486/paimio-sanatorium | 60.4590,22.7342 | coordinates taken from latitude.to
 MIT Baker House |  | url:https://exhibits.lib.ttu.edu/s/archlib/item/41850 | 42°21′24.3″N 71°05′45.0″W | coordinates taken from Texas Tech University Libraries (362 Memorial Dr, Cambridge, MA)
 London City Hall |  | en:City_Hall,_London | NONE | Page coordinates point to The Crystal (GLA moved there in 2021, Royal Docks), not the Southwark building designed by Foster; not used
@@ -195,7 +189,6 @@ Bibliothèque nationale de France |  | de:Bibliothèque_nationale_de_France | 48
 Louvre Abu Dhabi |  | de:Louvre_Abu_Dhabi | 24.5336°N 54.3984°E | 
 London City Hall |  | de:City_Hall_(London) | 51.5047°N 0.0783°W | 
 Palladio 的別墅群 | Villa Pojana | de:Villa_Pojana | 45.2854°N 11.4983°E | 
-Sagrada Família 等 Gaudí 作品 | Colònia Güell | de:Colònia_Güell | 41.3611°N 2.0294°E | 
 Nevsky Prospect |  | en:Nevsky_Prospect | 59°55′54″N 30°21′10″E | approximate: a linear street; point taken from the article page
 North Doors, Florence Baptistery |  | en:Florence_Baptistery | 43°46′23″N 11°15′18″E | taken from the containing building page
 Palazzo del Viminale |  | en:Palazzo_del_Viminale | 41°53′57″N 12°29′37″E | 

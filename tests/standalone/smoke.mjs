@@ -251,6 +251,10 @@ async function open({ pinned = true, fallback = true } = {}) {
   });
   await page.waitForSelector('[data-testid=edge-dot]');
   assert.equal(await page.locator('[data-testid=edge-dot]').count(), 1);
+  // Zooming far in does not remove the markers (the range is real distance, not pixels)
+  await page.evaluate(() => { window.__fake.map.zoom = 19; window.__fake.map.fire('move'); });
+  await page.waitForTimeout(150);
+  assert.equal(await page.locator('[data-testid=edge-dot]').count(), 1, 'Markers stay at zoom 19');
   await page.locator('[data-testid=edge-dot]').click();
   await page.waitForFunction(() => window.__fake.ease);
   assert.equal(await page.evaluate(() => window.__fake.ease.zoom), undefined, 'The zoom stays');
