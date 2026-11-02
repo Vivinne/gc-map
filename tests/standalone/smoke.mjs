@@ -128,7 +128,6 @@ async function open({ pinned = true, fallback = true } = {}) {
   ok('Marker and city sources; city circle / count / points layers with the switch zoom (wide cities earlier); navigation control');
 
   await page.waitForFunction((n) => window.__fake.setData.some((x) => x[0] === 'places' && x[1] === n), totalPts);
-  assert.equal((await page.textContent('[data-testid=count]')).includes(`${totalPts} map markers`), true);
   const fit = await page.evaluate(() => window.__fake.fit[0]);
   assert.deepEqual(fit, [[-8, 36], [29.5, 55]]);
   ok(`Data sent to the map (${totalPts} points); initial view is the European extent`);

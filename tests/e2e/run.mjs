@@ -38,9 +38,16 @@ async function newPage(viewport) {
 // ---------- Desktop ----------
 const page = await newPage({ width: 1280, height: 800 });
 await page.goto(page_url);
-await page.waitForSelector('[data-testid=count]');
-assert.equal((await page.textContent('[data-testid=count]')).trim(), `Showing ${total} / ${total} entries | ${totalPts} map markers`);
-ok(`Initially ${total} entries and ${totalPts} markers shown`);
+await page.waitForSelector('.brand');
+assert.equal(await page.locator('.brand p').count() + await page.locator('.count').count(), 0, 'No subtitle and no count line in the tag panel');
+ok(`Tag panel has no subtitle and no count line; ${totalPts} markers shown`);
+const cb = await page.locator('.credits').boundingBox();
+const sb = await page.locator('.stage').boundingBox();
+assert.ok(Math.abs(cb.y + cb.height - 800) <= 1 && cb.width >= 1279 && cb.height <= 20, 'Credits: a thin strip along the very bottom ' + JSON.stringify(cb));
+assert.ok(sb.y + sb.height <= cb.y + 1, 'The map ends where the credits strip starts');
+assert.ok((await page.textContent('.credits')).includes('OpenFreeMap') && (await page.textContent('.credits')).includes('faded markers are estimates'), 'Credits text kept');
+assert.equal(await page.locator('.side .credits').count(), 0, 'Credits are not inside the tag panel');
+ok('Credits line: thin strip along the bottom edge of the page, outside the tag panel');
 assert.equal(await page.locator('.list').count(), 0);
 assert.equal(await page.locator('.marker').count(), totalPts);
 ok('The building list is hidden while only the style tags are shown; marker count is correct');
@@ -242,8 +249,9 @@ await page.mouse.down();
 await page.mouse.move(5000, 5000, { steps: 4 });
 await page.mouse.up();
 const d2 = await dRect();
-assert.ok(d2.r <= 1266.5 && d2.b <= 786.5 && d2.x >= 13.5 && d2.y >= 13.5, '14 px inside the window: ' + JSON.stringify(d2));
-assert.ok(d2.r > 1255 && d2.b > 775, 'Pushed to the bottom-right corner: ' + JSON.stringify(d2));
+const mapB = (await page.locator('.stage').boundingBox()); const mapBottom = mapB.y + mapB.height; // the map ends above the credits strip
+assert.ok(d2.r <= 1266.5 && d2.b <= mapBottom - 13.5 && d2.x >= 13.5 && d2.y >= 13.5, '14 px inside the window: ' + JSON.stringify(d2));
+assert.ok(d2.r > 1255 && d2.b > mapBottom - 25, 'Pushed to the bottom-right corner: ' + JSON.stringify(d2));
 // Dragged to the top-left corner: it keeps its distance from the three-line button and stays inside the window
 const hb3 = await page.locator('.detail .head h2').boundingBox();
 await page.mouse.move(hb3.x + 10, hb3.y + 10);
@@ -332,7 +340,8 @@ assert.ok(e1.w > 1280 * 2 / 3 - 2 || Math.abs(e1.l - (sideR + 14)) <= 1.5 || e1.
 assert.ok(e1.l >= 14 - 1 && (e1.t > 330 || e1.l >= sideR + 14 - 1), 'Clear of the tag panel');
 await dragHandle('s', 0, 3000);
 e1 = await fs();
-assert.ok(Math.abs(e1.b - (800 - 14)) <= 1, 'Longest: the whole map height less the edge distance ' + JSON.stringify(e1));
+const stageBox = await page.locator('.stage').boundingBox();
+assert.ok(Math.abs(e1.b - (stageBox.y + stageBox.height - 14)) <= 1, 'Longest: the whole map height less the edge distance ' + JSON.stringify(e1));
 await dragHandle('n', 0, -3000);
 e1 = await fs();
 assert.ok(e1.t >= 14 - 1, 'Top keeps 14 px ' + e1.t);

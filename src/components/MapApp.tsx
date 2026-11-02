@@ -159,7 +159,6 @@ export default function MapApp() {
           </button>
           <header className="brand">
             <h1>GC Buildings Map</h1>
-            <p>C3 buildings | by handout §6 style lookup · {dataset.places.length} entries</p>
           </header>
         </div>
 
@@ -212,9 +211,6 @@ export default function MapApp() {
           {tags.size > 0 && (
             <button type="button" className="clear-tags" onClick={() => setTags(new Set())}>Clear tags ({tags.size})</button>
           )}
-          <p className="count" data-testid="count">
-            Showing {visible.length} / {dataset.places.length} entries | {fc.features.length} map markers
-          </p>
         </div>
 
         {filtersActive && (
@@ -224,9 +220,6 @@ export default function MapApp() {
           </>
         )}
 
-        <footer className="credits">
-          Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.
-        </footer>
         </div>
       </aside>
 
@@ -252,6 +245,9 @@ export default function MapApp() {
         )}
       </main>
 
+      <footer className="credits">
+        Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.
+      </footer>
       <nav className="tabs" aria-label="View switch">
         <button type="button" aria-pressed={tab === 'map'} onClick={() => setTab('map')}>Map</button>
         <button type="button" aria-pressed={tab === 'list'} onClick={() => setTab('list')}>List</button>
