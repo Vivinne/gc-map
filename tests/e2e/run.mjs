@@ -41,6 +41,9 @@ await page.goto(page_url);
 await page.waitForSelector('.brand');
 assert.equal(await page.locator('.brand p').count() + await page.locator('.count').count(), 0, 'No subtitle and no count line in the tag panel');
 ok(`Tag panel has no subtitle and no count line; ${totalPts} markers shown`);
+const hc = await page.evaluate(() => { const b = document.querySelector('.brand').getBoundingClientRect(); const h = document.querySelector('.brand h1').getBoundingClientRect(); return { top: h.top - b.top, bottom: b.bottom - h.bottom }; });
+assert.ok(await page.evaluate(() => { const h = document.querySelector('.brand h1'); return h.getBoundingClientRect().height < parseFloat(getComputedStyle(h).lineHeight) * 1.5 && h.scrollWidth <= h.parentElement.clientWidth; }), 'Tag panel heading stays on one line in the narrow panel');
+assert.ok(Math.abs(hc.top - hc.bottom) <= 2, 'Tag panel heading is centred vertically ' + JSON.stringify(hc));
 const cb = await page.locator('.credits').boundingBox();
 const sb = await page.locator('.stage').boundingBox();
 assert.ok(Math.abs(cb.y + cb.height - 800) <= 1 && cb.width >= 1279 && cb.height <= 20, 'Credits: a thin strip along the very bottom ' + JSON.stringify(cb));
@@ -394,7 +397,7 @@ ok('Detail panel drags by its heading block, stays within the map, keeps its pos
 
 // Collapsible building list (desktop)
 const sideW = () => page.evaluate(() => document.querySelector('.side').getBoundingClientRect().width);
-assert.ok((await sideW()) > 250);
+assert.ok(Math.abs((await sideW()) - 197) <= 1, 'Tag panel is 197 px wide (2/3 of the former 296 px) ' + (await sideW()));
 assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.side')).position), 'absolute', 'The tag panel floats over the map');
 await page.click('.menu-btn');
 await page.waitForTimeout(100);
@@ -406,7 +409,7 @@ const stageW = await page.evaluate(() => document.querySelector('.stage').getBou
 assert.ok(stageW >= 1200, String(stageW));
 await page.click('.menu-btn');
 await page.waitForTimeout(100);
-assert.ok((await sideW()) > 250);
+assert.ok(Math.abs((await sideW()) - 197) <= 1);
 ok('Building list collapses to give the map the full width, and expands again');
 
 // Plain-text rendering (HTML is not executed)
