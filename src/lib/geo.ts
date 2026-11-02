@@ -112,6 +112,8 @@ export function isSameSpot(b: LngLatBounds): boolean {
 
 /** Below this zoom each city is one numbered circle; from here up every marker is drawn on its own */
 export const CITY_TOP_ZOOM = 10.5;
+/** Middle level for the first click on a number: one zoom level below where numbers turn into dots, so the number is still there for a second click */
+export const NUMBER_MID_ZOOM = CITY_TOP_ZOOM - 1;
 /** A place whose own markers span more than this (degrees) is a region (the Veneto villas): it gets no city circle of its own; each of its markers joins the nearest city circle's union bounds (count unchanged) */
 export const WIDE_SPAN_DEG = 0.25;
 /** After a city click the zoom ends this far above the switch zoom, so the markers are already drawn one by one */
