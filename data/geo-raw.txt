@@ -83,8 +83,7 @@ Cathédrale Sainte-Croix d'Orléans |  | en:Orléans_Cathedral | 47.90111°N 1.9
 Fontainebleau |  | en:Palace_of_Fontainebleau | 48.4022°N 2.7006°E | 
 Palace of Versailles |  | en:Palace_of_Versailles | 48.8047°N 2.1203°E | 
 Panthéon |  | en:Panthéon,_Paris | 48.84611°N 2.34583°E | 
-Arc de Triomphe／Arc du Carrousel | Arc de Triomphe | en:Arc_de_Triomphe | 48.873778°N 2.295028°E | 
-Arc de Triomphe／Arc du Carrousel | Arc du Carrousel | en:Arc_de_Triomphe_du_Carrousel | 48.86173°N 2.33291°E | 
+Arc de Triomphe／Arc du Carrousel |  | en:Arc_de_Triomphe | 48.873778°N 2.295028°E | 
 Eiffel Tower |  | en:Eiffel_Tower | 48.858222°N 2.294500°E | 
 Villa Savoye |  | en:Villa_Savoye | 48.92444°N 2.02833°E | 
 Pavillon de l'Esprit Nouveau |  | en:Pavillon_de_l'Esprit_Nouveau | 48.865633°N 2.311486°E | Original pavilion demolished after the 1925 Expo (rebuilt in Bologna in 1977); the page does not say what the coordinates refer to, so a point near the original site in Paris is used; to be verified

@@ -3489,22 +3489,12 @@
    "points": [
     {
      "id": "arc-de-triomphe-arc-du-carrousel-paris~0",
-     "sub": "Arc de Triomphe",
+     "sub": "",
      "lat": 48.873778,
      "lng": 2.295028,
      "precision": "page",
      "note": "",
      "sourceUrl": "https://en.wikipedia.org/wiki/Arc_de_Triomphe",
-     "status": "Supplementary - to be verified"
-    },
-    {
-     "id": "arc-de-triomphe-arc-du-carrousel-paris~1",
-     "sub": "Arc du Carrousel",
-     "lat": 48.86173,
-     "lng": 2.33291,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Arc_de_Triomphe_du_Carrousel",
      "status": "Supplementary - to be verified"
     }
    ]
@@ -3795,7 +3785,7 @@
    "loc": "Kent（英）",
    "locLabel": "Kent, UK",
    "year": "1859–1860",
-   "who": "Philip Webb / Willam Morris",
+   "who": "Philip Webb / William Morris",
    "note": "Arts & Crafts 起點",
    "summary": "為 Morris 建的紅磚住宅，是 Arts & Crafts 的起點。",
    "country": "United Kingdom",
@@ -4235,7 +4225,7 @@
    "id": "schroder-house-utrecht",
    "name": "Schröder House",
    "loc": "Utrecht（荷）",
-   "locLabel": "Utrecht, NE",
+   "locLabel": "Utrecht, NL",
    "year": "1924",
    "who": "Gerrit Rietveld",
    "note": "De Stijl",
@@ -4732,7 +4722,7 @@
    "id": "paimio-sanatorium-paimio",
    "name": "Paimio Sanatorium",
    "loc": "Paimio（芬）",
-   "locLabel": "Paimio, FN",
+   "locLabel": "Paimio, FI",
    "year": "1929–1933",
    "who": "Alvar Aalto",
    "note": "北歐現代主義",
@@ -4986,7 +4976,7 @@
    "id": "villa-mairea-noormarkku",
    "name": "Villa Mairea",
    "loc": "Noormarkku (Finland)",
-   "locLabel": "Noormarkku, FN",
+   "locLabel": "Noormarkku, FI",
    "year": "1938-1939",
    "who": "Aino Aalto and Alvar Aalto",
    "note": "—",
