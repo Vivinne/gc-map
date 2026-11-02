@@ -49,7 +49,8 @@ Pisa Cathedral and Leaning Tower | Pisa Cathedral | en:Pisa_Cathedral | 43.72328
 Pisa Cathedral and Leaning Tower | Leaning Tower | en:Leaning_Tower_of_Pisa | 43.72306°N 10.39639°E | 
 Santa Maria del Fiore (Main Body) |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | 
 Santa Maria del Fiore Dome |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | Coordinates taken from the containing cathedral page
-Pazzi Chapel (Santa Croce) |  | en:Pazzi_Chapel | 43.7680056°N 11.2629889°E | 
+Pazzi Chapel (Santa Croce) |  | en:Santa_Croce,_Florence | 43°46′6.3″N 11°15′45.8″E | same point as Santa Croce (user decision)
+Santa Croce - Pazzi Chapel |  | en:Santa_Croce,_Florence | 43°46′6.3″N 11°15′45.8″E | same point as Santa Croce (user decision)
 Basilica di San Lorenzo |  | en:Basilica_of_San_Lorenzo,_Florence | 43.774917°N 11.253861°E | 
 Palazzo Medici Riccardi |  | en:Palazzo_Medici_Riccardi | 43.77528°N 11.2559889°E | 
 Santa Maria Novella (Facade) |  | en:Santa_Maria_Novella | 43.7746°N 11.2493°E | 
@@ -138,8 +139,8 @@ Ca' Granda |  | en:Ca'_Granda | NONE | Page has no coordinates
 Camera degli Sposi |  | en:Ducal_Palace,_Mantua | NONE | Page has no coordinates
 Palazzo Te |  | en:Palazzo_Te | NONE | Page has no coordinates
 Arco della Pace |  | en:Arco_della_Pace | NONE | Page has no coordinates
-Casa Galimberti／Palazzo Castiglioni | Casa Galimberti | url:https://aroundus.com/p/8123249-casa-galimberti | 45.47467,9.20706 | coordinates taken from Aroundus
-Casa Galimberti／Palazzo Castiglioni | Palazzo Castiglioni | url:https://travel.sygic.com/ko/poi/palazzo-castiglioni-poi:5069624 | 45°28′16.206″N 9°12′4.212″E | coordinates taken from Sygic Travel
+Casa Galimberti |  | url:https://aroundus.com/p/8123249-casa-galimberti | 45.47467,9.20706 | coordinates taken from Aroundus
+Palazzo Castiglioni |  | en:Palazzo_Castiglioni | 45.4711083,9.2013444 | coordinates from Wikipedia
 Asilo Sant'Elia |  | url:https://aroundus.com/p/8132223-asilo-sant-elia | 45.79849,9.08866 | coordinates taken from Aroundus
 QT8 |  | url:https://audiala.com/en/italy/milan/qt8 | 45.486,9.13718 | coordinates taken from Audiala (map link of the QT8 page)
 Gallaratese Quarter |  | url:https://bamwor.com/en/countries/italy/cities/gallaratese | 45.4959,9.1121 | coordinates taken from Bamwor (Gallaratese district)

@@ -1293,6 +1293,36 @@
    ]
   },
   {
+   "id": "santa-croce-pazzi-chapel-florence",
+   "name": "Santa Croce - Pazzi Chapel",
+   "loc": "Florence",
+   "year": "約 1441–1478 前後",
+   "who": "Filippo Brunelleschi",
+   "note": "與 Pazzi Chapel (Santa Croce) 同址",
+   "summary": "Santa Croce 修道院內，Brunelleschi 設計的禮拜堂，與 Pazzi Chapel (Santa Croce) 同址（資料來源兩列並存）。",
+   "country": "Italy",
+   "exams": [],
+   "style": "哥德式建築（Gothic）",
+   "styleId": "6.5",
+   "era": "medieval",
+   "eras": [
+    "medieval",
+    "renaissance"
+   ],
+   "points": [
+    {
+     "id": "santa-croce-pazzi-chapel-florence~0",
+     "sub": "",
+     "lat": 43.768417,
+     "lng": 11.262722,
+     "precision": "page",
+     "note": "same point as Santa Croce (user decision)",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
    "id": "scrovegni-chapel-padua",
    "name": "Scrovegni Chapel",
    "loc": "Padua",
@@ -1401,11 +1431,11 @@
     {
      "id": "pazzi-chapel-santa-croce-florence~0",
      "sub": "",
-     "lat": 43.768006,
-     "lng": 11.262989,
+     "lat": 43.768417,
+     "lng": 11.262722,
      "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Pazzi_Chapel",
+     "note": "same point as Santa Croce (user decision)",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
      "status": "Supplementary - to be verified"
     }
    ]
@@ -2358,7 +2388,7 @@
    "year": "1583",
    "who": "Domenico Fontana (facade); Carlo Maderno (Great Chapel)",
    "note": "—",
-   "summary": "教宗 Gregory XIII 的夏季居所；1583–1870 年為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為共和國總統官邸。",
+   "summary": "教宗 Gregory XIII 的夏季居所；1583–1870 年為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為 Presidential Palace（總統府），即義大利共和國總統官邸。",
    "country": "Italy",
    "exams": [
     2017
@@ -3038,7 +3068,7 @@
    "year": "1647–1652",
    "who": "Gian Lorenzo Bernini",
    "note": "Bel Composto 美妙融合",
-   "summary": "聖女的狂喜以雕塑、光線與建築融為一體，是 Bel Composto 的代表。",
+   "summary": "位於羅馬 Santa Maria della Vittoria 教堂 Cornaro Chapel 的 Bernini 雕塑群，以雕塑、光線與建築融為一體，是 Bel Composto 的代表。",
    "country": "Italy",
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
@@ -3096,7 +3126,7 @@
    "year": "—",
    "who": "Gian Lorenzo Bernini (design); Carlo Fontana (completion)",
    "note": "—",
-   "summary": "為 Ludovico Ludovisi 樞機而設計，Gregory XV 逝世後停工，Innocent XII 時期重啟；1871 年起為眾議院所在，1918 年起長期使用。",
+   "summary": "為 Ludovico Ludovisi 樞機而設計，Gregory XV 逝世後停工，Innocent XII 時期重啟；1871 年起為 Chamber of Deputies（眾議院）所在，1918 年起長期使用。",
    "country": "Italy",
    "exams": [
     2017
@@ -3127,7 +3157,7 @@
    "year": "15th-1505",
    "who": "Giuliano da Sangallo (restoration for Giovanni de' Medici); Paolo Maruscelli (Baroque facade)",
    "note": "—",
-   "summary": "業主為 Medici 家族，現為共和國參議院所在。",
+   "summary": "業主為 Medici 家族，現為 Senate of the Republic（參議院）所在。",
    "country": "Italy",
    "exams": [
     2017
@@ -3701,13 +3731,13 @@
    ]
   },
   {
-   "id": "casa-galimberti-palazzo-castiglioni-milan",
-   "name": "Casa Galimberti／Palazzo Castiglioni",
+   "id": "casa-galimberti-milan",
+   "name": "Casa Galimberti",
    "loc": "Milan",
-   "year": "1903–1905（Galimberti）；1901–1904（Castiglioni）",
+   "year": "1903–1905",
    "who": "Giovanni Battista Bossi（Galimberti）",
    "note": "義大利 Stile Liberty",
-   "summary": "米蘭的義大利 Stile Liberty（新藝術）住宅，立面有繁複的曲線與雕飾。",
+   "summary": "Giovanni Battista Bossi 設計的米蘭 Stile Liberty（新藝術）住宅，Via Malpighi 3，立面貼有約 170 ㎡ 的彩色陶磚。",
    "country": "Italy",
    "exams": [],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
@@ -3718,23 +3748,42 @@
    ],
    "points": [
     {
-     "id": "casa-galimberti-palazzo-castiglioni-milan~0",
-     "sub": "Casa Galimberti",
+     "id": "casa-galimberti-milan~0",
+     "sub": "",
      "lat": 45.47467,
      "lng": 9.20706,
      "precision": "page",
      "note": "coordinates taken from Aroundus",
      "sourceUrl": "https://aroundus.com/p/8123249-casa-galimberti",
      "status": "Supplementary - to be verified"
-    },
+    }
+   ]
+  },
+  {
+   "id": "palazzo-castiglioni-milan",
+   "name": "Palazzo Castiglioni",
+   "loc": "Milan",
+   "year": "1901–1903",
+   "who": "Giuseppe Sommaruga",
+   "note": "義大利 Stile Liberty",
+   "summary": "Giuseppe Sommaruga 設計的米蘭 Stile Liberty 宅邸，是義大利 Liberty 的代表作之一。",
+   "country": "Italy",
+   "exams": [],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
     {
-     "id": "casa-galimberti-palazzo-castiglioni-milan~1",
-     "sub": "Palazzo Castiglioni",
-     "lat": 45.471168,
-     "lng": 9.20117,
+     "id": "palazzo-castiglioni-milan~0",
+     "sub": "",
+     "lat": 45.471108,
+     "lng": 9.201344,
      "precision": "page",
-     "note": "coordinates taken from Sygic Travel",
-     "sourceUrl": "https://travel.sygic.com/ko/poi/palazzo-castiglioni-poi:5069624",
+     "note": "coordinates from Wikipedia",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Castiglioni",
      "status": "Supplementary - to be verified"
     }
    ]
@@ -5706,7 +5755,7 @@
    "year": "1995–1999",
    "who": "Norman Foster",
    "note": "民主透明",
-   "summary": "在舊國會大廈上加玻璃穹頂，民眾可沿螺旋坡道走到頂，俯視議事廳，象徵民主透明。",
+   "summary": "在舊 Reichstag Building（國會大廈）上加玻璃穹頂，民眾可沿螺旋坡道走到頂，俯視議事廳，象徵民主透明。",
    "country": "Germany",
    "exams": [],
    "style": "戰後與當代建築（Postwar and Contemporary）",

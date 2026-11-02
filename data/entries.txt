@@ -40,6 +40,7 @@ Siena Cathedral | 約 1215–1263 | 黑白條紋大理石建成，內部地面�
 Basilica di San Francesco d'Assisi | 1228–1253 | 上下兩層教堂，滿牆是 Giotto 的壁畫，結構上較少使用飛扶壁。
 Ospedale degli Innocenti (Foundling Hospital) | 1419–1445 | 被視為第一座 Renaissance 建築，以圓拱、Corinthian 柱與嚴謹比例組成的柱廊，是歐洲最早的孤兒院之一。
 Santa Maria del Fiore Dome | 1420–1436 | 雙層殼體、魚骨砌磚、不用木鷹架，是當時最大的磚造穹頂。內部繪有 Vasari、Zuccari 的《最後審判》。
+Santa Croce - Pazzi Chapel | 約 1441–1478 前後 | Santa Croce 修道院內，Brunelleschi 設計的禮拜堂，與 Pazzi Chapel (Santa Croce) 同址（資料來源兩列並存）。
 Pazzi Chapel (Santa Croce) | 約 1441–1478 前後 | Santa Croce 內，以灰色砂岩 pietra serena 與白牆勾勒出嚴格比例的禮拜堂，是 Renaissance 中央式空間的典範。立面由 Niccolò Matas 設計。
 Palazzo Medici Riccardi | 1444–1484 | 佛羅倫斯 Renaissance 宮殿的原型，由 Cosimo il Vecchio 出資，三層外牆自下而上由粗石變平滑。
 Tempio Malatestiano | 1450–約 1468（未完成） | 在中世紀教堂外包一層仿凱旋門的立面，是 Rimini 領主 Sigismondo Malatesta 的紀念建築，內有 Giotto Crucifix，未完工。
@@ -92,7 +93,7 @@ Palazzo Reale (Milan) | 1769–1778 | 米蘭統治者的宮殿，18 世紀改為
 Palazzo Belgioioso | 1772–1781 | 米蘭的新古典宮殿，面對小廣場，立面對稱克制。
 St. Peter's Basilica Facade and Nave | 1607–1626 | 在原 Greek Cross 平面上加長中殿，使大殿成為拉丁十字，並完成立面，1626 年落成。
 Santa Susanna | 1597–1603 | 早期 Baroque 立面，柱子從平面逐漸凸出，向中軸聚集。
-Ecstasy of Saint Teresa | 1647–1652 | 聖女的狂喜以雕塑、光線與建築融為一體，是 Bel Composto 的代表。
+Ecstasy of Saint Teresa | 1647–1652 | 位於羅馬 Santa Maria della Vittoria 教堂 Cornaro Chapel 的 Bernini 雕塑群，以雕塑、光線與建築融為一體，是 Bel Composto 的代表。
 Sant'Ignazio di Loyola | 1626–1650（穹頂畫 1685） | 因無經費蓋穹頂，改在天花上畫出立體穹頂（trompe l'oeil），站在圓盤標記處看最逼真。
 Basilique du Sacré-Cœur | 1875–1914 | 俯視巴黎的白色 Romano-Byzantine 大教堂，原為巴黎公社事件後的贖罪建築。
 Mole Antonelliana | 1863–1889 | 原為猶太會堂，建築師逝世後才完工，高 167.5 m，現為國家電影博物館，是都靈地標。
@@ -107,7 +108,8 @@ Crystal Palace | 1850–1851 | 為 1851 年世博而建的全鐵骨架加平板�
 Eiffel Tower | 1887–1889 | 1889 年世博的入口，鍛鐵桁架高 300 m，一度是世界最高建築。
 Red House | 1859–1860 | 為 Morris 建的紅磚住宅，是 Arts & Crafts 的起點。
 Secession Building | 1897–1898 | 維也納分離派展館，頂上有金色月桂球頂，立面平滑，門上寫有「給時代藝術，給藝術自由」。
-Casa Galimberti／Palazzo Castiglioni | 1903–1905（Galimberti）；1901–1904（Castiglioni） | 米蘭的義大利 Stile Liberty（新藝術）住宅，立面有繁複的曲線與雕飾。
+Casa Galimberti | 1903–1905 | Giovanni Battista Bossi 設計的米蘭 Stile Liberty（新藝術）住宅，Via Malpighi 3，立面貼有約 170 ㎡ 的彩色陶磚。
+Palazzo Castiglioni | 1901–1903 | Giuseppe Sommaruga 設計的米蘭 Stile Liberty 宅邸，是義大利 Liberty 的代表作之一。
 Sagrada Família | 1882–（施工中；主塔 2026 達最終高度） | Gaudí 設計的教堂，自 1882 年施工至今，主塔已於 2026 年達最終高度。
 Casa Vicens | 1883–1888 | Gaudí 的住宅作品，至今仍保持住宅外觀與用途（UNESCO 世界遺產「Works of Antoni Gaudí」之一）。
 Palau Güell | 1885–1890 | 原為 Güell 家的住宅，現作文化與觀光設施，保留原有建築形式與裝飾（UNESCO 世界遺產之一）。
@@ -159,7 +161,7 @@ Lloyd's Building | 1978–1986 | 把樓梯、管線、電梯全部外露的 Bowe
 The Gherkin | 2001–2004 | 倫敦的 Diagrid 摩天樓，外形像小黃瓜，利用螺旋形中庭自然通風。
 London City Hall | 1998–2002 | 傾斜的透明球體，以減少陽光直射面積，旨在象徵民主透明。
 Grand Court | 1994–2000 | 為大英博物館中庭加的結構玻璃天幕，使原本封閉的庭院變成歐洲最大有頂廣場。
-Reichstag (Glass Dome) | 1995–1999 | 在舊國會大廈上加玻璃穹頂，民眾可沿螺旋坡道走到頂，俯視議事廳，象徵民主透明。
+Reichstag (Glass Dome) | 1995–1999 | 在舊 Reichstag Building（國會大廈）上加玻璃穹頂，民眾可沿螺旋坡道走到頂，俯視議事廳，象徵民主透明。
 Jewish Museum Berlin | 1993–1999 | 閃電形的平面與 Holocaust Tower、Garden of Exile 等空間，以解構手法表達歷史的斷裂。
 Dancing House | 1992–1996 | 布拉格河邊一對曲面塔樓，像一對跳舞的人，暱稱「Fred and Ginger」。
 Vitra Fire Station | 1990–1993 | 傾斜的混凝土牆與銳角空間，是解構式作品的早期代表，後來改為展覽空間。
@@ -171,9 +173,9 @@ Nevsky Prospect | 1710-1718 | 1710–1715 年先建 Moika 至 Fontanka 一段；
 North Doors, Florence Baptistery | 1424 | 20 面嵌板描繪基督生平，由下往上讀；框架上方另有 8 面福音書作者與教會聖師嵌板；1424 年復活節安裝。
 Palazzo del Viminale | 1911-1925 | （Greco-Roman classicism）1925 年 7 月 9 日啟用，自此為內政部所在。
 Palazzo della Farnesina | 1937-1959 | （simplified neoclassicism）1943 年起因二戰停工，1946 年復工；1959 年完工後為外交部所在。
-Quirinal Palace | 1583 | 教宗 Gregory XIII 的夏季居所；1583–1870 年為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為共和國總統官邸。
-Palazzo Montecitorio |  | 為 Ludovico Ludovisi 樞機而設計，Gregory XV 逝世後停工，Innocent XII 時期重啟；1871 年起為眾議院所在，1918 年起長期使用。
-Palazzo Madama | 15th-1505 | 業主為 Medici 家族，現為共和國參議院所在。
+Quirinal Palace | 1583 | 教宗 Gregory XIII 的夏季居所；1583–1870 年為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為 Presidential Palace（總統府），即義大利共和國總統官邸。
+Palazzo Montecitorio |  | 為 Ludovico Ludovisi 樞機而設計，Gregory XV 逝世後停工，Innocent XII 時期重啟；1871 年起為 Chamber of Deputies（眾議院）所在，1918 年起長期使用。
+Palazzo Madama | 15th-1505 | 業主為 Medici 家族，現為 Senate of the Republic（參議院）所在。
 Hermitage Museum | 1852 | （Winter Palace：Elizabethan Baroque）1764 年 Catherine the Great 購入柏林商人的收藏為創立之始，1852 年起對外開放，藏品逾 300 萬件。
 Capodimonte Museum | 1957 | （Italian Baroque, Neo-Classical）1738 年 Charles VII 原擬建獵宮，改建為大型宮殿；1950 年成為國立博物館，1957 年啟用。
 Metropolitan Museum of Art | 1880 | 1870 年創立，1880 年遷入第五大道現址；第一件入藏品為羅馬石棺，至今仍展出。

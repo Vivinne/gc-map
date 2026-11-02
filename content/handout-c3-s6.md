@@ -67,6 +67,7 @@
 | Basilica di San Francesco d'Assisi<br><span class="loc">Assisi</span> | 1253 | — | Giotto 壁畫；少用飛扶壁 |
 | Bargello Museum<br><span class="loc">Florence</span> | 1255-1367 | Neri di Fioravante (Great Council Hall and courtyard staircase); Tone di Giovanni (verone) | — |
 | Santa Croce<br><span class="loc">Florence</span> | 1294- | Niccolò Matas (facade) | — |
+| Santa Croce - Pazzi Chapel<br><span class="loc">Florence</span> | 1443 | Brunelleschi | 與 Pazzi Chapel (Santa Croce) 同址 |
 | Scrovegni Chapel<br><span class="loc">Padua</span> | 1303 | Giotto | — |
 
 ### 6.6 文藝復興與矯飾主義建築（Renaissance and Mannerism）
@@ -172,7 +173,8 @@
 |---|---|---|---|
 | Red House<br><span class="loc">Kent（英）</span> | 1859 | Philip Webb（為 Morris） | Arts & Crafts 起點 |
 | Secession Building<br><span class="loc">Vienna</span> | 1897 起（Secession） | Joseph Maria Olbrich | 金球頂 |
-| Casa Galimberti／Palazzo Castiglioni<br><span class="loc">Milan</span> | 1905（Galimberti）、1904（Castiglioni） | G. B. Bossi（Galimberti） | 義大利 Stile Liberty |
+| Casa Galimberti<br><span class="loc">Milan</span> | 1905 | G. B. Bossi（Galimberti） | 義大利 Stile Liberty |
+| Palazzo Castiglioni<br><span class="loc">Milan</span> | 1903 | Giuseppe Sommaruga | 義大利 Stile Liberty |
 | Sagrada Família<br><span class="loc">Barcelona（西）</span> | 1882 起（施工中） | Gaudí | 聖家堂；Gaudí 自 1882 年接手施工，至今仍在興建 |
 | Casa Vicens<br><span class="loc">Barcelona（西）</span> | 1883–1888 | Gaudí | Gaudí 早期的住宅作品 |
 | Palau Güell<br><span class="loc">Barcelona（西）</span> | 1885–1890 | Gaudí | 為 Güell 家建造的宅邸 |
