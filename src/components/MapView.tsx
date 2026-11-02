@@ -109,7 +109,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       style: STYLE_URL,
       center: [12.5, 43.5],
       zoom: 4.2,
-      maxBounds: [[-180, -POLAR_LAT], [180, POLAR_LAT]], // no polar regions
       attributionControl: { compact: true },
     });
     mapRef.current = map;
@@ -123,6 +122,8 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     });
 
     map.on('load', () => {
+      // No polar regions. Set after load, with longitude just inside ±180: MapLibre 5.6 crashes (null centre) when maxBounds is in the constructor or is exactly ±180
+      try { map.setMaxBounds([[-179.9, -POLAR_LAT], [179.9, POLAR_LAT]]); } catch { /* keep the map usable without the limit */ }
       map.addSource(SOURCE, { type: 'geojson', data: latest.current.fc as unknown as GeoData });
       const dot: NonNullable<CircleLayerSpecification['paint']> = {
         'circle-color': ['get', 'color'],
