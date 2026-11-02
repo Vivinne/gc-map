@@ -7,8 +7,8 @@ import { dataset } from '../lib/data';
 import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, pointsOutside, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 /** The coordinates of the buildings listed in a city feature's `pids` */
-const cityPoints = (pids: string, byPid: Map<string, [number, number]>): { lng: number; lat: number }[] =>
-  (JSON.parse(pids) as string[]).flatMap((id) => { const c = byPid.get(id); return c ? [{ lng: c[0], lat: c[1] }] : []; });
+const cityPoints = (pids: string, byPid: Map<string, [number, number]>): { pid: string; lng: number; lat: number }[] =>
+  (JSON.parse(pids) as string[]).flatMap((id) => { const c = byPid.get(id); return c ? [{ pid: id, lng: c[0], lat: c[1] }] : []; });
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 /** Zoom levels the map zooms out when the building panel is closed */
@@ -143,7 +143,8 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
           const dist = distanceM({ lng: mc.lng, lat: mc.lat }, { lng, lat });
           if (!best || dist < best.dist) best = { x: p.x, y: p.y, dist };
         }
-        if (best) items.push({ key: f.properties.city, n: f.properties.n, ...best });
+        // The number is how many of the city's buildings are out of the view (not the whole city), so it drops as you move toward them
+        if (best) items.push({ key: f.properties.city, n: out.length, ...best });
       }
       // Cities within 150 km first; when none is outside the view, the limit doubles (300, 600 km ...) until one is found
       // Direction buttons stay clear of the page buttons (menu, Full map, Back) and of the tag panel
@@ -415,22 +416,21 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
   const goEdge = (keys: string[]) => {
     const map = mapRef.current;
     if (!map) return;
-    // When several cities are merged into this direction (18 = 16 + 2), the city with the most buildings wins, even if another one is nearer
-    const mine = latest.current.cities.features.filter((f) => keys.includes(f.properties.city));
-    const top = mine.reduce<(typeof mine)[number] | undefined>((t, f) => (!t || f.properties.n > t.properties.n ? f : t), undefined);
-    if (!top) return;
-    const all = JSON.parse(top.properties.pids) as string[];
-    // A button that stands for exactly one building opens that building's panel (and flies to it) directly
-    if (mine.reduce((n, f) => n + f.properties.n, 0) === 1 && all.length === 1) {
-      latest.current.onPick([all[0] as string]);
-      return;
-    }
-    // Only the buildings out of the current view count, so the button always leads somewhere new
+    // The buildings of every city in this direction that are out of the current view; the city with the most of them wins (18 = 16 + 2 goes to the 16)
     const byPid = new Map(latest.current.fc.features.map((f) => [f.properties.pid, f.geometry.coordinates as [number, number]]));
     const mc = map.getCenter();
     const box2 = map.getContainer().getBoundingClientRect();
-    const away = pointsOutside(cityPoints(top.properties.pids, byPid), { lng: mc.lng, lat: mc.lat }, map.getZoom(), box2.width, box2.height);
-    const c = densestCenter(away.length ? away : cityPoints(top.properties.pids, byPid));
+    const outOf = (f: (typeof latest.current.cities.features)[number]) => pointsOutside(cityPoints(f.properties.pids, byPid), { lng: mc.lng, lat: mc.lat }, map.getZoom(), box2.width, box2.height);
+    const groups = latest.current.cities.features.filter((f) => keys.includes(f.properties.city)).map((f) => outOf(f)).filter((g) => g.length);
+    const total = groups.reduce((n, g) => n + g.length, 0);
+    const away = groups.reduce<(typeof groups)[number]>((t, g) => (g.length > t.length ? g : t), []);
+    if (!away.length) return;
+    // A button that stands for exactly one building opens that building's panel (and flies to it) directly
+    if (total === 1) {
+      latest.current.onPick([away[0]!.pid]);
+      return;
+    }
+    const c = densestCenter(away);
     if (!c) return;
     easeAway([c.lng, c.lat], map.getZoom());
   };

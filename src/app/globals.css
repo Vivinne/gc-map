@@ -90,9 +90,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .hide-edges { position: absolute; left: 10px; bottom: 38px; z-index: 5; display: flex; align-items: center; gap: 6px; padding: 2px 6px; font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.85); cursor: pointer; }
 .hide-edges input { margin: 0; width: 14px; height: 14px; }
 @media (min-width: 901px) {
-  /* Desktop: same width as Full map / Back, stacked above Back */
-  .hide-edges { left: auto; right: 10px; bottom: 114px; box-sizing: border-box; width: 104px; justify-content: center; gap: 4px; padding: 8px 0; font-size: 11px; background: #fff; border: 3px solid var(--ink); }
-  .hide-edges input { width: 12px; height: 12px; }
+  /* Desktop: stacked above Back, no border, the same padding on every side of the text */
+  .hide-edges { left: auto; right: 10px; bottom: 114px; gap: 6px; padding: 6px; font-size: 12px; background: #fff; border: 0; }
 }
 .credits-map { margin-left: auto; text-align: right; white-space: nowrap; }
 
