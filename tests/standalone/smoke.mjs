@@ -229,6 +229,34 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(eases.every((e) => e.zoom !== 9.37 && e.zoom !== 11.37), 'Wheel zooms are not history steps');
   assert.equal(await page.locator('[data-testid=map-back]').isDisabled(), true);
   ok('Back button returns to the view before the last map click (wheel zoom does not count)');
+  // Back and Full map also close the building panel and end a little farther out (0.7 level)
+  await page.evaluate(() => {
+    const m = window.__fake.map;
+    m.zoom = 6; m.center = { lng: 10, lat: 45 };
+    window.__fake.hits = [{ properties: { city: 'X', n: 6, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: '[]' } }];
+    m.fireLayer('click', 'cities', { point: { x: 5, y: 5 } }); // remembers the view (zoom 6)
+    window.__fake.hits = [{ properties: { pid: 'st-peters-dome-vatican' } }];
+    m.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); // opens the panel
+  });
+  await page.waitForSelector('[data-testid=detail]');
+  await page.evaluate(() => { window.__fake.ease = null; });
+  await page.click('[data-testid=map-back]');
+  const eb = await page.evaluate(() => window.__fake.ease);
+  assert.ok(eb && Math.abs(eb.zoom - 5.3) < 0.001, 'Back with the panel open: ' + (eb && eb.zoom));
+  await page.waitForFunction(() => !document.querySelector('[data-testid=detail]'));
+  ok('Back closes the panel and ends 0.7 level farther out');
+  await page.evaluate(() => { window.__fake.fly.length = 0; });
+  await page.click('.fullmap');
+  await page.waitForFunction(() => window.__fake.fly.length > 0);
+  const flyClosed = await page.evaluate(() => window.__fake.fly.at(-1).zoom ?? null);
+  await page.evaluate(() => { window.__fake.hits = [{ properties: { pid: 'st-peters-dome-vatican' } }]; window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); window.__fake.fly.length = 0; });
+  await page.waitForSelector('[data-testid=detail]');
+  await page.click('.fullmap');
+  await page.waitForFunction(() => window.__fake.fly.length > 0 || window.__fake.ease);
+  const flyOpen = await page.evaluate(() => window.__fake.fly.at(-1)?.zoom ?? null);
+  if (flyClosed != null && flyOpen != null) assert.ok(Math.abs(flyClosed - flyOpen - 0.7) < 0.001, 'Full map with the panel open ends 0.7 farther out: ' + flyClosed + ' / ' + flyOpen);
+  ok('Full map closes the panel and ends 0.7 level farther out');
+
   assert.ok(await page.evaluate(() => window.__fake.scale && window.__fake.scale.unit === 'metric'));
   ok('Scale bar (metric) added');
   await page.evaluate(() => { window.__fake.map.zoom = 4; });

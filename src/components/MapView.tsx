@@ -55,7 +55,7 @@ const MAX_FOOTPRINT_M2 = 150000;
 
 export type FocusTarget =
   | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; nonce: number }
-  | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; /** Fit exactly these bounds with almost no margin */ exact?: boolean; nonce: number };
+  | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; /** Fit exactly these bounds with almost no margin */ exact?: boolean; /** The building panel was open and is closing: end CLOSE_ZOOM_OUT levels farther out */ shrink?: boolean; /** First view after loading the page: jump there, no animation, not a Back step */ initial?: boolean; nonce: number };
 
 interface Props {
   fc: PointCollection;
@@ -112,7 +112,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       style: STYLE_URL,
       center: [12.5, 43.5],
       zoom: 4.2,
-      attributionControl: { compact: true },
+      attributionControl: false, // the credit line below the map carries the attribution
     });
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
@@ -366,7 +366,10 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready || !focus) return;
-    pushView();
+    const opts = focus as { initial?: boolean; shrink?: boolean };
+    if (!opts.initial) pushView();
+    const dz = opts.shrink ? CLOSE_ZOOM_OUT : 0;
+    const dur = (ms: number) => (opts.initial ? 0 : ms);
     if (focus.kind === 'point') {
       // Zoom so that the view reaches radiusKm from the point along the shorter map side
       const el = map.getContainer();
@@ -375,10 +378,14 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       const zoom = Math.log2((78271.517 * Math.cos((focus.lat * Math.PI) / 180)) / mpp);
       map.flyTo({ center: [focus.lng, focus.lat], zoom: Math.min(Math.max(zoom, 1), 19), essential: true });
     }
-    else if (focus.exact) map.fitBounds(focus.bounds, { padding: 4, maxZoom: 16, duration: 700 });
+    else if (focus.exact) {
+      const cam = map.cameraForBounds(focus.bounds, { padding: 4, maxZoom: 16 });
+      if (cam?.center && cam.zoom != null) map.easeTo({ center: cam.center, zoom: Math.max(cam.zoom - dz, 1), duration: dur(700) });
+      else map.fitBounds(focus.bounds, { padding: 4, maxZoom: 16, duration: dur(700) });
+    }
     else if (focus.blendWith) {
       // Centred on Switzerland, zoomed so that the scale bar reads 500 km
-      map.flyTo({ center: FULL_MAP_CENTER, zoom: zoomForMetersPerPixel(FULL_MAP_CENTER[1], FULL_MAP_MPP), essential: true, duration: 700 });
+      map.flyTo({ center: FULL_MAP_CENTER, zoom: Math.max(zoomForMetersPerPixel(FULL_MAP_CENTER[1], FULL_MAP_MPP) - dz, 1), essential: true, duration: dur(700) });
     } else map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus?.nonce, ready]);
@@ -387,7 +394,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     if (active) mapRef.current?.resize();
   }, [active]);
 
-  // The building panel was closed (X, Escape, Back, Full map, ...): the map zooms out a little, unless the same change moved the map itself (Full map, Back)
+  // The building panel was closed (X, Escape, ...): the map zooms out a little. Back and Full map move the map themselves and end CLOSE_ZOOM_OUT levels farther out
   const prevSel = useRef(selectedPid);
   const seenNonce = useRef<number | undefined>(focus?.nonce);
   const keepView = useRef(false);
@@ -408,8 +415,8 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     const map = mapRef.current;
     const prev = history.current.pop();
     if (!map || !prev) return;
-    keepView.current = !!latest.current.selectedPid; // Back restores its own view; no extra zoom-out for the panel it closes
-    map.easeTo({ center: prev.center, zoom: prev.zoom, duration: 500 });
+    keepView.current = !!latest.current.selectedPid; // Back restores its own view, a little farther out when it closes the panel
+    map.easeTo({ center: prev.center, zoom: Math.max(prev.zoom - (keepView.current ? CLOSE_ZOOM_OUT : 0), 1), duration: 500 });
     setCanBack(history.current.length > 0);
     onBack?.();
   };

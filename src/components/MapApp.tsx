@@ -24,6 +24,8 @@ export default function MapApp() {
   const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(new Set());
   const [tab, setTab] = useState<Tab>('map');
   const [focus, setFocus] = useState<FocusTarget | null>(null);
+  const selectedRef = useRef('');
+  selectedRef.current = selectedId;
   const [detailOffset, setDetailOffset] = useState<Offset>({ x: 0, y: 0 });
   const [detailMin, setDetailMin] = useState(false);
   const [detailSize, setDetailSize] = useState<DetailSize>({ k: 1, w: null, h: null, mh: null });
@@ -98,16 +100,22 @@ export default function MapApp() {
     }
   }, []);
 
-  const showFullMap = useCallback(() => {
+  const showFullMap = useCallback((initial = false) => {
     const b = boundsOf(dataset.places);
     if (!b) return;
     nonce.current += 1;
     // Phone: a fixed view of Europe (Scandinavia to Algeria, Spain to Ukraine); desktop: centred on Switzerland, scale bar 500 km
-    if (window.matchMedia('(max-width: 900px)').matches) setFocus({ kind: 'bounds', bounds: PHONE_FULL_BOUNDS, exact: true, nonce: nonce.current });
-    else setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, nonce: nonce.current });
+    const shrink = !!selectedRef.current; // the building panel is open and closes: end a little farther out
+    if (window.matchMedia('(max-width: 900px)').matches) setFocus({ kind: 'bounds', bounds: PHONE_FULL_BOUNDS, exact: true, shrink, initial, nonce: nonce.current });
+    else setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, shrink, initial, nonce: nonce.current });
     setSelectedId(''); // the building panel closes
     setTab('map');
   }, []);
+
+  // A reload starts at the Full map view
+  useEffect(() => {
+    showFullMap(true);
+  }, [showFullMap]);
 
   const select = useCallback(
     (id: string) => {
@@ -217,7 +225,7 @@ export default function MapApp() {
       </aside>
 
       <main className="stage">
-        <button type="button" className="fullmap" onClick={showFullMap}>Full map</button>
+        <button type="button" className="fullmap" onClick={() => showFullMap()}>Full map</button>
         <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} />
         {selected && (
           <DetailPanel
@@ -236,7 +244,8 @@ export default function MapApp() {
       </main>
 
       <footer className="credits">
-        Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.
+        <span>Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.</span>
+        <span className="credits-map">OpenFreeMap © OpenMapTiles Data from OpenStreetMap</span>
       </footer>
       <nav className="tabs" aria-label="View switch">
         <button type="button" aria-pressed={tab === 'map'} onClick={() => setTab('map')}>Map</button>
