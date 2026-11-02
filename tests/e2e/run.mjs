@@ -441,6 +441,29 @@ const overflow = await m.evaluate(() => document.documentElement.scrollWidth > w
 assert.equal(overflow, false);
 ok('No horizontal scrolling on mobile');
 
+// Figure ground check: steps through the buildings, Y / N marks advance and persist, the arrows move
+await page.evaluate(() => window.localStorage.removeItem('gc-fg-marks'));
+await page.click('[data-testid=fg-open]');
+await page.waitForSelector('[data-testid=fgbar]');
+const pos0 = await page.locator('[data-testid=fg-pos]').innerText();
+assert.ok(/^1 \/ \d+$/.test(pos0), pos0);
+const total = Number(pos0.split('/')[1]);
+await page.keyboard.press('ArrowRight');
+assert.ok((await page.locator('[data-testid=fg-pos]').innerText()).startsWith('2 /'), 'Right arrow: next');
+await page.keyboard.press('ArrowLeft');
+assert.ok((await page.locator('[data-testid=fg-pos]').innerText()).startsWith('1 /'), 'Left arrow: previous');
+await page.keyboard.press('n');
+assert.ok((await page.locator('[data-testid=fg-pos]').innerText()).startsWith('2 /'), 'N marks and advances');
+await page.keyboard.press('y');
+assert.ok((await page.locator('[data-testid=fg-pos]').innerText()).startsWith('3 /'), 'Y marks and advances');
+const marks = await page.evaluate(() => JSON.parse(window.localStorage.getItem('gc-fg-marks') ?? '{}'));
+assert.deepEqual(Object.values(marks), ['N', 'Y']);
+assert.ok((await page.locator('.fg-sum').innerText()).includes('Marked 2/' + total), 'Summary counts the marks');
+assert.ok(await page.locator('[data-testid=detail]').isVisible(), 'The building being checked is selected');
+await page.click('[data-testid=fg-close]');
+assert.equal(await page.locator('[data-testid=fgbar]').count(), 0);
+ok('Figure ground check: arrows step, Y / N mark and advance, marks persist, the checked building is selected');
+
 await browser.close();
 if (problems.length) { console.error('Browser errors:\n' + problems.join('\n')); process.exit(1); }
 console.log(`\nAll passed (${step} checks). Screenshots: ${shots}`);

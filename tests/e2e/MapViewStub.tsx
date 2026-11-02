@@ -12,6 +12,7 @@ interface Props {
   focus: unknown;
   active: boolean;
   onPick: (pids: string[]) => void;
+  onFootprint?: unknown;
 }
 
 export default function MapViewStub({ fc, selectedPid, bounds, focus, active, onPick }: Props) {
