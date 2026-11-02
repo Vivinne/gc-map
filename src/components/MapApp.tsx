@@ -71,6 +71,13 @@ export default function MapApp() {
     });
   }, []);
 
+  // A page restored from the back/forward cache would keep the old screen: reload it so it starts from the default screen
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => { if (e.persisted) window.location.reload(); };
+    window.addEventListener('pageshow', onShow);
+    return () => window.removeEventListener('pageshow', onShow);
+  }, []);
+
   // URL hash <-> state
   useEffect(() => {
     const h = formatHash({ p: selectedId, t: [...tags], q });
@@ -173,6 +180,10 @@ export default function MapApp() {
             placeholder="Search"
             aria-label="Search"
           />
+          <label className="hide-edges">
+            <input type="checkbox" checked={hideEdges} onChange={(e) => setHideEdges(e.target.checked)} data-testid="hide-edges" />
+            <span>Hide direction buttons</span>
+          </label>
           {groups.map((g) => {
             const isOpen = openGroups.has(g.id);
             const nChecked = g.tags.filter((t) => tags.has(t.id)).length;
@@ -244,7 +255,6 @@ export default function MapApp() {
       </main>
 
       <footer className="credits">
-        <label className="credits-hide"><input type="checkbox" checked={hideEdges} onChange={(e) => setHideEdges(e.target.checked)} data-testid="hide-edges" />Hide direction buttons</label>
         <span className="credits-note"><span className="credits-base">Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. </span>Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.</span>
         <span className="credits-map">OpenFreeMap © OpenMapTiles Data from OpenStreetMap</span>
       </footer>

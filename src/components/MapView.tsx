@@ -7,6 +7,8 @@ import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 /** Zoom levels the map zooms out when the building panel is closed */
+/** Zoom levels per click on the + / - buttons (2 = four times the scale) */
+const ZOOM_BUTTON_STEP = 2;
 const CLOSE_ZOOM_OUT = 0.7;
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
 const SOURCE = 'places';
@@ -113,6 +115,14 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     });
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    // The + / - buttons move ZOOM_BUTTON_STEP levels per click (the built-in control moves one)
+    map.getContainer()?.addEventListener?.('click', (ev) => {
+      const t = ev.target as Element | null;
+      const dir = t?.closest?.('.maplibregl-ctrl-zoom-in') ? 1 : t?.closest?.('.maplibregl-ctrl-zoom-out') ? -1 : 0;
+      if (!dir) return;
+      ev.stopPropagation();
+      map.easeTo({ zoom: map.getZoom() + dir * ZOOM_BUTTON_STEP, duration: 350 });
+    }, true);
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'metric' }), 'bottom-left');
 
     map.on('error', (e) => {
