@@ -149,7 +149,7 @@ test('city circles: city from the handout location, count = buildings, region pl
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });
 
-import { distanceM, edgeMarkers, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
+import { edgeMarkers, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
 test('densestCenter picks the middle of the most crowded group', () => {
   assert.equal(densestCenter([]), null);
   // three buildings within 300 m, one 20 km away: the centre is the middle of the three
@@ -165,33 +165,34 @@ test('zoom for 1 km on the scale bar, polar limit and phone Full map bounds', ()
   assert.deepEqual(PHONE_FULL_BOUNDS, [[-12, 30], [32, 63]]);
 });
 
-test('edgeMarkers: one per direction on the view edge, sum nearby, skip inside and too far', () => {
+test('edgeMarkers: nearest city per direction on the view edge, skip inside, no distance limit', () => {
   const m = edgeMarkers([
     { key: 'in', n: 5, x: 500, y: 300 },
     { key: 'left', n: 1, x: -2000, y: 300 },
     { key: 'right', n: 1, x: 3000, y: 300 },
     { key: 'right2', n: 2, x: 4000, y: 310 },
-    { key: 'far', n: 9, x: 99999, y: 300 },
-  ], 1000, 600, 22, 8000);
-  assert.equal(m.length, 2);
+    { key: 'far', n: 9, x: 9999999, y: -5000000 },
+  ], 1000, 600);
+  assert.equal(m.length, 3);
   const l = m.find((e) => e.key === 'left')!;
   const r = m.find((e) => e.key === 'right')!;
   assert.equal(l.n, 1);
-  assert.equal(l.x, 22);
-  assert.equal(r.n, 3);
-  assert.equal(r.x, 978);
-  assert.ok(Math.abs(l.y - 300) < 1);
-});
-
-test('distanceM: Florence-Pisa is about 70 km', () => {
-  const d = distanceM({ lng: 11.2558, lat: 43.7696 }, { lng: 10.4017, lat: 43.7228 });
-  assert.ok(d > 65_000 && d < 75_000, String(d));
+  assert.equal(Math.round(l.x), 24);
+  assert.equal(r.n, 1);
+  assert.equal(Math.round(r.x), 976);
+  assert.ok(m.some((e) => e.key === 'far'));
+  assert.ok(!m.some((e) => e.key === 'right2'));
 });
 
 import { readFileSync } from 'node:fs';
-test('Sagrada Familia has a single marker', () => {
+test('Gaudi works are separate entries with one marker each', () => {
   const d = JSON.parse(readFileSync(new URL('../src/data/places.json', import.meta.url), 'utf8'));
-  const p = d.places.find((x: { id: string }) => x.id.startsWith('sagrada-familia'));
-  assert.equal(p.points.length, 1);
-  assert.equal(p.points[0].sub, 'Sagrada Família');
+  const names = ['Sagrada Família', 'Casa Vicens', 'Palau Güell', 'Casa Batlló', 'Casa Milà', 'Park Güell', 'Colònia Güell'];
+  for (const n of names) {
+    const p = d.places.find((x: { name: string }) => x.name === n);
+    assert.ok(p, n);
+    assert.equal(p.points.length, 1, n);
+    assert.ok(p.summary, n);
+  }
+  assert.ok(!d.places.some((x: { name: string }) => x.name.includes('等 Gaudí')));
 });

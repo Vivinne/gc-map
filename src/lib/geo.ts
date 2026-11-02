@@ -230,49 +230,25 @@ export interface EdgeMarker {
 }
 
 /**
- * Markers for cities outside the view: one per direction on the viewport edge (inset px inside it), labelled with the number of buildings.
- * Cities farther than `range` px from the view centre (default: no limit; the caller limits by real distance) are left out; cities whose edge spots are closer than `cell` px are summed into one marker.
+ * Markers for cities outside the view, one per direction: the 360 degrees around the view centre are split into `sectors` equal sectors and the nearest
+ * city of each sector gets a marker on the viewport edge (inset px inside it) at its bearing, labelled with that city's number of buildings.
+ * There is no distance limit, so a marker always points to the nearest buildings however far away they are.
  */
-export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 24, range = Infinity, cell = 40): EdgeMarker[] {
+export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 24, sectors = 12): EdgeMarker[] {
   const cx = w / 2;
   const cy = h / 2;
-  const out = new Map<string, EdgeMarker & { d: number }>();
+  const best = new Map<number, EdgeMarker & { d: number }>();
   for (const it of items) {
     if (it.x >= 0 && it.x <= w && it.y >= 0 && it.y <= h) continue;
     const dx = it.x - cx;
     const dy = it.y - cy;
     const d = Math.hypot(dx, dy);
-    if (!Number.isFinite(d) || d > range || d === 0) continue;
-    const hx = cx - inset;
-    const hy = cy - inset;
-    const k = Math.min(hx / Math.abs(dx || 1e-9), hy / Math.abs(dy || 1e-9));
-    const x = cx + dx * k;
-    const y = cy + dy * k;
-    const slot = `${Math.round(x / cell)}:${Math.round(y / cell)}`;
-    const cur = out.get(slot);
-    if (!cur) out.set(slot, { key: it.key, n: it.n, x, y, d });
-    else {
-      cur.n += it.n;
-      if (d < cur.d) {
-        cur.d = d;
-        cur.key = it.key;
-        cur.x = x;
-        cur.y = y;
-      }
-    }
+    if (!Number.isFinite(d) || d === 0) continue;
+    const sector = Math.floor(((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI)) * sectors) % sectors;
+    const cur = best.get(sector);
+    if (cur && cur.d <= d) continue;
+    const k = Math.min((cx - inset) / Math.abs(dx || 1e-9), (cy - inset) / Math.abs(dy || 1e-9));
+    best.set(sector, { key: it.key, n: it.n, x: cx + dx * k, y: cy + dy * k, d });
   }
-  return [...out.values()].map(({ key, n, x, y }) => ({ key, n, x, y }));
-}
-
-/** Cities farther than this (metres, straight line from the view centre) get no edge marker, however far the map is zoomed in */
-export const EDGE_RANGE_M = 150_000;
-
-/** Straight-line distance in metres between two lng/lat points (haversine) */
-export function distanceM(a: { lng: number; lat: number }, b: { lng: number; lat: number }): number {
-  const R = 6371008.8;
-  const rad = Math.PI / 180;
-  const dLat = (b.lat - a.lat) * rad;
-  const dLng = (b.lng - a.lng) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+  return [...best.values()].map(({ key, n, x, y }) => ({ key, n, x, y }));
 }

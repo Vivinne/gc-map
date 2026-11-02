@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, EDGE_RANGE_M, distanceM, edgeMarkers, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, edgeMarkers, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
@@ -130,10 +130,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       const el = map.getContainer();
       const w = el.clientWidth;
       const h = el.clientHeight;
-      const mc = map.getCenter();
-      // Real distance, not pixels: the markers stay however far the map is zoomed in
-      const near = latest.current.cities.features.filter((f) => distanceM({ lng: mc.lng, lat: mc.lat }, { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }) <= EDGE_RANGE_M);
-      const items = near.map((f) => {
+      const items = latest.current.cities.features.map((f) => {
         const p = map.project(f.geometry.coordinates);
         return { key: f.properties.city, n: f.properties.n, x: p.x, y: p.y };
       });

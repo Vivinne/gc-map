@@ -173,7 +173,13 @@
 | Red House<br><span class="loc">Kent（英）</span> | 1859 | Philip Webb（為 Morris） | Arts & Crafts 起點 |
 | Secession Building<br><span class="loc">Vienna</span> | 1897 起（Secession） | Joseph Maria Olbrich | 金球頂 |
 | Casa Galimberti／Palazzo Castiglioni<br><span class="loc">Milan</span> | 1905（Galimberti）、1904（Castiglioni） | G. B. Bossi（Galimberti） | 義大利 Stile Liberty |
-| Sagrada Família 等 Gaudí 作品<br><span class="loc">Barcelona（西）</span> | 1882 起（施工中） | Gaudí | Casa Vicens、Palau Güell、Colònia Güell、Casa Batlló、Casa Milà、Park Güell、Sagrada Família |
+| Sagrada Família<br><span class="loc">Barcelona（西）</span> | 1882 起（施工中） | Gaudí | 聖家堂；Gaudí 自 1882 年接手施工，至今仍在興建 |
+| Casa Vicens<br><span class="loc">Barcelona（西）</span> | 1883–1888 | Gaudí | Gaudí 早期的住宅作品 |
+| Palau Güell<br><span class="loc">Barcelona（西）</span> | 1885–1890 | Gaudí | 為 Güell 家建造的宅邸 |
+| Casa Batlló<br><span class="loc">Barcelona（西）</span> | 1904–1906 | Gaudí | 由 Gaudí 改建的既有建築 |
+| Casa Milà<br><span class="loc">Barcelona（西）</span> | 1906–1912 | Gaudí | Gaudí 設計的集合住宅 |
+| Park Güell<br><span class="loc">Barcelona（西）</span> | 1900–1914 | Gaudí | Gaudí 設計的公園，至今仍作公共公園使用 |
+| Colònia Güell<br><span class="loc">Barcelona（西）</span> | 1908–1914 | Gaudí | Colònia Güell 教堂的地下禮拜堂（Crypt） |
 | Tassel House<br><span class="loc">Brussels（比）</span> | 1893 | Victor Horta | Art Nouveau |
 | Glasgow School of Art<br><span class="loc">Glasgow (United Kingdom)</span> | 1897-1909 | Charles Rennie Mackintosh and Margaret Macdonald Mackintosh | — |
 | Palais Stoclet<br><span class="loc">Brussels (Belgium)</span> | 1905-1911 | Josef Hoffmann | — |

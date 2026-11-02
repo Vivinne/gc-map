@@ -3740,13 +3740,13 @@
    ]
   },
   {
-   "id": "sagrada-familia-gaudi-53a7-barcelona",
-   "name": "Sagrada Família 等 Gaudí 作品",
+   "id": "sagrada-familia-barcelona",
+   "name": "Sagrada Família",
    "loc": "Barcelona（西）",
    "year": "1882–（施工中；主塔 2026 達最終高度）",
    "who": "Antoni Gaudí",
-   "note": "Casa Vicens、Palau Güell、Colònia Güell、Casa Batlló、Casa Milà、Park Güell、Sagrada Família",
-   "summary": "一系列有機曲線與自然形式的建築，其中聖家堂自 1882 年施工至今，主塔已於 2026 年達最終高度。",
+   "note": "聖家堂；Gaudí 自 1882 年接手施工，至今仍在興建",
+   "summary": "Gaudí 設計的教堂，自 1882 年施工至今，主塔已於 2026 年達最終高度。",
    "country": "Others",
    "exams": [
     2015
@@ -3759,13 +3759,199 @@
    ],
    "points": [
     {
-     "id": "sagrada-familia-gaudi-53a7-barcelona~0",
-     "sub": "Sagrada Família",
+     "id": "sagrada-familia-barcelona~0",
+     "sub": "",
      "lat": 41.40369,
      "lng": 2.17433,
      "precision": "page",
      "note": "",
      "sourceUrl": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "casa-vicens-barcelona",
+   "name": "Casa Vicens",
+   "loc": "Barcelona（西）",
+   "year": "1883–1888",
+   "who": "Antoni Gaudí",
+   "note": "Gaudí 早期的住宅作品",
+   "summary": "Gaudí 的住宅作品，至今仍保持住宅外觀與用途（UNESCO 世界遺產「Works of Antoni Gaudí」之一）。",
+   "country": "Others",
+   "exams": [
+    2015
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "casa-vicens-barcelona~0",
+     "sub": "",
+     "lat": 41.40358,
+     "lng": 2.15079,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Vicens",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "palau-guell-barcelona",
+   "name": "Palau Güell",
+   "loc": "Barcelona（西）",
+   "year": "1885–1890",
+   "who": "Antoni Gaudí",
+   "note": "為 Güell 家建造的宅邸",
+   "summary": "原為 Güell 家的住宅，現作文化與觀光設施，保留原有建築形式與裝飾（UNESCO 世界遺產之一）。",
+   "country": "Others",
+   "exams": [
+    2015
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "palau-guell-barcelona~0",
+     "sub": "",
+     "lat": 41.37889,
+     "lng": 2.17417,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Palau_G%C3%BCell",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "casa-batllo-barcelona",
+   "name": "Casa Batlló",
+   "loc": "Barcelona（西）",
+   "year": "1904–1906",
+   "who": "Antoni Gaudí",
+   "note": "由 Gaudí 改建的既有建築",
+   "summary": "既有建築經 Gaudí 改建而成，仍保留集合住宅的原設計，兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。",
+   "country": "Others",
+   "exams": [
+    2015
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "casa-batllo-barcelona~0",
+     "sub": "",
+     "lat": 41.39158,
+     "lng": 2.16492,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Batll%C3%B3",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "casa-mila-barcelona",
+   "name": "Casa Milà",
+   "loc": "Barcelona（西）",
+   "year": "1906–1912",
+   "who": "Antoni Gaudí",
+   "note": "Gaudí 設計的集合住宅",
+   "summary": "Gaudí 設計的集合住宅，大致保留原設計，現兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。",
+   "country": "Others",
+   "exams": [
+    2015
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "casa-mila-barcelona~0",
+     "sub": "",
+     "lat": 41.39528,
+     "lng": 2.16167,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Mil%C3%A0",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "park-guell-barcelona",
+   "name": "Park Güell",
+   "loc": "Barcelona（西）",
+   "year": "1900–1914",
+   "who": "Antoni Gaudí",
+   "note": "Gaudí 設計的公園，至今仍作公共公園使用",
+   "summary": "Gaudí 設計的公園，至今仍作公共公園使用，由巴塞隆納市政府持有（UNESCO 世界遺產之一）。",
+   "country": "Others",
+   "exams": [
+    2015
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "park-guell-barcelona~0",
+     "sub": "",
+     "lat": 41.41361,
+     "lng": 2.15278,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://en.wikipedia.org/wiki/Park_G%C3%BCell",
+     "status": "Supplementary - to be verified"
+    }
+   ]
+  },
+  {
+   "id": "colonia-guell-barcelona",
+   "name": "Colònia Güell",
+   "loc": "Barcelona（西）",
+   "year": "1908–1914",
+   "who": "Antoni Gaudí",
+   "note": "Colònia Güell 教堂的地下禮拜堂（Crypt）",
+   "summary": "Colònia Güell 教堂的地下禮拜堂（Crypt）；原規劃中的教堂只完成這一部分，現仍作教堂使用（UNESCO 世界遺產之一）。",
+   "country": "Others",
+   "exams": [
+    2015
+   ],
+   "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
+   "styleId": "6.10",
+   "era": "c19",
+   "eras": [
+    "c19"
+   ],
+   "points": [
+    {
+     "id": "colonia-guell-barcelona~0",
+     "sub": "",
+     "lat": 41.3611,
+     "lng": 2.0294,
+     "precision": "page",
+     "note": "",
+     "sourceUrl": "https://de.wikipedia.org/wiki/Col%C3%B2nia_G%C3%BCell",
      "status": "Supplementary - to be verified"
     }
    ]

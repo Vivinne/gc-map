@@ -108,7 +108,13 @@ Eiffel Tower | 1887–1889 | 1889 年世博的入口，鍛鐵桁架高 300 m，�
 Red House | 1859–1860 | 為 Morris 建的紅磚住宅，是 Arts & Crafts 的起點。
 Secession Building | 1897–1898 | 維也納分離派展館，頂上有金色月桂球頂，立面平滑，門上寫有「給時代藝術，給藝術自由」。
 Casa Galimberti／Palazzo Castiglioni | 1903–1905（Galimberti）；1901–1904（Castiglioni） | 米蘭的義大利 Stile Liberty（新藝術）住宅，立面有繁複的曲線與雕飾。
-Sagrada Família 等 Gaudí 作品 | 1882–（施工中；主塔 2026 達最終高度） | 一系列有機曲線與自然形式的建築，其中聖家堂自 1882 年施工至今，主塔已於 2026 年達最終高度。
+Sagrada Família | 1882–（施工中；主塔 2026 達最終高度） | Gaudí 設計的教堂，自 1882 年施工至今，主塔已於 2026 年達最終高度。
+Casa Vicens | 1883–1888 | Gaudí 的住宅作品，至今仍保持住宅外觀與用途（UNESCO 世界遺產「Works of Antoni Gaudí」之一）。
+Palau Güell | 1885–1890 | 原為 Güell 家的住宅，現作文化與觀光設施，保留原有建築形式與裝飾（UNESCO 世界遺產之一）。
+Casa Batlló | 1904–1906 | 既有建築經 Gaudí 改建而成，仍保留集合住宅的原設計，兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。
+Casa Milà | 1906–1912 | Gaudí 設計的集合住宅，大致保留原設計，現兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。
+Park Güell | 1900–1914 | Gaudí 設計的公園，至今仍作公共公園使用，由巴塞隆納市政府持有（UNESCO 世界遺產之一）。
+Colònia Güell | 1908–1914 | Colònia Güell 教堂的地下禮拜堂（Crypt）；原規劃中的教堂只完成這一部分，現仍作教堂使用（UNESCO 世界遺產之一）。
 Tassel House | 1892–1893 | 以鑄鐵與玻璃、曲線植物紋樣打造的住宅，被視為 Art Nouveau 的開端。
 Schröder House | 1924 | 以三原色與直線平面構成的住宅，內部可用滑動隔間改變空間，是 De Stijl 唯一的實際住宅。
 Pavillon de l'Esprit Nouveau | 1924–1925 | 1925 年巴黎世博中擅自參展的展館，展示 Citrohan 住宅單元，宣告現代住宅理念。
