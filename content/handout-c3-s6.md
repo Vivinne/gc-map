@@ -22,14 +22,14 @@
 | Pantheon<br><span class="loc">Rome</span> | AD 125 | Hadrian | Rotunda；穹頂直徑＝高＝43.3 m；Oculus 9 m；無鋼筋混凝土穹頂 |
 | Basilica of Maxentius and Constantine<br><span class="loc">Rome</span> | 308–312 起 | Maxentius／Constantine | 中殿三組混凝土十字拱；早期基督教堂範本 |
 | Arch of Constantine<br><span class="loc">Rome</span> | 315 | Constantine | 紀念 Milvian Bridge 之勝；大量 Spolia |
-| Roman Forum 與帝國議事廣場<br><span class="loc">Rome</span> | BC 6 世紀–AD 113 | — | 共和 Forum 與帝國 Fori Imperiali |
+| Roman Forum and Imperial Fora<br><span class="loc">Rome</span> | BC 6 世紀–AD 113 | — | 共和 Forum 與帝國 Fori Imperiali |
 
 ### 6.3 早期基督教與拜占庭建築（Early Christian and Byzantine）
 
 | 建築 | 年份 | 建築師／人物 | 內容 |
 |---|---|---|---|
 | Colonne di San Lorenzo<br><span class="loc">Milan</span> | 2 世紀柱、4 世紀末重組 | — | 16 根 Corinthian 柱；Spolia |
-| Mediolanum 皇宮區、Circo、Thermae Herculeae<br><span class="loc">Milan</span> | 286 起 | Maximianus | 西羅馬首都的帝國建築；Circo 殘塔＝San Giorgio al Palazzo 鐘樓 |
+| Mediolanum Imperial Palace District, Circo, Thermae Herculeae<br><span class="loc">Milan</span> | 286 起 | Maximianus | 西羅馬首都的帝國建築；Circo 殘塔＝San Giorgio al Palazzo 鐘樓 |
 | Hagia Sophia<br><span class="loc">Istanbul（土耳其）</span> | 532–537 | Anthemius／Isidore | Pendentive 穹頂；Justinian 時期 |
 | Basilica di San Marco<br><span class="loc">Venice</span> | 1094 | — | Byzantine；希臘十字平面 |
 
@@ -40,7 +40,7 @@
 | Basilica di Sant'Ambrogio<br><span class="loc">Milan</span> | 原堂 379–386；現堂約 1080 起 | — | Lombard Romanesque 原型；紅磚＋肋拱；無 clerestory |
 | Mont-Saint-Michel Abbey<br><span class="loc">Mont-Saint-Michel（法）</span> | 1023 | — | Romanesque／Gothic；La Merveille 奇蹟樓 |
 | Parma Baptistery<br><span class="loc">Parma</span> | 1196 | Benedetto Antelami | 八角形；粉紅 Verona 大理石；四層 loggias；Romanesque → Gothic |
-| Pisa Cathedral 與斜塔<br><span class="loc">Pisa</span> | 1118（主教堂）、1372（斜塔） | — | Italian Romanesque；彩色大理石盲拱廊 |
+| Pisa Cathedral and Leaning Tower<br><span class="loc">Pisa</span> | 1118（主教堂）、1372（斜塔） | — | Italian Romanesque；彩色大理石盲拱廊 |
 | San Miniato al Monte<br><span class="loc">Florence</span> | 1207 | — | Romanesque；內有 Cardinal of Portugal Chapel（Rossellino） |
 
 ### 6.5 哥德式建築（Gothic）
@@ -62,7 +62,7 @@
 | Cathédrale Sainte-Croix d'Orléans<br><span class="loc">Orléans（法）</span> | 1278 | — | — |
 | Duomo di Milano<br><span class="loc">Milan</span> | 1386 | — | 義大利規模最大的哥德式；融合倫巴底與國際哥德 |
 | Seville Cathedral<br><span class="loc">Seville（西）</span> | 1401 | — | Late Gothic |
-| Santa Maria del Fiore（主體）<br><span class="loc">Florence</span> | 1436 | — | Brunelleschi 圓頂之前的哥德大教堂 |
+| Santa Maria del Fiore (Main Body)<br><span class="loc">Florence</span> | 1436 | — | Brunelleschi 圓頂之前的哥德大教堂 |
 | Siena Cathedral<br><span class="loc">Siena</span> | 1263 | — | 鑲嵌大理石地面；Gate of Heaven 屋頂步道；Gothic |
 | Basilica di San Francesco d'Assisi<br><span class="loc">Assisi</span> | 1253 | — | Giotto 壁畫；少用飛扶壁 |
 | Bargello Museum<br><span class="loc">Florence</span> | 1255-1367 | Neri di Fioravante (Great Council Hall and courtyard staircase); Tone di Giovanni (verone) | — |
@@ -73,35 +73,35 @@
 
 | 建築 | 年份 | 建築師／人物 | 內容 |
 |---|---|---|---|
-| Ospedale degli Innocenti（Foundling Hospital）<br><span class="loc">Florence</span> | 1419 | Brunelleschi | 第一座 Renaissance 建築；圓拱＋Corinthian 柱 |
-| Santa Maria del Fiore 穹頂<br><span class="loc">Florence</span> | 1420 | Brunelleschi | 雙層殼體、魚骨砌磚、無木鷹架；Vasari、Zuccari《最後審判》 |
-| Pazzi Chapel（Santa Croce）<br><span class="loc">Florence</span> | 1443 | Brunelleschi | Santa Croce 內；立面由 Niccolò Matas 設計 |
+| Ospedale degli Innocenti (Foundling Hospital)<br><span class="loc">Florence</span> | 1419 | Brunelleschi | 第一座 Renaissance 建築；圓拱＋Corinthian 柱 |
+| Santa Maria del Fiore Dome<br><span class="loc">Florence</span> | 1420 | Brunelleschi | 雙層殼體、魚骨砌磚、無木鷹架；Vasari、Zuccari《最後審判》 |
+| Pazzi Chapel (Santa Croce)<br><span class="loc">Florence</span> | 1443 | Brunelleschi | Santa Croce 內；立面由 Niccolò Matas 設計 |
 | Palazzo Medici Riccardi<br><span class="loc">Florence</span> | 1444 | Michelozzo | 贊助人 Cosimo il Vecchio |
 | Tempio Malatestiano<br><span class="loc">Rimini</span> | 1447 | Alberti | Giotto Crucifix |
 | Ca' Granda<br><span class="loc">Milan</span> | 15 世紀 | Filarete | 大醫院；今 Milan 大學主校區；十字形庭院 |
 | Palazzo Rucellai<br><span class="loc">Florence</span> | 1450 | Alberti | 三層柱式 Tuscan–Ionic–Corinthian 壁柱 |
-| Santa Maria Novella（立面）<br><span class="loc">Florence</span> | 1456 | Alberti | 渦卷包住未完工哥德立面 |
+| Santa Maria Novella (Facade)<br><span class="loc">Florence</span> | 1456 | Alberti | 渦卷包住未完工哥德立面 |
 | Sant'Andrea<br><span class="loc">Mantua</span> | 1470 | Alberti | Pediment＋凱旋門 |
 | Camera degli Sposi<br><span class="loc">Mantua</span> | 1474 | Mantegna | Palazzo Ducale；di sotto in sù 仰視透視 |
 | Santa Maria presso San Satiro<br><span class="loc">Milan</span> | 1482 | Bramante | Trompe l'oeil：實深 90–97 cm 的唱詩班，視覺上約 10 m 深 |
 | Palazzo Gondi<br><span class="loc">Florence</span> | 1490 | G. da Sangallo | — |
-| Santa Maria delle Grazie（Tribuna）<br><span class="loc">Milan</span> | 1492 開工 | Bramante | 後殿穹頂；《最後的晚餐》 |
+| Santa Maria delle Grazie (Tribuna)<br><span class="loc">Milan</span> | 1492 開工 | Bramante | 後殿穹頂；《最後的晚餐》 |
 | Tempietto<br><span class="loc">Rome</span> | 1502 | Bramante | Central Plan＋Doric 柱 |
 | Cortile del Belvedere<br><span class="loc">Vatican</span> | 1505 | Bramante | 透視觀景庭園；Julius II |
-| 聖伯多祿大殿（首版設計）<br><span class="loc">Vatican</span> | 1506 | Bramante | Greek Cross；大量拆除舊石柱 → Maestro Ruinante |
+| St. Peter's Basilica (First Design)<br><span class="loc">Vatican</span> | 1506 | Bramante | Greek Cross；大量拆除舊石柱 → Maestro Ruinante |
 | San Maurizio al Monastero Maggiore<br><span class="loc">Milan</span> | 1518 | Bernardino Luini | 「Sistine Chapel of Milan」 |
 | Fontainebleau<br><span class="loc">Fontainebleau（法）</span> | 1528（另一寫法 1552） | Serlio | Renaissance 傳到法國 |
 | Palazzo Te<br><span class="loc">Mantua</span> | 1534 | Giulio Romano | Slipping Triglyphs；Mannerism |
 | Laurentian Library<br><span class="loc">Florence</span> | 1534 | Michelangelo | 三股樓梯、嵌牆暗柱；Mannerism 開端 |
 | Piazza del Campidoglio<br><span class="loc">Rome</span> | 1546 | Michelangelo | 橢圓／梯形；解決不對稱壓迫感 |
-| 聖伯多祿大殿穹頂<br><span class="loc">Vatican</span> | 1546 | Michelangelo | 雙層圓頂；Giacomo della Porta 完工 |
+| St. Peter's Basilica Dome<br><span class="loc">Vatican</span> | 1546 | Michelangelo | 雙層圓頂；Giacomo della Porta 完工 |
 | Basilica Palladiana<br><span class="loc">Vicenza</span> | 1549 | Palladio | Serliana 拱 |
-| Palladio 的別墅群<br><span class="loc">Veneto</span> | 1549–1559 | Palladio | Pojana 1549、Barbaro 1554、Badoer 1556、Foscari 1559（Foscari 又名 Malcontenta） |
+| Palladio's Villas<br><span class="loc">Veneto</span> | 1549–1559 | Palladio | Pojana 1549、Barbaro 1554、Badoer 1556、Foscari 1559（Foscari 又名 Malcontenta） |
 | Palazzo Marino<br><span class="loc">Milan</span> | 1558 | Alessi | 今 Milan 市政廳 |
 | Villa Farnese<br><span class="loc">Caprarola</span> | 1559 | Vignola | Pentagon＋圓形庭院 |
 | Uffizi<br><span class="loc">Florence</span> | 1560 | Vasari | U 形中庭；Medici 辦公室 |
 | Vasari Corridor<br><span class="loc">Florence</span> | 1565 | Vasari | Ponte Vecchio — Palazzo Vecchio — Uffizi — Pitti |
-| Villa Capra（La Rotonda）<br><span class="loc">Vicenza</span> | 1570 | Palladio | 四面對稱、希臘柱廊、穹頂 |
+| Villa Capra (La Rotonda)<br><span class="loc">Vicenza</span> | 1570 | Palladio | 四面對稱、希臘柱廊、穹頂 |
 | Il Redentore<br><span class="loc">Venice</span> | 1577 | Palladio | — |
 | Sforza Castle<br><span class="loc">Milan</span> | 1452（Filarete 塔） | Filarete | — |
 | Basilica di San Lorenzo<br><span class="loc">Florence</span> | 1470 | Brunelleschi | pietra serena 灰色砂岩建立嚴格模矩 |
@@ -114,8 +114,8 @@
 
 | 建築 | 年份 | 建築師／人物 | 內容 |
 |---|---|---|---|
-| Gesù（Church of the Gesù）<br><span class="loc">Rome</span> | 1568 | Vignola（立面 della Porta） | Baroque 起源；取消側廊 → 單一寬中殿 |
-| Baldacchino（聖伯多祿）<br><span class="loc">Vatican</span> | 1624 | Bernini | 29 m；Solomonic Columns |
+| Gesù (Church of the Gesù)<br><span class="loc">Rome</span> | 1568 | Vignola（立面 della Porta） | Baroque 起源；取消側廊 → 單一寬中殿 |
+| Baldacchino (St. Peter's)<br><span class="loc">Vatican</span> | 1624 | Bernini | 29 m；Solomonic Columns |
 | Santa Maria della Salute<br><span class="loc">Venice</span> | 1631 | Longhena | Octagon |
 | San Carlo alle Quattro Fontane<br><span class="loc">Rome</span> | 1638 | Borromini | 橢圓平面、波浪立面、卵形穹頂 |
 | Sant'Ivo alla Sapienza<br><span class="loc">Rome</span> | 1642 | Borromini | 六角星形平面＋螺旋燈籠頂 |
@@ -131,9 +131,9 @@
 | Trevi Fountain<br><span class="loc">Rome</span> | 1732 | Salvi | Palazzo Poli 牆壁改造；Corinthian 柱 |
 | Royal Palace of Caserta<br><span class="loc">Caserta</span> | 1752 | Vanvitelli | 「義大利的凡爾賽」 |
 | Teatro alla Scala<br><span class="loc">Milan</span> | 1778 | Piermarini | — |
-| Palazzo Reale（Milan）<br><span class="loc">Milan</span> | 1778 | Piermarini | — |
+| Palazzo Reale (Milan)<br><span class="loc">Milan</span> | 1778 | Piermarini | — |
 | Palazzo Belgioioso<br><span class="loc">Milan</span> | 1781 | Piermarini | — |
-| 聖伯多祿大殿立面與中殿<br><span class="loc">Vatican</span> | 1626 | Maderno | 把 Greek Cross 變拉丁十字；1626 落成 |
+| St. Peter's Basilica Facade and Nave<br><span class="loc">Vatican</span> | 1626 | Maderno | 把 Greek Cross 變拉丁十字；1626 落成 |
 | Santa Susanna<br><span class="loc">Rome</span> | 1603 | Maderno | Baroque |
 | Ecstasy of Saint Teresa<br><span class="loc">Rome（Santa Maria della Vittoria）</span> | 1652 | Bernini | Bel Composto 美妙融合 |
 | Sant'Ignazio di Loyola<br><span class="loc">Rome</span> | 1685 | Andrea Pozzo | 畫出立體穹頂（trompe l'oeil） |
@@ -190,13 +190,13 @@
 |---|---|---|---|
 | Schröder House<br><span class="loc">Utrecht（荷）</span> | 1924 | Rietveld | De Stijl |
 | Pavillon de l'Esprit Nouveau<br><span class="loc">Paris</span> | 1925 | Le Corbusier | 巴黎世博；擅自參展 |
-| Bauhaus Dessau 校舍<br><span class="loc">Dessau（德）</span> | 1925 遷校；1926 設計落成 | Walter Gropius | 風車平面、RC 框架、玻璃帷幕 |
+| Bauhaus Dessau Building<br><span class="loc">Dessau（德）</span> | 1925 遷校；1926 設計落成 | Walter Gropius | 風車平面、RC 框架、玻璃帷幕 |
 | Weissenhof Estate<br><span class="loc">Stuttgart（德）</span> | 1927 | Mies（總策劃） | 2027＝100 週年 |
 | Villa Savoye<br><span class="loc">Poissy 附近（法）</span> | 約 1929 | Le Corbusier | 五點建築全納入 |
 | Barcelona Pavilion<br><span class="loc">Barcelona（西）</span> | 1929 | Mies | 大理石牆、倒影池；承重柱與隔牆分離 |
 | Fallingwater<br><span class="loc">Pennsylvania（美）</span> | 1935 | Frank Lloyd Wright | 懸臂跨瀑布 |
 | Unité d'Habitation | 戰後 | Le Corbusier | 垂直聚落；清水混凝土；Brutalism |
-| Notre-Dame-du-Haut（Ronchamp）<br><span class="loc">Ronchamp（法）</span> | 1950–60 | Le Corbusier | 自由平面；廊香教堂 |
+| Notre-Dame-du-Haut (Ronchamp)<br><span class="loc">Ronchamp（法）</span> | 1950–60 | Le Corbusier | 自由平面；廊香教堂 |
 | AEG Turbine Factory<br><span class="loc">Berlin</span> | 1909 | Peter Behrens | Werkbund 代表作 |
 | Chrysler Building<br><span class="loc">New York</span> | 1930 | Van Alen | Art Deco |
 | Empire State Building<br><span class="loc">New York</span> | 1931 | Shreve, Lamb & Harmon | Art Deco |
@@ -239,8 +239,8 @@
 | Guggenheim Museum Bilbao<br><span class="loc">Bilbao（西）</span> | 1997 | Frank Gehry | 鈦金屬曲面 |
 | MAXXI<br><span class="loc">Rome</span> | 2010 | Zaha Hadid | — |
 | Gallaratese Quarter<br><span class="loc">Milan</span> | 1973 | Aldo Rossi | La Tendenza |
-| Generali Tower（CityLife）<br><span class="loc">Milan</span> | 2017 | Zaha Hadid | 「Twisted」 |
-| Palazzo dell'Arte（Triennale）<br><span class="loc">Milan</span> | 1933 | Giovanni Muzio | 2025 Triennale 展場 |
+| Generali Tower (CityLife)<br><span class="loc">Milan</span> | 2017 | Zaha Hadid | 「Twisted」 |
+| Palazzo dell'Arte (Triennale)<br><span class="loc">Milan</span> | 1933 | Giovanni Muzio | 2025 Triennale 展場 |
 | Polimi Campus Nord<br><span class="loc">Milan</span> | — | Renzo Piano | — |
 | Museo Castelvecchio<br><span class="loc">Verona</span> | 1964 | Carlo Scarpa | 陰影縫隙；構造碎片 |
 | Louvre Pyramid<br><span class="loc">Paris</span> | 1989 | I. M. Pei | Mitterrand Grands Projets |
@@ -253,7 +253,7 @@
 | The Gherkin<br><span class="loc">London</span> | 2004 | Norman Foster | Diagrid |
 | London City Hall<br><span class="loc">London</span> | 2002 | Norman Foster | 透明球體 |
 | Grand Court<br><span class="loc">London</span> | 2000 | Norman Foster | 結構玻璃天幕 |
-| Reichstag（玻璃穹頂）<br><span class="loc">Berlin</span> | 1999 | Norman Foster | 民主透明 |
+| Reichstag (Glass Dome)<br><span class="loc">Berlin</span> | 1999 | Norman Foster | 民主透明 |
 | Jewish Museum Berlin<br><span class="loc">Berlin</span> | 1999 | Daniel Libeskind | 解構 |
 | Dancing House<br><span class="loc">Prague</span> | 1996 | Frank Gehry | — |
 | Vitra Fire Station | 1993 | Zaha Hadid | — |

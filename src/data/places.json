@@ -399,8 +399,8 @@
    ]
   },
   {
-   "id": "roman-forum-1a9a-rome",
-   "name": "Roman Forum 與帝國議事廣場",
+   "id": "roman-forum-and-imperial-fora-rome",
+   "name": "Roman Forum and Imperial Fora",
    "loc": "Rome",
    "year": "BC 6 世紀–AD 113",
    "who": "—",
@@ -416,7 +416,7 @@
    ],
    "points": [
     {
-     "id": "roman-forum-1a9a-rome~0",
+     "id": "roman-forum-and-imperial-fora-rome~0",
      "sub": "Roman Forum",
      "lat": 41.8922,
      "lng": 12.4852,
@@ -457,8 +457,8 @@
    ]
   },
   {
-   "id": "mediolanum-circo-thermae-herculeae-cb01-milan",
-   "name": "Mediolanum 皇宮區、Circo、Thermae Herculeae",
+   "id": "mediolanum-imperial-palace-district-circo-thermae-herculeae-milan",
+   "name": "Mediolanum Imperial Palace District, Circo, Thermae Herculeae",
    "loc": "Milan",
    "year": "286–4 世紀初",
    "who": "Marcus Aurelius Valerius Maximianus (Maximian)",
@@ -474,7 +474,7 @@
    ],
    "points": [
     {
-     "id": "mediolanum-circo-thermae-herculeae-cb01-milan~0",
+     "id": "mediolanum-imperial-palace-district-circo-thermae-herculeae-milan~0",
      "sub": "",
      "lat": 45.46694,
      "lng": 9.19,
@@ -633,8 +633,8 @@
    ]
   },
   {
-   "id": "pisa-cathedral-87fa-pisa",
-   "name": "Pisa Cathedral 與斜塔",
+   "id": "pisa-cathedral-and-leaning-tower-pisa",
+   "name": "Pisa Cathedral and Leaning Tower",
    "loc": "Pisa",
    "year": "1063–1118（主教堂）；1173–1372（斜塔）",
    "who": "—",
@@ -652,7 +652,7 @@
    ],
    "points": [
     {
-     "id": "pisa-cathedral-87fa-pisa~0",
+     "id": "pisa-cathedral-and-leaning-tower-pisa~0",
      "sub": "Pisa Cathedral",
      "lat": 43.723281,
      "lng": 10.395845,
@@ -662,8 +662,8 @@
      "status": "Supplementary - to be verified"
     },
     {
-     "id": "pisa-cathedral-87fa-pisa~1",
-     "sub": "斜塔",
+     "id": "pisa-cathedral-and-leaning-tower-pisa~1",
+     "sub": "Leaning Tower",
      "lat": 43.72306,
      "lng": 10.39639,
      "precision": "page",
@@ -1138,8 +1138,8 @@
    ]
   },
   {
-   "id": "santa-maria-del-fiore-3eab-florence",
-   "name": "Santa Maria del Fiore（主體）",
+   "id": "santa-maria-del-fiore-main-body-florence",
+   "name": "Santa Maria del Fiore (Main Body)",
    "loc": "Florence",
    "year": "1296–1436",
    "who": "—",
@@ -1155,7 +1155,7 @@
    ],
    "points": [
     {
-     "id": "santa-maria-del-fiore-3eab-florence~0",
+     "id": "santa-maria-del-fiore-main-body-florence~0",
      "sub": "",
      "lat": 43.77306,
      "lng": 11.25694,
@@ -1325,7 +1325,7 @@
   },
   {
    "id": "ospedale-degli-innocenti-foundling-hospital-florence",
-   "name": "Ospedale degli Innocenti（Foundling Hospital）",
+   "name": "Ospedale degli Innocenti (Foundling Hospital)",
    "loc": "Florence",
    "year": "1419–1445",
    "who": "Filippo Brunelleschi",
@@ -1353,8 +1353,8 @@
    ]
   },
   {
-   "id": "santa-maria-del-fiore-8b69-florence",
-   "name": "Santa Maria del Fiore 穹頂",
+   "id": "santa-maria-del-fiore-dome-florence",
+   "name": "Santa Maria del Fiore Dome",
    "loc": "Florence",
    "year": "1420–1436",
    "who": "Filippo Brunelleschi",
@@ -1370,7 +1370,7 @@
    ],
    "points": [
     {
-     "id": "santa-maria-del-fiore-8b69-florence~0",
+     "id": "santa-maria-del-fiore-dome-florence~0",
      "sub": "",
      "lat": 43.77306,
      "lng": 11.25694,
@@ -1383,7 +1383,7 @@
   },
   {
    "id": "pazzi-chapel-santa-croce-florence",
-   "name": "Pazzi Chapel（Santa Croce）",
+   "name": "Pazzi Chapel (Santa Croce)",
    "loc": "Florence",
    "year": "約 1441–1478 前後",
    "who": "Filippo Brunelleschi",
@@ -1529,8 +1529,8 @@
    ]
   },
   {
-   "id": "santa-maria-novella-18f6-florence",
-   "name": "Santa Maria Novella（立面）",
+   "id": "santa-maria-novella-facade-florence",
+   "name": "Santa Maria Novella (Facade)",
    "loc": "Florence",
    "year": "1456–1470",
    "who": "Leon Battista Alberti",
@@ -1548,7 +1548,7 @@
    ],
    "points": [
     {
-     "id": "santa-maria-novella-18f6-florence~0",
+     "id": "santa-maria-novella-facade-florence~0",
      "sub": "",
      "lat": 43.7746,
      "lng": 11.2493,
@@ -1677,7 +1677,7 @@
   },
   {
    "id": "santa-maria-delle-grazie-tribuna-milan",
-   "name": "Santa Maria delle Grazie（Tribuna）",
+   "name": "Santa Maria delle Grazie (Tribuna)",
    "loc": "Milan",
    "year": "1492–1497",
    "who": "Donato Bramante",
@@ -1766,7 +1766,7 @@
   },
   {
    "id": "st-peters-first-design-vatican",
-   "name": "聖伯多祿大殿（首版設計）",
+   "name": "St. Peter's Basilica (First Design)",
    "loc": "Vatican",
    "year": "1506–",
    "who": "Donato Bramante",
@@ -1940,7 +1940,7 @@
   },
   {
    "id": "st-peters-dome-vatican",
-   "name": "聖伯多祿大殿穹頂",
+   "name": "St. Peter's Basilica Dome",
    "loc": "Vatican",
    "year": "1546–1590",
    "who": "Michelangelo Buonarroti",
@@ -1997,8 +1997,8 @@
    ]
   },
   {
-   "id": "palladio-86f2-veneto",
-   "name": "Palladio 的別墅群",
+   "id": "palladio-s-villas-veneto",
+   "name": "Palladio's Villas",
    "loc": "Veneto",
    "year": "1549–1559（四座）",
    "who": "Andrea Palladio",
@@ -2016,7 +2016,7 @@
    ],
    "points": [
     {
-     "id": "palladio-86f2-veneto~0",
+     "id": "palladio-s-villas-veneto~0",
      "sub": "Villa Barbaro（Maser）",
      "lat": 45.8122,
      "lng": 11.9764,
@@ -2026,7 +2026,7 @@
      "status": "Supplementary - to be verified"
     },
     {
-     "id": "palladio-86f2-veneto~1",
+     "id": "palladio-s-villas-veneto~1",
      "sub": "Villa Badoer（Fratta Polesine）",
      "lat": 45.030353,
      "lng": 11.639861,
@@ -2036,7 +2036,7 @@
      "status": "Supplementary - to be verified"
     },
     {
-     "id": "palladio-86f2-veneto~2",
+     "id": "palladio-s-villas-veneto~2",
      "sub": "Villa Foscari（Malcontenta）",
      "lat": 45.43528,
      "lng": 12.20111,
@@ -2046,7 +2046,7 @@
      "status": "Supplementary - to be verified"
     },
     {
-     "id": "palladio-86f2-veneto~3",
+     "id": "palladio-s-villas-veneto~3",
      "sub": "Villa Pojana",
      "lat": 45.2854,
      "lng": 11.4983,
@@ -2175,7 +2175,7 @@
   },
   {
    "id": "villa-capra-la-rotonda-vicenza",
-   "name": "Villa Capra（La Rotonda）",
+   "name": "Villa Capra (La Rotonda)",
    "loc": "Vicenza",
    "year": "1566–約 1570",
    "who": "Andrea Palladio",
@@ -2416,7 +2416,7 @@
   },
   {
    "id": "gesu-church-of-the-gesu-rome",
-   "name": "Gesù（Church of the Gesù）",
+   "name": "Gesù (Church of the Gesù)",
    "loc": "Rome",
    "year": "1568–1580",
    "who": "Giacomo Barozzi da Vignola（立面：Giacomo della Porta）",
@@ -2444,8 +2444,8 @@
    ]
   },
   {
-   "id": "baldacchino-53ab-vatican",
-   "name": "Baldacchino（聖伯多祿）",
+   "id": "baldacchino-st-peter-s-vatican",
+   "name": "Baldacchino (St. Peter's)",
    "loc": "Vatican",
    "year": "1623–1634",
    "who": "Gian Lorenzo Bernini",
@@ -2461,7 +2461,7 @@
    ],
    "points": [
     {
-     "id": "baldacchino-53ab-vatican~0",
+     "id": "baldacchino-st-peter-s-vatican~0",
      "sub": "",
      "lat": 41.90222,
      "lng": 12.45333,
@@ -2917,7 +2917,7 @@
   },
   {
    "id": "palazzo-reale-milan-milan",
-   "name": "Palazzo Reale（Milan）",
+   "name": "Palazzo Reale (Milan)",
    "loc": "Milan",
    "year": "1769–1778",
    "who": "Giuseppe Piermarini",
@@ -2975,7 +2975,7 @@
   },
   {
    "id": "st-peters-facade-nave-vatican",
-   "name": "聖伯多祿大殿立面與中殿",
+   "name": "St. Peter's Basilica Facade and Nave",
    "loc": "Vatican",
    "year": "1607–1626",
    "who": "Carlo Maderno",
@@ -4110,8 +4110,8 @@
    ]
   },
   {
-   "id": "bauhaus-dessau-1578-dessau",
-   "name": "Bauhaus Dessau 校舍",
+   "id": "bauhaus-dessau-building-dessau",
+   "name": "Bauhaus Dessau Building",
    "loc": "Dessau（德）",
    "year": "1925–1926",
    "who": "Walter Gropius",
@@ -4129,7 +4129,7 @@
    ],
    "points": [
     {
-     "id": "bauhaus-dessau-1578-dessau~0",
+     "id": "bauhaus-dessau-building-dessau~0",
      "sub": "",
      "lat": 51.8432,
      "lng": 12.2205,
@@ -4294,7 +4294,7 @@
   },
   {
    "id": "notre-dame-du-haut-ronchamp-ronchamp",
-   "name": "Notre-Dame-du-Haut（Ronchamp）",
+   "name": "Notre-Dame-du-Haut (Ronchamp)",
    "loc": "Ronchamp（法）",
    "year": "1950–1955",
    "who": "Le Corbusier (Charles-Édouard Jeanneret)",
@@ -5291,7 +5291,7 @@
   },
   {
    "id": "generali-tower-citylife-milan",
-   "name": "Generali Tower（CityLife）",
+   "name": "Generali Tower (CityLife)",
    "loc": "Milan",
    "year": "2011–2017",
    "who": "Zaha Hadid",
@@ -5322,7 +5322,7 @@
   },
   {
    "id": "palazzo-dell-arte-triennale-milan",
-   "name": "Palazzo dell'Arte（Triennale）",
+   "name": "Palazzo dell'Arte (Triennale)",
    "loc": "Milan",
    "year": "1931–1933",
    "who": "Giovanni Muzio",
@@ -5700,8 +5700,8 @@
    ]
   },
   {
-   "id": "reichstag-8020-berlin",
-   "name": "Reichstag（玻璃穹頂）",
+   "id": "reichstag-glass-dome-berlin",
+   "name": "Reichstag (Glass Dome)",
    "loc": "Berlin",
    "year": "1995–1999",
    "who": "Norman Foster",
@@ -5717,7 +5717,7 @@
    ],
    "points": [
     {
-     "id": "reichstag-8020-berlin~0",
+     "id": "reichstag-glass-dome-berlin~0",
      "sub": "",
      "lat": 52.51861,
      "lng": 13.37611,

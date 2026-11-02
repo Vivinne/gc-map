@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, distanceM, edgeMarkersExpanding, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, distanceM, edgeMarkersExpanding, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 /** Zoom levels the map zooms out when the building panel is closed */
@@ -72,9 +72,11 @@ interface Props {
   onPick: (pids: string[]) => void;
   /** The Back button was used: the parent closes the building panel */
   onBack?: () => void;
+  /** A number click moved the view away from the selected building: the parent closes its panel */
+  onDeselect?: () => void;
 }
 
-export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick, onBack }: Props) {
+export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick, onBack, onDeselect }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
   const [ready, setReady] = useState(false);
@@ -84,9 +86,9 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   const [edges, setEdges] = useState<EdgeMarker[]>([]);
 
   // Event handlers must read the latest values; use refs to avoid rebinding
-  const latest = useRef({ fc, cities, selectedPid, onPick });
+  const latest = useRef({ fc, cities, selectedPid, onPick, onDeselect });
   useEffect(() => {
-    latest.current = { fc, cities, selectedPid, onPick };
+    latest.current = { fc, cities, selectedPid, onPick, onDeselect };
   });
 
   // Back button history: the view as it was before each click that moves the map (a map click, a list selection, Full map); wheel zooming and panning are not recorded
@@ -232,6 +234,20 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
 
       // City click: zoom so that every building of the city is in view and drawn on its own
       const cityClick = (e: { point: { x: number; y: number } }) => {
+        // The view moves to centre/zoom: when it no longer shows the selected building, its panel closes (without the extra zoom-out of a plain close)
+        const moveTo = (center: [number, number], zoom: number) => {
+          const sel = latest.current.selectedPid;
+          if (sel) {
+            const el = map.getContainer();
+            const pts = latest.current.fc.features.filter((f) => f.properties.pid === sel);
+            const visible = pts.some((f) => viewContainsPoint({ lng: center[0], lat: center[1] }, zoom, el.clientWidth, el.clientHeight, { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
+            if (pts.length && !visible) {
+              keepView.current = true;
+              latest.current.onDeselect?.();
+            }
+          }
+          map.easeTo({ center, zoom, duration: 600 });
+        };
         const hit = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: ['cities'] })[0];
         const pr = hit?.properties;
         if (!pr) return;
@@ -243,7 +259,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
           // Identical coordinates cannot be told apart by zooming: several buildings -> one of them (the first) is shown; a single building -> the deepest zoom
           const pids = pr.pids ? (JSON.parse(String(pr.pids)) as string[]) : [];
           if (pids.length > 1) latest.current.onPick([pids[0] as string]);
-          else map.easeTo({ center: [b[0][0], b[0][1]], zoom: SAME_SPOT_ZOOM, duration: 600 });
+          else moveTo([b[0][0], b[0][1]], SAME_SPOT_ZOOM);
           return;
         }
         // A number was clicked: go to the middle of the most crowded group of its buildings, at a scale of 1 km on the scale bar
@@ -251,7 +267,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
           const set = new Set(pids);
           const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
           const c = densestCenter(pts) ?? { lng: (b[0][0] + b[1][0]) / 2, lat: (b[0][1] + b[1][1]) / 2 };
-          map.easeTo({ center: [c.lng, c.lat], zoom: Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)), duration: 600 });
+          moveTo([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)));
         };
         const pidsOf = (v: unknown): string[] => {
           try {

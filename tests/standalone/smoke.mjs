@@ -313,6 +313,17 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(e3.center[0] > 12.4 && e3.center[0] < 12.6 && e3.center[1] > 41.8 && e3.center[1] < 42, JSON.stringify(e3.center));
   ok('Merged circle number click -> centre of the most crowded group among all its buildings, scale 1 km');
 
+  // A number click that moves the view away from the selected building closes its panel; one that keeps it in view does not
+  const reichstag = idOf('Reichstag (Glass Dome)');
+  await page.evaluate((id) => { window.__fake.map.zoom = 4; window.__fake.hits = [{ properties: { pid: id } }]; window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); }, colosseum);
+  await page.waitForSelector('[data-testid=detail]');
+  await page.evaluate((ids) => { window.__fake.hits = [{ properties: { city: 'X', n: 1, w: 12.4922, s: 41.8903, e: 12.4922, nn: 41.8903, pids: JSON.stringify(ids) } }]; window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } }); }, [colosseum]);
+  await page.waitForTimeout(200);
+  assert.equal(await page.locator('[data-testid=detail]').count(), 1, 'The selected building stays in view: the panel stays open');
+  await page.evaluate((ids) => { window.__fake.map.zoom = 4; window.__fake.hits = [{ properties: { city: 'X', n: 1, w: 13.3762, s: 52.5186, e: 13.3762, nn: 52.5186, pids: JSON.stringify(ids) } }]; window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } }); }, [reichstag]);
+  await page.waitForFunction(() => !document.querySelector('[data-testid=detail]'));
+  ok('Number click: panel stays open while the selected building is in view, closes when the view leaves it');
+
   // City click 3: identical coordinates, several buildings -> the first is shown (no chooser)
   await page.evaluate((h) => {
     window.__fake.hits = [h];

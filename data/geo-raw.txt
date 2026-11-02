@@ -6,16 +6,16 @@ Colosseum |  | en:Colosseum | 41.8903°N 12.4922°E |
 Domus Aurea |  | en:Domus_Aurea | 41.891388888889°N 12.495277777778°E | 
 Basilica of Maxentius and Constantine |  | en:Basilica_of_Maxentius | 41.8919°N 12.4883°E | 
 Arch of Constantine |  | en:Arch_of_Constantine | 41.88972°N 12.49083°E | 
-Roman Forum 與帝國議事廣場 | Roman Forum | en:Roman_Forum | 41.8922°N 12.4852°E | 
+Roman Forum and Imperial Fora | Roman Forum | en:Roman_Forum | 41.8922°N 12.4852°E | 
 Cloaca Maxima |  | en:Cloaca_Maxima | 41.8889°N 12.4803°E | 
 Tempietto |  | en:San_Pietro_in_Montorio | 41.8886°N 12.4666°E | Coordinates taken from the containing church page
 Cortile del Belvedere |  | en:Cortile_del_Belvedere | 41.90417°N 12.45472°E | 
-聖伯多祿大殿（首版設計） |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
+St. Peter's Basilica (First Design) |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
 Piazza del Campidoglio |  | en:Piazza_del_Campidoglio | 41.89333°N 12.48278°E | 
-聖伯多祿大殿穹頂 |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
-Gesù（Church of the Gesù） |  | en:Church_of_the_Gesù | 41.89583°N 12.47972°E | 
-聖伯多祿大殿立面與中殿 |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
-Baldacchino（聖伯多祿） |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | Coordinates taken from the containing basilica page
+St. Peter's Basilica Dome |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
+Gesù (Church of the Gesù) |  | en:Church_of_the_Gesù | 41.89583°N 12.47972°E | 
+St. Peter's Basilica Facade and Nave |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | 
+Baldacchino (St. Peter's) |  | en:St._Peter's_Basilica | 41.90222°N 12.45333°E | Coordinates taken from the containing basilica page
 Fontana dei Quattro Fiumi |  | en:Piazza_Navona | 41.899°N 12.4731°E | Coordinates taken from the containing square page
 Piazza San Pietro |  | en:St._Peter's_Square | 41.9022°N 12.4572°E | 
 Sant'Andrea al Quirinale |  | en:Sant'Andrea_al_Quirinale | 41.90068°N 12.48934°E | 
@@ -33,26 +33,26 @@ Basilica di Sant'Ambrogio |  | en:Basilica_of_Sant'Ambrogio | 45.4624250°N 9.17
 Duomo di Milano |  | en:Milan_Cathedral | 45.46417°N 9.19139°E | 
 Sforza Castle |  | en:Sforza_Castle | 45.47000°N 9.17861°E | 
 Sant'Andrea |  | en:Basilica_of_Sant'Andrea,_Mantua | 45.15889°N 10.79417°E | 
-Santa Maria delle Grazie（Tribuna） |  | en:Santa_Maria_delle_Grazie,_Milan | 45.46583°N 9.17111°E | 
+Santa Maria delle Grazie (Tribuna) |  | en:Santa_Maria_delle_Grazie,_Milan | 45.46583°N 9.17111°E | 
 Santa Maria presso San Satiro |  | en:Santa_Maria_presso_San_Satiro | 45.4626472°N 9.1880333°E | 
 San Maurizio al Monastero Maggiore |  | en:San_Maurizio_al_Monastero_Maggiore | 45.465502°N 9.178921°E | 
 Palazzo Marino |  | en:Palazzo_Marino | 45.4664972°N 9.1906861°E | 
 San Bernardino alle Ossa |  | en:San_Bernardino_alle_Ossa | 45.4625528°N 9.1956111°E | 
 Teatro alla Scala |  | en:La_Scala | 45.46750°N 9.18917°E | 
-Palazzo Reale（Milan） |  | en:Royal_Palace_of_Milan | 45.4632°N 9.1911°E | 
+Palazzo Reale (Milan) |  | en:Royal_Palace_of_Milan | 45.4632°N 9.1911°E | 
 Palazzo Belgioioso |  | en:Palazzo_Belgioioso | 45.467578°N 9.192423°E | 
 Casa del Fascio |  | en:Casa_del_Fascio_(Como) | 45.812363°N 9.086022°E | 
 Pirelli Tower |  | en:Pirelli_Tower | 45.48472°N 9.20139°E | 
 Torre Velasca |  | en:Torre_Velasca | 45.46000°N 9.19056°E | 
-Generali Tower（CityLife） |  | en:Generali_Tower | 45.4783°N 9.1552°E | 
-Pisa Cathedral 與斜塔 | Pisa Cathedral | en:Pisa_Cathedral | 43.723281°N 10.395845°E | 
-Pisa Cathedral 與斜塔 | 斜塔 | en:Leaning_Tower_of_Pisa | 43.72306°N 10.39639°E | 
-Santa Maria del Fiore（主體） |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | 
-Santa Maria del Fiore 穹頂 |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | Coordinates taken from the containing cathedral page
-Pazzi Chapel（Santa Croce） |  | en:Pazzi_Chapel | 43.7680056°N 11.2629889°E | 
+Generali Tower (CityLife) |  | en:Generali_Tower | 45.4783°N 9.1552°E | 
+Pisa Cathedral and Leaning Tower | Pisa Cathedral | en:Pisa_Cathedral | 43.723281°N 10.395845°E | 
+Pisa Cathedral and Leaning Tower | Leaning Tower | en:Leaning_Tower_of_Pisa | 43.72306°N 10.39639°E | 
+Santa Maria del Fiore (Main Body) |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | 
+Santa Maria del Fiore Dome |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | Coordinates taken from the containing cathedral page
+Pazzi Chapel (Santa Croce) |  | en:Pazzi_Chapel | 43.7680056°N 11.2629889°E | 
 Basilica di San Lorenzo |  | en:Basilica_of_San_Lorenzo,_Florence | 43.774917°N 11.253861°E | 
 Palazzo Medici Riccardi |  | en:Palazzo_Medici_Riccardi | 43.77528°N 11.2559889°E | 
-Santa Maria Novella（立面） |  | en:Santa_Maria_Novella | 43.7746°N 11.2493°E | 
+Santa Maria Novella (Facade) |  | en:Santa_Maria_Novella | 43.7746°N 11.2493°E | 
 Pienza Cathedral |  | en:Pienza_Cathedral | 43.0763°N 11.6791°E | 
 Uffizi |  | en:Uffizi | 43.7683°N 11.2553°E | 
 Vasari Corridor |  | en:Vasari_Corridor | 43.7682028°N 11.2540472°E | The corridor is several hundred metres long; the coordinates are the page marker point
@@ -60,10 +60,10 @@ Siena Cathedral |  | en:Siena_Cathedral | 43.3177°N 11.3290°E |
 Basilica Palladiana |  | en:Basilica_Palladiana | 45.5470°N 11.5466°E | 
 Il Redentore |  | en:Il_Redentore | 45.4249917°N 12.3324528°E | 
 San Miniato al Monte |  | it:Basilica_di_San_Miniato_al_Monte | 43.759758,11.264731 | 
-Villa Capra（La Rotonda） |  | en:Villa_La_Rotonda | 45.5315°N 11.5603°E | 
-Palladio 的別墅群 | Villa Barbaro（Maser） | en:Villa_Barbaro | 45.8122°N 11.9764°E | 
-Palladio 的別墅群 | Villa Badoer（Fratta Polesine） | en:Villa_Badoer | 45.0303528°N 11.6398611°E | 
-Palladio 的別墅群 | Villa Foscari（Malcontenta） | en:Villa_Foscari | 45.43528°N 12.20111°E | 
+Villa Capra (La Rotonda) |  | en:Villa_La_Rotonda | 45.5315°N 11.5603°E | 
+Palladio's Villas | Villa Barbaro（Maser） | en:Villa_Barbaro | 45.8122°N 11.9764°E | 
+Palladio's Villas | Villa Badoer（Fratta Polesine） | en:Villa_Badoer | 45.0303528°N 11.6398611°E | 
+Palladio's Villas | Villa Foscari（Malcontenta） | en:Villa_Foscari | 45.43528°N 12.20111°E | 
 Santa Maria della Salute |  | en:Santa_Maria_della_Salute | 45.43083°N 12.33444°E | 
 Parma Baptistery |  | en:Parma_Baptistery | 44.80308°N 10.33041°E | 
 Castel del Monte |  | en:Castel_del_Monte,_Apulia | 41.0847535°N 16.2709346°E | 
@@ -118,16 +118,16 @@ Guggenheim Museum New York |  | en:Solomon_R._Guggenheim_Museum | 40.78306°N 73
 Müller House |  | en:Villa_Müller | 50.09250°N 14.37833°E | 
 Lloyd's Building |  | en:Lloyd's_building | 51.51306°N 0.082361°W | 
 Grand Court |  | en:Queen_Elizabeth_II_Great_Court | 51.51944°N 0.12694°W | Inside the British Museum
-Reichstag（玻璃穹頂） |  | en:Reichstag_building | 52.51861°N 13.37611°E | 
+Reichstag (Glass Dome) |  | en:Reichstag_building | 52.51861°N 13.37611°E | 
 Jewish Museum Berlin |  | en:Jewish_Museum_Berlin | 52.502°N 13.395°E | 
 Guggenheim Museum Bilbao |  | en:Guggenheim_Museum_Bilbao | 43.26861°N 2.93389°W | 
 Nakagin Capsule Tower |  | en:Nakagin_Capsule_Tower | 35.6656111°N 139.7633889°E | Building demolished in 2022; the coordinates are the original site
 Secession Building |  | en:Secession_Building | 48.2005167°N 16.3656750°E | 
-Bauhaus Dessau 校舍 |  | en:Bauhaus_Dessau | 51.8432°N 12.2205°E | Page marker point; may be several hundred metres from the building; to be verified
+Bauhaus Dessau Building |  | en:Bauhaus_Dessau | 51.8432°N 12.2205°E | Page marker point; may be several hundred metres from the building; to be verified
 AEG Turbine Factory |  | de:AEG-Turbinenfabrik | 52.5282 N, 13.3245 E | 
 The Gherkin |  | en:The_Gherkin | 51.51444°N 0.08028°W | 
 Königsplatz |  | de:Königsplatz_(München) | 48.145752777778 N, 11.565375 E | 
-Mediolanum 皇宮區、Circo、Thermae Herculeae |  | en:Milan | 45.46694°N 9.19000°E | Approximate: central Milan, not the actual location of the buildings
+Mediolanum Imperial Palace District, Circo, Thermae Herculeae |  | en:Milan | 45.46694°N 9.19000°E | Approximate: central Milan, not the actual location of the buildings
 Dancing House |  | en:Dancing_House | 50.07556°N 14.41417°E | 
 Basilica di San Marco |  | en:Piazza_San_Marco | 45.43389°N 12.33806°E | Coordinates taken from the containing square page
 Valle dei Templi |  | en:Temple_of_Concordia | NONE | Page has no coordinates
@@ -143,12 +143,12 @@ Casa Galimberti／Palazzo Castiglioni | Palazzo Castiglioni | url:https://travel
 Asilo Sant'Elia |  | url:https://aroundus.com/p/8132223-asilo-sant-elia | 45.79849,9.08866 | coordinates taken from Aroundus
 QT8 |  | url:https://audiala.com/en/italy/milan/qt8 | 45.486,9.13718 | coordinates taken from Audiala (map link of the QT8 page)
 Gallaratese Quarter |  | url:https://bamwor.com/en/countries/italy/cities/gallaratese | 45.4959,9.1121 | coordinates taken from Bamwor (Gallaratese district)
-Palazzo dell'Arte（Triennale） |  | url:https://aroundus.com/p/8130801- | 45.47216,9.17350 | coordinates taken from Aroundus (Triennale di Milano)
-Ospedale degli Innocenti（Foundling Hospital） |  | en:Ospedale_degli_Innocenti | NONE | Page has no coordinates
+Palazzo dell'Arte (Triennale) |  | url:https://aroundus.com/p/8130801- | 45.47216,9.17350 | coordinates taken from Aroundus (Triennale di Milano)
+Ospedale degli Innocenti (Foundling Hospital) |  | en:Ospedale_degli_Innocenti | NONE | Page has no coordinates
 Palazzo Rucellai |  | en:Palazzo_Rucellai | NONE | Page has no coordinates
 Palazzo Gondi |  | url:https://aroundus.com/p/8125110-palazzo-gondi | 43.76972,11.25722 | coordinates taken from Aroundus
 Laurentian Library |  | en:Laurentian_Library | NONE | Page has no coordinates
-Palladio 的別墅群 | Villa Pojana | en:Villa_Pojana | NONE | Page has no coordinates
+Palladio's Villas | Villa Pojana | en:Villa_Pojana | NONE | Page has no coordinates
 Museo Castelvecchio |  | url:https://latitude.to/articles-by-country/it/italy/32594/castelvecchio-museum | 45.4373,10.9860 | coordinates taken from latitude.to
 Basilica di San Francesco d'Assisi |  | url:https://latitude.to/articles-by-country/it/italy/6702/basilica-of-san-francesco-dassisi | 43.0715,12.6033 | coordinates taken from latitude.to
 Villa Farnese |  | en:Villa_Farnese | NONE | Page has no coordinates
@@ -158,7 +158,7 @@ Basilica of Saint-Denis |  | en:Basilica_of_St_Denis | NONE | Page has no coordi
 Notre-Dame de Mantes-la-Jolie |  | url:https://travel.sygic.com/en/poi/notre-dame-de-mantes-poi:4841495 | 48°59′25.14″N 1°43′13.201″E | coordinates taken from Sygic Travel
 Basilique du Sacré-Cœur |  | en:Sacré-Cœur,_Paris | NONE | Page has no coordinates
 Bibliothèque Sainte-Geneviève |  | url:https://travel.sygic.com/en/poi/sainte-genevieve-library-poi:54976 | 48°50′49.738″N 2°20′45.576″E | coordinates taken from Sygic Travel
-Notre-Dame-du-Haut（Ronchamp） |  | url:https://latitude.to/articles-by-country/fr/france/7548/notre-dame-du-haut | 47.7023,6.6193 | coordinates taken from latitude.to
+Notre-Dame-du-Haut (Ronchamp) |  | url:https://latitude.to/articles-by-country/fr/france/7548/notre-dame-du-haut | 47.7023,6.6193 | coordinates taken from latitude.to
 Centre Pompidou |  | en:Centre_Pompidou | NONE | Page has no coordinates
 Bibliothèque nationale de France |  | en:Bibliothèque_nationale_de_France | NONE | Page has no coordinates
 Louvre Abu Dhabi |  | en:Louvre_Abu_Dhabi | NONE | Page has no coordinates
@@ -180,7 +180,7 @@ Vanna Venturi House |  | en:Vanna_Venturi_House | 40.0707°N 75.2081°W | Supple
 Polimi Campus Nord |  | en:Milano_Bovisa_railway_station | 45.5025°N 9.15917°E | Approximate; represented by Milano Bovisa station (serving the Bovisa campus); Renzo Piano's Campus Nord is in the Goccia area of Bovisa; coordinates of the campus itself not found
 Valle dei Templi |  | de:Tal_der_Tempel | 37.2897°N 13.5900°E | 
 Basilica of Saint-Denis |  | de:Basilika_Saint-Denis | 48.9354°N 2.3597°E | 
-Ospedale degli Innocenti（Foundling Hospital） |  | de:Ospedale_degli_Innocenti | 43.7762°N 11.2611°E | 
+Ospedale degli Innocenti (Foundling Hospital) |  | de:Ospedale_degli_Innocenti | 43.7762°N 11.2611°E | 
 Ca' Granda |  | de:Ospedale_Maggiore_(Mailand) | 45.4601°N 9.1944°E | 
 Palazzo Rucellai |  | de:Palazzo_Rucellai | 43.7713°N 11.2496°E | 
 Camera degli Sposi |  | de:Palazzo_Ducale_(Mantua) | 45.1603°N 10.7980°E | Coordinates taken from the containing Palazzo Ducale page
@@ -194,7 +194,7 @@ Centre Pompidou |  | de:Centre_Pompidou | 48.8606°N 2.3522°E |
 Bibliothèque nationale de France |  | de:Bibliothèque_nationale_de_France | 48.8336°N 2.3758°E | 
 Louvre Abu Dhabi |  | de:Louvre_Abu_Dhabi | 24.5336°N 54.3984°E | 
 London City Hall |  | de:City_Hall_(London) | 51.5047°N 0.0783°W | 
-Palladio 的別墅群 | Villa Pojana | de:Villa_Pojana | 45.2854°N 11.4983°E | 
+Palladio's Villas | Villa Pojana | de:Villa_Pojana | 45.2854°N 11.4983°E | 
 Colònia Güell | | de:Colònia_Güell | 41.3611°N 2.0294°E | 
 Nevsky Prospect |  | en:Nevsky_Prospect | 59°55′54″N 30°21′10″E | approximate: a linear street; point taken from the article page
 North Doors, Florence Baptistery |  | en:Florence_Baptistery | 43°46′23″N 11°15′18″E | taken from the containing building page

@@ -226,7 +226,7 @@ export default function MapApp() {
 
       <main className="stage">
         <button type="button" className="fullmap" onClick={() => showFullMap()}>Full map</button>
-        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} />
+        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} onDeselect={() => setSelectedId('')} />
         {selected && (
           <DetailPanel
             place={selected}
@@ -244,7 +244,7 @@ export default function MapApp() {
       </main>
 
       <footer className="credits">
-        <span>Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.</span>
+        <span className="credits-note"><span className="credits-base">Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. </span>Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.</span>
         <span className="credits-map">OpenFreeMap © OpenMapTiles Data from OpenStreetMap</span>
       </footer>
       <nav className="tabs" aria-label="View switch">

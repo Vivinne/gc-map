@@ -284,3 +284,14 @@ export function edgeMarkersExpanding(items: readonly (EdgeItem & { dist: number 
     if (m.length || r >= maxDist) return m;
   }
 }
+
+/** True when the point lies inside the view that has this centre and zoom in a w x h px map (Web Mercator, 512 px tiles as in MapLibre) */
+export function viewContainsPoint(center: { lng: number; lat: number }, zoom: number, w: number, h: number, pt: { lng: number; lat: number }): boolean {
+  const world = 512 * 2 ** zoom;
+  const my = (lat: number) => (0.5 - Math.log(Math.tan(Math.PI / 4 + (Math.max(-85, Math.min(85, lat)) * Math.PI) / 360)) / (2 * Math.PI)) * world;
+  let dLng = pt.lng - center.lng;
+  dLng = ((((dLng + 180) % 360) + 360) % 360) - 180;
+  const dx = (dLng / 360) * world;
+  const dy = my(pt.lat) - my(center.lat);
+  return Math.abs(dx) <= w / 2 && Math.abs(dy) <= h / 2;
+}

@@ -149,7 +149,7 @@ test('city circles: city from the handout location, count = buildings, region pl
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });
 
-import { edgeMarkers, edgeMarkersExpanding, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
+import { viewContainsPoint, edgeMarkers, edgeMarkersExpanding, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
 test('densestCenter picks the middle of the most crowded group', () => {
   assert.equal(densestCenter([]), null);
   // three buildings within 300 m, one 20 km away: the centre is the middle of the three
@@ -193,4 +193,12 @@ test('edgeMarkersExpanding: 150 km first, doubles when nothing is found', () => 
   assert.deepEqual(edgeMarkersExpanding([mid, far], 1000, 600).map((m) => m.key), ['mid']);
   assert.deepEqual(edgeMarkersExpanding([far], 1000, 600).map((m) => m.key), ['far']);
   assert.deepEqual(edgeMarkersExpanding([], 1000, 600), []);
+});
+
+test('viewContainsPoint: 1 km scale view of 1000 x 600 px', () => {
+  const z = zoomForMetersPerPixel(41.9, SCALE_1KM_MPP);
+  const c = { lng: 12.49, lat: 41.9 };
+  assert.ok(viewContainsPoint(c, z, 1000, 600, { lng: 12.5, lat: 41.9 })); // about 0.8 km east
+  assert.ok(!viewContainsPoint(c, z, 1000, 600, { lng: 13.0, lat: 41.9 })); // about 38 km east
+  assert.ok(!viewContainsPoint(c, z, 1000, 600, { lng: 12.49, lat: 41.95 })); // about 5.5 km north
 });
