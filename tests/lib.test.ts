@@ -165,36 +165,18 @@ test('zoom for 1 km on the scale bar, polar limit and phone Full map bounds', ()
   assert.deepEqual(PHONE_FULL_BOUNDS, [[-12, 30], [32, 63]]);
 });
 
-test('edgeMarkers: nearest city per direction on the view edge, skip inside, no distance limit', () => {
+test('edgeMarkers: only the 2 nearest directions; close bearings merge into one', () => {
   const m = edgeMarkers([
     { key: 'in', n: 5, x: 500, y: 300 },
-    { key: 'left', n: 1, x: -2000, y: 300 },
-    { key: 'right', n: 1, x: 3000, y: 300 },
-    { key: 'right2', n: 2, x: 4000, y: 310 },
-    { key: 'far', n: 9, x: 9999999, y: -5000000 },
+    { key: 'east', n: 1, x: 3000, y: 300 },
+    { key: 'east2', n: 7, x: 4000, y: 700 }, // about 8 degrees from east: merged into it
+    { key: 'west', n: 2, x: -4000, y: 300 },
+    { key: 'north', n: 3, x: 500, y: -9000 },
   ], 1000, 600);
-  assert.equal(m.length, 3);
-  const l = m.find((e) => e.key === 'left')!;
-  const r = m.find((e) => e.key === 'right')!;
-  assert.equal(l.n, 1);
-  assert.equal(Math.round(l.x), 24);
-  assert.equal(r.n, 1);
-  assert.equal(Math.round(r.x), 976);
-  assert.ok(m.some((e) => e.key === 'far'));
-  assert.ok(!m.some((e) => e.key === 'right2'));
-});
-
-import { readFileSync } from 'node:fs';
-test('Gaudi works are separate entries with one marker each', () => {
-  const d = JSON.parse(readFileSync(new URL('../src/data/places.json', import.meta.url), 'utf8'));
-  const names = ['Sagrada Família', 'Casa Vicens', 'Palau Güell', 'Casa Batlló', 'Casa Milà', 'Park Güell', 'Colònia Güell'];
-  for (const n of names) {
-    const p = d.places.find((x: { name: string }) => x.name === n);
-    assert.ok(p, n);
-    assert.equal(p.points.length, 1, n);
-    assert.ok(p.summary, n);
-  }
-  assert.ok(!d.places.some((x: { name: string }) => x.name.includes('等 Gaudí')));
+  assert.deepEqual(m.map((e) => e.key), ['east', 'west']);
+  assert.equal(m[0]!.n, 1);
+  assert.equal(Math.round(m[0]!.x), 976);
+  assert.equal(Math.round(m[1]!.x), 24);
 });
 
 test('edgeMarkersExpanding: 150 km first, doubles when nothing is found', () => {

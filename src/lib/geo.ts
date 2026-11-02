@@ -230,27 +230,27 @@ export interface EdgeMarker {
 }
 
 /**
- * Markers for cities outside the view, one per direction: the 360 degrees around the view centre are split into `sectors` equal sectors and the nearest
- * city of each sector gets a marker on the viewport edge (inset px inside it) at its bearing, labelled with that city's number of buildings.
- * There is no distance limit, so a marker always points to the nearest buildings however far away they are.
+ * Markers for cities outside the view: only the nearest `max` directions. Cities are taken nearest first; a city whose bearing from the view centre is within
+ * `mergeDeg` of one already taken counts as the same direction and is merged into it (the nearer city's marker stays). Each marker sits on the viewport edge
+ * (inset px inside it) at its bearing and is labelled with that city's number of buildings. There is no distance limit here (the caller limits it).
  */
-export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 24, sectors = 12): EdgeMarker[] {
+export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 24, max = 2, mergeDeg = 45): EdgeMarker[] {
   const cx = w / 2;
   const cy = h / 2;
-  const best = new Map<number, EdgeMarker & { d: number }>();
-  for (const it of items) {
-    if (it.x >= 0 && it.x <= w && it.y >= 0 && it.y <= h) continue;
-    const dx = it.x - cx;
-    const dy = it.y - cy;
-    const d = Math.hypot(dx, dy);
-    if (!Number.isFinite(d) || d === 0) continue;
-    const sector = Math.floor(((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI)) * sectors) % sectors;
-    const cur = best.get(sector);
-    if (cur && cur.d <= d) continue;
+  const out: (EdgeMarker & { a: number })[] = [];
+  const outside = items
+    .filter((it) => !(it.x >= 0 && it.x <= w && it.y >= 0 && it.y <= h))
+    .map((it) => ({ it, dx: it.x - cx, dy: it.y - cy, d: Math.hypot(it.x - cx, it.y - cy) }))
+    .filter((o) => Number.isFinite(o.d) && o.d > 0)
+    .sort((p, q) => p.d - q.d);
+  for (const { it, dx, dy } of outside) {
+    if (out.length >= max) break;
+    const a = (Math.atan2(dy, dx) * 180) / Math.PI;
+    if (out.some((o) => Math.abs(((a - o.a + 540) % 360) - 180) < mergeDeg)) continue;
     const k = Math.min((cx - inset) / Math.abs(dx || 1e-9), (cy - inset) / Math.abs(dy || 1e-9));
-    best.set(sector, { key: it.key, n: it.n, x: cx + dx * k, y: cy + dy * k, d });
+    out.push({ key: it.key, n: it.n, x: cx + dx * k, y: cy + dy * k, a });
   }
-  return [...best.values()].map(({ key, n, x, y }) => ({ key, n, x, y }));
+  return out.map(({ key, n, x, y }) => ({ key, n, x, y }));
 }
 
 /** Edge markers show cities within this distance (m) of the view centre first */
