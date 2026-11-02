@@ -148,3 +148,19 @@ test('city circles: city from the handout location, count = buildings, region pl
   assert.equal(cityClickZoom(14), 14);
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });
+
+import { PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
+test('densestCenter picks the middle of the most crowded group', () => {
+  assert.equal(densestCenter([]), null);
+  // three buildings within 300 m, one 20 km away: the centre is the middle of the three
+  const c = densestCenter([{ lng: 12.4900, lat: 41.9000 }, { lng: 12.4920, lat: 41.9010 }, { lng: 12.4910, lat: 41.9020 }, { lng: 12.7, lat: 42.0 }])!;
+  assert.ok(Math.abs(c.lng - 12.4910) < 1e-4 && Math.abs(c.lat - 41.9010) < 1e-4, JSON.stringify(c));
+  // a single point is its own centre
+  assert.deepEqual(densestCenter([{ lng: 8.54, lat: 47.37 }]), { lng: 8.54, lat: 47.37 });
+});
+test('zoom for 1 km on the scale bar, polar limit and phone Full map bounds', () => {
+  const z = zoomForMetersPerPixel(45, SCALE_1KM_MPP);
+  assert.ok(Math.abs((78271.517 * Math.cos((45 * Math.PI) / 180)) / 2 ** z - SCALE_1KM_MPP) < 1e-9);
+  assert.equal(POLAR_LAT, 66.5);
+  assert.deepEqual(PHONE_FULL_BOUNDS, [[-12, 30], [32, 63]]);
+});

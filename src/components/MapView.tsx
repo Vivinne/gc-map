@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, SAME_SPOT_ZOOM, boundsOfCoords, cityClickZoom, coordKey, isSameSpot, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, SCALE_1KM_MPP, boundsOfCoords, coordKey, densestCenter, isSameSpot, zoomForMetersPerPixel, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
@@ -53,7 +53,7 @@ const MAX_FOOTPRINT_M2 = 150000;
 
 export type FocusTarget =
   | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; nonce: number }
-  | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; nonce: number };
+  | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; /** Fit exactly these bounds with almost no margin */ exact?: boolean; nonce: number };
 
 interface Props {
   fc: PointCollection;
@@ -109,6 +109,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       style: STYLE_URL,
       center: [12.5, 43.5],
       zoom: 4.2,
+      maxBounds: [[-180, -POLAR_LAT], [180, POLAR_LAT]], // no polar regions
       attributionControl: { compact: true },
     });
     mapRef.current = map;
@@ -216,14 +217,24 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
           if (pids.length > 1) latest.current.onPick(pids);
           return;
         }
-        const el = map.getContainer();
-        const pad = merged ? Math.round(Math.min(el.clientWidth, el.clientHeight) * UNION_PAD) : 80;
-        const cam = map.cameraForBounds(b, { padding: pad, maxZoom: 17 });
-        const center = cam?.center ?? [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2];
-        if (!merged) return map.easeTo({ center, zoom: cityClickZoom(cam?.zoom ?? 0), duration: 600 });
-        // Merged circle: show the union of its cities (no minimum zoom, the members may be far apart); always zoom in at least a little
-        const zoom = Math.max(cam?.zoom ?? 0, map.getZoom() + 0.5);
-        map.easeTo({ center, zoom, duration: 600 });
+        // A number was clicked: go to the middle of the most crowded group of its buildings, at a scale of 1 km on the scale bar
+        const goDensest = (pids: string[]) => {
+          const set = new Set(pids);
+          const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
+          const c = densestCenter(pts) ?? { lng: (b[0][0] + b[1][0]) / 2, lat: (b[0][1] + b[1][1]) / 2 };
+          map.easeTo({ center: [c.lng, c.lat], zoom: Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)), duration: 600 });
+        };
+        const pidsOf = (v: unknown): string[] => {
+          try {
+            return JSON.parse(String(v ?? '[]')) as string[];
+          } catch {
+            return [];
+          }
+        };
+        if (!merged) return goDensest(pidsOf(pr.pids));
+        const src = map.getSource(CITY_SOURCE) as GeoJSONSource | undefined;
+        if (!src) return goDensest([]);
+        src.getClusterLeaves(Number(pr.cluster_id), 1000, 0).then((ls) => goDensest(ls.flatMap((l) => pidsOf((l.properties as Record<string, unknown> | null)?.pids)))).catch(() => goDensest([]));
       };
       map.on('click', 'cities', cityClick);
       for (const id of ['cities', 'points', 'points-few']) {
@@ -335,6 +346,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       const zoom = Math.log2((78271.517 * Math.cos((focus.lat * Math.PI) / 180)) / mpp);
       map.flyTo({ center: [focus.lng, focus.lat], zoom: Math.min(Math.max(zoom, 1), 19), essential: true });
     }
+    else if (focus.exact) map.fitBounds(focus.bounds, { padding: 4, maxZoom: 16, duration: 700 });
     else if (focus.blendWith && map.cameraForBounds) {
       // Halfway between "fit everything" and the given reference view (less zoomed out than a full fit)
       const all = map.cameraForBounds(focus.bounds, { padding: 120 });

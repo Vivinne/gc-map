@@ -221,9 +221,11 @@ async function open({ pinned = true, fallback = true } = {}) {
   ok('Scale bar (metric) added');
   await page.evaluate(() => { window.__fake.map.zoom = 4; });
 
-  // City click 1: zoom to the bounds of the city's buildings, just past the switch zoom; no chooser
+  // City click 1: a number goes to the middle of the most crowded group of that city's buildings, scale bar 1 km; no chooser
   await page.keyboard.press('Escape');
-  const city = (o) => ({ properties: { city: 'X', n: 3, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: JSON.stringify(['a', 'b', 'c']), ...o } });
+  const romePids = data.places.filter((p) => p.points.some((pt) => pt.lng > 12.4 && pt.lng < 12.6 && pt.lat > 41.8 && pt.lat < 42)).map((p) => p.id);
+  assert.ok(romePids.length > 10, 'Rome buildings found in the data: ' + romePids.length);
+  const city = (o) => ({ properties: { city: 'X', n: 3, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: JSON.stringify(romePids), ...o } });
   await page.evaluate((h) => {
     window.__fake.hits = [h];
     window.__fake.ease = null;
@@ -231,23 +233,25 @@ async function open({ pinned = true, fallback = true } = {}) {
   }, city());
   await page.waitForFunction(() => window.__fake.ease);
   const e1 = await page.evaluate(() => window.__fake.ease);
-  assert.ok(e1.zoom >= 11, String(e1.zoom));
-  assert.ok(Math.abs(e1.center[0] - 12.475) < 1e-6 && Math.abs(e1.center[1] - 41.915) < 1e-6, JSON.stringify(e1.center));
+  const mpp = (z, lat) => (78271.517 * Math.cos((lat * Math.PI) / 180)) / 2 ** z;
+  assert.ok(Math.abs(mpp(e1.zoom, e1.center[1]) - 9.8) < 0.01, 'Scale 1 km on the scale bar: ' + mpp(e1.zoom, e1.center[1]));
+  assert.ok(e1.zoom > 10.5, 'Past the switch zoom: ' + e1.zoom);
+  assert.ok(e1.center[0] > 12.4 && e1.center[0] < 12.6 && e1.center[1] > 41.8 && e1.center[1] < 42, JSON.stringify(e1.center));
   assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
-  ok('City click -> zooms to the bounds of the city, past the switch zoom');
+  ok('City number click -> centre of the most crowded group of its buildings, scale 1 km');
 
-  // City click: merged circle (several close cities) -> fit their united bounds and split them apart
-  await page.evaluate((h) => {
-    window.__fake.expansion = 13;
-    window.__fake.hits = [h];
+  // City click: merged circle (several close cities) -> the same, over the buildings of all its cities
+  await page.evaluate((o) => {
+    window.__fake.leaves = [{ properties: { pids: JSON.stringify(o.ids), vpids: '[]' } }];
+    window.__fake.hits = [o.h];
     window.__fake.ease = null;
     window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } });
-  }, city({ cluster: true, cluster_id: 4, point_count: 4, n: 29, w: 7.6, s: 45.15, e: 10.8, nn: 47.6, xw: 7.6, xs: 45.15, xe: 10.8, xn: 47.6 }));
+  }, { ids: romePids, h: city({ cluster: true, cluster_id: 4, point_count: 4, n: 29, w: 7.6, s: 45.15, e: 10.8, nn: 47.6, xw: 7.6, xs: 45.15, xe: 10.8, xn: 47.6 }) });
   await page.waitForFunction(() => window.__fake.ease);
   const e3 = await page.evaluate(() => window.__fake.ease);
-  assert.ok(e3.zoom > 4.4 && e3.zoom < 8, String(e3.zoom));
-  assert.ok(Math.abs(e3.center[0] - 9.2) < 1e-6 && Math.abs(e3.center[1] - 46.375) < 1e-6, JSON.stringify(e3.center));
-  ok('Merged circle click -> fits the union of its cities (no minimum zoom of a single city)');
+  assert.ok(Math.abs(mpp(e3.zoom, e3.center[1]) - 9.8) < 0.01, 'Scale 1 km: ' + mpp(e3.zoom, e3.center[1]));
+  assert.ok(e3.center[0] > 12.4 && e3.center[0] < 12.6 && e3.center[1] > 41.8 && e3.center[1] < 42, JSON.stringify(e3.center));
+  ok('Merged circle number click -> centre of the most crowded group among all its buildings, scale 1 km');
 
   // City click 3: identical coordinates -> deepest zoom and the chooser list
   await page.evaluate((h) => {

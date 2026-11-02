@@ -397,7 +397,7 @@ ok('Detail panel drags by its heading block, stays within the map, keeps its pos
 
 // Collapsible building list (desktop)
 const sideW = () => page.evaluate(() => document.querySelector('.side').getBoundingClientRect().width);
-assert.ok(Math.abs((await sideW()) - 197) <= 1, 'Tag panel is 197 px wide (2/3 of the former 296 px) ' + (await sideW()));
+assert.ok(Math.abs((await sideW()) - 230) <= 1, 'Tag panel is 230 px wide ' + (await sideW()));
 assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.side')).position), 'absolute', 'The tag panel floats over the map');
 await page.click('.menu-btn');
 await page.waitForTimeout(100);
@@ -409,7 +409,7 @@ const stageW = await page.evaluate(() => document.querySelector('.stage').getBou
 assert.ok(stageW >= 1200, String(stageW));
 await page.click('.menu-btn');
 await page.waitForTimeout(100);
-assert.ok(Math.abs((await sideW()) - 197) <= 1);
+assert.ok(Math.abs((await sideW()) - 230) <= 1);
 ok('Building list collapses to give the map the full width, and expands again');
 
 // Plain-text rendering (HTML is not executed)
@@ -420,15 +420,18 @@ ok('No injected nodes');
 // URL restore
 const p2 = await newPage({ width: 1280, height: 800 });
 await p2.goto(page_url + '#p=maxxi-rome&t=s:modern&q=hadid');
-await p2.waitForSelector('[data-testid=detail]');
-assert.equal((await p2.textContent('[data-testid=detail] h2')).trim(), 'MAXXI');
+await p2.waitForSelector('.tag-toggle');
+// A reload starts with the building panel closed, and the selection is dropped from the address
+assert.equal(await p2.locator('[data-testid=detail]').count(), 0, 'Reload closes the building panel');
+assert.ok(!(await p2.evaluate(() => window.location.hash)).includes('p='), 'The selection is removed from the address');
 // Groups start collapsed; the checked count shows on the button and opening it shows the checked tag
 assert.equal(await p2.locator('.tag-item').count(), 0);
 assert.equal((await p2.textContent('[data-testid=checked-styles]')).trim(), '1');
 await p2.click('.tag-toggle:has-text("Styles")');
 assert.equal(await p2.locator('.tag-item[data-checked=true]').textContent().then((t) => /Modern/.test(t)), true);
 assert.equal(await p2.inputValue('.search'), 'hadid');
-ok('URL hash restores selection / era / search; a collapsed group shows its checked count');
+assert.equal(await p2.getAttribute('.search', 'placeholder'), 'Search', 'Search placeholder');
+ok('URL hash restores era / search (not the selection: a reload closes the building panel); a collapsed group shows its checked count');
 await p2.close();
 
 // ---------- Mobile ----------
@@ -451,6 +454,12 @@ const box = await m.locator('[data-testid=detail]').boundingBox();
 assert.ok(box.width >= 388 && box.y > 0, JSON.stringify(box));
 ok('Mobile: tab switch, picking from the list returns to the map and shows the bottom panel');
 await m.screenshot({ path: resolve(shots, 'mobile-detail.png') });
+await m.click('.tabs button:has-text("Map")');
+await m.keyboard.press('Escape'); // the bottom panel covers the button
+await m.click('.fullmap');
+const fm = await m.evaluate(() => window.__map.focus);
+assert.deepEqual([fm.kind, fm.exact, fm.bounds], ['bounds', true, [[-12, 30], [32, 63]]], 'Phone Full map = Spain..Ukraine, Algeria..Scandinavia ' + JSON.stringify(fm));
+ok('Phone: Full map shows Europe (Scandinavia to Algeria, Spain to Ukraine)');
 const overflow = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
 assert.equal(overflow, false);
 ok('No horizontal scrolling on mobile');

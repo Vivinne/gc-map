@@ -3,7 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { dataset, unlocated } from '../lib/data';
 import { filterPlaces } from '../lib/filter';
-import { HOME_BOUNDS, boundsOf, toCityCollection, toFeatureCollection } from '../lib/geo';
+import { HOME_BOUNDS, PHONE_FULL_BOUNDS, boundsOf, toCityCollection, toFeatureCollection } from '../lib/geo';
 import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
@@ -20,7 +20,7 @@ export default function MapApp() {
   const [sideOpen, setSideOpen] = useState(true);
   const [tags, setTags] = useState<ReadonlySet<string>>(() => new Set(init.t));
   const [q, setQ] = useState(init.q);
-  const [selectedId, setSelectedId] = useState(placesById.has(init.p) ? init.p : '');
+  const [selectedId, setSelectedId] = useState(''); // a reload starts with the building panel closed
   const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(new Set());
   const [choices, setChoices] = useState<string[]>([]);
   const [tab, setTab] = useState<Tab>('map');
@@ -103,7 +103,9 @@ export default function MapApp() {
     const b = boundsOf(dataset.places);
     if (!b) return;
     nonce.current += 1;
-    setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, nonce: nonce.current });
+    // Phone: a fixed view of Europe (Scandinavia to Algeria, Spain to Ukraine); desktop: halfway between the Europe view and a fit of every marker
+    if (window.matchMedia('(max-width: 900px)').matches) setFocus({ kind: 'bounds', bounds: PHONE_FULL_BOUNDS, exact: true, nonce: nonce.current });
+    else setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, nonce: nonce.current });
     setSelectedId(''); // the building panel closes
     setChoices([]);
     setTab('map');
@@ -169,7 +171,7 @@ export default function MapApp() {
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search building, place, architect"
+            placeholder="Search"
             aria-label="Search"
           />
           {groups.map((g) => {

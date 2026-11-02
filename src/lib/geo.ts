@@ -29,6 +29,45 @@ export function toFeatureCollection(places: readonly Place[], eras: readonly Era
 /** Default view when no filter is applied (Spain to Istanbul, UK to Sicily) */
 export const HOME_BOUNDS: [[number, number], [number, number]] = [[-8, 36], [29.5, 55]];
 
+/** Full map on a phone: top = half of the Scandinavian peninsula, bottom = Algeria, left = Spain and a little open sea, right = the middle of Ukraine; Europe stays centred */
+export const PHONE_FULL_BOUNDS: [[number, number], [number, number]] = [[-12, 30], [32, 63]];
+
+/** The map never shows the polar regions: latitude is limited to the polar circles */
+export const POLAR_LAT = 66.5;
+
+/** Metres per CSS pixel at which the scale bar (100 px wide at most) reads exactly 1 km */
+export const SCALE_1KM_MPP = 9.8;
+
+/** Zoom level (512 px tiles) that shows `mpp` metres per CSS pixel at the given latitude */
+export function zoomForMetersPerPixel(lat: number, mpp: number): number {
+  return Math.log2((78271.517 * Math.cos((lat * Math.PI) / 180)) / mpp);
+}
+
+/**
+ * Centre of the most crowded group of points: for every point the points within `radiusM` metres are counted; the point with the most neighbours wins
+ * (ties: the tighter group), and the centre is the mean of that group. null when there are no points.
+ */
+export function densestCenter(pts: readonly { lng: number; lat: number }[], radiusM = 500): { lng: number; lat: number } | null {
+  if (!pts.length) return null;
+  const R = 6371008.8;
+  const dist = (a: { lng: number; lat: number }, b: { lng: number; lat: number }) => {
+    const x = ((b.lng - a.lng) * Math.PI) / 180 * Math.cos((((a.lat + b.lat) / 2) * Math.PI) / 180);
+    const y = ((b.lat - a.lat) * Math.PI) / 180;
+    return Math.hypot(x, y) * R;
+  };
+  let best: { lng: number; lat: number }[] = [];
+  let bestSum = Infinity;
+  for (const p of pts) {
+    const near = pts.filter((q) => dist(p, q) <= radiusM);
+    const sum = near.reduce((n, q) => n + dist(p, q), 0);
+    if (near.length > best.length || (near.length === best.length && sum < bestSum)) {
+      best = near;
+      bestSum = sum;
+    }
+  }
+  return { lng: best.reduce((n, q) => n + q.lng, 0) / best.length, lat: best.reduce((n, q) => n + q.lat, 0) / best.length };
+}
+
 /** [[west, south], [east, north]]; returns null when there are no points */
 export function boundsOf(places: readonly Place[]): [[number, number], [number, number]] | null {
   let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
