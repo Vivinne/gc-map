@@ -222,7 +222,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   ok('Scale bar (metric) added');
   await page.evaluate(() => { window.__fake.map.zoom = 4; });
 
-  // City click 1: a number goes to the middle of the most crowded group of that city's buildings (1st click middle level, 2nd click scale bar 1 km); no chooser
+  // City click 1: a number goes to the middle of the most crowded group of that city's buildings, scale bar 1 km; no chooser
   await page.keyboard.press('Escape');
   const romePids = data.places.filter((p) => p.points.some((pt) => pt.lng > 12.4 && pt.lng < 12.6 && pt.lat > 41.8 && pt.lat < 42)).map((p) => p.id);
   assert.ok(romePids.length > 10, 'Rome buildings found in the data: ' + romePids.length);
@@ -235,27 +235,14 @@ async function open({ pinned = true, fallback = true } = {}) {
   await page.waitForFunction(() => window.__fake.ease);
   const e1 = await page.evaluate(() => window.__fake.ease);
   const mpp = (z, lat) => (78271.517 * Math.cos((lat * Math.PI) / 180)) / 2 ** z;
-  assert.equal(e1.zoom, 9.5, 'First click -> middle level: ' + e1.zoom);
-  assert.ok(e1.zoom < 10.5, 'Numbers are still shown at the middle level');
+  assert.ok(Math.abs(mpp(e1.zoom, e1.center[1]) - 9.8) < 0.01, 'Scale 1 km on the scale bar: ' + mpp(e1.zoom, e1.center[1]));
+  assert.ok(e1.zoom > 10.5, 'Past the switch zoom: ' + e1.zoom);
   assert.ok(e1.center[0] > 12.4 && e1.center[0] < 12.6 && e1.center[1] > 41.8 && e1.center[1] < 42, JSON.stringify(e1.center));
-  ok('City number, first click -> middle level (9.5) on the most crowded group');
-  // Second click on the number (now at the middle level) -> scale bar 1 km
-  await page.evaluate((h) => {
-    window.__fake.map.zoom = 9.5;
-    window.__fake.hits = [h];
-    window.__fake.ease = null;
-    window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } });
-  }, city());
-  await page.waitForFunction(() => window.__fake.ease);
-  const e2 = await page.evaluate(() => window.__fake.ease);
-  assert.ok(Math.abs(mpp(e2.zoom, e2.center[1]) - 9.8) < 0.01, 'Scale 1 km on the scale bar: ' + mpp(e2.zoom, e2.center[1]));
-  assert.ok(e2.zoom > 10.5, 'Past the switch zoom: ' + e2.zoom);
   assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
-  ok('City number, second click -> scale 1 km');
+  ok('City number click -> centre of the most crowded group of its buildings, scale 1 km');
 
   // City click: merged circle (several close cities) -> the same, over the buildings of all its cities
   await page.evaluate((o) => {
-    window.__fake.map.zoom = 9.5;
     window.__fake.leaves = [{ properties: { pids: JSON.stringify(o.ids), vpids: '[]' } }];
     window.__fake.hits = [o.h];
     window.__fake.ease = null;
