@@ -23,6 +23,8 @@ const SOURCE = 'places';
 /** One numbered point per city; drawn below the city zoom, the single markers above it */
 const CITY_SOURCE = 'cities';
 const REGION_SOURCE = 'regions';
+/** A region number below this goes straight to the middle of its most crowded group when clicked */
+const REGION_DIRECT_N = 20;
 /** City circle radius (px, fixed); circles whose centres are closer than the diameter overlap, so they are merged (counts summed) */
 const CITY_RADIUS = 15;
 /** Circles stand for at least this many buildings; fewer are drawn as their own coloured dots (overlapping is fine) */
@@ -204,6 +206,8 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
       // Phone Full map (below REGION_TOP_ZOOM): one circle per region (Italy north / centre / south, France, the United Kingdom ...), no merging by distance
       map.addSource(REGION_SOURCE, { type: 'geojson', data: latest.current.regions as unknown as GeoData });
       map.addLayer({ id: 'regions', type: 'circle', source: REGION_SOURCE, maxzoom: REGION_TOP_ZOOM, paint: cityPaint });
+      // Buildings far from the middle of their region are not in its number: small coloured dots on the Full map
+      map.addLayer({ id: 'points-far', type: 'circle', source: SOURCE, maxzoom: REGION_TOP_ZOOM, filter: ['in', ['get', 'pid'], ['literal', latest.current.regions.outliers]], paint: dot });
       map.addLayer({ id: 'region-count', type: 'symbol', source: REGION_SOURCE, maxzoom: REGION_TOP_ZOOM, layout: countLayout, paint: { 'text-color': '#ffffff' } });
       map.addLayer({
         id: 'selected',
@@ -225,7 +229,7 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
             [x - 10, y - 10],
             [x + 10, y + 10],
           ],
-          { layers: ['points', 'points-few'] },
+          { layers: ['points', 'points-few', 'points-far'] },
         );
         if (!hits.length) return;
         // A click on a marker shows that building; when markers overlap, the one nearest to the click is picked (the first listed when they share a spot)
@@ -245,6 +249,7 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
       };
       map.on('click', 'points', pickAt);
       map.on('click', 'points-few', pickAt);
+      map.on('click', 'points-far', pickAt);
 
       // City click: zoom so that every building of the city is in view and drawn on its own
       const cityClick = (e: { point: { x: number; y: number } }) => {
@@ -288,10 +293,17 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
         if (!pr) return;
         const b: LngLatBounds = [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
         if (isSameSpot(b)) return easeAwayRef.current([b[0][0], b[0][1]], SAME_SPOT_ZOOM);
+        // Fewer than 20 buildings: straight to the middle of the most crowded group, at 1 km on the scale bar
+        if (Number(pr.n) < REGION_DIRECT_N) {
+          const ids = new Set(JSON.parse(String(pr.pids ?? '[]')) as string[]);
+          const pts = latest.current.fc.features.filter((f) => ids.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
+          const c = densestCenter(pts);
+          if (c) return easeAwayRef.current([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)));
+        }
         const cam = map.cameraForBounds(b, { padding: 40, maxZoom: 9 });
         if (cam?.center) easeAwayRef.current(cam.center as [number, number], Math.max(cam.zoom ?? REGION_TOP_ZOOM, REGION_TOP_ZOOM + 0.2));
       });
-      for (const id of ['cities', 'regions', 'points', 'points-few']) {
+      for (const id of ['cities', 'regions', 'points', 'points-few', 'points-far']) {
         map.on('mouseenter', id, () => (map.getCanvas().style.cursor = 'pointer'));
         map.on('mouseleave', id, () => (map.getCanvas().style.cursor = ''));
       }
@@ -342,6 +354,7 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
     (map.getSource(SOURCE) as GeoJSONSource | undefined)?.setData(fc as unknown as GeoData);
     (map.getSource(CITY_SOURCE) as GeoJSONSource | undefined)?.setData(cities as unknown as GeoData);
     (map.getSource(REGION_SOURCE) as GeoJSONSource | undefined)?.setData(regions as unknown as GeoData);
+    if (map.getLayer('points-far')) map.setFilter('points-far', ['in', ['get', 'pid'], ['literal', regions.outliers]]);
   }, [fc, cities, regions, ready]);
 
   // Selection ring

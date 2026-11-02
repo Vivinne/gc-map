@@ -254,3 +254,16 @@ test('toRegionCollection: Italy north / centre / south, France and the UK are se
   assert.equal(by['United Kingdom'], 1);
   assert.equal(Object.keys(by).filter((k) => k.startsWith('Others')).length, 2, 'Madrid and Seville join, Athens stays apart');
 });
+
+test('toRegionCollection: far buildings are drawn as dots and left out of the region number', async () => {
+  const { toRegionCollection } = await import('../src/lib/geo');
+  const pt = (lat: number, lng: number) => [{ id: 'p', sub: '', lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '' }];
+  const ps = [
+    mk({ id: 'paris', country: 'France', points: pt(48.9, 2.4) }), mk({ id: 'versailles', country: 'France', points: pt(48.8, 2.1) }), mk({ id: 'chartres', country: 'France', points: pt(48.4, 1.5) }),
+    mk({ id: 'reims', country: 'France', points: pt(49.3, 4.0) }), mk({ id: 'amiens', country: 'France', points: pt(49.9, 2.3) }), mk({ id: 'orleans', country: 'France', points: pt(47.9, 1.9) }),
+    mk({ id: 'marseille', country: 'France', points: pt(43.3, 5.4) }),
+  ];
+  const r = toRegionCollection(ps);
+  assert.deepEqual(r.outliers, ['marseille']);
+  assert.equal(r.features.find((f) => f.properties.region === 'France')!.properties.n, 6);
+});

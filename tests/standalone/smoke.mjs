@@ -90,7 +90,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 7);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 8);
   const f = await page.evaluate(() => ({
     
     cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
@@ -100,7 +100,7 @@ async function open({ pinned = true, fallback = true } = {}) {
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['points', 'points-few', 'cities', 'city-count', 'regions', 'region-count', 'selected']);
+  assert.deepEqual(f.layers, ['points', 'points-few', 'cities', 'city-count', 'regions', 'points-far', 'region-count', 'selected']);
   // Phone Full map: one circle per region (Italy north / centre / south, France, the United Kingdom ...), not merged by distance
   const reg = await page.evaluate(() => ({ src: window.__fake.sources.regions, layers: window.__fake.layers.filter((l) => l.id === 'regions' || l.id === 'region-count' || l.id === 'cities').map((l) => [l.id, l.minzoom ?? null, l.maxzoom ?? null]) }));
   assert.ok(!reg.src.cluster, 'Regions are fixed groups, not distance clusters');
@@ -109,6 +109,14 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.deepEqual(reg.layers.find((l) => l[0] === 'regions').slice(1), [null, 3]);
   assert.deepEqual(reg.layers.find((l) => l[0] === 'cities').slice(1), [3, 10.5]);
   ok('Below zoom 3 each region (Italy N/C/S, France, UK ...) has its own number; cities take over from zoom 3');
+  // A region number below 20 goes straight to the middle of its most crowded group
+  const south = data.places.filter((p) => p.country === 'Italy' && p.points[0].lat < 41.5);
+  await page.evaluate((ps) => { window.__fake.ease = null; window.__fake.hits = [{ properties: { region: 'Italy South', n: ps.length, w: 12, s: 37, e: 15, nn: 41, pids: JSON.stringify(ps.map((p) => p.id)) } }]; window.__fake.map.fireLayer('click', 'regions', { point: { x: 5, y: 5 } }); }, south);
+  await page.waitForFunction(() => window.__fake.ease);
+  const re = await page.evaluate(() => window.__fake.ease);
+  assert.ok(re.zoom > 12, 'A region with fewer than 20 buildings goes to the 1 km view: ' + re.zoom);
+  assert.ok(south.some((p) => Math.abs(p.points[0].lat - re.center[1]) < 0.01), 'Centred on its most crowded group');
+  ok('Region number below 20 -> straight to the middle of its most crowded group');
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
   for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);

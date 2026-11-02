@@ -176,7 +176,12 @@ export interface RegionFeature {
 export interface RegionCollection {
   type: 'FeatureCollection';
   features: RegionFeature[];
+  /** Buildings far from the middle of their region: not counted in it, drawn as small coloured dots on the Full map instead */
+  outliers: string[];
 }
+
+/** A building farther than this (m) from the mean position of the rest of its region is drawn as its own dot */
+export const REGION_FAR_M = 300_000;
 
 /** Region of a building: Italy is split by latitude, France / UK / Germany / US by country tag; the rest (tag Others) is grouped by distance in toRegionCollection */
 export function regionKey(p: Place): string {
@@ -213,7 +218,18 @@ export function toRegionCollection(places: readonly Place[]): RegionCollection {
   let k = 0;
   for (const ps of chains.values()) groups.set(`Others ${(ps[0] as Place).name} #${++k}`, ps);
   const features: RegionFeature[] = [];
-  for (const [region, ps] of groups) {
+  const outliers: string[] = [];
+  const meanOf = (xs: readonly Place[]) => ({ lng: xs.reduce((n, p) => n + p.points[0]!.lng, 0) / xs.length, lat: xs.reduce((n, p) => n + p.points[0]!.lat, 0) / xs.length });
+  for (const [region, all] of groups) {
+    let ps = all;
+    if (!region.startsWith('Others ')) {
+      const m = meanOf(all);
+      const near = all.filter((p) => distanceM(m, p.points[0]!) <= REGION_FAR_M);
+      if (near.length && near.length < all.length) {
+        ps = near;
+        for (const p of all) if (!near.includes(p)) outliers.push(p.id);
+      }
+    }
     const b = boundsOf(ps) as LngLatBounds;
     const pts = ps.map((p) => p.points[0]!);
     features.push({
@@ -222,7 +238,7 @@ export function toRegionCollection(places: readonly Place[]): RegionCollection {
       properties: { region, n: ps.length, w: b[0][0], s: b[0][1], e: b[1][0], nn: b[1][1], pids: JSON.stringify(ps.map((p) => p.id)) },
     });
   }
-  return { type: 'FeatureCollection', features };
+  return { type: 'FeatureCollection', features, outliers };
 }
 
 export interface CityFeature {
