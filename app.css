@@ -87,7 +87,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .unloc .why { font-size: 12px; color: var(--muted); }
 
 .credits { position: absolute; z-index: 9; left: 0; right: 0; bottom: 0; height: calc(var(--credit-h) - 1px); padding: 0 8px; overflow: hidden; font-size: 10px; line-height: calc(var(--credit-h) - 1px); white-space: nowrap; text-overflow: ellipsis; color: var(--muted); background: var(--paper); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; }
-.hide-edges { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.hide-edges { position: absolute; left: 10px; bottom: 38px; z-index: 5; display: flex; align-items: center; gap: 6px; padding: 2px 6px; font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.85); cursor: pointer; }
 .hide-edges input { margin: 0; width: 14px; height: 14px; }
 .credits-map { margin-left: auto; text-align: right; white-space: nowrap; }
 
