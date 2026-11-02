@@ -165,18 +165,24 @@ test('zoom for 1 km on the scale bar, polar limit and phone Full map bounds', ()
   assert.deepEqual(PHONE_FULL_BOUNDS, [[-12, 30], [32, 63]]);
 });
 
-test('edgeMarkers: only the 2 nearest directions; close bearings merge into one', () => {
+test('edgeMarkers: 2 nearest directions; bearings within 20 degrees merge (middle direction, numbers add, nearest is the target)', () => {
   const m = edgeMarkers([
     { key: 'in', n: 5, x: 500, y: 300 },
     { key: 'east', n: 1, x: 3000, y: 300 },
-    { key: 'east2', n: 7, x: 4000, y: 700 }, // about 8 degrees from east: merged into it
+    { key: 'east2', n: 7, x: 4000, y: 700 }, // about 8 degrees from east: merged
     { key: 'west', n: 2, x: -4000, y: 300 },
     { key: 'north', n: 3, x: 500, y: -9000 },
   ], 1000, 600);
   assert.deepEqual(m.map((e) => e.key), ['east', 'west']);
-  assert.equal(m[0]!.n, 1);
-  assert.equal(Math.round(m[0]!.x), 976);
-  assert.equal(Math.round(m[1]!.x), 24);
+  assert.equal(m[0]!.n, 8);
+  assert.ok(m[0]!.y > 300 && m[0]!.y < 600 - 24, 'the direction is between the two bearings: ' + m[0]!.y);
+  assert.equal(m[1]!.n, 2);
+  // 25 degrees apart: two directions
+  const far = edgeMarkers([
+    { key: 'a', n: 1, x: 3000, y: 300 },
+    { key: 'b', n: 1, x: 3000 + 0, y: 300 + Math.tan((25 * Math.PI) / 180) * 2500 },
+  ], 1000, 600);
+  assert.equal(far.length, 2);
 });
 
 test('edgeMarkersExpanding: 150 km first, doubles when nothing is found', () => {

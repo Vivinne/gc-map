@@ -231,26 +231,33 @@ export interface EdgeMarker {
 
 /**
  * Markers for cities outside the view: only the nearest `max` directions. Cities are taken nearest first; a city whose bearing from the view centre is within
- * `mergeDeg` of one already taken counts as the same direction and is merged into it (the nearer city's marker stays). Each marker sits on the viewport edge
- * (inset px inside it) at its bearing and is labelled with that city's number of buildings. There is no distance limit here (the caller limits it).
+ * `mergeDeg` of an existing direction joins it: the direction becomes the middle (mean) of the bearings and the numbers add up, while the click target stays
+ * the nearest city of the group. Each marker sits on the viewport edge (inset px inside it) at its direction. There is no distance limit here (the caller limits it).
  */
-export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 24, max = 2, mergeDeg = 45): EdgeMarker[] {
+export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 24, max = 2, mergeDeg = 20): EdgeMarker[] {
   const cx = w / 2;
   const cy = h / 2;
-  const out: (EdgeMarker & { a: number })[] = [];
   const outside = items
     .filter((it) => !(it.x >= 0 && it.x <= w && it.y >= 0 && it.y <= h))
-    .map((it) => ({ it, dx: it.x - cx, dy: it.y - cy, d: Math.hypot(it.x - cx, it.y - cy) }))
+    .map((it) => ({ it, a: Math.atan2(it.y - cy, it.x - cx), d: Math.hypot(it.x - cx, it.y - cy) }))
     .filter((o) => Number.isFinite(o.d) && o.d > 0)
     .sort((p, q) => p.d - q.d);
-  for (const { it, dx, dy } of outside) {
-    if (out.length >= max) break;
-    const a = (Math.atan2(dy, dx) * 180) / Math.PI;
-    if (out.some((o) => Math.abs(((a - o.a + 540) % 360) - 180) < mergeDeg)) continue;
-    const k = Math.min((cx - inset) / Math.abs(dx || 1e-9), (cy - inset) / Math.abs(dy || 1e-9));
-    out.push({ key: it.key, n: it.n, x: cx + dx * k, y: cy + dy * k, a });
+  const groups: { key: string; n: number; sx: number; sy: number }[] = [];
+  const limit = (mergeDeg * Math.PI) / 180;
+  for (const { it, a } of outside) {
+    const g = groups.find((q) => Math.abs(((a - Math.atan2(q.sy, q.sx) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) < limit);
+    if (g) {
+      g.n += it.n;
+      g.sx += Math.cos(a);
+      g.sy += Math.sin(a);
+    } else if (groups.length < max) groups.push({ key: it.key, n: it.n, sx: Math.cos(a), sy: Math.sin(a) });
   }
-  return out.map(({ key, n, x, y }) => ({ key, n, x, y }));
+  return groups.map((g) => {
+    const dx = g.sx;
+    const dy = g.sy;
+    const k = Math.min((cx - inset) / Math.abs(dx || 1e-9), (cy - inset) / Math.abs(dy || 1e-9));
+    return { key: g.key, n: g.n, x: cx + dx * k, y: cy + dy * k };
+  });
 }
 
 /** Edge markers show cities within this distance (m) of the view centre first */
