@@ -6,6 +6,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, distanceM, edgeMarkersExpanding, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
+/** Zoom levels the map zooms out when the building panel is closed */
+const CLOSE_ZOOM_OUT = 0.7;
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
 const SOURCE = 'places';
 /** One numbered point per city; drawn below the city zoom, the single markers above it */
@@ -385,11 +387,28 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     if (active) mapRef.current?.resize();
   }, [active]);
 
+  // The building panel was closed (X, Escape, Back, Full map, ...): the map zooms out a little, unless the same change moved the map itself (Full map, Back)
+  const prevSel = useRef(selectedPid);
+  const seenNonce = useRef<number | undefined>(focus?.nonce);
+  const keepView = useRef(false);
+  useEffect(() => {
+    const was = prevSel.current;
+    prevSel.current = selectedPid;
+    const moved = focus?.nonce !== seenNonce.current;
+    seenNonce.current = focus?.nonce;
+    const map = mapRef.current;
+    const skip = keepView.current || moved;
+    keepView.current = false;
+    if (!map || !ready || !was || selectedPid || skip) return;
+    map.easeTo({ zoom: Math.max(map.getZoom() - CLOSE_ZOOM_OUT, 1), duration: 400 });
+  }, [selectedPid, focus?.nonce, ready]);
+
   // Back to the view before the last zoom
   const goBack = () => {
     const map = mapRef.current;
     const prev = history.current.pop();
     if (!map || !prev) return;
+    keepView.current = !!latest.current.selectedPid; // Back restores its own view; no extra zoom-out for the panel it closes
     map.easeTo({ center: prev.center, zoom: prev.zoom, duration: 500 });
     setCanBack(history.current.length > 0);
     onBack?.();

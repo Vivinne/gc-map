@@ -173,6 +173,16 @@ async function open({ pinned = true, fallback = true } = {}) {
   ok('Several entries at one location -> the first is shown, no chooser');
   await page.keyboard.press('Escape');
 
+  // Closing the building panel zooms the map out a little (0.7 level)
+  await page.evaluate(() => { window.__fake.map.zoom = 12; window.__fake.hits = [{ properties: { pid: 'st-peters-dome-vatican' } }]; window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); });
+  await page.waitForSelector('[data-testid=detail]');
+  await page.evaluate(() => { window.__fake.ease = null; });
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => window.__fake.ease);
+  const ez = await page.evaluate(() => window.__fake.ease);
+  assert.ok(Math.abs(ez.zoom - 11.3) < 0.001, 'Zoom after closing: ' + ez.zoom);
+  ok('Closing the building panel -> the map zooms out 0.7 level');
+
   // Overlapping dots at different places: the one nearest to the click is shown (no zoom to a range, no chooser)
   await page.evaluate(([far, near]) => {
     const h = (pid, c) => ({ properties: { pid }, geometry: { coordinates: c } });
