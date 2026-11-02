@@ -148,14 +148,3 @@ test('city circles: city from the handout location, count = buildings, region pl
   assert.equal(cityClickZoom(14), 14);
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });
-
-import { toCsv, type FgRow } from '../src/lib/fgcheck';
-test('figure ground CSV lists only N marks and missing footprints, with quoting', () => {
-  const r = (o: Partial<FgRow>): FgRow => ({ id: 'a', name: 'A', loc: '', lat: 1, lng: 2, mark: '', footprint: 'found', area_m2: 100, ...o });
-  const csv = toCsv([r({ id: 'ok', mark: 'Y' }), r({ id: 'bad', name: 'He said "hi", ok', mark: 'N' }), r({ id: 'none', footprint: 'not found', area_m2: '' }), r({ id: 'unseen', footprint: 'not viewed', area_m2: '' })]);
-  const lines = csv.replace('\uFEFF', '').trim().split('\r\n');
-  assert.equal(lines[0], 'id,name,loc,lat,lng,mark,footprint,area_m2');
-  assert.equal(lines.length, 3);
-  assert.ok(lines[1]!.startsWith('bad,"He said ""hi"", ok"'));
-  assert.ok(lines[2]!.startsWith('none,'));
-});

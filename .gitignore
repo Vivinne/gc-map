@@ -6,4 +6,3 @@ next-env.d.ts
 .DS_Store
 .e2e/
 site/
-figure-ground-audit.csv
