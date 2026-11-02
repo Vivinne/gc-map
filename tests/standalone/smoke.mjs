@@ -293,9 +293,21 @@ async function open({ pinned = true, fallback = true } = {}) {
   await page.evaluate(() => { window.__fake.map.zoom = 19; window.__fake.map.fire('move'); });
   await page.waitForTimeout(150);
   assert.equal(await page.locator('[data-testid=edge-dot]').count(), 1, 'Markers stay at zoom 19');
+  // With a building open far from the target (Berlin vs. the view at 12.5E 43.5N), the edge button closes the panel
+  await page.evaluate((id) => { window.__fake.hits = [{ properties: { pid: id } }]; window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); }, idOf('Reichstag (Glass Dome)'));
+  await page.waitForSelector('[data-testid=detail]');
+  await page.evaluate(() => { window.__fake.map.zoom = 12; window.__fake.map.fire('move'); });
+  await page.waitForSelector('[data-testid=edge-dot]');
+  await page.evaluate(() => { window.__fake.ease = null; });
+  await page.locator('[data-testid=edge-dot]').first().click();
+  await page.waitForFunction(() => window.__fake.ease);
+  assert.equal(await page.locator('[data-testid=detail]').count(), 0, 'Edge button moved away from the selected building: panel closed');
+  assert.equal(await page.evaluate(() => window.__fake.ease.zoom), 12, 'The zoom stays (no extra zoom-out)');
+  ok('Edge button that leaves the selected building closes its panel');
+  await page.waitForSelector('[data-testid=edge-dot]');
   await page.locator('[data-testid=edge-dot]').click();
   await page.waitForFunction(() => window.__fake.ease);
-  assert.equal(await page.evaluate(() => window.__fake.ease.zoom), undefined, 'The zoom stays');
+  assert.equal(await page.evaluate(() => window.__fake.ease.zoom), 12, 'The zoom stays');
   ok('Edge marker for a city outside the view -> click moves there, zoom unchanged');
   await page.evaluate(() => { window.__proj = null; window.__fake.map.zoom = 4; window.__fake.map.fire('move'); });
   await page.waitForFunction(() => document.querySelectorAll('[data-testid=edge-dot]').length === 0);

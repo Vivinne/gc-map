@@ -107,4 +107,4 @@ Below zoom 10.5 each city is one dark numbered circle; the number is the count o
 
 - Closing the building panel (X, Escape, Back, Full map) zooms the map out a little (0.7 level; Back and Full map end that much farther out than their own target view). A reload starts at the Full map view with the panel closed.
 - The credit line at the bottom is one line: "Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates: ..." on the left and "OpenFreeMap © OpenMapTiles Data from OpenStreetMap" (the former [i] text) right-aligned; the map's own attribution button is removed. On a phone the line is smaller and the "Basemap ©" sentence is left out (the right-hand credit carries it).
-- Building names are English only (no Chinese characters). A number click that moves the view away from the selected building closes its panel.
+- Building names are English only (no Chinese characters). A number click (city circle or direction button) that moves the view away from the selected building closes its panel.

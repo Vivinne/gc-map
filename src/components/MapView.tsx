@@ -106,6 +106,26 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   const pushRef = useRef(pushView);
   pushRef.current = pushView;
 
+  // A number (city circle or direction button) moves the view to centre/zoom: when the new view no longer shows the selected building, its panel closes
+  // (without the extra zoom-out of a plain close)
+  const easeAway = (center: [number, number], zoom: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const sel = latest.current.selectedPid;
+    if (sel) {
+      const el = map.getContainer();
+      const pts = latest.current.fc.features.filter((f) => f.properties.pid === sel);
+      const visible = pts.some((f) => viewContainsPoint({ lng: center[0], lat: center[1] }, zoom, el.clientWidth, el.clientHeight, { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
+      if (pts.length && !visible) {
+        keepView.current = true;
+        latest.current.onDeselect?.();
+      }
+    }
+    map.easeTo({ center, zoom, duration: 600 });
+  };
+  const easeAwayRef = useRef(easeAway);
+  easeAwayRef.current = easeAway;
+
   // Create the map (once only)
   useEffect(() => {
     if (!box.current) return;
@@ -234,20 +254,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
 
       // City click: zoom so that every building of the city is in view and drawn on its own
       const cityClick = (e: { point: { x: number; y: number } }) => {
-        // The view moves to centre/zoom: when it no longer shows the selected building, its panel closes (without the extra zoom-out of a plain close)
-        const moveTo = (center: [number, number], zoom: number) => {
-          const sel = latest.current.selectedPid;
-          if (sel) {
-            const el = map.getContainer();
-            const pts = latest.current.fc.features.filter((f) => f.properties.pid === sel);
-            const visible = pts.some((f) => viewContainsPoint({ lng: center[0], lat: center[1] }, zoom, el.clientWidth, el.clientHeight, { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
-            if (pts.length && !visible) {
-              keepView.current = true;
-              latest.current.onDeselect?.();
-            }
-          }
-          map.easeTo({ center, zoom, duration: 600 });
-        };
+        const moveTo = (center: [number, number], zoom: number) => easeAwayRef.current(center, zoom);
         const hit = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: ['cities'] })[0];
         const pr = hit?.properties;
         if (!pr) return;
@@ -455,7 +462,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       }
     }
     pushRef.current();
-    map.easeTo({ center: best, duration: 600 });
+    easeAway(best, map.getZoom());
   };
 
   return (
