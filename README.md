@@ -94,7 +94,7 @@ Below zoom 10.5 each city is one dark numbered circle; the number is the count o
 - A reload closes the building panel (the address keeps the tags and the search text, not the selection).
 - Selecting a building (map or list) flies to a view that reaches 500 m from the point along the shorter map side, whatever the previous zoom.
 - A circle is drawn only when it stands for 5 or more buildings. Below that (single cities and merged circles alike) the buildings of the circle are drawn as their own coloured dots, overlapping if need be; the region-place markers attached to such a circle (see above) are drawn with them. The dot list is refreshed when the map goes idle.
-- Clicking overlapping dots at different places zooms to the range that pulls them apart (at least one level deeper); clicking dots at one coordinate opens the chooser list; a single dot selects the building.
+- Clicking a dot shows that building's detail panel directly. When dots overlap, one is picked: the nearest to the click (the first listed when they share a coordinate). There is no chooser list and no zoom-to-range.
 - The tag panel floats over the map (desktop); the three-line button collapses it to just that button. On phones it stays the List tab.
 - The building detail panel can be dragged by its coloured heading block (desktop; at least 60 px stays on the map; the position is kept for the next building). On phones it stays a bottom sheet.
 - Tag/search input updates the checkboxes at once; the list, tag counts and map data follow through React's deferred values, and tag matching no longer rebuilds its lookup per building.

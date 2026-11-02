@@ -336,37 +336,6 @@ export function DetailPanel({
   );
 }
 
-export function Chooser({
-  places, eras, onSelect, onClose,
-}: {
-  places: readonly Place[];
-  eras: readonly Era[];
-  onSelect: (id: string) => void;
-  onClose: () => void;
-}) {
-  return (
-    <section className="chooser" aria-label="Several buildings at the same location" data-testid="chooser">
-      <header>
-        <strong>{places.length} entries here</strong>
-        <button type="button" className="close" onClick={onClose} aria-label="Close">×</button>
-      </header>
-      <ul>
-        {places.map((p) => (
-          <li key={p.id}>
-            <button type="button" className="item" style={{ ['--c' as string]: eraOf(eras, p.era)?.color }} onClick={() => onSelect(p.id)}>
-              <span className="bar" />
-              <span className="txt">
-                <span className="name">{p.name}</span>
-                <span className="meta">{p.style}</span>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 export function UnlocatedList({
   items, onSelect,
 }: {

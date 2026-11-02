@@ -1,4 +1,4 @@
-// e2e: with a stub map, verifies filtering / search / detail / same-spot chooser / unlocated list / URL state / mobile layout
+// e2e: with a stub map, verifies filtering / search / detail / unlocated list / URL state / mobile layout
 import { createRequire } from 'node:module';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -162,19 +162,14 @@ await page.fill('.search', '');
 ok('Selecting a building: detail in heading/context format (no architect line or dash when the handout names none; no coordinates, source or locate button), URL hash, map selection state');
 await page.screenshot({ path: resolve(shots, 'desktop-detail.png') });
 
-// Several entries at one coordinate -> chooser
+// Several entries at one coordinate: a click on a marker shows that building directly (no chooser list)
 await page.keyboard.press('Escape');
 assert.equal(await page.locator('[data-testid=detail]').count(), 0);
 await page.locator('.marker[data-pid=st-peters-dome-vatican]').first().dispatchEvent('click');
-await page.waitForSelector('[data-testid=chooser]');
-const choice = await page.locator('[data-testid=chooser] .name').allTextContents();
-assert.ok(choice.length >= 4, choice.join(','));
-ok(`St. Peter's shares one coordinate -> chooser lists ${choice.length} entries: ${choice.join(', ')}`);
+await page.waitForSelector('[data-testid=detail]');
 const domeName = data.places.find((p) => p.id === 'st-peters-dome-vatican').name;
-await page.click(`[data-testid=chooser] .item:has-text("${domeName}")`);
 assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), domeName);
-assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
-ok('Choosing one entry in the chooser -> detail');
+ok('Click on a marker -> its detail directly (no chooser)');
 
 // Multi-point building
 const palladioName = data.places.find((p) => p.id.startsWith('palladio')).name;

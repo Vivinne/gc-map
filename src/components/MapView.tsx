@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, SCALE_1KM_MPP, boundsOfCoords, coordKey, densestCenter, isSameSpot, zoomForMetersPerPixel, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, SCALE_1KM_MPP, densestCenter, isSameSpot, zoomForMetersPerPixel, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
@@ -184,19 +184,21 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
           ],
           { layers: ['points', 'points-few'] },
         );
-        const pids = [...new Set<string>(hits.map((h) => String(h.properties?.pid)))];
-        if (!pids.length) return;
-        const coords = hits.map((h) => (h.geometry as { coordinates?: [number, number] } | undefined)?.coordinates).filter((c): c is [number, number] => !!c);
-        const distinct = new Set(coords.map((c) => coordKey(c[0], c[1])));
-        if (pids.length > 1 && distinct.size > 1) {
-          // Overlapping dots at different places: zoom to the range that pulls them apart
-          pushRef.current();
-          const b = boundsOfCoords(coords) as LngLatBounds;
-          const cam = map.cameraForBounds(b, { padding: 80, maxZoom: 17 });
-          map.easeTo({ center: cam?.center ?? [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2], zoom: Math.max(cam?.zoom ?? 0, map.getZoom() + 1), duration: 600 });
-          return;
+        if (!hits.length) return;
+        // A click on a marker shows that building; when markers overlap, the one nearest to the click is picked (the first listed when they share a spot)
+        let best = hits[0];
+        let bestD = Infinity;
+        for (const h of hits) {
+          const c = (h.geometry as { coordinates?: [number, number] } | undefined)?.coordinates;
+          if (!c) continue;
+          const px = map.project(c);
+          const d = Math.hypot(px.x - x, px.y - y);
+          if (d < bestD) {
+            bestD = d;
+            best = h;
+          }
         }
-        latest.current.onPick(pids);
+        latest.current.onPick([String(best?.properties?.pid)]);
       };
       map.on('click', 'points', pickAt);
       map.on('click', 'points-few', pickAt);
@@ -211,10 +213,10 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         const b: LngLatBounds = merged ? [[Number(pr.xw), Number(pr.xs)], [Number(pr.xe), Number(pr.xn)]] : [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
         pushRef.current();
         if (isSameSpot(b)) {
-          // Identical coordinates cannot be told apart by zooming: go to the deepest level; several buildings -> the chooser list
-          map.easeTo({ center: [b[0][0], b[0][1]], zoom: SAME_SPOT_ZOOM, duration: 600 });
+          // Identical coordinates cannot be told apart by zooming: several buildings -> one of them (the first) is shown; a single building -> the deepest zoom
           const pids = pr.pids ? (JSON.parse(String(pr.pids)) as string[]) : [];
-          if (pids.length > 1) latest.current.onPick(pids);
+          if (pids.length > 1) latest.current.onPick([pids[0] as string]);
+          else map.easeTo({ center: [b[0][0], b[0][1]], zoom: SAME_SPOT_ZOOM, duration: 600 });
           return;
         }
         // A number was clicked: go to the middle of the most crowded group of its buildings, at a scale of 1 km on the scale bar

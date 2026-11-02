@@ -163,25 +163,26 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.match(foot.features[0].properties.color, /^#/);
   ok('Selecting a building -> its basemap footprint is filled with the style colour');
 
-  // Several entries at one spot -> chooser
+  // Several entries at one spot: one of them is shown directly (no chooser)
   await page.keyboard.press('Escape');
   await page.evaluate((ids) => { window.__fake.hits = ids.map((pid) => ({ properties: { pid } })); window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); }, ['st-peters-dome-vatican', 'st-peters-facade-nave-vatican']);
-  await page.waitForSelector('[data-testid=chooser]');
-  ok('Several entries at one location -> chooser');
+  await page.waitForSelector('[data-testid=detail]');
+  assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), data.places.find((p) => p.id === 'st-peters-dome-vatican').name);
+  assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
+  ok('Several entries at one location -> the first is shown, no chooser');
   await page.keyboard.press('Escape');
 
-  // Overlapping dots at different places: no chooser, zoom to the range that separates them
-  await page.evaluate(() => {
+  // Overlapping dots at different places: the one nearest to the click is shown (no zoom to a range, no chooser)
+  await page.evaluate(([far, near]) => {
     const h = (pid, c) => ({ properties: { pid }, geometry: { coordinates: c } });
-    window.__fake.hits = [h('a', [12.49, 41.89]), h('b', [12.5, 41.9])];
-    window.__fake.ease = null;
-    window.__fake.map.zoom = 9;
+    window.__fake.hits = [h(far, [50, 50]), h(near, [2, 2])];
     window.__fake.map.fireLayer('click', 'points-few', { point: { x: 1, y: 1 } });
-  });
-  const eo = await page.evaluate(() => window.__fake.ease);
-  assert.ok(eo && eo.zoom >= 10, JSON.stringify(eo));
+  }, [idOf('Trevi Fountain'), colosseum]);
+  await page.waitForSelector('[data-testid=detail]');
+  assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Colosseum');
   assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
-  ok('Click on overlapping coloured dots -> zooms to their range (no chooser)');
+  ok('Click on overlapping coloured dots -> the nearest one is shown (no chooser)');
+  await page.keyboard.press('Escape');
 
   // Circles under 5 buildings become coloured dots: the idle handler lists their pids in the points-few filter
   await page.evaluate(() => {
@@ -253,16 +254,15 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(e3.center[0] > 12.4 && e3.center[0] < 12.6 && e3.center[1] > 41.8 && e3.center[1] < 42, JSON.stringify(e3.center));
   ok('Merged circle number click -> centre of the most crowded group among all its buildings, scale 1 km');
 
-  // City click 3: identical coordinates -> deepest zoom and the chooser list
+  // City click 3: identical coordinates, several buildings -> the first is shown (no chooser)
   await page.evaluate((h) => {
     window.__fake.hits = [h];
     window.__fake.ease = null;
     window.__fake.map.fireLayer('click', 'cities', { point: { x: 5, y: 5 } });
   }, city({ n: 2, w: 12.4533, s: 41.9022, e: 12.4533, nn: 41.9022, pids: JSON.stringify(['st-peters-dome-vatican', 'st-peters-facade-nave-vatican']) }));
-  await page.waitForFunction(() => window.__fake.ease);
-  assert.equal((await page.evaluate(() => window.__fake.ease)).zoom, 18);
-  await page.waitForSelector('[data-testid=chooser]');
-  ok('City with identical coordinates -> deepest zoom and the chooser list');
+  await page.waitForSelector('[data-testid=detail]');
+  assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
+  ok('City number with identical coordinates -> the first building is shown (no chooser)');
   await page.keyboard.press('Escape');
 
   // City click 4: single building, degenerate bounds -> zoom in, no chooser

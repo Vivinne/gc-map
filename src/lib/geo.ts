@@ -102,7 +102,7 @@ export function boundsOfCoords(coords: readonly (readonly [number, number])[]): 
   return [[w, s], [e, n]];
 }
 
-/** About 1 m: a box this small cannot be separated by zooming, so the chooser list has to take over */
+/** About 1 m: a box this small cannot be separated by zooming, so one of the buildings at that spot is shown */
 export const SAME_SPOT_DEG = 1e-5;
 export const SAME_SPOT_ZOOM = 18;
 

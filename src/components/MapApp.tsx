@@ -8,7 +8,7 @@ import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
 import MapView, { type FocusTarget } from './MapView';
-import { Chooser, DetailPanel, PlaceList, UnlocatedList, eraOf, type DetailSize, type Offset } from './Panels';
+import { DetailPanel, PlaceList, UnlocatedList, eraOf, type DetailSize, type Offset } from './Panels';
 
 type Tab = 'map' | 'list';
 
@@ -22,7 +22,6 @@ export default function MapApp() {
   const [q, setQ] = useState(init.q);
   const [selectedId, setSelectedId] = useState(''); // a reload starts with the building panel closed
   const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(new Set());
-  const [choices, setChoices] = useState<string[]>([]);
   const [tab, setTab] = useState<Tab>('map');
   const [focus, setFocus] = useState<FocusTarget | null>(null);
   const [detailOffset, setDetailOffset] = useState<Offset>({ x: 0, y: 0 });
@@ -107,7 +106,6 @@ export default function MapApp() {
     if (window.matchMedia('(max-width: 900px)').matches) setFocus({ kind: 'bounds', bounds: PHONE_FULL_BOUNDS, exact: true, nonce: nonce.current });
     else setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, nonce: nonce.current });
     setSelectedId(''); // the building panel closes
-    setChoices([]);
     setTab('map');
   }, []);
 
@@ -116,20 +114,16 @@ export default function MapApp() {
       const p = placesById.get(id);
       if (!p) return;
       setSelectedId(id);
-      setChoices([]);
-      setTab('map');
+        setTab('map');
       flyToPlace(p);
     },
     [flyToPlace],
   );
 
   const onPick = useCallback(
+    // The map sends the building that was picked (when markers overlap it has already chosen one)
     (pids: string[]) => {
-      if (pids.length === 1) select(pids[0] as string);
-      else {
-        setChoices(pids);
-        setSelectedId('');
-      }
+      if (pids[0]) select(pids[0]);
     },
     [select],
   );
@@ -138,13 +132,10 @@ export default function MapApp() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
       setSelectedId('');
-      setChoices([]);
-    };
+      };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
-
-  const choicePlaces = choices.map((id) => placesById.get(id)).filter((p): p is Place => Boolean(p));
 
   return (
     <div className="app" data-tab={tab} data-side={sideOpen ? 'open' : 'closed'}>
@@ -227,7 +218,7 @@ export default function MapApp() {
 
       <main className="stage">
         <button type="button" className="fullmap" onClick={showFullMap}>Full map</button>
-        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => { setSelectedId(''); setChoices([]); }} />
+        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} />
         {selected && (
           <DetailPanel
             place={selected}
@@ -241,9 +232,6 @@ export default function MapApp() {
             onMinimize={() => setDetailMin((v) => !v)}
             onClose={() => setSelectedId('')}
           />
-        )}
-        {!selected && choicePlaces.length > 1 && (
-          <Chooser places={choicePlaces} eras={dataset.eras} onSelect={select} onClose={() => setChoices([])} />
         )}
       </main>
 

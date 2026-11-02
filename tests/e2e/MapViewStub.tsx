@@ -41,7 +41,7 @@ export default function MapViewStub({ fc, selectedPid, bounds, focus, active, on
             data-pid={f.properties.pid}
             data-selected={f.properties.pid === selectedPid}
             aria-label={f.properties.name}
-            onClick={() => onPick(byCoord.get(k) ?? [f.properties.pid])}
+            onClick={() => onPick([f.properties.pid])}
             style={{ position: 'absolute', width: 12, height: 12, borderRadius: 6, border: '2px solid #fff', background: f.properties.color, transform: 'translate(-50%,-50%)', padding: 0, outline: f.properties.pid === selectedPid ? '3px solid #111827' : 'none', ...pos(lng, lat) }}
           />
         );
