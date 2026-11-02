@@ -109,3 +109,4 @@ Below zoom 10.5 each city is one dark numbered circle; the number is the count o
 - Building names are English only (no Chinese characters). A number click (city circle or direction button) that moves the view away from the selected building closes its panel.
 
 - Display sync with the Claude Doc "GC Buildings: Names, Locations, Architects": `data/doc-display.txt` (handout name | display name | display location | display architect) overrides what readers see (`name`, `locLabel`, `who`). Ids, geo keys, country tags and city grouping still use the handout names and locations. An empty field means no override; run `npm run data` after editing.
+- Reload shows the default screen: tags, search and selection in the address are ignored and the address is cleared. A checkbox at the bottom-left of the footer hides the direction buttons (not remembered).

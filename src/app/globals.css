@@ -87,6 +87,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .unloc .why { font-size: 12px; color: var(--muted); }
 
 .credits { position: absolute; z-index: 9; left: 0; right: 0; bottom: 0; height: calc(var(--credit-h) - 1px); padding: 0 8px; overflow: hidden; font-size: 10px; line-height: calc(var(--credit-h) - 1px); white-space: nowrap; text-overflow: ellipsis; color: var(--muted); background: var(--paper); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; }
+.credits-hide { display: inline-flex; align-items: center; gap: 4px; flex: none; color: inherit; cursor: pointer; }
+.credits-hide input { margin: 0; width: 11px; height: 11px; }
 .credits-map { margin-left: auto; text-align: right; white-space: nowrap; }
 
 /* ---------- Detail panel ---------- */

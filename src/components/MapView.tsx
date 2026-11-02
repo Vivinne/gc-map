@@ -31,6 +31,8 @@ export type FocusTarget =
   | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; /** Fit exactly these bounds with almost no margin */ exact?: boolean; /** The building panel was open and is closing: end CLOSE_ZOOM_OUT levels farther out */ shrink?: boolean; /** First view after loading the page: jump there, no animation, not a Back step */ initial?: boolean; nonce: number };
 
 interface Props {
+  /** Hide the direction buttons for buildings outside the view */
+  hideEdges?: boolean;
   fc: PointCollection;
   /** Currently selected building id; empty string = none */
   selectedPid: string;
@@ -49,7 +51,7 @@ interface Props {
   onDeselect?: () => void;
 }
 
-export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick, onBack, onDeselect }: Props) {
+export default function MapView({ hideEdges = false, fc, cities, selectedPid, bounds, focus, active, onPick, onBack, onDeselect }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
   const [ready, setReady] = useState(false);
@@ -410,7 +412,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   return (
     <>
       <div ref={box} className="map" data-testid="map" />
-      {edges.map((m) => (
+      {!hideEdges && edges.map((m) => (
         <button key={m.key} type="button" className="edge-dot" data-testid="edge-dot" style={{ left: m.x, top: m.y }} aria-label={`${m.n} buildings in this direction`} onClick={() => goEdge(m.keys)}>
           {m.n}
         </button>

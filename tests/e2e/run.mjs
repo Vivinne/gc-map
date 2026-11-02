@@ -416,17 +416,19 @@ ok('No injected nodes');
 const p2 = await newPage({ width: 1280, height: 800 });
 await p2.goto(page_url + '#p=maxxi-rome&t=s:modern&q=hadid');
 await p2.waitForSelector('.tag-toggle');
-// A reload starts with the building panel closed, and the selection is dropped from the address
+// A reload starts from the default screen: no building panel, no tags, no search, and the address is cleared
 assert.equal(await p2.locator('[data-testid=detail]').count(), 0, 'Reload closes the building panel');
-assert.ok(!(await p2.evaluate(() => window.location.hash)).includes('p='), 'The selection is removed from the address');
-// Groups start collapsed; the checked count shows on the button and opening it shows the checked tag
-assert.equal(await p2.locator('.tag-item').count(), 0);
-assert.equal((await p2.textContent('[data-testid=checked-styles]')).trim(), '1');
-await p2.click('.tag-toggle:has-text("Styles")');
-assert.equal(await p2.locator('.tag-item[data-checked=true]').textContent().then((t) => /Modern/.test(t)), true);
-assert.equal(await p2.inputValue('.search'), 'hadid');
+assert.equal(await p2.inputValue('.search'), '', 'Reload clears the search');
+assert.equal(await p2.locator('[data-testid=checked-styles]').count(), 0, 'Reload clears the tags');
+assert.equal(await p2.evaluate(() => window.location.hash), '', 'The address is back to the default');
 assert.equal(await p2.getAttribute('.search', 'placeholder'), 'Search', 'Search placeholder');
-ok('URL hash restores era / search (not the selection: a reload closes the building panel); a collapsed group shows its checked count');
+ok('Reload (even with a hash) shows the default screen');
+// Hide direction buttons: unchecked at start; checking removes every direction button
+assert.equal(await p2.isChecked('[data-testid=hide-edges]'), false);
+await p2.check('[data-testid=hide-edges]');
+assert.equal(await p2.locator('[data-testid=edge-dot]').count(), 0);
+await p2.uncheck('[data-testid=hide-edges]');
+ok('Bottom-left checkbox hides the direction buttons');
 await p2.close();
 
 // ---------- Mobile ----------

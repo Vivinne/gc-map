@@ -289,6 +289,10 @@ async function open({ pinned = true, fallback = true } = {}) {
   await page.evaluate(() => { window.__fake.map.zoom = 19; window.__fake.map.fire('move'); });
   await page.waitForTimeout(150);
   assert.equal(await page.locator('[data-testid=edge-dot]').count(), 1, 'Markers stay at zoom 19');
+  await page.check('[data-testid=hide-edges]');
+  assert.equal(await page.locator('[data-testid=edge-dot]').count(), 0, 'Checkbox hides the direction buttons');
+  await page.uncheck('[data-testid=hide-edges]');
+  await page.waitForSelector('[data-testid=edge-dot]');
   // With a building open far from the target (Berlin vs. the view at 12.5E 43.5N), the edge button closes the panel
   await page.evaluate((id) => { window.__fake.hits = [{ properties: { pid: id } }]; window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); }, idOf('Reichstag (Glass Dome)'));
   await page.waitForSelector('[data-testid=detail]');

@@ -16,10 +16,10 @@ const groups = buildGroups(dataset.eras);
 const placesById = new Map(dataset.places.map((p) => [p.id, p]));
 
 export default function MapApp() {
-  const [init] = useState(() => parseHash(typeof window === 'undefined' ? '' : window.location.hash));
   const [sideOpen, setSideOpen] = useState(true);
-  const [tags, setTags] = useState<ReadonlySet<string>>(() => new Set(init.t));
-  const [q, setQ] = useState(init.q);
+  const [hideEdges, setHideEdges] = useState(false); // not remembered: a reload shows the buttons again
+  const [tags, setTags] = useState<ReadonlySet<string>>(new Set()); // a reload starts from the default screen: the address' tags and search are dropped
+  const [q, setQ] = useState('');
   const [selectedId, setSelectedId] = useState(''); // a reload starts with the building panel closed
   const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(new Set());
   const [tab, setTab] = useState<Tab>('map');
@@ -226,7 +226,7 @@ export default function MapApp() {
 
       <main className="stage">
         <button type="button" className="fullmap" onClick={() => showFullMap()}>Full map</button>
-        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} onDeselect={() => setSelectedId('')} />
+        <MapView hideEdges={hideEdges} fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} onDeselect={() => setSelectedId('')} />
         {selected && (
           <DetailPanel
             place={selected}
@@ -244,6 +244,7 @@ export default function MapApp() {
       </main>
 
       <footer className="credits">
+        <label className="credits-hide"><input type="checkbox" checked={hideEdges} onChange={(e) => setHideEdges(e.target.checked)} data-testid="hide-edges" />Hide direction buttons</label>
         <span className="credits-note"><span className="credits-base">Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. </span>Coordinates: Wikipedia or named web pages, unverified; faded markers are estimates.</span>
         <span className="credits-map">OpenFreeMap © OpenMapTiles Data from OpenStreetMap</span>
       </footer>
