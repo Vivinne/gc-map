@@ -280,3 +280,16 @@ test('selectionView: whole city first, nearest neighbour for the overlap check',
   assert.equal(selectionView([a], a).cityKm, 3);
   assert.equal(selectionView([a], a).minSepM, Infinity);
 });
+
+test('scaleKmFor: scattered groups get 100 / 50 km, dense named cities 3 / 1 km', async () => {
+  const { scaleKmFor } = await import('../src/lib/geo');
+  const finland = [{ lng: 22.4, lat: 60.4 }, { lng: 21.9, lat: 61.6 }, { lng: 24.9, lat: 60.2 }, { lng: 28.7, lat: 60.7 }];
+  const nl = [{ lng: 5.1, lat: 52.1 }, { lng: 4.9, lat: 52.4 }, { lng: 4.5, lat: 52.0 }, { lng: 5.5, lat: 51.4 }];
+  const milan = [{ lng: 9.19, lat: 45.46 }, { lng: 9.18, lat: 45.47 }];
+  assert.equal(scaleKmFor(finland), 100);
+  assert.equal(scaleKmFor(nl), 50);
+  assert.equal(scaleKmFor(milan), 1);
+  assert.equal(scaleKmFor(milan, 'Venice'), 3);
+  assert.equal(scaleKmFor(milan, 'Berlin'), 3);
+  for (const c of ['Milan', 'Paris', 'Barcelona', 'Rome', 'Florence', 'London']) assert.equal(scaleKmFor(finland, c), 1, c);
+});
