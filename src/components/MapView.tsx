@@ -1,490 +1,579 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import { dataset } from '../lib/data';
-import { CITY_TOP_ZOOM, REGION_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, pointsOutside, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type RegionCollection, type PointCollection } from '../lib/geo';
+import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { basemap } from '../lib/basemap';
+import { MIN_DONUT, boundsOf, clusterAt, donutRadius, nearest, regionOf, stacks, type Cluster } from '../lib/geo';
+import { BUILDINGS, ERAS, ERA_ORDER, type Building } from '../lib/model';
+import { Icon } from './Icons';
 
-/** The coordinates of the buildings listed in a city feature's `pids` */
-const cityPoints = (pids: string, byPid: Map<string, [number, number]>): { pid: string; lng: number; lat: number }[] =>
-  (JSON.parse(pids) as string[]).flatMap((id) => { const c = byPid.get(id); return c ? [{ pid: id, lng: c[0], lat: c[1] }] : []; });
+export const DETAIL_ZOOM = 11.5;
+const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]];
+const SEA = '#EEF1F4';
+const LAND = '#D6DBE1';
 
-// OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
-/** Zoom levels the map zooms out when the building panel is closed */
-/** Zoom levels per click on the + / - buttons (2 = four times the scale) */
-const ZOOM_BUTTON_STEP = 2;
-const CLOSE_ZOOM_OUT = 0.7;
-/** Phones show a smaller map, so closing the panel zooms out farther */
-const CLOSE_ZOOM_OUT_PHONE = 1.7;
-const closeZoomOut = (): number => (typeof window !== 'undefined' && window.matchMedia?.('(max-width: 900px)').matches ? CLOSE_ZOOM_OUT_PHONE : CLOSE_ZOOM_OUT);
-const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
-const SOURCE = 'places';
-/** One numbered point per city; drawn below the city zoom, the single markers above it */
-const CITY_SOURCE = 'cities';
-const REGION_SOURCE = 'regions';
-/** Selecting a building: the nearest other building must be at least this many px away, else the map zooms in more */
-const SEPARATION_PX = 24;
-/** A region number below this goes straight to the middle of its most crowded group when clicked */
-const REGION_DIRECT_N = 20;
-/** City circle radius (px, fixed); circles whose centres are closer than the diameter overlap, so they are merged (counts summed) */
-const CITY_RADIUS = 15;
-/** Circles stand for at least this many buildings; fewer are drawn as their own coloured dots (overlapping is fine) */
-const MIN_NUMBER = 5;
-/** Earlier views kept for the back button */
-/** Margin kept around the union of a merged circle, as a share of the shorter map side (about 20%, like the Veneto view the user pointed at) */
-const UNION_PAD = 0.2;
-const CITY_MERGE_PX = CITY_RADIUS * 2 + 4;
-
-const INK = '#111827';
-type GeoData = Parameters<GeoJSONSource['setData']>[0];
-
-
-export type FocusTarget =
-  | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; /** With `cityKm`: the view shows the building's whole city (this many km around it) and only zooms in further when the nearest other building would be closer than SEPARATION_PX on screen; `radiusKm` is then the deepest zoom allowed */ cityKm?: number; minSepM?: number; nonce: number }
-  | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; /** Fit exactly these bounds with almost no margin */ exact?: boolean; /** The building panel was open and is closing: end CLOSE_ZOOM_OUT levels farther out */ shrink?: boolean; /** First view after loading the page: jump there, no animation, not a Back step */ initial?: boolean; nonce: number };
-
-interface Props {
-  /** Hide the direction buttons for buildings outside the view */
-  hideEdges?: boolean;
-  fc: PointCollection;
-  /** Currently selected building id; empty string = none */
-  selectedPid: string;
-  /** One feature per city with the number of visible buildings in it */
-  cities: CityCollection;
-  regions: RegionCollection;
-  /** Bounding box of the currently visible buildings; null = no points */
-  bounds: [[number, number], [number, number]] | null;
-  focus: FocusTarget | null;
-  /** The container must be re-measured when the mobile tab switches */
-  active: boolean;
-  /** Marker clicked: returns all building ids at that spot (several can share a coordinate) */
-  onPick: (pids: string[]) => void;
-  /** The Back button was used: the parent closes the building panel */
-  onBack?: () => void;
-  /** A number click moved the view away from the selected building: the parent closes its panel */
-  onDeselect?: () => void;
+export interface Padding {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
 }
 
-export default function MapView({ hideEdges = false, fc, cities, regions, selectedPid, bounds, focus, active, onPick, onBack, onDeselect }: Props) {
-  const box = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<MLMap | null>(null);
-  const [ready, setReady] = useState(false);
-  const [err, setErr] = useState('');
-  const [edges, setEdges] = useState<EdgeMarker[]>([]);
+export interface MapHandle {
+  fitAll(list: Building[]): void;
+  fitTo(list: Building[], maxZoom?: number): void;
+  showBuilding(b: Building): void;
+  home(): void;
+}
 
-  // Event handlers must read the latest values; use refs to avoid rebinding
-  const latest = useRef({ fc, cities, regions, selectedPid, onPick, onDeselect });
-  useEffect(() => {
-    latest.current = { fc, cities, regions, selectedPid, onPick, onDeselect };
-  });
+interface Props {
+  buildings: Building[];
+  selected: Building | null;
+  hoverCity: string;
+  padding: Padding;
+  reducedMotion: boolean;
+  /** Phone layout: side widgets give way to the building sheet */
+  compact?: boolean;
+  onSelect(id: string): void;
+  onCity(city: string): void;
+  onReady?(): void;
+}
 
-  // A number (city circle or direction button) moves the view to centre/zoom: when the new view no longer shows the selected building, its panel closes
-  // (without the extra zoom-out of a plain close)
-  const easeAway = (center: [number, number], zoom: number) => {
-    const map = mapRef.current;
-    if (!map) return;
-    const sel = latest.current.selectedPid;
-    if (sel) {
-      const el = map.getContainer();
-      const pts = latest.current.fc.features.filter((f) => f.properties.pid === sel);
-      const visible = pts.some((f) => viewContainsPoint({ lng: center[0], lat: center[1] }, zoom, el.clientWidth, el.clientHeight, { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
-      if (pts.length && !visible) {
-        keepView.current = true;
-        latest.current.onDeselect?.();
-      }
-    }
-    map.easeTo({ center, zoom, duration: 600 });
+function styleSpec(): StyleSpecification {
+  const { land, borders } = basemap();
+  return {
+    version: 8,
+    sources: {
+      land: { type: 'geojson', data: land },
+      borders: { type: 'geojson', data: borders },
+      // Streets for the city scale. Optional: if the tile server cannot be reached the offline layers above still draw the map.
+      ofm: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' },
+    },
+    layers: [
+      { id: 'sea', type: 'background', paint: { 'background-color': SEA } },
+      { id: 'land', type: 'fill', source: 'land', paint: { 'fill-color': LAND } },
+      { id: 'ofm-water', type: 'fill', source: 'ofm', 'source-layer': 'water', minzoom: 6, paint: { 'fill-color': SEA } },
+      {
+        id: 'ofm-river', type: 'line', source: 'ofm', 'source-layer': 'waterway', minzoom: 9,
+        paint: { 'line-color': SEA, 'line-width': ['interpolate', ['linear'], ['zoom'], 9, 0.8, 15, 4] },
+      },
+      {
+        id: 'ofm-roads', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 10,
+        filter: ['match', ['get', 'class'], ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'minor', 'service'], true, false],
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: {
+          'line-color': '#F4F6F8',
+          'line-width': ['interpolate', ['exponential', 1.6], ['zoom'], 10, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 1.4, 0.4], 16, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 12, ['secondary', 'tertiary'], 9, 5]],
+        },
+      },
+      { id: 'ofm-buildings', type: 'fill', source: 'ofm', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': '#CBD1D8' } },
+      { id: 'borders', type: 'line', source: 'borders', maxzoom: 10, paint: { 'line-color': '#FFFFFF', 'line-width': 1 } },
+    ],
   };
-  const easeAwayRef = useRef(easeAway);
-  easeAwayRef.current = easeAway;
+}
 
-  // Create the map (once only)
+const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
+  const { buildings, selected, hoverCity, padding, reducedMotion, compact, onSelect, onCity, onReady } = props;
+  const box = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MlMap | null>(null);
+  const [layer, setLayer] = useState<HTMLElement | null>(null);
+  const [frame, setFrame] = useState(0);
+  const [stackPick, setStackPick] = useState<{ lng: number; lat: number; items: Building[] } | null>(null);
+  const [tip, setTip] = useState<Cluster | null>(null);
+  const padRef = useRef(padding);
+  padRef.current = padding;
+  const motion = useCallback((ms: number) => (reducedMotion ? 0 : ms), [reducedMotion]);
+
   useEffect(() => {
     if (!box.current) return;
     const map = new maplibregl.Map({
       container: box.current,
-      style: STYLE_URL,
-      center: [12.5, 43.5],
-      zoom: 4.2,
-      attributionControl: false, // the credit line below the map carries the attribution
+      style: styleSpec(),
+      bounds: EUROPE,
+      fitBoundsOptions: { padding: 30 },
+      attributionControl: false,
+      renderWorldCopies: false,
+      maxZoom: 18,
+      minZoom: 1.2,
+      dragRotate: false,
+      pitchWithRotate: false,
+    });
+    map.touchZoomRotate.disableRotation();
+    map.on('error', () => {
+      /* tile server unreachable: the offline layers keep working */
+    });
+    let raf = 0;
+    const bump = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        setFrame((f) => f + 1);
+      });
+    };
+    map.on('move', bump);
+    map.on('resize', bump);
+    map.on('load', () => {
+      bump();
+      onReady?.();
     });
     mapRef.current = map;
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-    // The + / - buttons move ZOOM_BUTTON_STEP levels per click (the built-in control moves one)
-    map.getContainer()?.addEventListener?.('click', (ev) => {
-      const t = ev.target as Element | null;
-      const dir = t?.closest?.('.maplibregl-ctrl-zoom-in') ? 1 : t?.closest?.('.maplibregl-ctrl-zoom-out') ? -1 : 0;
-      if (!dir) return;
-      ev.stopPropagation();
-      map.easeTo({ zoom: map.getZoom() + dir * ZOOM_BUTTON_STEP, duration: 350 });
-    }, true);
-    map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'metric' }), 'bottom-left');
-
-    map.on('error', (e) => {
-      const msg = e.error?.message ?? '';
-      // A single tile or font failure is not fatal; only warn when the style itself fails to load
-      if (/style|tiles\.openfreemap|Failed to fetch|NetworkError/i.test(msg)) setErr('Basemap failed to load; check your network connection (marker data is unaffected).');
-    });
-
-    // Cities outside the view (while city numbers are hidden, i.e. zoomed in): one marker per direction on the view edge with its building count
-    let raf = 0;
-    const updateEdges = () => {
-      raf = 0;
-      if (map.getZoom() < CITY_TOP_ZOOM) return setEdges((e) => (e.length ? [] : e));
-      const el = map.getContainer();
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      const mc = map.getCenter();
-      // A city gets a direction button only while some of its buildings are outside the view, and the button points at the nearest of those
-      // (a city whose middle is off screen but whose buildings are all in view has no button; one you are standing in has a button only for what is out of view)
-      const byPid = new Map(latest.current.fc.features.map((f) => [f.properties.pid, f.geometry.coordinates as [number, number]]));
-      const zoom = map.getZoom();
-      const items: { key: string; n: number; x: number; y: number; dist: number }[] = [];
-      for (const f of latest.current.cities.features) {
-        const out = pointsOutside(cityPoints(f.properties.pids, byPid), { lng: mc.lng, lat: mc.lat }, zoom, w, h);
-        let best: { x: number; y: number; dist: number } | null = null;
-        for (const [lng, lat] of out.map((q) => [q.lng, q.lat] as const)) {
-          const p = map.project([lng, lat]);
-          const dist = distanceM({ lng: mc.lng, lat: mc.lat }, { lng, lat });
-          if (!best || dist < best.dist) best = { x: p.x, y: p.y, dist };
-        }
-        // The number is how many of the city's buildings are out of the view (not the whole city), so it drops as you move toward them
-        if (best) items.push({ key: f.properties.city, n: out.length, ...best });
-      }
-      // Cities within 150 km first; when none is outside the view, the limit doubles (300, 600 km ...) until one is found
-      // Direction buttons stay clear of the page buttons (menu, Full map, Back) and of the tag panel
-      const o = el.getBoundingClientRect();
-      const obstacles = Array.from(document.querySelectorAll('.menu-btn, .fullmap, .map-back, .side')).map((n) => {
-        const r = n.getBoundingClientRect();
-        return { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height };
-      });
-      setEdges(avoidObstacles(edgeMarkersExpanding(items, w, h), obstacles, w, h));
-    };
-    const scheduleEdges = () => {
-      if (!raf) raf = requestAnimationFrame(updateEdges);
-    };
-    map.on('move', scheduleEdges);
-    map.on('load', scheduleEdges);
-
-    map.on('load', () => {
-      // No polar regions. Set after load, with longitude just inside ±180: MapLibre 5.6 crashes (null centre) when maxBounds is in the constructor or is exactly ±180
-      try { map.setMaxBounds([[-179.9, -POLAR_LAT], [179.9, POLAR_LAT]]); } catch { /* keep the map usable without the limit */ }
-      map.addSource(SOURCE, { type: 'geojson', data: latest.current.fc as unknown as GeoData });
-      const dot: NonNullable<CircleLayerSpecification['paint']> = {
-        'circle-color': ['get', 'color'],
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 5, 10, 7, 15, 10],
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff',
-        // Memory estimates (unverified) are semi-transparent
-        'circle-opacity': ['case', ['get', 'est'], 0.5, 1],
-        'circle-stroke-opacity': ['case', ['get', 'est'], 0.5, 1],
-      };
-      const cityPaint: NonNullable<CircleLayerSpecification['paint']> = {
-        'circle-color': INK,
-        'circle-radius': CITY_RADIUS,
-        'circle-stroke-width': 3,
-        'circle-stroke-color': '#ffffff',
-      };
-      const countLayout: NonNullable<SymbolLayerSpecification['layout']> = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true };
-      map.addLayer({ id: 'points', type: 'circle', source: SOURCE, minzoom: CITY_TOP_ZOOM, paint: dot });
-      // Below the switch zoom: markers of the circles with fewer than MIN_NUMBER buildings (list kept up to date by refreshFew)
-      map.addLayer({ id: 'points-few', type: 'circle', source: SOURCE, minzoom: REGION_TOP_ZOOM, maxzoom: CITY_TOP_ZOOM, filter: ['in', ['get', 'pid'], ['literal', []]], paint: dot });
-      // Nearby cities merge into one circle (count summed, bounds united) so circles never overlap
-      map.addSource(CITY_SOURCE, {
-        type: 'geojson',
-        data: latest.current.cities as unknown as GeoData,
-        cluster: true,
-        clusterRadius: CITY_MERGE_PX,
-        clusterMaxZoom: Math.ceil(CITY_TOP_ZOOM),
-        clusterProperties: {
-          n: ['+', ['get', 'n']],
-          w: ['min', ['get', 'w']], s: ['min', ['get', 's']], e: ['max', ['get', 'e']], nn: ['max', ['get', 'nn']],
-          xw: ['min', ['get', 'xw']], xs: ['min', ['get', 'xs']], xe: ['max', ['get', 'xe']], xn: ['max', ['get', 'xn']],
-        },
-      });
-      map.addLayer({ id: 'cities', type: 'circle', source: CITY_SOURCE, minzoom: REGION_TOP_ZOOM, maxzoom: CITY_TOP_ZOOM, filter: ['>=', ['get', 'n'], MIN_NUMBER], layout: { 'circle-sort-key': ['-', 0, ['get', 'n']] }, paint: cityPaint });
-      map.addLayer({ id: 'city-count', type: 'symbol', source: CITY_SOURCE, minzoom: REGION_TOP_ZOOM, maxzoom: CITY_TOP_ZOOM, filter: ['>=', ['get', 'n'], MIN_NUMBER], layout: countLayout, paint: { 'text-color': '#ffffff' } });
-      // Phone Full map (below REGION_TOP_ZOOM): one circle per region (Italy north / centre / south, France, the United Kingdom ...), no merging by distance
-      map.addSource(REGION_SOURCE, { type: 'geojson', data: latest.current.regions as unknown as GeoData });
-      map.addLayer({ id: 'regions', type: 'circle', source: REGION_SOURCE, maxzoom: REGION_TOP_ZOOM, paint: cityPaint });
-      // Buildings far from the middle of their region are not in its number: small coloured dots on the Full map
-      map.addLayer({ id: 'points-far', type: 'circle', source: SOURCE, maxzoom: REGION_TOP_ZOOM, filter: ['in', ['get', 'pid'], ['literal', latest.current.regions.outliers]], paint: dot });
-      map.addLayer({ id: 'region-count', type: 'symbol', source: REGION_SOURCE, maxzoom: REGION_TOP_ZOOM, layout: countLayout, paint: { 'text-color': '#ffffff' } });
-      map.addLayer({
-        id: 'selected',
-        type: 'circle',
-        source: SOURCE,
-        filter: ['==', ['get', 'pid'], latest.current.selectedPid],
-        paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 10, 15, 18],
-          'circle-color': 'rgba(0,0,0,0)',
-          'circle-stroke-width': 3,
-          'circle-stroke-color': INK,
-        },
-      });
-
-      const pickAt = (e: { point: { x: number; y: number } }) => {
-        const { x, y } = e.point;
-        const hits = map.queryRenderedFeatures(
-          [
-            [x - 10, y - 10],
-            [x + 10, y + 10],
-          ],
-          { layers: ['points', 'points-few', 'points-far'] },
-        );
-        if (!hits.length) return;
-        // A click on a marker shows that building; when markers overlap, the one nearest to the click is picked (the first listed when they share a spot)
-        let best = hits[0];
-        let bestD = Infinity;
-        for (const h of hits) {
-          const c = (h.geometry as { coordinates?: [number, number] } | undefined)?.coordinates;
-          if (!c) continue;
-          const px = map.project(c);
-          const d = Math.hypot(px.x - x, px.y - y);
-          if (d < bestD) {
-            bestD = d;
-            best = h;
-          }
-        }
-        latest.current.onPick([String(best?.properties?.pid)]);
-      };
-      map.on('click', 'points', pickAt);
-      map.on('click', 'points-few', pickAt);
-      map.on('click', 'points-far', pickAt);
-
-      // City click: zoom so that every building of the city is in view and drawn on its own
-      const cityClick = (e: { point: { x: number; y: number } }) => {
-        const moveTo = (center: [number, number], zoom: number) => easeAwayRef.current(center, zoom);
-        const hit = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: ['cities'] })[0];
-        const pr = hit?.properties;
-        if (!pr) return;
-        const merged = pr.cluster === true || pr.cluster === 'true';
-        // A merged circle shows the union of its cities plus the region-place markers attached to them; a single city only its buildings
-        const b: LngLatBounds = merged ? [[Number(pr.xw), Number(pr.xs)], [Number(pr.xe), Number(pr.xn)]] : [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
-        if (isSameSpot(b)) {
-          // Identical coordinates cannot be told apart by zooming: several buildings -> one of them (the first) is shown; a single building -> the deepest zoom
-          const pids = pr.pids ? (JSON.parse(String(pr.pids)) as string[]) : [];
-          if (pids.length > 1) latest.current.onPick([pids[0] as string]);
-          else moveTo([b[0][0], b[0][1]], SAME_SPOT_ZOOM);
-          return;
-        }
-        // A number was clicked: go to the middle of the most crowded group of its buildings, at a scale of 1 km on the scale bar
-        const goDensest = (pids: string[]) => {
-          const set = new Set(pids);
-          const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
-          const c = densestCenter(pts) ?? { lng: (b[0][0] + b[1][0]) / 2, lat: (b[0][1] + b[1][1]) / 2 };
-          moveTo([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)));
-        };
-        const pidsOf = (v: unknown): string[] => {
-          try {
-            return JSON.parse(String(v ?? '[]')) as string[];
-          } catch {
-            return [];
-          }
-        };
-        if (!merged) return goDensest(pidsOf(pr.pids));
-        const src = map.getSource(CITY_SOURCE) as GeoJSONSource | undefined;
-        if (!src) return goDensest([]);
-        src.getClusterLeaves(Number(pr.cluster_id), 1000, 0).then((ls) => goDensest(ls.flatMap((l) => pidsOf((l.properties as Record<string, unknown> | null)?.pids)))).catch(() => goDensest([]));
-      };
-      map.on('click', 'cities', cityClick);
-      // A region was clicked: zoom to all its buildings (the cities inside then appear)
-      map.on('click', 'regions', (e: { point: { x: number; y: number } }) => {
-        const pr = map.queryRenderedFeatures([e.point.x, e.point.y] as unknown as [number, number], { layers: ['regions'] })[0]?.properties;
-        if (!pr) return;
-        const b: LngLatBounds = [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
-        if (isSameSpot(b)) return easeAwayRef.current([b[0][0], b[0][1]], SAME_SPOT_ZOOM);
-        // Fewer than 20 buildings: straight to the middle of the most crowded group, at 1 km on the scale bar
-        if (Number(pr.n) < REGION_DIRECT_N) {
-          const ids = new Set(JSON.parse(String(pr.pids ?? '[]')) as string[]);
-          const pts = latest.current.fc.features.filter((f) => ids.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
-          const c = densestCenter(pts);
-          if (c) return easeAwayRef.current([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)));
-        }
-        const cam = map.cameraForBounds(b, { padding: 40, maxZoom: 9 });
-        if (cam?.center) easeAwayRef.current(cam.center as [number, number], Math.max(cam.zoom ?? REGION_TOP_ZOOM, REGION_TOP_ZOOM + 0.2));
-      });
-      for (const id of ['cities', 'regions', 'points', 'points-few', 'points-far']) {
-        map.on('mouseenter', id, () => (map.getCanvas().style.cursor = 'pointer'));
-        map.on('mouseleave', id, () => (map.getCanvas().style.cursor = ''));
-      }
-      // Circles that would show fewer than MIN_NUMBER buildings are not drawn: their buildings appear as coloured dots instead
-      let fewKey = '';
-      const refreshFew = async () => {
-        const src = map.getSource(CITY_SOURCE) as GeoJSONSource | undefined;
-        if (!src) return;
-        const feats = map.querySourceFeatures(CITY_SOURCE, { filter: ['<', ['get', 'n'], MIN_NUMBER] });
-        const pids = new Set<string>();
-        const add = (pr: Record<string, unknown> | null | undefined) => {
-          for (const k of ['pids', 'vpids']) for (const id of JSON.parse(String(pr?.[k] ?? '[]')) as string[]) pids.add(id);
-        };
-        const jobs: Promise<void>[] = [];
-        for (const f of feats) {
-          const pr = f.properties as Record<string, unknown>;
-          if (pr.cluster === true || pr.cluster === 'true') jobs.push(src.getClusterLeaves(Number(pr.cluster_id), 50, 0).then((ls) => ls.forEach((l) => add(l.properties as Record<string, unknown>))));
-          else add(pr);
-        }
-        await Promise.all(jobs).catch(() => undefined);
-        const list = [...pids].sort();
-        const key = list.join('|');
-        if (key === fewKey) return;
-        fewKey = key;
-        map.setFilter('points-few', ['in', ['get', 'pid'], ['literal', list]]);
-      };
-      map.on('idle', () => {
-        void refreshFew();
-      });
-      setReady(true);
-    });
-
+    setLayer(map.getCanvasContainer());
     const ro = new ResizeObserver(() => map.resize());
     ro.observe(box.current);
-
     return () => {
       ro.disconnect();
+      cancelAnimationFrame(raf);
       map.remove();
       mapRef.current = null;
-      setReady(false);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Data update
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !ready) return;
-    (map.getSource(SOURCE) as GeoJSONSource | undefined)?.setData(fc as unknown as GeoData);
-    (map.getSource(CITY_SOURCE) as GeoJSONSource | undefined)?.setData(cities as unknown as GeoData);
-    (map.getSource(REGION_SOURCE) as GeoJSONSource | undefined)?.setData(regions as unknown as GeoData);
-    if (map.getLayer('points-far')) map.setFilter('points-far', ['in', ['get', 'pid'], ['literal', regions.outliers]]);
-  }, [fc, cities, regions, ready]);
+  const fitTo = useCallback(
+    (list: Building[], maxZoom = 15.5) => {
+      const map = mapRef.current;
+      const b = boundsOf(list);
+      if (!map || !b) return;
+      const p = padRef.current;
+      const extra = 50;
+      map.fitBounds(b, {
+        padding: { top: p.top + extra, right: p.right + extra, bottom: p.bottom + extra, left: p.left + extra },
+        maxZoom,
+        duration: motion(650),
+      });
+    },
+    [motion],
+  );
 
-  // Selection ring
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !ready) return;
-    map.setFilter('selected', ['==', ['get', 'pid'], selectedPid]);
-  }, [selectedPid, ready]);
+  useImperativeHandle(
+    ref,
+    () => ({
+      fitAll: (list) => (list.length ? fitTo(list, 6) : undefined),
+      fitTo,
+      home: () => {
+        const p = padRef.current;
+        mapRef.current?.fitBounds(EUROPE, { padding: { top: p.top + 20, right: p.right + 20, bottom: p.bottom + 20, left: p.left + 20 }, duration: motion(650) });
+      },
+      showBuilding: (b) => {
+        const map = mapRef.current;
+        if (!map) return;
+        const p = padRef.current;
+        // Zoom so the nearest other building stays in view (context), never past street level,
+        // and never so far out that names are hidden
+        const near = nearest(b, BUILDINGS, 1)[0];
+        const c = map.getContainer();
+        const side = Math.max(200, Math.min(c.clientWidth - p.left - p.right, c.clientHeight - p.top - p.bottom));
+        let z = 15;
+        if (near) {
+          const mpp = near.d / (0.12 * side);
+          z = Math.log2((40075016.686 * Math.cos((b.lat * Math.PI) / 180)) / (512 * mpp));
+        }
+        z = Math.max(DETAIL_ZOOM + 0.2, Math.min(14.5, z));
+        map.easeTo({ center: [b.lng, b.lat], zoom: z, padding: p, duration: motion(600) });
+      },
+    }),
+    [fitTo, motion],
+  );
 
-  // After filtering, zoom to the visible extent
-  const boundsKey = JSON.stringify(bounds);
+  const map = mapRef.current;
+  const zoom = map ? map.getZoom() : 4;
+  const detail = zoom >= DETAIL_ZOOM;
+  const zBucket = Math.floor(zoom * 2) / 2;
+
+  const clusters = useMemo(() => (detail ? [] : clusterAt(buildings, zBucket)), [buildings, zBucket, detail]);
+  const piles = useMemo(() => (detail ? stacks(buildings) : []), [buildings, detail]);
+
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !ready || !bounds) return;
-    map.fitBounds(bounds, { padding: 70, maxZoom: 14, duration: 600 });
+    setStackPick(null);
+    setTip(null);
+  }, [buildings, detail]);
+
+  // Buildings outside the current view, grouped by region
+  const outside = useMemo(() => {
+    if (!map) return [];
+    const bb = map.getBounds();
+    const groups = new Map<string, Building[]>();
+    for (const b of buildings) {
+      if (bb.contains([b.lng, b.lat])) continue;
+      const k = regionOf(b);
+      const arr = groups.get(k);
+      if (arr) arr.push(b);
+      else groups.set(k, [b]);
+    }
+    return [...groups.entries()].sort((a, b) => b[1].length - a[1].length).slice(0, 3);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boundsKey, ready]);
+  }, [map, buildings, frame]);
 
-  // Fly to the given building
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !ready || !focus) return;
-    const opts = focus as { initial?: boolean; shrink?: boolean };
-    const dz = opts.shrink ? closeZoomOut() : 0;
-    const dur = (ms: number) => (opts.initial ? 0 : ms);
-    if (focus.kind === 'point') {
-      // Zoom so that the view reaches radiusKm from the point along the shorter map side
-      const el = map.getContainer();
-      const px = Math.max(100, Math.min(el.clientWidth, el.clientHeight));
-      let mpp = (focus.radiusKm * 2000) / px;
-      if (focus.cityKm) {
-        // City view first; zoom in only until the nearest other building is SEPARATION_PX away (never deeper than radiusKm)
-        let m = (focus.cityKm * 2000) / px;
-        if (focus.minSepM && focus.minSepM / m < SEPARATION_PX) m = focus.minSepM / SEPARATION_PX;
-        mpp = Math.max(mpp, m);
+  const down = useRef<[number, number] | null>(null);
+  const onDown = (e: React.PointerEvent) => {
+    down.current = [e.clientX, e.clientY];
+  };
+  const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < 5;
+
+  let overlay: React.ReactNode = null;
+  if (map && layer) {
+    const W = map.getContainer().clientWidth;
+    const H = map.getContainer().clientHeight;
+    const proj = (lng: number, lat: number) => {
+      const p = map.project([lng, lat]);
+      return [p.x, p.y] as const;
+    };
+    const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
+    const marks: React.ReactNode[] = [];
+    const labels: React.ReactNode[] = [];
+    const cityLabels: { key: string; x: number; y: number; r: number; text: string; hot: boolean }[] = [];
+
+    if (!detail) {
+      for (const c of clusters) {
+        if (c.items.length < MIN_DONUT) {
+          for (const b of c.items) {
+            const [x, y] = proj(b.lng, b.lat);
+            if (!inView(x, y)) continue;
+            marks.push(
+              <circle key={b.id} className="mk dot" cx={x} cy={y} r={5.5} fill={ERAS[b.era].color} onPointerDown={onDown} onClick={(e) => isClick(e) && onSelect(b.id)}>
+                <title>{b.name}</title>
+              </circle>,
+            );
+          }
+          continue;
+        }
+        const [x, y] = proj(c.lng, c.lat);
+        if (!inView(x, y)) continue;
+        const r = donutRadius(c.items.length);
+        const hot = hoverCity === c.name || tip === c;
+        marks.push(
+          <g
+            key={c.key}
+            className="mk donut"
+            transform={`translate(${x.toFixed(1)},${y.toFixed(1)})`}
+            onPointerDown={onDown}
+            onPointerEnter={() => setTip(c)}
+            onPointerLeave={() => setTip((t) => (t === c ? null : t))}
+            onClick={(e) => {
+              if (!isClick(e)) return;
+              setTip(null);
+              if (c.cities.size === 1) onCity(c.name);
+              else fitTo(c.items);
+            }}
+          >
+            {hot && <circle r={r + 6} className="donut-hot" />}
+            <Donut items={c.items} r={r} />
+            <text className="donut-n" y={4.3} textAnchor="middle">
+              {c.items.length}
+            </text>
+          </g>,
+        );
+        if (c.items.length >= 5 || hot) cityLabels.push({ key: c.key, x, y, r, text: clusterName(c), hot });
       }
-      let zoom = Math.log2((78271.517 * Math.cos((focus.lat * Math.PI) / 180)) / mpp);
-      if (focus.cityKm) zoom = Math.max(zoom, CITY_TOP_ZOOM + 0.1); // the building itself must be drawn as a dot, not inside a city circle
-      map.flyTo({ center: [focus.lng, focus.lat], zoom: Math.min(Math.max(zoom, 1), 19), essential: true });
-    }
-    else if (focus.exact) {
-      const cam = map.cameraForBounds(focus.bounds, { padding: 4, maxZoom: 16 });
-      if (cam?.center && cam.zoom != null) map.easeTo({ center: cam.center, zoom: Math.max(cam.zoom - dz, 1), duration: dur(700) });
-      else map.fitBounds(focus.bounds, { padding: 4, maxZoom: 16, duration: dur(700) });
-    }
-    else if (focus.blendWith) {
-      // Centred on Switzerland, zoomed so that the scale bar reads 500 km
-      map.flyTo({ center: FULL_MAP_CENTER, zoom: Math.max(zoomForMetersPerPixel(FULL_MAP_CENTER[1], FULL_MAP_MPP) - dz, 1), essential: true, duration: dur(700) });
-    } else map.fitBounds(focus.bounds, { padding: 120, maxZoom: 16, duration: 700 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focus?.nonce, ready]);
-
-  useEffect(() => {
-    if (active) mapRef.current?.resize();
-  }, [active]);
-
-  // The building panel was closed (X, Escape, ...): the map zooms out a little. Back and Full map move the map themselves and end CLOSE_ZOOM_OUT levels farther out
-  const prevSel = useRef(selectedPid);
-  const seenNonce = useRef<number | undefined>(focus?.nonce);
-  const keepView = useRef(false);
-  useEffect(() => {
-    const was = prevSel.current;
-    prevSel.current = selectedPid;
-    const moved = focus?.nonce !== seenNonce.current;
-    seenNonce.current = focus?.nonce;
-    const map = mapRef.current;
-    const skip = keepView.current || moved;
-    keepView.current = false;
-    if (!map || !ready || !was || selectedPid || skip) return;
-    map.easeTo({ zoom: Math.max(map.getZoom() - closeZoomOut(), 1), duration: 400 });
-  }, [selectedPid, focus?.nonce, ready]);
-
-  // Back: zoom to the size of the country the current building is in (the open building, else the one nearest the view centre); the panel closes
-  const goBack = () => {
-    const map = mapRef.current;
-    if (!map) return;
-    const sel = latest.current.selectedPid ? dataset.places.find((p) => p.id === latest.current.selectedPid) : undefined;
-    const c = map.getCenter();
-    const ref = sel?.points[0] ? { place: sel, lng: sel.points[0].lng, lat: sel.points[0].lat } : nearestPlace(dataset.places, c.lng, c.lat);
-    if (!ref) return;
-    keepView.current = !!latest.current.selectedPid; // this view is the end point: no extra zoom-out when the panel closes
-    const b = countryBounds(dataset.places, ref.place.country);
-    if (b) {
-      const cam = map.cameraForBounds(b, { padding: 20, maxZoom: 16 });
-      if (cam?.center) map.easeTo({ center: cam.center as [number, number], zoom: cam.zoom, duration: 600 });
+      // City names: right of the circle first, then left, below, above; never over another circle or name
+      const occupied: Box[] = [];
+      for (const c of clusters) {
+        if (c.items.length < MIN_DONUT) continue;
+        const [x, y] = proj(c.lng, c.lat);
+        const r = donutRadius(c.items.length);
+        occupied.push({ x1: x - r, x2: x + r, y1: y - r, y2: y + r });
+      }
+      cityLabels.sort((a, b) => Number(b.hot) - Number(a.hot) || b.r - a.r);
+      for (const l of cityLabels) {
+        const tw = textWidth(l.text, false) + 2;
+        const cands: [number, number][] = [
+          [l.x + l.r + 5, l.y + 4.5],
+          [l.x - l.r - 5 - tw, l.y + 4.5],
+          [l.x - tw / 2, l.y + l.r + 15],
+          [l.x - tw / 2, l.y - l.r - 6],
+        ];
+        for (const [tx, ty] of cands) {
+          const b = { x1: tx - 2, x2: tx + tw + 2, y1: ty - 12, y2: ty + 3 };
+          if (occupied.some((o) => !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2))) continue;
+          occupied.push(b);
+          labels.push(<CityLabel key={`l-${l.key}`} x={tx} y={ty} text={l.text} />);
+          break;
+        }
+      }
     } else {
-      // "Others": there is no country to fit, so show about 1000 km across around the building
-      const px = Math.max(map.getContainer().getBoundingClientRect().width, 1);
-      map.easeTo({ center: [ref.lng, ref.lat], zoom: Math.min(Math.max(zoomForMetersPerPixel(OTHERS_VIEW_M / px, ref.lat), 1), 16), duration: 600 });
+      const placed: Box[] = [];
+      const items: { x: number; y: number; pile: { items: Building[]; lng: number; lat: number } }[] = [];
+      for (const pile of piles) {
+        const [x, y] = proj(pile.lng, pile.lat);
+        if (!inView(x, y)) continue;
+        items.push({ x, y, pile });
+        placed.push({ x1: x - 8, x2: x + 8, y1: y - 8, y2: y + 8 });
+      }
+      // Labels: selected first, then those asked in previous years, then the rest; skipped where they would collide
+      const rank = (p: { items: Building[] }) => (selected && p.items.includes(selected) ? 0 : p.items.some((b) => b.exams.length) ? 1 : 2);
+      for (const it of [...items].sort((a, b) => rank(a.pile) - rank(b.pile))) {
+        const isSel = !!selected && it.pile.items.includes(selected);
+        const text = it.pile.items.length > 1 ? `${shortStack(it.pile.items)} (${it.pile.items.length})` : it.pile.items[0]!.name;
+        const pos = placeLabel(it.x, it.y, text, isSel, placed, W, H);
+        if (!pos) continue;
+        labels.push(<PlaceLabel key={`t-${it.pile.items[0]!.id}`} {...pos} text={text} strong={isSel} />);
+      }
+      for (const it of items) {
+        const { x, y, pile } = it;
+        if (pile.items.length > 1) {
+          marks.push(
+            <g key={`s-${pile.items[0]!.id}`} className="mk pile" transform={`translate(${x},${y})`} onPointerDown={onDown} onClick={(e) => isClick(e) && setStackPick(pile)}>
+              <rect x={-10} y={-10} width={20} height={20} />
+              <text y={4.5} textAnchor="middle">
+                {pile.items.length}
+              </text>
+            </g>,
+          );
+        } else {
+          const b = pile.items[0]!;
+          if (selected && b.id === selected.id) continue;
+          marks.push(
+            <circle key={b.id} className={`mk dot${b.exams.length ? ' asked' : ''}`} cx={x} cy={y} r={6.5} fill={ERAS[b.era].color} onPointerDown={onDown} onClick={(e) => isClick(e) && onSelect(b.id)}>
+              <title>{b.name}</title>
+            </circle>,
+          );
+        }
+      }
     }
-    onBack?.();
-  };
+    if (selected) {
+      const [x, y] = proj(selected.lng, selected.lat);
+      if (inView(x, y)) {
+        marks.push(
+          <g key="sel" className="sel-mark" transform={`translate(${x},${y})`}>
+            <circle r={18} fill={ERAS[selected.era].color} opacity={0.2} />
+            <circle r={10} fill="#fff" stroke="#000" strokeWidth={3} />
+            <circle r={5.5} fill={ERAS[selected.era].color} />
+          </g>,
+        );
+      }
+    }
 
-  // A direction button: move (zoom unchanged) to the middle of the most crowded group of the city with the most buildings among those merged into that direction
-  const goEdge = (keys: string[]) => {
-    const map = mapRef.current;
-    if (!map) return;
-    // The buildings of every city in this direction that are out of the current view; the city with the most of them wins (18 = 16 + 2 goes to the 16)
-    const byPid = new Map(latest.current.fc.features.map((f) => [f.properties.pid, f.geometry.coordinates as [number, number]]));
-    const mc = map.getCenter();
-    const box2 = map.getContainer().getBoundingClientRect();
-    const outOf = (f: (typeof latest.current.cities.features)[number]) => pointsOutside(cityPoints(f.properties.pids, byPid), { lng: mc.lng, lat: mc.lat }, map.getZoom(), box2.width, box2.height);
-    const groups = latest.current.cities.features.filter((f) => keys.includes(f.properties.city)).map((f) => outOf(f)).filter((g) => g.length);
-    const total = groups.reduce((n, g) => n + g.length, 0);
-    const away = groups.reduce<(typeof groups)[number]>((t, g) => (g.length > t.length ? g : t), []);
-    if (!away.length) return;
-    // A button that stands for exactly one building opens that building's panel (and flies to it) directly
-    if (total === 1) {
-      latest.current.onPick([away[0]!.pid]);
-      return;
+    let tipEl: React.ReactNode = null;
+    if (tip && !detail) {
+      const [x, y] = proj(tip.lng, tip.lat);
+      const r = donutRadius(tip.items.length);
+      const parts = [...tip.cities.entries()].sort((a, b) => b[1] - a[1]);
+      tipEl = (
+        <div className="map-tip" style={{ left: Math.min(x + r + 10, W - 250), top: y + r + 4 }}>
+          <b>{clusterName(tip)}</b>
+          <span>
+            {tip.items.length} buildings{parts.length > 1 ? `: ${parts.map(([k, v]) => `${k} ${v}`).join(', ')}` : ''}
+          </span>
+          <span className="k">Click to zoom in</span>
+        </div>
+      );
     }
-    const c = densestCenter(away);
-    if (!c) return;
-    easeAway([c.lng, c.lat], map.getZoom());
-  };
+
+    let pickEl: React.ReactNode = null;
+    if (stackPick) {
+      const [x, y] = proj(stackPick.lng, stackPick.lat);
+      pickEl = (
+        <div
+          className="stack-pick"
+          style={{ left: Math.min(x + 16, W - 290), top: Math.max(8, Math.min(y - 10, H - 40 - stackPick.items.length * 38)) }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
+          <div className="sp-h">
+            Same place, {stackPick.items.length} entries
+            <button type="button" aria-label="Close" onClick={() => setStackPick(null)}>
+              <Icon name="close" size={12} />
+            </button>
+          </div>
+          {stackPick.items.map((b) => (
+            <button
+              type="button"
+              key={b.id}
+              className="sp-row"
+              onClick={() => {
+                setStackPick(null);
+                onSelect(b.id);
+              }}
+            >
+              <i style={{ background: ERAS[b.era].color }} />
+              <span>{b.name}</span>
+              <em>{b.yearShort}</em>
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    overlay = createPortal(
+      <>
+        <svg className="overlay" width={W} height={H}>
+          {marks}
+          {labels}
+        </svg>
+        {tipEl}
+        {pickEl}
+      </>,
+      layer,
+    );
+  }
+
+  // Scale bar: the longest round length that fits in 110 px
+  let scale: { label: string; px: number } | null = null;
+  if (map) {
+    const lat = map.getCenter().lat;
+    const mpp = (40075016.686 * Math.cos((lat * Math.PI) / 180)) / (512 * 2 ** zoom);
+    const nice = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000];
+    const m = [...nice].reverse().find((n) => n / mpp <= 110) ?? 5;
+    scale = { label: m >= 1000 ? `${m / 1000} km` : `${m} m`, px: m / mpp };
+  }
 
   return (
-    <>
-      <div ref={box} className="map" data-testid="map" />
-      {!hideEdges && edges.map((m) => (
-        <button key={m.key} type="button" className="edge-dot" data-testid="edge-dot" style={{ left: m.x, top: m.y }} aria-label={`${m.n} buildings in this direction`} onClick={() => goEdge(m.keys)}>
-          {m.n}
+    <div className="map-box">
+      <div ref={box} className="map-canvas" />
+      {overlay}
+      {outside.length > 0 && !(compact && selected) && (
+        <div className="away" style={{ left: padding.left + 16, bottom: padding.bottom + 52 }}>
+          {outside.map(([k, v]) => (
+            <button type="button" key={k} className="chip away-chip" onClick={() => fitTo(v, 12)}>
+              {k}
+              <span className="n">{v.length}</span>
+              <Icon name="right" size={12} />
+            </button>
+          ))}
+        </div>
+      )}
+      {scale && !(compact && selected) && (
+        <div className="scale" style={{ left: padding.left + 16, bottom: padding.bottom + 14 }}>
+          {scale.label}
+          <i style={{ width: scale.px }} />
+        </div>
+      )}
+      <div className="ctrls" style={{ right: padding.right + 14, bottom: padding.bottom + 14 }}>
+        <button type="button" aria-label="Zoom in" onClick={() => map?.zoomIn({ duration: motion(250) })}>
+          <Icon name="plus" />
         </button>
-      ))}
-      <button type="button" className="map-back" data-testid="map-back" aria-label="Back to the country view" title="Country view" onClick={goBack}>
-        &lt; Back
-      </button>
-      {err && <div className="map-note" role="status">{err}</div>}
+        <button type="button" aria-label="Zoom out" onClick={() => map?.zoomOut({ duration: motion(250) })}>
+          <Icon name="minus" />
+        </button>
+        <button type="button" aria-label="Show every result" title="Show every result (F)" onClick={() => (buildings.length ? fitTo(buildings, 6) : undefined)}>
+          <Icon name="fit" />
+        </button>
+      </div>
+      <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: padding.right + 64, bottom: padding.bottom + 4 }}>
+        Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors
+      </div>
+    </div>
+  );
+});
+
+export default MapView;
+
+/** Name for a circle: the city; several cities are "<city> area"; many cities of one country are the country */
+function clusterName(c: Cluster): string {
+  if (c.cities.size === 1) return c.name;
+  const countries = new Set(c.items.map((b) => b.country));
+  const only = [...countries][0];
+  if (c.cities.size >= 4 && countries.size === 1 && only && only !== 'Others') return only;
+  return `${c.name} area`;
+}
+
+function Donut({ items, r }: { items: Building[]; r: number }) {
+  const ring = 6;
+  const parts = ERA_ORDER.map((e) => [e, items.filter((b) => b.era === e).length] as const).filter(([, n]) => n > 0);
+  const total = items.length;
+  if (parts.length === 1) {
+    return (
+      <>
+        <circle r={r - ring / 2} fill="none" stroke={ERAS[parts[0]![0]].color} strokeWidth={ring} />
+        <circle r={r - ring} fill="#fff" />
+      </>
+    );
+  }
+  let a0 = -Math.PI / 2;
+  const P = (a: number, rr: number) => `${(Math.cos(a) * rr).toFixed(2)},${(Math.sin(a) * rr).toFixed(2)}`;
+  return (
+    <>
+      {parts.map(([e, n]) => {
+        const a1 = a0 + (n / total) * Math.PI * 2;
+        const large = a1 - a0 > Math.PI ? 1 : 0;
+        const d = `M${P(a0, r)} A${r},${r} 0 ${large} 1 ${P(a1, r)} L${P(a1, r - ring)} A${r - ring},${r - ring} 0 ${large} 0 ${P(a0, r - ring)} Z`;
+        a0 = a1;
+        return <path key={e} d={d} fill={ERAS[e].color} stroke="#fff" strokeWidth={1} />;
+      })}
+      <circle r={r - ring} fill="#fff" />
     </>
   );
+}
+
+function CityLabel({ x, y, text }: { x: number; y: number; text: string }) {
+  return (
+    <g className="city-lbl">
+      <text x={x} y={y} className="halo">
+        {text}
+      </text>
+      <text x={x} y={y}>
+        {text}
+      </text>
+    </g>
+  );
+}
+
+interface Box {
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
+}
+
+let measureCtx: CanvasRenderingContext2D | null = null;
+function textWidth(text: string, strong: boolean): number {
+  if (!measureCtx) measureCtx = document.createElement('canvas').getContext('2d');
+  if (!measureCtx) return text.length * 7;
+  measureCtx.font = `${strong ? 750 : 600} ${strong ? 13.5 : 12}px "Archivo Variable", "Noto Sans TC", sans-serif`;
+  return measureCtx.measureText(text).width;
+}
+
+function placeLabel(x: number, y: number, text: string, strong: boolean, placed: Box[], W: number, H: number) {
+  const fs = strong ? 13.5 : 12;
+  const tw = textWidth(text, strong);
+  const cands: [number, number, 'start' | 'end' | 'middle'][] = [
+    [12, 4, 'start'], [-12, 4, 'end'], [0, -14, 'middle'], [0, 22, 'middle'], [10, -9, 'start'], [-10, -9, 'end'], [10, 16, 'start'], [-10, 16, 'end'],
+  ];
+  for (const [dx, dy, anchor] of cands) {
+    const x1 = anchor === 'start' ? x + dx : anchor === 'end' ? x + dx - tw : x - tw / 2;
+    const b = { x1: x1 - 3, x2: x1 + tw + 3, y1: y + dy - fs, y2: y + dy + 4 };
+    if (b.x1 < 2 || b.x2 > W - 2 || b.y1 < 2 || b.y2 > H - 2) continue;
+    if (placed.some((o) => !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2))) continue;
+    placed.push(b);
+    return { x: x1, y: y + dy, w: tw };
+  }
+  return null;
+}
+
+function PlaceLabel({ x, y, w, text, strong }: { x: number; y: number; w: number; text: string; strong: boolean }) {
+  if (strong) {
+    return (
+      <g className="place-lbl strong">
+        <rect x={x - 6} y={y - 15} width={w + 12} height={21} />
+        <text x={x} y={y}>
+          {text}
+        </text>
+      </g>
+    );
+  }
+  return (
+    <g className="place-lbl">
+      <text x={x} y={y} className="halo">
+        {text}
+      </text>
+      <text x={x} y={y}>
+        {text}
+      </text>
+    </g>
+  );
+}
+
+/** Label for several entries at one spot: their shared leading words, else the first name */
+function shortStack(items: Building[]): string {
+  const words = items.map((b) => b.name.split(/\s+/));
+  const out: string[] = [];
+  const first = words[0] ?? [];
+  for (let i = 0; i < first.length; i++) {
+    const w = first[i];
+    if (w && words.every((ws) => ws[i] === w)) out.push(w);
+    else break;
+  }
+  return out.length ? out.join(' ') : (items[0]?.name ?? '');
 }

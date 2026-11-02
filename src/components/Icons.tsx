@@ -1,0 +1,39 @@
+export type IconName = 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'time' | 'cards' | 'undo';
+
+/** Line icons drawn on a 16 px grid; colour follows the text colour */
+export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
+  const p = { width: size, height: size, viewBox: '0 0 16 16', 'aria-hidden': true, focusable: false } as const;
+  const s = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.9 } as const;
+  switch (name) {
+    case 'search':
+      return (<svg {...p}><circle cx="6.8" cy="6.8" r="4.8" {...s} /><path d="M10.4 10.4 14.5 14.5" {...s} strokeWidth={2.1} /></svg>);
+    case 'plus':
+      return (<svg {...p}><path d="M8 2v12M2 8h12" {...s} /></svg>);
+    case 'minus':
+      return (<svg {...p}><path d="M2 8h12" {...s} /></svg>);
+    case 'fit':
+      return (<svg {...p}><path d="M1.5 5.5v-4h4M10.5 1.5h4v4M14.5 10.5v4h-4M5.5 14.5h-4v-4" {...s} /></svg>);
+    case 'close':
+      return (<svg {...p}><path d="M3 3l10 10M13 3 3 13" {...s} /></svg>);
+    case 'left':
+      return (<svg {...p}><path d="M10 2.5 4.5 8l5.5 5.5" {...s} /></svg>);
+    case 'right':
+      return (<svg {...p}><path d="M6 2.5 11.5 8 6 13.5" {...s} /></svg>);
+    case 'star':
+      return (<svg {...p}><path d="M8 1.6l1.9 4.1 4.5.5-3.4 3 1 4.4L8 11.4l-4 2.2 1-4.4-3.4-3 4.5-.5z" {...s} strokeWidth={1.5} strokeLinejoin="round" /></svg>);
+    case 'starOn':
+      return (<svg {...p}><path d="M8 1.6l1.9 4.1 4.5.5-3.4 3 1 4.4L8 11.4l-4 2.2 1-4.4-3.4-3 4.5-.5z" fill="currentColor" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" /></svg>);
+    case 'check':
+      return (<svg {...p}><path d="M2.5 8.5 6 12l7.5-8.5" {...s} strokeWidth={2.1} /></svg>);
+    case 'filter':
+      return (<svg {...p}><path d="M1.5 3.5h13M4 8h8M6.5 12.5h3" {...s} /></svg>);
+    case 'map':
+      return (<svg {...p}><path d="M1.5 4l4-1.7 5 1.7 4-1.7v9.7l-4 1.7-5-1.7-4 1.7zM5.5 2.3v9.7M10.5 4v9.7" {...s} strokeWidth={1.5} strokeLinejoin="round" /></svg>);
+    case 'time':
+      return (<svg {...p}><path d="M1 8h14M4 4.5v7M8 3v10M12 5.5v5" {...s} strokeWidth={1.6} /></svg>);
+    case 'cards':
+      return (<svg {...p}><rect x="2" y="4.5" width="9.5" height="9.5" {...s} strokeWidth={1.5} /><path d="M4.5 2h9.5v9.5" {...s} strokeWidth={1.5} /></svg>);
+    case 'undo':
+      return (<svg {...p}><path d="M5 3.5 2 6.5l3 3M2.5 6.5H10a4 4 0 0 1 0 8H7" {...s} strokeWidth={1.6} /></svg>);
+  }
+}

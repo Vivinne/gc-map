@@ -1,5 +1,8 @@
-// Entry for the static single-page build: mounts MapApp directly, without Next.js. MapLibre is loaded by index.html through a <script> tag (window.maplibregl).
+// Entry for the single-file build (scripts/build-standalone.mjs): same App, no Next.js
+import '@fontsource-variable/archivo/wdth.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '../app/globals.css';
 import { createRoot } from 'react-dom/client';
-import MapApp from '../components/MapApp';
+import App from '../components/App';
 
-createRoot(document.getElementById('root') as HTMLElement).render(<MapApp />);
+createRoot(document.getElementById('root')!).render(<App />);

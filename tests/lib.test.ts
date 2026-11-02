@@ -1,282 +1,154 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { filterPlaces, matchesQuery, norm } from '../src/lib/filter';
-import { SAME_SPOT_ZOOM, boundsOf, boundsOfCoords, cityClickZoom, cityOf, coordKey, isSameSpot, toCityCollection, toFeatureCollection, CITY_TOP_ZOOM } from '../src/lib/geo';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { blocks, scaleEnd, tickX, xOfYear, yearAt } from '../src/lib/band';
+import { EMPTY, apply, tagCounts, type Filters } from '../src/lib/filter';
+import { clusterAt, donutRadius, distance, regionOf, stacks, worldPx, MIN_DONUT } from '../src/lib/geo';
 import { formatHash, parseHash } from '../src/lib/hash';
-import { buildGroups, matchesTags } from '../src/lib/tags';
-import type { Era, Place } from '../src/lib/types';
+import { BUILDINGS, BY_ID, citiesOf, shortYear, startYear } from '../src/lib/model';
+import { again, gotIt, newDeck, syncDeck, AGAIN_GAP } from '../src/lib/review';
+import { search } from '../src/lib/search';
 
-const eras: Era[] = [
-  { id: 'ancient', label: 'Ancient', color: '#B5452E' },
-  { id: 'modern', label: 'Modern', color: '#6B3FA0' },
-];
+const none = new Set<string>();
+const CENTURY = '\u4e16\u7d00';
 
-const groups = buildGroups(eras);
-
-const mk = (over: Partial<Place>): Place => {
-  const p: Place = {
-    id: 'x', name: 'X', loc: 'Rome', locLabel: 'Rome', year: '—', who: '—', note: '', summary: '', style: 'Ancient Rome',
-    styleId: '6.2', era: 'ancient', eras: [], country: 'Italy', exams: [], points: [], ...over,
-  };
-  if (!over.eras) p.eras = [p.era];
-  return p;
-};
-
-const pt = (id: string, lng: number, lat: number, sub = '') => ({
-  id, sub, lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '',
+test('startYear: spans, BC, AD, centuries, missing', () => {
+  assert.equal(startYear('1928\u20131931'), 1928);
+  assert.equal(startYear('BC 447\u2013BC 432'), -447);
+  assert.equal(startYear('AD 118\u2013125'), 118);
+  assert.equal(startYear('15th-1505'), 1450);
+  assert.equal(startYear(`BC 6 ${CENTURY}\u2013`), -550);
+  assert.equal(startYear(`2 ${CENTURY}\u20134 ${CENTURY}`), 150);
+  assert.equal(startYear('\u2014'), null);
+  assert.equal(startYear(''), null);
 });
 
-const places: Place[] = [
-  mk({ id: 'pantheon-rome', name: 'Pantheon', points: [pt('a', 12.4768, 41.8986)] }),
-  mk({ id: 'pantheon-paris', name: 'Panthéon', loc: 'Paris', era: 'ancient', country: 'France', exams: [2016], note: 'French version of the Pantheon', points: [pt('b', 2.3458, 48.846)] }),
-  mk({ id: 'maxxi', name: 'MAXXI', era: 'modern', exams: [2016, 2018], who: 'Zaha Hadid', points: [pt('c', 12.466, 41.929)] }),
-  mk({ id: 'salk', name: 'Salk Institute', loc: '', era: 'modern', country: '', who: 'Louis Kahn', points: [] }),
-];
-
-test('norm strips diacritics and lower-cases', () => {
-  assert.equal(norm('Panthéon'), 'pantheon');
-  assert.equal(norm('Bibliothèque'), 'bibliotheque');
+test('shortYear keeps the first part as written', () => {
+  assert.equal(shortYear('1928\u20131931'), '1928');
+  assert.equal(shortYear('1909-1910'), '1909');
+  assert.equal(shortYear('BC 447\u2013BC 432'), 'BC 447');
+  assert.equal(shortYear('\u2014'), '');
 });
 
-test('matchesQuery: empty string matches all, several keywords are ANDed', () => {
-  assert.ok(matchesQuery(places[0]!, ''));
-  assert.ok(matchesQuery(places[2]!, 'zaha  maxxi'));
-  assert.ok(!matchesQuery(places[2]!, 'zaha pantheon'));
+test('every building has a city, a position and a sortable year or none', () => {
+  assert.equal(BUILDINGS.length, 204);
+  for (const b of BUILDINGS) {
+    assert.ok(b.city, `${b.name} has no city`);
+    assert.ok(Number.isFinite(b.lng) && Number.isFinite(b.lat));
+    assert.ok(b.y0 === null || (b.y0 > -1000 && b.y0 < 2100), `${b.name} year ${b.y0}`);
+  }
+  assert.equal(citiesOf(BUILDINGS)[0]!.city, 'Rome');
 });
 
-test('matchesQuery: diacritics are ignored', () => {
-  assert.ok(matchesQuery(places[1]!, 'pantheon'));
-  assert.ok(matchesQuery(places[0]!, 'panthéon'));
+test('filters: union inside a group, intersection across groups', () => {
+  const f: Filters = { ...EMPTY, styles: ['ancient', 'baroque'] };
+  const r = apply(f, none);
+  assert.ok(r.every((b) => b.eras.includes('ancient') || b.eras.includes('baroque')));
+  assert.ok(r.length > apply({ ...EMPTY, styles: ['ancient'] }, none).length);
+  const it = apply({ ...f, countries: ['Italy'] }, none);
+  assert.ok(it.length > 0 && it.every((b) => b.country === 'Italy'));
+  const asked = apply({ ...EMPTY, exam: true, examYears: [2016] }, none);
+  assert.ok(asked.length > 0 && asked.every((b) => b.exams.includes(2016)));
+  const range = apply({ ...EMPTY, range: [1900, 1950] }, none);
+  assert.ok(range.every((b) => b.y0 !== null && b.y0 >= 1900 && b.y0 <= 1950));
+  assert.deepEqual(apply({ ...EMPTY, q: 'Le Corbusier' }, none).length >= 5, true);
 });
 
-test('filterPlaces: era and search can be combined', () => {
-  const all = filterPlaces(places, { tags: new Set(), q: '' }, groups);
-  assert.equal(all.length, 4);
-  const modern = filterPlaces(places, { tags: new Set(['s:modern']), q: '' }, groups);
-  assert.deepEqual(modern.map((p) => p.id), ['maxxi', 'salk']);
-  const q = filterPlaces(places, { tags: new Set(), q: 'kahn' }, groups);
-  assert.deepEqual(q.map((p) => p.id), ['salk']);
+test('tag counts are "if this tag were added"', () => {
+  const c = tagCounts({ ...EMPTY, styles: ['modern'] }, none);
+  const modern = apply({ ...EMPTY, styles: ['modern'] }, none).length;
+  assert.equal(c.styles.modern, modern);
+  assert.equal(c.styles.ancient, apply({ ...EMPTY, styles: ['modern', 'ancient'] }, none).length);
+  assert.equal(c.countries.Italy, apply({ ...EMPTY, styles: ['modern'], countries: ['Italy'] }, none).length);
+  assert.equal(tagCounts(EMPTY, none).exam, 76);
 });
 
-test('tags: union inside a group, intersection across groups; tags without a match give nothing', () => {
-  const run = (...t: string[]) => filterPlaces(places, { tags: new Set(t), q: '' }, groups).map((p) => p.id);
-  assert.deepEqual(run('y:2016'), ['pantheon-paris', 'maxxi']);
-  assert.deepEqual(run('y:2016', 'c:France'), ['pantheon-paris']);
-  assert.deepEqual(run('y:2016', 'y:2018'), places.filter((p) => p.exams.includes(2016) || p.exams.includes(2018)).map((p) => p.id), 'same group = union');
-  assert.ok(run('y:2016', 'y:2018').length >= run('y:2016').length);
-  assert.deepEqual(run('y:2016', 'y:2018', 'c:France'), ['pantheon-paris'], 'groups are intersected');
-  assert.deepEqual(run('c:France', 'c:Italy').sort(), places.filter((p) => p.country === 'France' || p.country === 'Italy').map((p) => p.id).sort());
-  assert.deepEqual(run('y:2016', 'c:France', 's:modern'), []);
-  assert.deepEqual(run('c:Others'), []);
-  // a building with several style tags counts under each of them
-  const multi = [mk({ id: 'multi', name: 'Multi', era: 'ancient', eras: ['ancient', 'modern'] })];
-  const hit = (t: string) => filterPlaces(multi, { tags: new Set([t]), q: '' }, groups).length;
-  assert.equal(hit('s:ancient') + hit('s:modern'), 2);
-  assert.ok(matchesTags(places[0]!, new Set(), groups));
-  assert.equal(groups.map((g) => g.tags.length).join(','), '6,2,13');
-});
-
-test('toFeatureCollection: one Feature per point, coordinates are [lng, lat], colour follows the era', () => {
-  const fc = toFeatureCollection(places, eras);
-  assert.equal(fc.features.length, 3);
-  const f = fc.features[0]!;
-  assert.deepEqual(f.geometry.coordinates, [12.4768, 41.8986]);
-  assert.equal(f.properties.color, '#B5452E');
-  assert.equal(f.properties.pid, 'pantheon-rome');
-  assert.equal(f.properties.est, false);
-  const est = toFeatureCollection([mk({ id: 'e', points: [{ ...pt('e0', 1, 2), precision: 'estimate' as const }] })], eras);
-  assert.equal(est.features[0]!.properties.est, true);
-});
-
-test('boundsOf: covers all points; null when there are none', () => {
-  assert.deepEqual(boundsOf(places), [[2.3458, 41.8986], [12.4768, 48.846]]);
-  assert.equal(boundsOf([places[3]!]), null);
-});
-
-test('coordKey: points within about 10 m count as the same', () => {
-  assert.equal(coordKey(12.45333, 41.90222), coordKey(12.453331, 41.902219));
-});
-
-test('hash: round-trips and ignores unknown tags', () => {
-  const s = { p: 'maxxi', t: ['y:2016', 'c:United Kingdom', 's:modern'], q: 'zaha hadid' };
+test('address hash round trip', () => {
+  const s = { mode: 'timeline' as const, b: 'pantheon-rome', city: 'Rome', filters: { ...EMPTY, styles: ['ancient' as const], countries: ['Italy'], exam: true, examYears: [2016], range: [-500, 1500] as [number, number], q: 'dome', who: 'Hadrian', starred: true } };
   assert.deepEqual(parseHash(formatHash(s)), s);
-  assert.deepEqual(parseHash('#t=y:2016,nope,c:Italy').t, ['y:2016', 'c:Italy']);
-  assert.equal(formatHash({ p: '', t: [], q: '' }), '');
+  assert.deepEqual(parseHash('#s=bogus&k=Mars&y=1990'), { mode: 'map', b: '', city: '', filters: EMPTY });
 });
 
-test('same-spot detection and bounds of coordinates', () => {
-  assert.equal(boundsOfCoords([]), null);
-  const b = boundsOfCoords([[12.45, 41.9], [12.5, 41.88], [12.47, 41.95]]);
-  assert.deepEqual(b, [[12.45, 41.88], [12.5, 41.95]]);
-  assert.equal(isSameSpot(b!), false);
-  assert.equal(isSameSpot(boundsOfCoords([[12.4533, 41.9022], [12.4533, 41.9022]])!), true);
-  assert.equal(isSameSpot(boundsOfCoords([[12.4533, 41.9022], [12.4534, 41.9022]])!), false);
-  assert.ok(SAME_SPOT_ZOOM > 17);
+test('period band: block widths fill the band, year scale is monotonic', () => {
+  const bl = blocks(1000, BUILDINGS);
+  const last = bl[bl.length - 1]!;
+  assert.ok(Math.abs(last.x + last.w - 1000) < 0.5);
+  let prev = -Infinity;
+  for (let x = 0; x <= scaleEnd(bl); x += 5) {
+    const y = yearAt(bl, x);
+    assert.ok(y >= prev - 1, `year goes back at x=${x}`);
+    prev = Math.max(prev, y);
+  }
+  for (const b of BUILDINGS) {
+    const x = tickX(bl, b);
+    if (b.y0 === null) assert.equal(x, null);
+    else assert.ok(x! >= 0 && x! <= 1000);
+  }
+  assert.ok(xOfYear(bl, 1500) < xOfYear(bl, 1900));
 });
 
-test('city circles: city from the handout location, count = buildings, region places join the nearest city, click zoom', () => {
-  const mk = (id: string, loc: string, pts: [number, number][], note = '') =>
-    ({ id, loc, points: pts.map(([lng, lat], i) => ({ id: `${id}${i}`, lng, lat, sub: '', note, precision: 'exact' })) }) as unknown as Place;
-  assert.equal(cityOf(mk('a', 'Rome（Italy）', [[12.5, 41.9]])), 'Rome');
-  assert.equal(cityOf(mk('b', 'Paris (France) 附近', [[2.3, 48.8]])), 'Paris');
-  assert.notEqual(cityOf(mk('c', 'Vatican City', [[12.45, 41.9]])), cityOf(mk('d', 'Rome', [[12.5, 41.9]])));
-  assert.equal(cityOf(mk('e', '', [[5.4, 43.3]], 'Supplementary location: Marseille; coordinates taken from X')), 'Marseille');
-  const places = [
-    mk('r1', 'Rome', [[12.49, 41.89]]),
-    mk('r2', 'Rome（Italy）', [[12.47, 41.9], [12.48, 41.91]]), // two points, one building
-    mk('v1', 'Venice', [[12.33, 45.43]]),
-    mk('g', 'Veneto', [[11.5, 45.0], [12.2, 45.8]]), // villas spread over a region
-    mk('z', 'Zurich', [[8.54, 47.37]]),
-  ];
-  const f = toCityCollection(places).features;
-  const by = Object.fromEntries(f.map((x) => [x.properties.city, x.properties]));
-  assert.equal(by.Rome!.n, 2);
-  assert.equal(by.Zurich!.n, 1);
-  // A region-wide place (the Veneto villas) has no city circle of its own
-  assert.equal(by.Veneto, undefined);
-  assert.deepEqual(JSON.parse(by.Rome!.pids), ['r1', 'r2']);
-  assert.deepEqual([by.Rome!.w, by.Rome!.s, by.Rome!.e, by.Rome!.nn], [12.47, 41.89, 12.49, 41.91]);
-  // The region place's markers join the nearest city's union bounds (x*); number, circle bounds and position stay
-  const ven = by.Venice!;
-  assert.equal(ven.n, 1);
-  assert.deepEqual([ven.w, ven.e], [12.33, 12.33]);
-  assert.equal(ven.vpids, JSON.stringify(['g']));
-  assert.equal(by.Rome!.vpids, '[]');
-  assert.deepEqual([ven.xw, ven.xs, ven.xe, ven.xn], [11.5, 45, 12.33, 45.8]);
-  assert.deepEqual([by.Rome!.xw, by.Rome!.xs, by.Rome!.xe, by.Rome!.xn], [by.Rome!.w, by.Rome!.s, by.Rome!.e, by.Rome!.nn]);
-  // The click lands just past the switch zoom, a deeper fit is kept
-  assert.equal(cityClickZoom(14), 14);
-  assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
+test('review deck: got it retires, again comes back a few cards later', () => {
+  const ids = BUILDINGS.map((b) => b.id);
+  let d = newDeck(ids, 7);
+  assert.equal(new Set(d.queue).size, ids.length);
+  const first = d.queue[0]!;
+  d = again(d);
+  assert.equal(d.queue.indexOf(first), AGAIN_GAP);
+  assert.equal(d.again[first], 1);
+  const cur = d.queue[0]!;
+  d = gotIt(d);
+  assert.ok(d.known.includes(cur) && !d.queue.includes(cur));
+  const synced = syncDeck({ ...d, queue: [...d.queue, 'gone'] }, ids, 1);
+  assert.ok(!synced.queue.includes('gone'));
+  assert.equal(synced.queue.length + synced.known.length, ids.length);
 });
 
-import { avoidObstacles, viewContainsPoint, edgeMarkers, edgeMarkersExpanding, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
-test('densestCenter picks the middle of the most crowded group', () => {
-  assert.equal(densestCenter([]), null);
-  // three buildings within 300 m, one 20 km away: the centre is the middle of the three
-  const c = densestCenter([{ lng: 12.4900, lat: 41.9000 }, { lng: 12.4920, lat: 41.9010 }, { lng: 12.4910, lat: 41.9020 }, { lng: 12.7, lat: 42.0 }])!;
-  assert.ok(Math.abs(c.lng - 12.4910) < 1e-4 && Math.abs(c.lat - 41.9010) < 1e-4, JSON.stringify(c));
-  // a single point is its own centre
-  assert.deepEqual(densestCenter([{ lng: 8.54, lat: 47.37 }]), { lng: 8.54, lat: 47.37 });
-});
-test('zoom for 1 km on the scale bar, polar limit and phone Full map bounds', () => {
-  const z = zoomForMetersPerPixel(45, SCALE_1KM_MPP);
-  assert.ok(Math.abs((78271.517 * Math.cos((45 * Math.PI) / 180)) / 2 ** z - SCALE_1KM_MPP) < 1e-9);
-  assert.equal(POLAR_LAT, 66.5);
-  assert.deepEqual(PHONE_FULL_BOUNDS, [[-12, 30], [32, 63]]);
+test('search groups architects, cities and buildings; note text matches', () => {
+  const r = search('corb');
+  assert.equal(r.architects[0]?.kind === 'architect' && r.architects[0].who, 'Le Corbusier');
+  assert.ok(r.buildings.length >= 6);
+  assert.ok(search('rome').cities.length >= 1);
+  assert.ok(search('\u5eca\u9999').matched.some((b) => b.name.includes('Ronchamp')));
+  assert.equal(search('   ').flat.length, 0);
 });
 
-test('edgeMarkers: 2 nearest directions; bearings within 20 degrees merge (middle direction, numbers add, nearest is the target)', () => {
-  const m = edgeMarkers([
-    { key: 'in', n: 5, x: 500, y: 300 },
-    { key: 'east', n: 1, x: 3000, y: 300 },
-    { key: 'east2', n: 7, x: 4000, y: 700 }, // about 8 degrees from east: merged
-    { key: 'west', n: 2, x: -4000, y: 300 },
-    { key: 'north', n: 3, x: 500, y: -9000 },
-  ], 1000, 600);
-  assert.deepEqual(m.map((e) => e.key), ['east', 'west']);
-  assert.equal(m[0]!.n, 8);
-  assert.deepEqual(m[0]!.keys, ['east', 'east2']);
-  assert.ok(m[0]!.y > 300 && m[0]!.y < 600 - 24, 'the direction is between the two bearings: ' + m[0]!.y);
-  assert.equal(m[1]!.n, 2);
-  // 25 degrees apart: two directions
-  const far = edgeMarkers([
-    { key: 'a', n: 1, x: 3000, y: 300 },
-    { key: 'b', n: 1, x: 3000 + 0, y: 300 + Math.tan((25 * Math.PI) / 180) * 2500 },
-  ], 1000, 600);
-  assert.equal(far.length, 2);
+test('map circles never overlap at any zoom', () => {
+  for (const z of [3, 4, 5, 6, 7, 8, 9, 10, 11]) {
+    const cl = clusterAt(BUILDINGS, z).filter((c) => c.items.length >= MIN_DONUT);
+    assert.equal(cl.reduce((s, c) => s + c.items.length, 0) + clusterAt(BUILDINGS, z).filter((c) => c.items.length < MIN_DONUT).reduce((s, c) => s + c.items.length, 0), BUILDINGS.length);
+    for (let i = 0; i < cl.length; i++) {
+      for (let j = i + 1; j < cl.length; j++) {
+        const a = cl[i]!;
+        const b = cl[j]!;
+        const [ax, ay] = worldPx(a.lng, a.lat, z);
+        const [bx, by] = worldPx(b.lng, b.lat, z);
+        const d = Math.hypot(ax - bx, ay - by);
+        assert.ok(d > donutRadius(a.items.length) + donutRadius(b.items.length) - 12, `z${z} ${a.name}/${b.name} ${d.toFixed(1)}`);
+      }
+    }
+    assert.equal(new Set(clusterAt(BUILDINGS, z).map((c) => c.key)).size, clusterAt(BUILDINGS, z).length, `duplicate keys at z${z}`);
+  }
 });
 
-test('edgeMarkersExpanding: 150 km first, doubles when nothing is found', () => {
-  const near = { key: 'near', n: 1, x: 3000, y: 300, dist: 100_000 };
-  const mid = { key: 'mid', n: 2, x: -2000, y: 300, dist: 400_000 };
-  const far = { key: 'far', n: 3, x: 300, y: 5000, dist: 1_000_000 };
-  assert.deepEqual(edgeMarkersExpanding([near, mid, far], 1000, 600).map((m) => m.key), ['near']);
-  assert.deepEqual(edgeMarkersExpanding([mid, far], 1000, 600).map((m) => m.key), ['mid']);
-  assert.deepEqual(edgeMarkersExpanding([far], 1000, 600).map((m) => m.key), ['far']);
-  assert.deepEqual(edgeMarkersExpanding([], 1000, 600), []);
+test('same-spot groups and regions', () => {
+  const peter = stacks(BUILDINGS).find((s) => s.items.some((b) => b.name === "St. Peter's Baldacchino"));
+  assert.ok(peter && peter.items.length >= 4);
+  assert.equal(regionOf(BY_ID.get('pantheon-rome')!), 'Italy');
+  assert.ok(Math.abs(distance([12.4768, 41.8986], [12.4922, 41.8903]) - 1546) < 60);
 });
 
-test('viewContainsPoint: 1 km scale view of 1000 x 600 px', () => {
-  const z = zoomForMetersPerPixel(41.9, SCALE_1KM_MPP);
-  const c = { lng: 12.49, lat: 41.9 };
-  assert.ok(viewContainsPoint(c, z, 1000, 600, { lng: 12.5, lat: 41.9 })); // about 0.8 km east
-  assert.ok(!viewContainsPoint(c, z, 1000, 600, { lng: 13.0, lat: 41.9 })); // about 38 km east
-  assert.ok(!viewContainsPoint(c, z, 1000, 600, { lng: 12.49, lat: 41.95 })); // about 5.5 km north
-});
-
-test('avoidObstacles: markers slide along the edge clear of page buttons and of each other', () => {
-  const w = 1000;
-  const h = 600;
-  const button = { x: 880, y: 440, w: 104, h: 44 }; // like Full map at the bottom right
-  const out = avoidObstacles([{ x: 976, y: 460 }, { x: 976, y: 462 }, { x: 500, y: 24 }], [button], w, h);
-  const clear = (m: { x: number; y: number }) => m.x + 16 <= button.x || m.x - 16 >= button.x + button.w || m.y + 16 <= button.y || m.y - 16 >= button.y + button.h;
-  assert.ok(clear(out[0]!) && clear(out[1]!));
-  assert.ok(Math.hypot(out[0]!.x - out[1]!.x, out[0]!.y - out[1]!.y) >= 32, 'two markers do not overlap');
-  assert.deepEqual(out[2], { x: 500, y: 24 }, 'a free marker stays');
-});
-
-test('countryBounds / nearestPlace: Back goes to the size of the building\'s country', async () => {
-  const { countryBounds, nearestPlace } = await import('../src/lib/geo');
-  const a = mk({ id: 'a', country: 'Italy', points: [{ id: 'a~0', sub: '', lat: 41.9, lng: 12.5, precision: 'page', note: '', sourceUrl: '', status: '' }] });
-  const b = mk({ id: 'b', country: 'Italy', points: [{ id: 'b~0', sub: '', lat: 45.5, lng: 9.2, precision: 'page', note: '', sourceUrl: '', status: '' }] });
-  const c = mk({ id: 'c', country: 'France', points: [{ id: 'c~0', sub: '', lat: 48.8, lng: 2.3, precision: 'page', note: '', sourceUrl: '', status: '' }] });
-  const d = mk({ id: 'd', country: 'Others', points: [{ id: 'd~0', sub: '', lat: 41, lng: 29, precision: 'page', note: '', sourceUrl: '', status: '' }] });
-  assert.deepEqual(countryBounds([a, b, c, d], 'Italy'), [[9.2, 41.9], [12.5, 45.5]]);
-  assert.equal(countryBounds([a, b, c, d], 'Others'), null);
-  assert.equal(nearestPlace([a, b, c], 9, 45)?.place.id, 'b');
-  assert.equal(nearestPlace([], 9, 45), null);
-});
-
-test('pointsOutside: only the buildings out of the view count for a direction button', async () => {
-  const { pointsOutside } = await import('../src/lib/geo');
-  const pts = [{ lng: 2.17, lat: 41.39 }, { lng: 2.18, lat: 41.4 }, { lng: 2.3, lat: 41.45 }];
-  // 390 x 640 px at zoom 13 is about 4.7 x 7.7 km: the first two are in view, the third (about 12 km away) is not
-  assert.deepEqual(pointsOutside(pts, { lng: 2.175, lat: 41.395 }, 13, 390, 640), [pts[2]]);
-  assert.deepEqual(pointsOutside(pts.slice(0, 2), { lng: 2.175, lat: 41.395 }, 13, 390, 640), []);
-});
-
-test('toRegionCollection: Italy north / centre / south, France and the UK are separate numbers', async () => {
-  const { toRegionCollection } = await import('../src/lib/geo');
-  const pt = (lat: number, lng: number) => [{ id: 'p', sub: '', lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '' }];
-  const ps = [
-    mk({ id: 'milan', country: 'Italy', points: pt(45.5, 9.2) }), mk({ id: 'turin', country: 'Italy', points: pt(45.1, 7.7) }),
-    mk({ id: 'rome', country: 'Italy', points: pt(41.9, 12.5) }), mk({ id: 'florence', country: 'Italy', points: pt(43.8, 11.3) }),
-    mk({ id: 'naples', country: 'Italy', points: pt(40.9, 14.3) }),
-    mk({ id: 'paris', country: 'France', points: pt(48.9, 2.4) }), mk({ id: 'london', country: 'United Kingdom', points: pt(51.4, -0.1) }),
-    mk({ id: 'madrid', country: 'Others', points: pt(40.4, -3.7) }), mk({ id: 'seville', country: 'Others', points: pt(37.4, -6) }),
-    mk({ id: 'athens', country: 'Others', points: pt(38, 23.7) }),
-  ];
-  const by = Object.fromEntries(toRegionCollection(ps).features.map((f) => [f.properties.region, f.properties.n]));
-  assert.equal(by['Italy North'], 2);
-  assert.equal(by['Italy Centre'], 2);
-  assert.equal(by['Italy South'], 1);
-  assert.equal(by['France'], 1);
-  assert.equal(by['United Kingdom'], 1);
-  assert.equal(Object.keys(by).filter((k) => k.startsWith('Others')).length, 2, 'Madrid and Seville join, Athens stays apart');
-});
-
-test('toRegionCollection: far buildings are drawn as dots and left out of the region number', async () => {
-  const { toRegionCollection } = await import('../src/lib/geo');
-  const pt = (lat: number, lng: number) => [{ id: 'p', sub: '', lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '' }];
-  const ps = [
-    mk({ id: 'paris', country: 'France', points: pt(48.9, 2.4) }), mk({ id: 'versailles', country: 'France', points: pt(48.8, 2.1) }), mk({ id: 'chartres', country: 'France', points: pt(48.4, 1.5) }),
-    mk({ id: 'reims', country: 'France', points: pt(49.3, 4.0) }), mk({ id: 'amiens', country: 'France', points: pt(49.9, 2.3) }), mk({ id: 'orleans', country: 'France', points: pt(47.9, 1.9) }),
-    mk({ id: 'marseille', country: 'France', points: pt(43.3, 5.4) }),
-  ];
-  const r = toRegionCollection(ps);
-  assert.deepEqual(r.outliers, ['marseille']);
-  assert.equal(r.features.find((f) => f.properties.region === 'France')!.properties.n, 6);
-});
-
-test('selectionView: whole city first, nearest neighbour for the overlap check', async () => {
-  const { selectionView } = await import('../src/lib/geo');
-  const pt = (lat: number, lng: number) => [{ id: 'p', sub: '', lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '' }];
-  const a = mk({ id: 'a', loc: 'Rome', points: pt(41.9, 12.5) });
-  const b = mk({ id: 'b', loc: 'Rome', points: pt(41.9009, 12.5) }); // about 100 m north of a
-  const c = mk({ id: 'c', loc: 'Rome', points: pt(41.95, 12.55) }); // about 7 km away
-  const v = selectionView([a, b, c], a);
-  assert.ok(v.minSepM > 90 && v.minSepM < 110, String(v.minSepM));
-  assert.ok(v.cityKm > 7 && v.cityKm < 9, String(v.cityKm)); // farthest building about 7 km, with margin
-  assert.equal(selectionView([a], a).cityKm, 3);
-  assert.equal(selectionView([a], a).minSepM, Infinity);
+test('code files contain no Chinese characters (UI strings, comments, tests)', () => {
+  const roots = ['src/lib', 'src/components', 'src/app', 'src/standalone', 'scripts', 'tests'];
+  const cjk = /[\u3000-\u303f\u3400-\u9fff\uf900-\ufaff\uff00-\uffef]/;
+  const bad: string[] = [];
+  const walk = (dir: string) => {
+    for (const name of readdirSync(dir)) {
+      const p = join(dir, name);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (/\.(ts|tsx|mjs|css)$/.test(name) && cjk.test(readFileSync(p, 'utf8'))) bad.push(p);
+    }
+  };
+  for (const r of roots) walk(new URL(`../${r}`, import.meta.url).pathname);
+  assert.deepEqual(bad, []);
 });

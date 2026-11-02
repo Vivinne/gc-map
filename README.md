@@ -1,28 +1,46 @@
-# GC Buildings Map (private, runs locally)
+# GC Atlas
 
-Map of the C3 buildings: a filterable list on the left, markers on the map on the right; click a marker to see that row's notes (heading: NAME in bold capitals, then built span and location in lowercase; context: architect, a dash, then a short summary from `data/entries.txt`; blank when none). Coordinates, sources and "show on map" buttons are not displayed. Data comes from handout C3 §6.1–6.15 (196 rows).
+General Culture buildings (handout C3 §6.1–6.15, 204 rows) as a map, a timeline and a review deck.
+All 204 buildings are located; every coordinate has a source (see "Data flow").
+
+## Views
+
+| View | Key | What it does |
+|---|---|---|
+| Map | `M` | City circles (ring segments = share of each style, number = buildings) at country scale; single buildings with names from zoom 11.5. Click a circle to zoom in, a dot to open the building. Several entries at one spot are a black square with a count; click it to choose. Buttons on the lower left jump to results outside the view. |
+| Timeline | `T` | One lane per country, buildings placed by start year. Follows every filter and the period band. Hover shows the notes, click opens the building on the map. |
+| Review | `R` | Cards for all 204 buildings (or the 76 asked in previous years): position, built span, place, architect and style first; the name after **Show answer** (`Space`). **Again** (`1`) brings the card back four cards later, **Got it** (`2`) retires it. Progress stays in this browser. |
+
+Always on screen (except Review):
+
+- **Index (left)**: style, country, "Asked in previous years" (with year tags 2007–2019 when on) and Starred filters. Inside one group tags are a union; across groups they intersect. The number on a tag is what you would get if you added it. With no filter, the list shows cities by size with a style-share bar; with filters, the matching buildings by year; inside a city, its buildings (oldest first / A to Z / asked first).
+- **Period band (bottom)**: one solid block per style, width by number of buildings, a white tick per building. Click a block to toggle that style, drag across to keep a span of years, drag the black handles to change it, double-click to reset. Each change shows a short note with **Undo**.
+- **Search** (`/` or `Ctrl/Cmd+K`): buildings, architects, cities and note text (Chinese notes included). `Up/Down` move, `Enter` opens, `Tab` keeps the text as a list filter.
+- **Building panel**: NAME, `built span, place`, architect, a full-width dash, the summary, the `[year TEST-ARCHED]` line (full-width brackets) for buildings asked in previous years, the three nearest buildings with distances and up to three of the same style in the same city. `Left/Right` step through the current list, `S` stars, `Esc` closes. Opening a building counts it as seen (top bar).
+
+Other keys: `1`–`8` toggle the styles in band order, `F` fits the map to the results.
+
+Phone (up to 900 px wide): search bar and style chips on top, the period band above the tab bar (Map / Timeline / Review), the full index in the **List** sheet, the building as a bottom sheet (tap or drag the handle to expand, drag down to close), swipe a revealed review card right for "got it", left for "again".
+
+The view (mode, building, city, filters) is kept in the address, e.g. `#m=timeline&s=modern&e=1&r=1900~1950`, so it can be bookmarked or shared. Seen buildings, stars and review progress are kept in the browser (localStorage; the page works without it).
 
 ## Run
 
-Requires Node.js ≥ 20.9.
+Requires Node.js >= 20.9.
 
 ```bash
 npm install
-npm run dev            # http://localhost:3000
-# or export statically and preview locally
-npm run build && npm run serve   # out/ -> http://localhost:3000
+npm run dev                      # http://localhost:3000
+npm run build && npm run serve   # static export in out/
+BASE_PATH=/gc-map/atlas npm run build   # export for https://<user>.github.io/gc-map/atlas/
+npm run site                     # single-file pages in site/ (index.html, artifact.html)
 ```
 
-`dev` and `build` first run `npm run data` automatically (rebuilds `src/data/*.json`). The basemap needs a network connection (OpenFreeMap).
+`site/index.html` opens straight from disk. `site/artifact.html` is the same page without address state, for hosts that only pass a plain `#name`.
 
-## Static single-page build (no Next.js needed)
+## Basemap
 
-```bash
-npm run site        # writes site/ (index.html, app.js, app.css, README.txt)
-```
-
-`site/` opens by double-clicking `index.html`, or the whole folder can go on any static host. The React and TypeScript code is shared with the Next.js build (`src/components`); only the entry point (`src/standalone/main.tsx`) differs, and MapLibre is loaded from jsDelivr through a `<script>` tag.
-`npm run site:test` uses a fake `window.maplibregl` to verify the loading flow, the fallback and the calls MapView makes (17 checks); it is not real MapLibre.
+The map draws its own basemap from `src/data/basemap.json` (Natural Earth, public domain), so it works offline and inside sandboxed hosts. From zoom 6 it also requests street-level vector tiles from OpenFreeMap (water, rivers, roads from zoom 10, building footprints from zoom 14), restyled in the same flat colours; where those tiles cannot load, the map keeps the offline layers. No map labels are drawn from tiles: building and city names come from the site's own overlay.
 
 ## Data flow
 
@@ -36,87 +54,45 @@ npm run site        # writes site/ (index.html, app.js, app.css, README.txt)
 | `data/architects.txt` | `handout value | full name`: the architect line in the detail panel shows the full name; unlisted values are shown as written |
 | `data/countries.txt` | `handout location | country tag` (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location are keyed by building name, using the supplementary location in `geo-raw.txt`. Vatican is listed under Italy |
 | `data/extra-styles.txt` | `building name | era ids` (comma separated): extra style tags besides the one given by the handout section, for buildings whose source states several styles |
-| `data/exams.txt` | `building name | years` (2007–2019): years in which the building itself was a past-exam topic. Shown as a grey italic last line, e.g. `【2016 TEST-ARCHED】`; only years are published, never question or knowledge-point IDs. Buildings not listed have no line |
+| `data/exams.txt` | `building name | years` (2007–2019): years in which the building itself was a past-exam topic. Shown as a grey italic last line, e.g. `[2016 TEST-ARCHED] (full-width brackets)`; only years are published, never question or knowledge-point IDs. Buildings not listed have no line |
 | `data/id-aliases.txt` | Fixed ids (`name | id`) for names that would otherwise get a hash-suffixed slug |
 | `data/leak-patterns.txt` | One `/regex/flags` per line: markers that must never appear in displayed fields (shared by the build and the tests) |
 | `GAPS.md` | List of gaps and estimates (generated by `npm run data`; do not edit by hand) |
+| `scripts/build-basemap.mjs` | Builds `src/data/basemap.json` (Natural Earth 1:50m countries as simplified TopoJSON, from the `world-atlas` package): the offline basemap filled as land, with inland borders |
 | `scripts/build-data.mjs` | Parse -> match coordinates -> validate -> write `src/data/places.json` and `unlocated.json`; exits with code 1 on errors |
 
 To fill a gap: enter lat, lng and source_url in `data/geo-manual.csv`, then run `npm run data`. Manual coordinates take priority over estimates and Wikipedia coordinates. Every coordinate gets a coarse city-range check; anything outside the range is reported as an error.
 
 Priority: `geo-manual.csv` > `geo-raw.txt` > `geo-estimate.csv`.
 
-Build-time checks: ids are unique, coordinate ranges are valid, coordinates (including estimates and manual ones) fall inside the city's range, estimates never appear on rows with no handout location, and displayed fields must not contain `q-…`, `k-NNNN`, `[to be confirmed`, `[supplement]`, wording about past exams / candidate answers / practice questions, or HTML tags.
 
-## How the rules map to the data
+## Code
 
-- Sourced coordinates (mostly Wikipedia; 3 points come from Structurae, latitude.to and Komoot, named in the note) are marked "Supplementary - to be verified" and carry a source link. Precision is one of `page` (page coordinate), `contained` (taken from the containing building or complex), `approx` (approximate) or `manual`.
-- There are no memory estimates; every marker has a source link. Non-Wikipedia sources are named in the note ("coordinates taken from ...").
-- For the 7 rows where the handout gives no location, the coordinate is supplied by a source and the note starts with `Supplementary location: City`; the heading omits the location. These rows must not use estimates.
-- Polimi Campus Nord: only the coordinate of Milano Bovisa station (which serves the Bovisa campus) was found, so it stands in as an approximate position; it is not the campus itself.
-- Every row has a coordinate (a building that exists always has one). Where Wikipedia shows none, the coordinate comes from another named web page (latlong.net, aroundus.com, Komoot), cited in the point's source link; the sidebar "Unlocated list" appears only if a gap ever exists.
-- Plain-text rendering; no `dangerouslySetInnerHTML`.
-- Private use: `<meta robots noindex>` and `public/robots.txt` (disallow all). This is not confidentiality: anyone who knows the URL of a published copy can open it.
+| Path | Purpose |
+|---|---|
+| `src/lib/model.ts` | Building model: start year, list year, city key, search text |
+| `src/lib/filter.ts` | Filters, tag counts |
+| `src/lib/band.ts` | Period band geometry (blocks, ticks, year at a position) |
+| `src/lib/geo.ts` | Distances, screen-space city circles, same-spot groups, regions |
+| `src/lib/search.ts` | Grouped search |
+| `src/lib/review.ts` | Review deck |
+| `src/lib/hash.ts`, `storage.ts` | Address state, browser storage |
+| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, timeline, review |
 
-## Tests
+All code, comments and UI text are English; the study notes in `content/` and the data files keep their original wording.
+
+## Checks
 
 ```bash
-npm test     # 26 unit tests: filtering, geometry, hash, parsing, data validation
 npm run typecheck
-npm run e2e  # replaces the map with a stub and checks the UI flow in Chromium (26 checks)
+npm test        # unit tests: years, filters, tag counts, address state, band scale, review deck, search, circle overlap, data rules, no Chinese characters in code
+npm run site && npm run e2e   # Chromium flows on site/index.html (desktop and phone), screenshots in .e2e/
 ```
 
-`e2e` needs `esbuild` and `playwright` (listed as devDependencies); the first run needs `npx playwright install chromium`.
+`npm run e2e` needs Playwright's Chromium (`npx playwright install chromium`), or set `CHROMIUM_PATH` to an installed Chromium.
 
-## Not yet verified (the authoring environment could not reach the npm registry)
+## Not verified
 
-- `npm install`, `next dev` and `next build` have not been run in a real environment.
-- Static build: whether `maplibre-gl@5.6.0` files exist on jsDelivr, and whether the basemap loads when `index.html` is opened directly from `file://`, are unverified (the fallback is `@5`).
-- The real MapLibre map has not been run: tile loading and click hit-testing, city circle rendering (numbered circles, count text font "Noto Sans Bold" from the OpenFreeMap glyph server) and the city-click zoom (all checked only against a fake MapLibre; `npm run e2e` stubs the map entirely).
-- `tsc --noEmit` has only been run with a shim in place of `@types/react`; rerun `npm run typecheck` after `npm install`.
-- The coordinates were copied from source-page text summaries and have not been spot-checked by a human; Polimi Campus Nord is a station coordinate, not the campus itself.
-- All coordinates are sourced (Wikipedia or a named site); 5 of them were also checked on Google Maps by the project owner. The remaining non-Google-checked coordinates are "to be verified".
-
-## Tags
-
-The sidebar has three group buttons; pressing one shows its sub tags (several groups can be open at once; a collapsed group shows how many of its tags are checked). The groups hold checkable tags: **Country**, **Styles** (Ancient, Medieval, Renaissance, Baroque, 19th Century, Modern, Beaux-Arts and Others; Others holds non-building items) and **Previous Years** (2007–2019), in that order. A building whose source states several styles counts under each of them (`data/extra-styles.txt`). Tags checked inside one group are a union (a building matches if it has any of them); across the three groups they are an intersection (a building must match every group that has a checked tag). The number on a tag is how many buildings would match if it were added to the checked ones; the checked tags are stored in the URL hash (`t=y:2016,c:Italy`); which groups are open is not stored.
-
-## City circles
-
-Below zoom 10.5 each city is one dark numbered circle; the number is the count of buildings in that city (a single-building city shows 1; a building with several points counts once). From zoom 10.5 up, every marker is drawn on its own. The city is the handout location column with bracketed details merged into it ("Rome (Italy)" -> Rome); Vatican City is separate from Rome; the rows without a handout location use the supplementary location named in their coordinate note. Clicking a number (a city, or a merged circle of several cities) flies to the middle of the most crowded group of its buildings (the building with the most neighbours within 500 m, centre of that group) at a scale of 1 km on the scale bar (9.8 m per pixel), so the buildings are drawn one by one; identical coordinates still open the chooser. A place whose own markers span more than 0.25 degrees (only the Veneto villas) is a region, not a city entry: it has no circle and no number of its own, and below zoom 10.5 its markers are hidden like every other marker. Each of its markers joins the nearest city circle's union bounds only (the number and circle position do not change), so clicking a merged circle in the Veneto area also shows the villa markers. If all of a city's markers share one coordinate, the map goes to its deepest zoom and (with several buildings) the chooser list opens. All circles have the same size. Circles never overlap: cities closer than one circle diameter (about 34 screen pixels) are merged into one circle with the summed count (e.g. Rome and Vatican City when zoomed out), and split again as you zoom in. Clicking a merged circle fits the union of the bounds of all its buildings with a margin of about 20% of the shorter map side (no minimum zoom, its cities may be far apart). Circles follow the active filters. From zoom 10.5 up, cities outside the view get a small dark dot with their building count on the view edge, in the direction of the city (only the 2 nearest directions; cities whose bearings are within 20° merge into one direction: the middle bearing, numbers added, a click goes to the nearest of them; within 150 km of the view centre; when there is none, the limit doubles to 300, 600 km and so on until one is found); clicking one pans, without changing the zoom, to the middle of the most crowded group of the city with the most buildings in that direction (e.g. 18 = 16 + 2 goes to the 16, even if the 2 is nearer); the buttons slide along the edge to stay clear of the menu, Full map and Back buttons and the tag panel.
-
-## Map controls and zoom behaviour
-
-- Back button (`< Back`, above the Full map button, bottom-right of the map): returns to the view as it was before the last click that moved the map (a circle or dot click, selecting a building, Full map). Mouse-wheel zooming and dragging are not steps. Up to 30 steps are kept. Back also closes the building panel.
-- Scale bar (metric, bottom-left).
-- The map never shows the polar regions: latitude is limited to the polar circles (66.5 degrees north and south).
-- Closing the building panel (X, Escape, clicking elsewhere that closes it) zooms the map out by 0.7 level; Back and Full map set their own view instead.
-- Full map: on a computer, centred on Switzerland with the scale bar at 500 km; on a phone (width up to 900 px) a fixed view of Europe: top = half of the Scandinavian peninsula (63 N), bottom = Algeria (30 N), left = Spain and a little open sea (12 W), right = the middle of Ukraine (32 E), Europe centred.
-- A reload closes the building panel (the address keeps the tags and the search text, not the selection).
-- Selecting a building (map or list) flies to a view that reaches 500 m from the point along the shorter map side, whatever the previous zoom.
-- A circle is drawn only when it stands for 5 or more buildings. Below that (single cities and merged circles alike) the buildings of the circle are drawn as their own coloured dots, overlapping if need be; the region-place markers attached to such a circle (see above) are drawn with them. The dot list is refreshed when the map goes idle.
-- Clicking a dot shows that building's detail panel directly. When dots overlap, one is picked: the nearest to the click (the first listed when they share a coordinate). There is no chooser list and no zoom-to-range.
-- The tag panel floats over the map (desktop); the three-line button collapses it to just that button. On phones it stays the List tab.
-- The building detail panel can be dragged by its coloured heading block (desktop; at least 60 px stays on the map; the position is kept for the next building). On phones it stays a bottom sheet.
-- Tag/search input updates the checkboxes at once; the list, tag counts and map data follow through React's deferred values, and tag matching no longer rebuilds its lookup per building.
-- Detail panel: the [-] button (same size as [x], left of it) shrinks it to the building name, [-] and [x]; pressing [-] again restores it. The panel stays 14 px inside the map edges and 14 px away from the tag panel (the whole panel when open, just the button when collapsed); the position is checked again on window resize and when the tag panel opens or closes. While minimized the [-] shows as [▢] (it restores the panel). The bottom-left corner is a resize handle: full size is the upper limit, the smallest size has an 11 pt heading; body text, buttons and spacing scale with the width (the right edge stays put). Desktop only.
-- The tag panel is 230 px wide; the search box shows "Search"; its heading (14 px) stays on one line and is centred vertically in the dark block. It has no subtitle and no count line. The attribution line (basemap and coordinate sources) is a thin strip along the very bottom of the page, outside the tag panel; the map ends above it.
-- The Back and Full map buttons have the same width. Full map also closes the building panel.
-- The detail panel resizes from all four edges and all four corners. A corner keeps the proportions and scales type and buttons (the heading is 24 px - 2 pt at full size and shrinks to 11 pt at the smallest), the opposite corner stays; an edge moves only itself, the other three sides stay (type size unchanged, the text scrolls when the box is shorter than it). Limits, always 14 px from the map edges and the tag panel: width from "the heading on one line + the two buttons" (the heading never wraps, at any size, edge or corner, and a longer title widens the panel) up to 2/3 of the map width (the one-line heading comes first: when it needs more than 2/3, the panel may be wider, never closer than 14 px to the map edges); height from the heading + one line of text up to the whole map height. The minimized panel has the same eight handles (its height goes down to one heading line). When minimized, the [-] button shows a bold square instead. The tag panel and the detail panel have no shadow.
-
-- Closing the building panel (X, Escape, Back, Full map) zooms the map out a little (0.7 level; Back and Full map end that much farther out than their own target view). A reload starts at the Full map view with the panel closed.
-- The credit line at the bottom is one line: "Basemap © OpenFreeMap, OpenMapTiles, OpenStreetMap contributors. Coordinates: ..." on the left and "OpenFreeMap © OpenMapTiles Data from OpenStreetMap" (the former [i] text) right-aligned; the map's own attribution button is removed. On a phone the line is smaller and the "Basemap ©" sentence is left out (the right-hand credit carries it).
-- Building names are English only (no Chinese characters). A number click (city circle or direction button) that moves the view away from the selected building closes its panel.
-
-- Display sync with the Claude Doc "GC Buildings: Names, Locations, Architects": `data/doc-display.txt` (handout name | display name | display location | display architect) overrides what readers see (`name`, `locLabel`, `who`). Ids, geo keys, country tags and city grouping still use the handout names and locations. An empty field means no override; run `npm run data` after editing.
-- Reload shows the default screen: tags, search and selection in the address are ignored and the address is cleared. A checkbox at the bottom-left of the footer hides the direction buttons (not remembered).
-- "Hide direction buttons" is a checkbox at the top of the tag panel (not remembered). Full map / Back sit 10 px from the bottom-right corner of the map. The + / - buttons zoom 2 levels per click (`ZOOM_BUTTON_STEP`). A page restored from the back/forward cache reloads to the default screen.
-- A direction button that shows 1 opens that building's panel directly (and flies to it); buttons with more than 1 still move to the middle of the most crowded group.
-- Back (phone and desktop) zooms to the size of the country of the open building (else the building nearest the view centre) and closes the panel; it no longer returns to a previous view and is always enabled. Buildings tagged "Others" get about 1000 km across around the building.
-- Direction buttons: a city has a button only while some of its buildings are outside the view; the button points at the nearest of those and a press moves to the middle of the most crowded group of the buildings that are out of view, so it always moves (checked for every button at zoom 11-15 on a 390 x 640 map). "Hide Direction" is a checkbox above the scale bar (phone and desktop). Closing the panel zooms out 0.7 level on desktop and 1.7 on phones (width up to 900 px).
-- "Hide Direction" sits right above Back on desktop (same 104 px width as Full map / Back); on phones it stays above the scale bar and shows only on the Map tab.
-- The number on a direction button is how many buildings of that city (or merged cities) are out of the current view, so it drops as you move toward them; pressing it moves to the most crowded group of those, and a button showing 1 opens that building.
-- Below zoom 3 (the phone's Full map) the circles are regions, not distance clusters: Italy North (lat >= 44) / Centre (41.5-44) / South, France, United Kingdom, Germany, United States, and the "Others" grouped when a chain of them is within 400 km (`toRegionCollection`). Clicking a region zooms to its buildings; from zoom 3 the city circles take over. The desktop Full map (zoom about 3.5) is unchanged.
-- Cache buster: `index.html` loads `app.js?v=<hash>` and `app.css?v=<hash>` (hash of their content), so a phone browser that cached an older build fetches the new files once `index.html` itself is fresh.
-- Full map (below zoom 3): a building farther than 300 km from the mean position of its named region (Italy N/C/S, France, UK, Germany, US) is not counted in that region's number; it is drawn as a small coloured dot (layer `points-far`, clickable). A region number below 20 goes straight to the middle of its most crowded group at 1 km on the scale bar; 20 or more first zooms to the region's bounds.
-- Selecting a building (marker, list, direction button showing 1): the map first shows the whole city (the farthest building of the same city fits, 3-40 km around, never below zoom 10.6 so the building is a dot) and zooms in further only while its nearest other building would be less than 24 px away; the deepest zoom is still the old 500 m view (`selectionView`, `SEPARATION_PX`).
+- Street tiles from OpenFreeMap: the authoring environment cannot reach the tile server, so all checks ran on the offline basemap only.
+- Publishing to GitHub Pages under `/gc-map/atlas/` has not been done.
+- Coordinates other than the five checked on Google Maps by the project owner are "to be verified".
