@@ -232,7 +232,7 @@ export default function MapApp() {
 
       <main className="stage">
         <button type="button" className="fullmap" onClick={showFullMap}>Full map</button>
-        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} />
+        <MapView fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => { setSelectedId(''); setChoices([]); }} />
         {selected && (
           <DetailPanel
             place={selected}

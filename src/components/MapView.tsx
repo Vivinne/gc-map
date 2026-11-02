@@ -68,9 +68,11 @@ interface Props {
   active: boolean;
   /** Marker clicked: returns all building ids at that spot (several can share a coordinate) */
   onPick: (pids: string[]) => void;
+  /** The Back button was used: the parent closes the building panel */
+  onBack?: () => void;
 }
 
-export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick }: Props) {
+export default function MapView({ fc, cities, selectedPid, bounds, focus, active, onPick, onBack }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
   const [ready, setReady] = useState(false);
@@ -357,6 +359,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     if (!map || !prev) return;
     map.easeTo({ center: prev.center, zoom: prev.zoom, duration: 500 });
     setCanBack(history.current.length > 0);
+    onBack?.();
   };
 
   return (

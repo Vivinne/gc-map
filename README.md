@@ -87,7 +87,7 @@ Below zoom 10.5 each city is one dark numbered circle; the number is the count o
 
 ## Map controls and zoom behaviour
 
-- Back button (`< Back`, above the Full map button, bottom-right of the map): returns to the view as it was before the last click that moved the map (a circle or dot click, selecting a building, Full map). Mouse-wheel zooming and dragging are not steps. Up to 30 steps are kept.
+- Back button (`< Back`, above the Full map button, bottom-right of the map): returns to the view as it was before the last click that moved the map (a circle or dot click, selecting a building, Full map). Mouse-wheel zooming and dragging are not steps. Up to 30 steps are kept. Back also closes the building panel.
 - Scale bar (metric, bottom-left).
 - Selecting a building (map or list) flies to a view that reaches 500 m from the point along the shorter map side, whatever the previous zoom.
 - A circle is drawn only when it stands for 5 or more buildings. Below that (single cities and merged circles alike) the buildings of the circle are drawn as their own coloured dots, overlapping if need be; the region-place markers attached to such a circle (see above) are drawn with them. The dot list is refreshed when the map goes idle.

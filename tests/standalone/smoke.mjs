@@ -212,6 +212,7 @@ async function open({ pinned = true, fallback = true } = {}) {
     await page.click('[data-testid=map-back]');
     eases.push(await page.evaluate(() => window.__fake.ease));
   }
+  assert.equal(await page.locator('[data-testid=detail]').count(), 0, 'Back closes the building panel');
   assert.equal(eases[0].zoom, 5);
   assert.deepEqual(eases[0].center, [10, 45]);
   assert.ok(eases.every((e) => e.zoom !== 9.37 && e.zoom !== 11.37), 'Wheel zooms are not history steps');
