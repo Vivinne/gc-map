@@ -86,6 +86,28 @@ export function boundsOf(places: readonly Place[]): [[number, number], [number, 
   return Number.isFinite(w) ? [[w, s], [e, n]] : null;
 }
 
+/** Fixed width of the Back view for a building whose country tag is "Others" (no single country to fit), in metres */
+export const OTHERS_VIEW_M = 1_000_000;
+
+/** Bounds of every building tagged with one country; null for "Others" or an unknown tag (it is a mixed group) */
+export function countryBounds(places: readonly Place[], country: string): [[number, number], [number, number]] | null {
+  if (!country || country === 'Others') return null;
+  return boundsOf(places.filter((p) => p.country === country));
+}
+
+/** The building (and the point) closest to a position; null when no building has a coordinate */
+export function nearestPlace(places: readonly Place[], lng: number, lat: number): { place: Place; lng: number; lat: number } | null {
+  let best: { place: Place; lng: number; lat: number } | null = null;
+  let bd = Infinity;
+  for (const p of places) {
+    for (const pt of p.points) {
+      const d = distanceM({ lng, lat }, { lng: pt.lng, lat: pt.lat });
+      if (d < bd) { bd = d; best = { place: p, lng: pt.lng, lat: pt.lat }; }
+    }
+  }
+  return best;
+}
+
 /** Points at the same location (rounded to 4 decimals, about 10 m) stack together */
 export function coordKey(lng: number, lat: number): string {
   return `${lng.toFixed(4)},${lat.toFixed(4)}`;

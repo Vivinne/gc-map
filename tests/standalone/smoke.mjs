@@ -187,44 +187,32 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.deepEqual(ff, ['in', ['get', 'pid'], ['literal', ['colosseum', 'villa1', 'x1']]]);
   ok('Circles with fewer than 5 buildings -> their buildings (and attached villa markers) are drawn as dots');
 
-  // Back button: returns to the view before the last click that moved the map; wheel zooming and panning are not recorded
+  // Back button: zooms to the size of the country of the open building (else the building nearest the view centre) and closes the panel
   await page.evaluate(() => {
-    const m = window.__fake.map;
-    m.zoom = 5; m.center = { lng: 10, lat: 45 };
-    window.__fake.hits = [{ properties: { city: 'X', n: 6, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: '[]' } }];
-    m.fireLayer('click', 'cities', { point: { x: 5, y: 5 } }); // the click moves the map: the view before it is remembered
-    m.zoom = 9.37; m.center = { lng: 12.4, lat: 41.9 }; m.fire('moveend'); // mouse wheel / drag afterwards: not remembered
-    m.zoom = 11.37; m.fire('moveend');
-  });
-  await page.waitForFunction(() => !document.querySelector('[data-testid=map-back]').disabled);
-  const eases = [];
-  for (let i = 0; i < 60 && !(await page.locator('[data-testid=map-back]').isDisabled()); i++) {
-    await page.evaluate(() => { window.__fake.ease = null; });
-    await page.click('[data-testid=map-back]');
-    eases.push(await page.evaluate(() => window.__fake.ease));
-  }
-  assert.equal(await page.locator('[data-testid=detail]').count(), 0, 'Back closes the building panel');
-  assert.equal(eases[0].zoom, 5);
-  assert.deepEqual(eases[0].center, [10, 45]);
-  assert.ok(eases.every((e) => e.zoom !== 9.37 && e.zoom !== 11.37), 'Wheel zooms are not history steps');
-  assert.equal(await page.locator('[data-testid=map-back]').isDisabled(), true);
-  ok('Back button returns to the view before the last map click (wheel zoom does not count)');
-  // Back and Full map also close the building panel and end a little farther out (0.7 level)
-  await page.evaluate(() => {
-    const m = window.__fake.map;
-    m.zoom = 6; m.center = { lng: 10, lat: 45 };
-    window.__fake.hits = [{ properties: { city: 'X', n: 6, w: 12.45, s: 41.88, e: 12.5, nn: 41.95, pids: '[]' } }];
-    m.fireLayer('click', 'cities', { point: { x: 5, y: 5 } }); // remembers the view (zoom 6)
     window.__fake.hits = [{ properties: { pid: 'st-peters-dome-vatican' } }];
-    m.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); // opens the panel
+    window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } }); // opens the panel
   });
   await page.waitForSelector('[data-testid=detail]');
   await page.evaluate(() => { window.__fake.ease = null; });
+  assert.equal(await page.locator('[data-testid=map-back]').isDisabled(), false, 'Back is always available');
   await page.click('[data-testid=map-back]');
-  const eb = await page.evaluate(() => window.__fake.ease);
-  assert.ok(eb && Math.abs(eb.zoom - 5.3) < 0.001, 'Back with the panel open: ' + (eb && eb.zoom));
+  const eb = { ease: await page.evaluate(() => window.__fake.ease) };
+  const it = data.places.filter((p) => p.country === 'Italy').flatMap((p) => p.points);
+  const w = Math.max(...it.map((t) => t.lng)) - Math.min(...it.map((t) => t.lng)), h = Math.max(...it.map((t) => t.lat)) - Math.min(...it.map((t) => t.lat));
+  assert.ok(eb.ease && Math.abs(eb.ease.zoom - Math.log2(360 / Math.max(w, h))) < 0.01, 'Back shows all of Italy: ' + (eb.ease && eb.ease.zoom));
   await page.waitForFunction(() => !document.querySelector('[data-testid=detail]'));
-  ok('Back closes the panel and ends 0.7 level farther out');
+  ok('Back -> country view of the open building, panel closes');
+  // A building tagged Others: about 1000 km across around it
+  await page.evaluate(() => {
+    window.__fake.hits = [{ properties: { pid: 'hagia-sophia-istanbul' } }];
+    window.__fake.map.fireLayer('click', 'points', { point: { x: 1, y: 1 } });
+    window.__fake.ease = null;
+  });
+  await page.waitForSelector('[data-testid=detail]');
+  await page.click('[data-testid=map-back]');
+  const eo = await page.evaluate(() => window.__fake.ease);
+  assert.ok(eo && Math.abs(eo.center[0] - 28.98) < 0.01 && Math.abs(eo.center[1] - 41.00833) < 0.01, 'Others: centred on the building: ' + JSON.stringify(eo));
+  ok('Back for an "Others" building -> about 1000 km around it');
   await page.evaluate(() => { window.__fake.fly.length = 0; });
   await page.click('.fullmap');
   await page.waitForFunction(() => window.__fake.fly.length > 0);

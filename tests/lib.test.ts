@@ -214,3 +214,15 @@ test('avoidObstacles: markers slide along the edge clear of page buttons and of 
   assert.ok(Math.hypot(out[0]!.x - out[1]!.x, out[0]!.y - out[1]!.y) >= 32, 'two markers do not overlap');
   assert.deepEqual(out[2], { x: 500, y: 24 }, 'a free marker stays');
 });
+
+test('countryBounds / nearestPlace: Back goes to the size of the building\'s country', async () => {
+  const { countryBounds, nearestPlace } = await import('../src/lib/geo');
+  const a = mk({ id: 'a', country: 'Italy', points: [{ id: 'a~0', sub: '', lat: 41.9, lng: 12.5, precision: 'page', note: '', sourceUrl: '', status: '' }] });
+  const b = mk({ id: 'b', country: 'Italy', points: [{ id: 'b~0', sub: '', lat: 45.5, lng: 9.2, precision: 'page', note: '', sourceUrl: '', status: '' }] });
+  const c = mk({ id: 'c', country: 'France', points: [{ id: 'c~0', sub: '', lat: 48.8, lng: 2.3, precision: 'page', note: '', sourceUrl: '', status: '' }] });
+  const d = mk({ id: 'd', country: 'Others', points: [{ id: 'd~0', sub: '', lat: 41, lng: 29, precision: 'page', note: '', sourceUrl: '', status: '' }] });
+  assert.deepEqual(countryBounds([a, b, c, d], 'Italy'), [[9.2, 41.9], [12.5, 45.5]]);
+  assert.equal(countryBounds([a, b, c, d], 'Others'), null);
+  assert.equal(nearestPlace([a, b, c], 9, 45)?.place.id, 'b');
+  assert.equal(nearestPlace([], 9, 45), null);
+});

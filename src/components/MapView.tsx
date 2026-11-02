@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { dataset } from '../lib/data';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 /** Zoom levels the map zooms out when the building panel is closed */
@@ -19,7 +20,6 @@ const CITY_RADIUS = 15;
 /** Circles stand for at least this many buildings; fewer are drawn as their own coloured dots (overlapping is fine) */
 const MIN_NUMBER = 5;
 /** Earlier views kept for the back button */
-const HISTORY_MAX = 30;
 /** Margin kept around the union of a merged circle, as a share of the shorter map side (about 20%, like the Veneto view the user pointed at) */
 const UNION_PAD = 0.2;
 const CITY_MERGE_PX = CITY_RADIUS * 2 + 4;
@@ -58,8 +58,6 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
   const mapRef = useRef<MLMap | null>(null);
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState('');
-  const history = useRef<{ center: [number, number]; zoom: number }[]>([]);
-  const [canBack, setCanBack] = useState(false);
   const [edges, setEdges] = useState<EdgeMarker[]>([]);
 
   // Event handlers must read the latest values; use refs to avoid rebinding
@@ -67,21 +65,6 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
   useEffect(() => {
     latest.current = { fc, cities, selectedPid, onPick, onDeselect };
   });
-
-  // Back button history: the view as it was before each click that moves the map (a map click, a list selection, Full map); wheel zooming and panning are not recorded
-  const pushView = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const c = map.getCenter();
-    const v = { center: [c.lng, c.lat] as [number, number], zoom: map.getZoom() };
-    const last = history.current.at(-1);
-    if (last && Math.abs(last.zoom - v.zoom) < 0.01 && Math.abs(last.center[0] - v.center[0]) < 1e-6 && Math.abs(last.center[1] - v.center[1]) < 1e-6) return;
-    history.current.push(v);
-    if (history.current.length > HISTORY_MAX) history.current.shift();
-    setCanBack(true);
-  }, []);
-  const pushRef = useRef(pushView);
-  pushRef.current = pushView;
 
   // A number (city circle or direction button) moves the view to centre/zoom: when the new view no longer shows the selected building, its panel closes
   // (without the extra zoom-out of a plain close)
@@ -248,7 +231,6 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
         const merged = pr.cluster === true || pr.cluster === 'true';
         // A merged circle shows the union of its cities plus the region-place markers attached to them; a single city only its buildings
         const b: LngLatBounds = merged ? [[Number(pr.xw), Number(pr.xs)], [Number(pr.xe), Number(pr.xn)]] : [[Number(pr.w), Number(pr.s)], [Number(pr.e), Number(pr.nn)]];
-        pushRef.current();
         if (isSameSpot(b)) {
           // Identical coordinates cannot be told apart by zooming: several buildings -> one of them (the first) is shown; a single building -> the deepest zoom
           const pids = pr.pids ? (JSON.parse(String(pr.pids)) as string[]) : [];
@@ -349,7 +331,6 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     const map = mapRef.current;
     if (!map || !ready || !focus) return;
     const opts = focus as { initial?: boolean; shrink?: boolean };
-    if (!opts.initial) pushView();
     const dz = opts.shrink ? CLOSE_ZOOM_OUT : 0;
     const dur = (ms: number) => (opts.initial ? 0 : ms);
     if (focus.kind === 'point') {
@@ -392,14 +373,24 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     map.easeTo({ zoom: Math.max(map.getZoom() - CLOSE_ZOOM_OUT, 1), duration: 400 });
   }, [selectedPid, focus?.nonce, ready]);
 
-  // Back to the view before the last zoom
+  // Back: zoom to the size of the country the current building is in (the open building, else the one nearest the view centre); the panel closes
   const goBack = () => {
     const map = mapRef.current;
-    const prev = history.current.pop();
-    if (!map || !prev) return;
-    keepView.current = !!latest.current.selectedPid; // Back restores its own view, a little farther out when it closes the panel
-    map.easeTo({ center: prev.center, zoom: Math.max(prev.zoom - (keepView.current ? CLOSE_ZOOM_OUT : 0), 1), duration: 500 });
-    setCanBack(history.current.length > 0);
+    if (!map) return;
+    const sel = latest.current.selectedPid ? dataset.places.find((p) => p.id === latest.current.selectedPid) : undefined;
+    const c = map.getCenter();
+    const ref = sel?.points[0] ? { place: sel, lng: sel.points[0].lng, lat: sel.points[0].lat } : nearestPlace(dataset.places, c.lng, c.lat);
+    if (!ref) return;
+    keepView.current = !!latest.current.selectedPid; // this view is the end point: no extra zoom-out when the panel closes
+    const b = countryBounds(dataset.places, ref.place.country);
+    if (b) {
+      const cam = map.cameraForBounds(b, { padding: 20, maxZoom: 16 });
+      if (cam?.center) map.easeTo({ center: cam.center as [number, number], zoom: cam.zoom, duration: 600 });
+    } else {
+      // "Others": there is no country to fit, so show about 1000 km across around the building
+      const px = Math.max(map.getContainer().getBoundingClientRect().width, 1);
+      map.easeTo({ center: [ref.lng, ref.lat], zoom: Math.min(Math.max(zoomForMetersPerPixel(OTHERS_VIEW_M / px, ref.lat), 1), 16), duration: 600 });
+    }
     onBack?.();
   };
 
@@ -414,7 +405,6 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     const all = JSON.parse(top.properties.pids) as string[];
     // A button that stands for exactly one building opens that building's panel (and flies to it) directly
     if (mine.reduce((n, f) => n + f.properties.n, 0) === 1 && all.length === 1) {
-      pushRef.current();
       latest.current.onPick([all[0] as string]);
       return;
     }
@@ -422,7 +412,6 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
     const c = densestCenter(pts);
     if (!c) return;
-    pushRef.current();
     easeAway([c.lng, c.lat], map.getZoom());
   };
 
@@ -434,7 +423,7 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
           {m.n}
         </button>
       ))}
-      <button type="button" className="map-back" data-testid="map-back" aria-label="Back to the previous view" title="Previous view" disabled={!canBack} onClick={goBack}>
+      <button type="button" className="map-back" data-testid="map-back" aria-label="Back to the country view" title="Country view" onClick={goBack}>
         &lt; Back
       </button>
       {err && <div className="map-note" role="status">{err}</div>}
