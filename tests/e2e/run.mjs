@@ -212,8 +212,11 @@ assert.ok(!mini.includes('－'));
 await page.fill('.search', '');
 ok('Heading shows "year, location" (location omitted when the handout gives none); context text comes from the notes');
 
-// Full map button: fits every marker, including New York and Tokyo
+// Full map button: fits every marker, including New York and Tokyo, and closes the building panel
+assert.equal(await page.locator('[data-testid=detail]').count(), 1, 'A building panel is open before Full map');
 await page.click('.fullmap');
+await settle();
+assert.equal(await page.locator('[data-testid=detail]').count(), 0, 'Full map closes the building panel');
 const fullB = await page.evaluate(() => window.__map.focus);
 assert.equal(fullB.kind, 'bounds');
 assert.deepEqual(fullB.blendWith, [[-8, 36], [29.5, 55]]);

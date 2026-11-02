@@ -104,6 +104,8 @@ export default function MapApp() {
     if (!b) return;
     nonce.current += 1;
     setFocus({ kind: 'bounds', bounds: b, blendWith: HOME_BOUNDS, nonce: nonce.current });
+    setSelectedId(''); // the building panel closes
+    setChoices([]);
     setTab('map');
   }, []);
 
