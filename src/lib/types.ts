@@ -26,6 +26,8 @@ export interface Place {
   name: string;
   /** Handout location; empty string = not given in the handout */
   loc: string;
+  /** Location as shown to readers (data/doc-display.txt); `loc` stays the key for city grouping and country */
+  locLabel: string;
   year: string;
   who: string;
   note: string;

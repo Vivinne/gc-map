@@ -140,10 +140,10 @@ test('data: every row has a span and a one- or two-sentence summary (Polimi Camp
 });
 
 test('data: new building titles and locations contain no Han characters', () => {
-  const NEW = new Set(['Nevsky Prospect', 'North Doors, Florence Baptistery', 'Palazzo del Viminale', 'Palazzo della Farnesina', 'Quirinal Palace', 'Palazzo Montecitorio', 'Palazzo Madama', 'Hermitage Museum', 'Capodimonte Museum', 'Metropolitan Museum of Art', 'Bargello Museum', 'Prado Museum', 'Robie House', 'Glasgow School of Art', 'Space Needle', 'Petronas Twin Towers', 'Allianz Arena', 'Palais Stoclet', 'Glass House', 'Louvre Museum', 'Weissenhof Double House', 'Marqués de Riscal Hotel', 'Sainte Marie de La Tourette', 'Van Gogh Museum', 'Dutch Pavilion', 'Villa Mairea', 'Viipuri Library', 'Kaufmann Desert House', 'Millard House', 'Fagus Factory', 'Sommerfeld House', 'Church of San Bernardino', 'Santa Croce', 'Scrovegni Chapel', 'Tate Modern']);
+  const NEW = new Set(['Nevsky Prospect', 'North Doors, Florence Baptistery', 'Palazzo del Viminale', 'Palazzo della Farnesina', 'Quirinal Palace', 'Palazzo Montecitorio', 'Palazzo Madama', 'Hermitage Museum / Winter Palace', 'Capodimonte Museum', 'Metropolitan Museum of Art', 'Bargello Museum', 'Prado Museum', 'Robie House', 'Glasgow School of Art', 'Space Needle', 'Petronas Twin Towers', 'Allianz Arena', 'Palais Stoclet', 'Glass House', 'Louvre Museum', 'Weissenhof Double House', 'Marqués de Riscal Hotel', 'Sainte Marie de La Tourette', 'Van Gogh Museum', 'Dutch Pavilion', 'Villa Mairea', 'Viipuri Library', 'Kaufmann Desert House', 'Millard House', 'Fagus Factory', 'Sommerfeld House', 'Church of San Bernardino', 'Santa Croce', 'Scrovegni Chapel', 'Tate Modern']);
   const hits = dataset.places.filter((p) => NEW.has(p.name));
   assert.equal(hits.length, NEW.size);
-  for (const p of hits) for (const f of [p.name, p.loc, p.who]) assert.ok(!/\p{Script=Han}/u.test(f), `${p.name}: ${f}`);
+  for (const p of hits) for (const f of [p.name, p.locLabel, p.who]) assert.ok(!/\p{Script=Han}/u.test(f), `${p.name}: ${f}`);
 });
 
 test('data: country tags and exam years are well formed', () => {
@@ -154,4 +154,13 @@ test('data: country tags and exam years are well formed', () => {
     for (const y of p.exams) assert.ok(y >= 2007 && y <= 2019, `${p.name}: ${y}`);
   }
   assert.ok(dataset.places.some((p) => p.exams.length > 0));
+});
+
+test('data: names, location labels and architects follow the synced Doc (data/doc-display.txt)', () => {
+  const by = new Map(dataset.places.map((p) => [p.name, p]));
+  for (const n of ['Mediolanum', 'Santa Maria delle Grazie', "St. Peter's Basilica", 'Church of Gesù', "St. Peter's Baldacchino", 'Versailles', 'Palazzo Reale', 'Hermitage Museum / Winter Palace', 'Arc de Triomphe']) assert.ok(by.has(n), n);
+  assert.equal(by.get('Hagia Sophia')!.locLabel, 'Istanbul');
+  assert.equal(by.get('Unité d\'Habitation')!.locLabel, 'Marseille, FR');
+  assert.equal(by.get('Pantheon')!.who, 'Hadrian');
+  assert.ok(!dataset.places.some((p) => !p.locLabel));
 });

@@ -15,7 +15,7 @@ const groups = buildGroups(eras);
 
 const mk = (over: Partial<Place>): Place => {
   const p: Place = {
-    id: 'x', name: 'X', loc: 'Rome', year: '—', who: '—', note: '', summary: '', style: 'Ancient Rome',
+    id: 'x', name: 'X', loc: 'Rome', locLabel: 'Rome', year: '—', who: '—', note: '', summary: '', style: 'Ancient Rome',
     styleId: '6.2', era: 'ancient', eras: [], country: 'Italy', exams: [], points: [], ...over,
   };
   if (!over.eras) p.eras = [p.era];

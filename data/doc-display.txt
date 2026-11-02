@@ -1,0 +1,99 @@
+# internal name (as in content/handout-c3-s6.md) | display name | display location | display architect / person
+# Synced from the user's Claude Doc 'GC Buildings: Names, Locations, Architects' (2026-11-02). Display only: ids, geo keys, countries and city grouping keep using the handout names and locations.
+# An empty field means no override. Applied by scripts/build-data.mjs after the rows are assembled.
+Valle dei Templi |  | Sicily | 
+Parthenon |  | Athens | 
+Erechtheion |  | Athens | 
+Pantheon |  |  | Hadrian
+Basilica of Maxentius and Constantine |  |  | Constantine
+Arch of Constantine |  |  | Constantine
+Mediolanum Imperial Palace District, Circo, Thermae Herculeae | Mediolanum |  | Maximian
+Hagia Sophia |  | Istanbul | —
+Mont-Saint-Michel Abbey |  | Mont-Saint-Michel | 
+Basilica of Saint-Denis |  | Saint-Denis | 
+Notre-Dame de Mantes-la-Jolie |  | Mantes | 
+Chartres Cathedral |  | Chartres, FR | 
+Bourges Cathedral |  | Bourges, FR | 
+Reims Cathedral |  | Reims, FR | 
+Amiens Cathedral |  | Amiens, FR | 
+Salisbury Cathedral |  | Salisbury, UK | 
+Strasbourg Cathedral |  | Strasbourg, FR | 
+Cologne Cathedral |  | Cologne, DE | 
+Cathédrale Sainte-Croix d'Orléans |  | Orléans, FR | 
+Seville Cathedral |  | Seville, ES | 
+Bargello Museum |  |  | Neri di Fioravante
+Santa Croce |  |  | Giorgio Vasari / Niccolò Matas (facade)
+Ca' Granda |  |  | Antonio di Pietro (Filarete)
+Santa Maria delle Grazie (Tribuna) | Santa Maria delle Grazie |  | 
+St. Peter's Basilica (First Design) | St. Peter's Basilica |  | 
+Fontainebleau |  | Fontainebleau, FR | 
+Laurentian Library |  |  | Michelangelo
+Piazza del Campidoglio |  |  | Michelangelo
+St. Peter's Basilica Dome |  |  | Michelangelo
+Villa Farnese |  |  | Giacomo Vignola
+Sforza Castle |  |  | Antonio di Pietro (Filarete)
+Quirinal Palace |  |  | President Hall
+Louvre Museum |  |  | I. M. Pei
+Gesù (Church of the Gesù) | Church of Gesù |  | Giacomo Vignola
+Baldacchino (St. Peter's) | St. Peter's Baldacchino |  | 
+Fontana dei Quattro Fiumi |  | Rome | 
+Palace of Versailles | Versailles | Versailles | Louis XIV
+Palazzo Reale (Milan) | Palazzo Reale |  | 
+Ecstasy of Saint Teresa |  | Rome | 
+Palazzo Montecitorio |  |  | Gian Lorenzo Bernini
+Palazzo Madama |  |  | Paolo Maruscelli (Baroque facade)
+Hermitage Museum | Hermitage Museum / Winter Palace | Saint Petersburg, RU | Empress Elizabeth
+Arco della Pace |  |  | Luigi Cagnola (Napoleone)
+Arc de Triomphe／Arc du Carrousel | Arc de Triomphe |  | Napoleone
+Alte Pinakothek |  | Munich | 
+Königsplatz |  | Munich | 
+Prado Museum |  | Madrid, ES | 
+Red House |  | Kent, UK | Philip Webb / Willam Morris
+Sagrada Família |  | Barcelona | 
+Casa Vicens |  | Barcelona | 
+Palau Güell |  | Barcelona | 
+Casa Batlló |  | Barcelona | 
+Casa Milà |  | Barcelona | 
+Park Güell |  | Barcelona | 
+Colònia Güell |  | Barcelona | 
+Tassel House |  | Brussels, BE | 
+Glasgow School of Art |  | Glasgow | Charles Rennie Mackintosh
+Palais Stoclet |  | Brussels, BE | 
+Schröder House |  | Utrecht, NE | 
+Pavillon de l'Esprit Nouveau |  |  | Le Corbusier
+Bauhaus Dessau Building |  | Dessau, DE | 
+Weissenhof Estate |  | Stuttgar, DE | Ludwig Mies van der Rohe
+Villa Savoye |  | Poissy, FR | Le Corbusier
+Barcelona Pavilion |  | Barcelona | 
+Fallingwater |  | Pennsylvania | 
+Unité d'Habitation |  | Marseille, FR | Le Corbusier
+Notre-Dame-du-Haut (Ronchamp) |  | Ronchamp, FR | Le Corbusier
+Paimio Sanatorium |  | Paimio, FN | 
+MIT Baker House |  | Cambridge, US | 
+Robie House |  | Chicago | 
+Glass House |  | New Canaan, US | 
+Weissenhof Double House |  | Stuttgart, DE | 
+Sainte Marie de La Tourette |  | Éveux, FR | Le Corbusier
+Van Gogh Museum |  | Amsterdam | 
+Dutch Pavilion |  |  | Gerrit Rietveld
+Villa Mairea |  | Noormarkku, FN | 
+Viipuri Library |  | Vyborg, RU | 
+Kaufmann Desert House |  | Palm Springs, US | 
+Millard House |  | Pasadena, US | 
+Fagus Factory |  | Alfeld, DE | 
+Pirelli Tower |  |  | Gio Ponti
+Torre Velasca |  |  | BBPR
+Tomba Brion |  | Treviso | 
+Guggenheim Museum Bilbao |  | Bilbao, ES | 
+Vitra Fire Station |  | Weil am Rhein, DE | 
+Phaeno Science Center |  | Wolfsburg, DE | 
+Wexner Center |  | Ohio | 
+Salk Institute |  | California | 
+Vanna Venturi House |  | Pennsylvania | 
+Space Needle |  | Seattle, US | Multiple architects
+Petronas Twin Towers |  | Kuala Lumpur, MY | 
+Allianz Arena |  | Munich, DE | 
+Marqués de Riscal Hotel |  | Elciego, ES | 
+Tate Modern |  |  | Multiple architects
+Metropolitan Museum of Art |  |  | Multiple architects
+Nevsky Prospect |  | Saint Petersburg, RU | Peter the Great

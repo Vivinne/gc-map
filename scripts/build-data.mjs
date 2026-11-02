@@ -283,8 +283,11 @@ function main() {
   }
 
   // Assemble
+  // Display overrides synced from the user's Doc (data/doc-display.txt): name, location label and architect shown to readers; keys stay as in the handout
+  const DISP = new Map(dataLines('data/doc-display.txt').map((l) => { const [k, n, lc, w] = l.split('|').map((x) => x.trim()); return [k, { n, lc, w }]; }));
+  for (const k of DISP.keys()) if (!rows.some((r) => r.name === k)) errors.push(`doc-display.txt: no building named "${k}"`);
   const places = rows.map((r) => ({
-    id: r.id, name: r.name, loc: r.loc, year: r.year, who: r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
+    id: r.id, name: DISP.get(r.name)?.n || r.name, loc: r.loc, locLabel: DISP.get(r.name)?.lc || r.loc, year: r.year, who: DISP.get(r.name)?.w || r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
     style: r.style.name, styleId: r.style.id, era: r.era, eras: r.eras,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
   }));

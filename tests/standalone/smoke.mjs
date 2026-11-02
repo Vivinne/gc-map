@@ -90,7 +90,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(!requested.some((u) => u.includes('@5/')), 'The fallback must not be used in the normal case');
   ok('App starts after the pinned MapLibre version loads and the page renders');
 
-  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 7);
+  await page.waitForFunction(() => window.__fake && window.__fake.layers.length === 5);
   const f = await page.evaluate(() => ({
     
     cityData: window.__fake.sources.cities.data.features.map((x) => x.properties),
@@ -100,7 +100,7 @@ async function open({ pinned = true, fallback = true } = {}) {
     pointsPaint: window.__fake.layers.find((l) => l.id === 'points').paint,
     controls: window.__fake.controls,
   }));
-  assert.deepEqual(f.layers, ['footprint', 'footprint-line', 'points', 'points-few', 'cities', 'city-count', 'selected']);
+  assert.deepEqual(f.layers, ['points', 'points-few', 'cities', 'city-count', 'selected']);
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds
   for (const cs of [f.cs.a]) {
     assert.equal(cs.cluster, true);
@@ -143,26 +143,6 @@ async function open({ pinned = true, fallback = true } = {}) {
   const fly = await page.evaluate(() => window.__fake.fly.at(-1));
   assert.ok(Math.abs(fly.zoom - 15.5) < 0.15, `500 m around the point: ${fly.zoom}`);
   ok('Marker click -> detail panel, selection-ring filter, flyTo');
-
-  // Figure ground: the basemap building polygon at the selected point is sent to the footprint source
-  const colo = data.places.find((p) => p.id === colosseum).points[0];
-  await page.evaluate(([lng, lat]) => {
-    const e = 0.0005;
-    window.__fake.hits = [
-      { properties: { pid: 'x' }, geometry: { type: 'Polygon', coordinates: [[[lng - e, lat - e], [lng + e, lat - e], [lng + e, lat + e], [lng - e, lat + e], [lng - e, lat - e]]] } },
-      { properties: { pid: 'y' }, geometry: { type: 'Polygon', coordinates: [[[lng + 1, lat], [lng + 1.1, lat], [lng + 1.1, lat + 0.1], [lng + 1, lat]]] } },
-      { properties: { pid: 'next' }, geometry: { type: 'Polygon', coordinates: [[[lng + 0.0001, lat - e], [lng + 3 * e, lat - e], [lng + 3 * e, lat - 0.0002], [lng + 0.0001, lat - 0.0002], [lng + 0.0001, lat - e]]] } }, // a neighbour beside the point
-      { properties: { pid: 'ring' }, geometry: { type: 'Polygon', coordinates: [[[lng - 3 * e, lat - 3 * e], [lng + 3 * e, lat - 3 * e], [lng + 3 * e, lat + 3 * e], [lng - 3 * e, lat + 3 * e], [lng - 3 * e, lat - 3 * e]], [[lng - e / 2, lat - e / 2], [lng + e / 2, lat - e / 2], [lng + e / 2, lat + e / 2], [lng - e / 2, lat + e / 2], [lng - e / 2, lat - e / 2]]] } }, // the point is in its courtyard (hole)
-      { properties: { pid: 'block' }, geometry: { type: 'Polygon', coordinates: [[[lng - 0.01, lat - 0.01], [lng + 0.01, lat - 0.01], [lng + 0.01, lat + 0.01], [lng - 0.01, lat + 0.01], [lng - 0.01, lat - 0.01]]] } }, // far larger than a building
-    ];
-    window.__fake.setData.length = 0;
-    window.__fake.map.fire('idle');
-  }, [colo.lng, colo.lat]);
-  await page.waitForFunction(() => window.__fake.setData.some((x) => x[0] === 'footprint'));
-  const foot = await page.evaluate(() => window.__fake.footprint);
-  assert.equal(foot.features.length, 1, 'Only the building itself: not neighbours, courtyards or block-sized shapes');
-  assert.match(foot.features[0].properties.color, /^#/);
-  ok('Selecting a building -> its basemap footprint is filled with the style colour');
 
   // Several entries at one spot: one of them is shown directly (no chooser)
   await page.keyboard.press('Escape');

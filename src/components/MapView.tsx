@@ -23,35 +23,8 @@ const UNION_PAD = 0.2;
 const CITY_MERGE_PX = CITY_RADIUS * 2 + 4;
 
 const INK = '#111827';
-const FOOTPRINT_SOURCE = 'footprint';
 type GeoData = Parameters<GeoJSONSource['setData']>[0];
-const EMPTY_FC = { type: 'FeatureCollection', features: [] } as const;
 
-type Ring = number[][];
-type Geom = { type: string; coordinates: unknown };
-/** Polygons of a (Multi)Polygon as [outer ring, ...holes] */
-const polygonsOf = (g: Geom): Ring[][] => (g.type === 'Polygon' ? [g.coordinates as Ring[]] : g.type === 'MultiPolygon' ? (g.coordinates as Ring[][]) : []);
-const ringHas = (ring: Ring, x: number, y: number): boolean => {
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [xi, yi] = ring[i] as [number, number];
-    const [xj, yj] = ring[j] as [number, number];
-    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
-};
-/** The point is inside a polygon's outer ring and not inside one of its holes (courtyards) */
-const coversPoint = (g: Geom, x: number, y: number): boolean => polygonsOf(g).some(([outer, ...holes]) => !!outer && ringHas(outer, x, y) && !holes.some((h) => ringHas(h, x, y)));
-const ringArea = (ring: Ring, lat: number): number => {
-  const kx = 111320 * Math.cos((lat * Math.PI) / 180);
-  const ky = 110574;
-  let a = 0;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) a += ((ring[j]![0]! * kx) * (ring[i]![1]! * ky)) - ((ring[i]![0]! * kx) * (ring[j]![1]! * ky));
-  return Math.abs(a) / 2;
-};
-const geomArea = (g: Geom, lat: number): number => polygonsOf(g).reduce((n, [outer, ...holes]) => n + (outer ? ringArea(outer, lat) : 0) - holes.reduce((m, h) => m + ringArea(h, lat), 0), 0);
-/** A single building is never larger than this; anything bigger is a block, campus or land-use shape, not the building itself */
-const MAX_FOOTPRINT_M2 = 150000;
 
 export type FocusTarget =
   | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; nonce: number }
@@ -195,10 +168,6 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         'circle-stroke-color': '#ffffff',
       };
       const countLayout: NonNullable<SymbolLayerSpecification['layout']> = { 'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true };
-      // Figure ground: the basemap footprint of the selected building, filled with its style colour
-      map.addSource(FOOTPRINT_SOURCE, { type: 'geojson', data: EMPTY_FC as unknown as GeoData });
-      map.addLayer({ id: 'footprint', type: 'fill', source: FOOTPRINT_SOURCE, paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.9 } });
-      map.addLayer({ id: 'footprint-line', type: 'line', source: FOOTPRINT_SOURCE, paint: { 'line-color': INK, 'line-width': 2 } });
       map.addLayer({ id: 'points', type: 'circle', source: SOURCE, minzoom: CITY_TOP_ZOOM, paint: dot });
       // Below the switch zoom: markers of the circles with fewer than MIN_NUMBER buildings (list kept up to date by refreshFew)
       map.addLayer({ id: 'points-few', type: 'circle', source: SOURCE, maxzoom: CITY_TOP_ZOOM, filter: ['in', ['get', 'pid'], ['literal', []]], paint: dot });
@@ -322,37 +291,9 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         fewKey = key;
         map.setFilter('points-few', ['in', ['get', 'pid'], ['literal', list]]);
       };
-      // The footprint comes from the basemap's building polygons that are drawn at the selected point; tiles may still be loading, so this retries on idle
-      let footKey = '';
-      const refreshFootprint = () => {
-        const src = map.getSource(FOOTPRINT_SOURCE) as GeoJSONSource | undefined;
-        if (!src) return;
-        const sel = latest.current.selectedPid;
-        const pts = sel ? latest.current.fc.features.filter((f) => f.properties.pid === sel) : [];
-        const layers = (map.getStyle()?.layers ?? []).filter((l) => (l as { 'source-layer'?: string })['source-layer'] === 'building').map((l) => l.id);
-        const out: { type: 'Feature'; geometry: Geom; properties: { color: string } }[] = [];
-        if (layers.length) {
-          for (const f of pts) {
-            const [lng, lat] = f.geometry.coordinates;
-            const px = map.project([lng, lat]);
-            // Only the basemap building polygons that contain the point itself (not their neighbours); courtyards (holes) do not count; oversized shapes are skipped
-            const hits = map.queryRenderedFeatures([[px.x - 2, px.y - 2], [px.x + 2, px.y + 2]], { layers }).filter((h) => {
-              const g = h.geometry as Geom;
-              return coversPoint(g, lng, lat) && geomArea(g, lat) <= MAX_FOOTPRINT_M2;
-            });
-            for (const h of hits) out.push({ type: 'Feature', geometry: h.geometry as Geom, properties: { color: f.properties.color } });
-          }
-        }
-        const key = sel + '|' + JSON.stringify(out.map((o) => o.geometry));
-        if (key === footKey) return;
-        footKey = key;
-        src.setData({ type: 'FeatureCollection', features: out } as unknown as GeoData);
-      };
       map.on('idle', () => {
         void refreshFew();
-        refreshFootprint();
       });
-      map.on('moveend', refreshFootprint);
       setReady(true);
     });
 

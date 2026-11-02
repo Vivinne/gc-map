@@ -29,7 +29,7 @@ export const PlaceList = memo(function PlaceList({
           <button type="button" className="item" aria-current={p.id === selectedId} onClick={() => onSelect(p.id)}>
             <span className="name">{p.name}</span>
             <span className="meta">
-              {[p.loc || 'Location not given', p.year !== '—' ? p.year : ''].filter(Boolean).join(' | ')}
+              {[p.locLabel || 'Location not given', p.year !== '—' ? p.year : ''].filter(Boolean).join(' | ')}
               {p.points.length === 0 && <em className="tag">Unlocated</em>}
             </span>
           </button>
@@ -131,7 +131,7 @@ export function DetailPanel({
   onMinimize: () => void;
   onClose: () => void;
 }) {
-  const sub = [blank(place.year), place.loc].filter(Boolean).join(', ');
+  const sub = [blank(place.year), place.locLabel].filter(Boolean).join(', ');
   const ref = useRef<HTMLElement>(null);
   const cur = useRef<Offset>(offset);
   const drag = useRef<{ x: number; y: number; ox: number; oy: number; base: DOMRect; s: DOMRect; menu: DOMRect | null } | null>(null);

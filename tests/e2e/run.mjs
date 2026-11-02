@@ -129,7 +129,7 @@ ok('Exam-year line: last line of the context, italic small; absent when the buil
 await page.fill('.search', 'Robie');
 await page.click('.list .item:has-text("Robie House")');
 assert.equal((await page.textContent('[data-testid=detail] h2')).trim(), 'Robie House');
-assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1909-1910, Chicago (United States)');
+assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1909-1910, Chicago');
 assert.equal((await page.textContent('[data-testid=detail] .who')).trim(), 'Frank Lloyd Wright');
 assert.equal((await page.textContent('[data-testid=detail] .exam')).trim(), '【2016 TEST-ARCHED】');
 await page.fill('.search', '');
@@ -198,7 +198,7 @@ if (unloc.length === 0) {
 await page.fill('.search', 'Salk');
 await page.click('.list .item:has-text("Salk Institute")');
 await page.waitForSelector('[data-testid=detail]');
-assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1959–1965');
+assert.equal((await page.textContent('[data-testid=detail] .loc')).trim(), '1959–1965, California');
 await page.fill('.search', 'Triennale');
 await page.click('.list .item:has-text("Triennale")');
 assert.equal((await page.textContent('[data-testid=detail] .who')).trim(), 'Giovanni Muzio');
