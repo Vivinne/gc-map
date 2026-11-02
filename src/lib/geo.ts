@@ -252,3 +252,28 @@ export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, in
   }
   return [...best.values()].map(({ key, n, x, y }) => ({ key, n, x, y }));
 }
+
+/** Edge markers show cities within this distance (m) of the view centre first */
+export const EDGE_RANGE_M = 150_000;
+
+/** Straight-line distance in metres between two lng/lat points (haversine) */
+export function distanceM(a: { lng: number; lat: number }, b: { lng: number; lat: number }): number {
+  const R = 6371008.8;
+  const rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad;
+  const dLng = (b.lng - a.lng) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+/**
+ * Edge markers limited to `base` metres from the view centre; when that leaves no marker at all, the limit doubles (300, 600, 1200 km ...)
+ * until there is one (or no city is left out).
+ */
+export function edgeMarkersExpanding(items: readonly (EdgeItem & { dist: number })[], w: number, h: number, base = EDGE_RANGE_M): EdgeMarker[] {
+  const maxDist = items.reduce((m, i) => Math.max(m, i.dist), 0);
+  for (let r = base; ; r *= 2) {
+    const m = edgeMarkers(items.filter((i) => i.dist <= r), w, h);
+    if (m.length || r >= maxDist) return m;
+  }
+}

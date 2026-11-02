@@ -149,7 +149,7 @@ test('city circles: city from the handout location, count = buildings, region pl
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });
 
-import { edgeMarkers, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
+import { edgeMarkers, edgeMarkersExpanding, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
 test('densestCenter picks the middle of the most crowded group', () => {
   assert.equal(densestCenter([]), null);
   // three buildings within 300 m, one 20 km away: the centre is the middle of the three
@@ -195,4 +195,14 @@ test('Gaudi works are separate entries with one marker each', () => {
     assert.ok(p.summary, n);
   }
   assert.ok(!d.places.some((x: { name: string }) => x.name.includes('等 Gaudí')));
+});
+
+test('edgeMarkersExpanding: 150 km first, doubles when nothing is found', () => {
+  const near = { key: 'near', n: 1, x: 3000, y: 300, dist: 100_000 };
+  const mid = { key: 'mid', n: 2, x: -2000, y: 300, dist: 400_000 };
+  const far = { key: 'far', n: 3, x: 300, y: 5000, dist: 1_000_000 };
+  assert.deepEqual(edgeMarkersExpanding([near, mid, far], 1000, 600).map((m) => m.key), ['near']);
+  assert.deepEqual(edgeMarkersExpanding([mid, far], 1000, 600).map((m) => m.key), ['mid']);
+  assert.deepEqual(edgeMarkersExpanding([far], 1000, 600).map((m) => m.key), ['far']);
+  assert.deepEqual(edgeMarkersExpanding([], 1000, 600), []);
 });
