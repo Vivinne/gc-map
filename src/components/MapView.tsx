@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, SCALE_1KM_MPP, densestCenter, isSameSpot, zoomForMetersPerPixel, type CityCollection, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, SCALE_1KM_MPP, densestCenter, edgeMarkers, isSameSpot, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
@@ -79,6 +79,7 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
   const [err, setErr] = useState('');
   const history = useRef<{ center: [number, number]; zoom: number }[]>([]);
   const [canBack, setCanBack] = useState(false);
+  const [edges, setEdges] = useState<EdgeMarker[]>([]);
 
   // Event handlers must read the latest values; use refs to avoid rebinding
   const latest = useRef({ fc, cities, selectedPid, onPick });
@@ -120,6 +121,26 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
       // A single tile or font failure is not fatal; only warn when the style itself fails to load
       if (/style|tiles\.openfreemap|Failed to fetch|NetworkError/i.test(msg)) setErr('Basemap failed to load; check your network connection (marker data is unaffected).');
     });
+
+    // Cities outside the view (while city numbers are hidden, i.e. zoomed in): one marker per direction on the view edge with its building count
+    let raf = 0;
+    const updateEdges = () => {
+      raf = 0;
+      if (map.getZoom() < CITY_TOP_ZOOM) return setEdges((e) => (e.length ? [] : e));
+      const el = map.getContainer();
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      const items = latest.current.cities.features.map((f) => {
+        const p = map.project(f.geometry.coordinates);
+        return { key: f.properties.city, n: f.properties.n, x: p.x, y: p.y };
+      });
+      setEdges(edgeMarkers(items, w, h));
+    };
+    const scheduleEdges = () => {
+      if (!raf) raf = requestAnimationFrame(updateEdges);
+    };
+    map.on('move', scheduleEdges);
+    map.on('load', scheduleEdges);
 
     map.on('load', () => {
       // No polar regions. Set after load, with longitude just inside ±180: MapLibre 5.6 crashes (null centre) when maxBounds is in the constructor or is exactly ±180
@@ -377,9 +398,35 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     onBack?.();
   };
 
+  const goEdge = (key: string) => {
+    const map = mapRef.current;
+    const f = latest.current.cities.features.find((c) => c.properties.city === key);
+    if (!map || !f) return;
+    const set = new Set(JSON.parse(f.properties.pids) as string[]);
+    const c = map.getCenter();
+    let best: [number, number] = f.geometry.coordinates;
+    let bd = Infinity;
+    for (const p of latest.current.fc.features) {
+      if (!set.has(p.properties.pid)) continue;
+      const q = p.geometry.coordinates;
+      const d = Math.hypot(q[0] - c.lng, q[1] - c.lat);
+      if (d < bd) {
+        bd = d;
+        best = q;
+      }
+    }
+    pushRef.current();
+    map.easeTo({ center: best, duration: 600 });
+  };
+
   return (
     <>
       <div ref={box} className="map" data-testid="map" />
+      {edges.map((m) => (
+        <button key={m.key} type="button" className="edge-dot" data-testid="edge-dot" style={{ left: m.x, top: m.y }} aria-label={`${m.n} buildings in this direction`} onClick={() => goEdge(m.key)}>
+          {m.n}
+        </button>
+      ))}
       <button type="button" className="map-back" data-testid="map-back" aria-label="Back to the previous view" title="Previous view" disabled={!canBack} onClick={goBack}>
         &lt; Back
       </button>

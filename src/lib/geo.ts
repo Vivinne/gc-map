@@ -207,3 +207,55 @@ export function toCityCollection(places: readonly Place[]): CityCollection {
   for (const [f, ids] of attached) f.properties.vpids = JSON.stringify(ids);
   return { type: 'FeatureCollection', features };
 }
+
+export interface EdgeItem {
+  key: string;
+  n: number;
+  /** Screen position of the city centre in px */
+  x: number;
+  y: number;
+}
+export interface EdgeMarker {
+  /** Key of the nearest city of the group (the click target) */
+  key: string;
+  /** Number of buildings in the group */
+  n: number;
+  /** Position on the viewport edge in px */
+  x: number;
+  y: number;
+}
+
+/**
+ * Markers for cities outside the view: one per direction on the viewport edge (inset px inside it), labelled with the number of buildings.
+ * Cities farther than `range` px from the view centre are left out; cities whose edge spots are closer than `cell` px are summed into one marker.
+ */
+export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, inset = 22, range = 8 * Math.max(w, h), cell = 40): EdgeMarker[] {
+  const cx = w / 2;
+  const cy = h / 2;
+  const out = new Map<string, EdgeMarker & { d: number }>();
+  for (const it of items) {
+    if (it.x >= 0 && it.x <= w && it.y >= 0 && it.y <= h) continue;
+    const dx = it.x - cx;
+    const dy = it.y - cy;
+    const d = Math.hypot(dx, dy);
+    if (d > range || d === 0) continue;
+    const hx = cx - inset;
+    const hy = cy - inset;
+    const k = Math.min(hx / Math.abs(dx || 1e-9), hy / Math.abs(dy || 1e-9));
+    const x = cx + dx * k;
+    const y = cy + dy * k;
+    const slot = `${Math.round(x / cell)}:${Math.round(y / cell)}`;
+    const cur = out.get(slot);
+    if (!cur) out.set(slot, { key: it.key, n: it.n, x, y, d });
+    else {
+      cur.n += it.n;
+      if (d < cur.d) {
+        cur.d = d;
+        cur.key = it.key;
+        cur.x = x;
+        cur.y = y;
+      }
+    }
+  }
+  return [...out.values()].map(({ key, n, x, y }) => ({ key, n, x, y }));
+}

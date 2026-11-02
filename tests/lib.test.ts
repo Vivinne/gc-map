@@ -149,7 +149,7 @@ test('city circles: city from the handout location, count = buildings, region pl
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });
 
-import { PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
+import { edgeMarkers, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
 test('densestCenter picks the middle of the most crowded group', () => {
   assert.equal(densestCenter([]), null);
   // three buildings within 300 m, one 20 km away: the centre is the middle of the three
@@ -163,4 +163,22 @@ test('zoom for 1 km on the scale bar, polar limit and phone Full map bounds', ()
   assert.ok(Math.abs((78271.517 * Math.cos((45 * Math.PI) / 180)) / 2 ** z - SCALE_1KM_MPP) < 1e-9);
   assert.equal(POLAR_LAT, 66.5);
   assert.deepEqual(PHONE_FULL_BOUNDS, [[-12, 30], [32, 63]]);
+});
+
+test('edgeMarkers: one per direction on the view edge, sum nearby, skip inside and too far', () => {
+  const m = edgeMarkers([
+    { key: 'in', n: 5, x: 500, y: 300 },
+    { key: 'left', n: 1, x: -2000, y: 300 },
+    { key: 'right', n: 1, x: 3000, y: 300 },
+    { key: 'right2', n: 2, x: 4000, y: 310 },
+    { key: 'far', n: 9, x: 99999, y: 300 },
+  ], 1000, 600);
+  assert.equal(m.length, 2);
+  const l = m.find((e) => e.key === 'left')!;
+  const r = m.find((e) => e.key === 'right')!;
+  assert.equal(l.n, 1);
+  assert.equal(l.x, 22);
+  assert.equal(r.n, 3);
+  assert.equal(r.x, 978);
+  assert.ok(Math.abs(l.y - 300) < 1);
 });

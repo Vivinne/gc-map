@@ -44,7 +44,8 @@ const FAKE = `(function(){
   Map.prototype.easeTo=function(o){ calls.ease=o; };
   Map.prototype.getZoom=function(){ return this.zoom; };
   Map.prototype.getStyle=function(){ return { layers: [{ id: 'building', 'source-layer': 'building' }, { id: 'water', 'source-layer': 'water' }] }; };
-  Map.prototype.project=function(c){ return { x: c[0], y: c[1] }; };
+  Map.prototype.project=function(c){ return window.__proj ? window.__proj(c) : { x: c[0], y: c[1] }; };
+  Map.prototype.getContainer=function(){ return { clientWidth: 1000, clientHeight: 600 }; };
   Map.prototype.getCenter=function(){ return this.center||{lng:12.5,lat:43.5}; };
   Map.prototype.querySourceFeatures=function(){ return calls.srcFeatures||[]; };
   window.__fakeLeaves=[];
@@ -240,6 +241,22 @@ async function open({ pinned = true, fallback = true } = {}) {
   assert.ok(e1.center[0] > 12.4 && e1.center[0] < 12.6 && e1.center[1] > 41.8 && e1.center[1] < 42, JSON.stringify(e1.center));
   assert.equal(await page.locator('[data-testid=chooser]').count(), 0);
   ok('City number click -> centre of the most crowded group of its buildings, scale 1 km');
+
+  // Zoomed in: cities outside the view get an edge marker with their count; a click moves the map to the nearest building of that city
+  await page.evaluate(() => {
+    window.__proj = () => ({ x: 3000, y: 300 });
+    window.__fake.map.zoom = 12;
+    window.__fake.ease = null;
+    window.__fake.map.fire('move');
+  });
+  await page.waitForSelector('[data-testid=edge-dot]');
+  assert.equal(await page.locator('[data-testid=edge-dot]').count(), 1);
+  await page.locator('[data-testid=edge-dot]').click();
+  await page.waitForFunction(() => window.__fake.ease);
+  assert.equal(await page.evaluate(() => window.__fake.ease.zoom), undefined, 'The zoom stays');
+  ok('Edge marker for a city outside the view -> click moves there, zoom unchanged');
+  await page.evaluate(() => { window.__proj = null; window.__fake.map.zoom = 4; window.__fake.map.fire('move'); });
+  await page.waitForFunction(() => document.querySelectorAll('[data-testid=edge-dot]').length === 0);
 
   // City click: merged circle (several close cities) -> the same, over the buildings of all its cities
   await page.evaluate((o) => {
