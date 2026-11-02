@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, distanceM, edgeMarkersExpanding, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 /** Zoom levels the map zooms out when the building panel is closed */
@@ -161,7 +161,13 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
         return { key: f.properties.city, n: f.properties.n, x: p.x, y: p.y, dist };
       });
       // Cities within 150 km first; when none is outside the view, the limit doubles (300, 600 km ...) until one is found
-      setEdges(edgeMarkersExpanding(items, w, h));
+      // Direction buttons stay clear of the page buttons (menu, Full map, Back) and of the tag panel
+      const o = el.getBoundingClientRect();
+      const obstacles = Array.from(document.querySelectorAll('.menu-btn, .fullmap, .map-back, .side')).map((n) => {
+        const r = n.getBoundingClientRect();
+        return { x: r.left - o.left, y: r.top - o.top, w: r.width, h: r.height };
+      });
+      setEdges(avoidObstacles(edgeMarkersExpanding(items, w, h), obstacles, w, h));
     };
     const scheduleEdges = () => {
       if (!raf) raf = requestAnimationFrame(updateEdges);
@@ -444,12 +450,15 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     onBack?.();
   };
 
-  // A direction button: move (zoom unchanged) to the middle of the most crowded group of the buildings in that direction (all cities merged into it)
+  // A direction button: move (zoom unchanged) to the middle of the most crowded group of the city with the most buildings among those merged into that direction
   const goEdge = (keys: string[]) => {
     const map = mapRef.current;
     if (!map) return;
-    const set = new Set<string>();
-    for (const f of latest.current.cities.features) if (keys.includes(f.properties.city)) for (const id of JSON.parse(f.properties.pids) as string[]) set.add(id);
+    // When several cities are merged into this direction (18 = 16 + 2), the city with the most buildings wins, even if another one is nearer
+    const mine = latest.current.cities.features.filter((f) => keys.includes(f.properties.city));
+    const top = mine.reduce<(typeof mine)[number] | undefined>((t, f) => (!t || f.properties.n > t.properties.n ? f : t), undefined);
+    if (!top) return;
+    const set = new Set<string>(JSON.parse(top.properties.pids) as string[]);
     const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
     const c = densestCenter(pts);
     if (!c) return;

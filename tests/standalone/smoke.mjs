@@ -45,11 +45,11 @@ const FAKE = `(function(){
   Map.prototype.getZoom=function(){ return this.zoom; };
   Map.prototype.getStyle=function(){ return { layers: [{ id: 'building', 'source-layer': 'building' }, { id: 'water', 'source-layer': 'water' }] }; };
   Map.prototype.project=function(c){ return window.__proj ? window.__proj(c) : { x: c[0], y: c[1] }; };
-  Map.prototype.getContainer=function(){ return { clientWidth: 1000, clientHeight: 600 }; };
+  Map.prototype.getContainer=function(){ return { clientWidth: 1000, clientHeight: 600, getBoundingClientRect: function(){ return { left: 0, top: 0, width: 1000, height: 600 }; } }; };
   Map.prototype.getCenter=function(){ return this.center||{lng:12.5,lat:43.5}; };
   Map.prototype.querySourceFeatures=function(){ return calls.srcFeatures||[]; };
   window.__fakeLeaves=[];
-  Map.prototype.getContainer=function(){ return { clientWidth: 1000, clientHeight: 800 }; };
+  Map.prototype.getContainer=function(){ return { clientWidth: 1000, clientHeight: 800, getBoundingClientRect: function(){ return { left: 0, top: 0, width: 1000, height: 800 }; } }; };
   Map.prototype.getCanvas=function(){ return { style:{} }; };
   Map.prototype.queryRenderedFeatures=function(){ return calls.hits; };
   Map.prototype.resize=function(){};
@@ -289,6 +289,22 @@ async function open({ pinned = true, fallback = true } = {}) {
   });
   await page.waitForSelector('[data-testid=edge-dot]');
   assert.equal(await page.locator('[data-testid=edge-dot]').count(), 1);
+  // A merged direction (e.g. 18 = 16 + 2): the click goes to the city with the most buildings even when another is nearer
+  await page.evaluate(() => {
+    window.__fake.map.center = { lng: 12.0, lat: 42.7 }; // Rome about 94 km away, Florence about 135 km
+    window.__proj = (c) => (c[1] < 42.5 ? { x: 3000, y: 300 } : c[1] < 44.5 && c[0] < 12 ? { x: 1500, y: 310 } : { x: 500, y: 300 }); // Rome far, Florence nearer on screen, the rest inside the view
+    window.__fake.map.zoom = 12;
+    window.__fake.ease = null;
+    window.__fake.map.fire('move');
+  });
+  await page.waitForSelector('[data-testid=edge-dot]');
+  await page.locator('[data-testid=edge-dot]').first().click();
+  await page.waitForFunction(() => window.__fake.ease);
+  const mc = await page.evaluate(() => window.__fake.ease.center);
+  assert.ok(mc[1] < 42.5, 'The merged direction goes to the city with the most buildings (Rome), not the nearer one: ' + JSON.stringify(mc));
+  ok('Merged direction button -> the city with the most buildings, even if another is nearer');
+  await page.evaluate(() => { window.__proj = () => ({ x: 3000, y: 300 }); window.__fake.map.center = { lng: 12.5, lat: 43.5 }; window.__fake.map.fire('move'); });
+
   // Zooming far in does not remove the markers (the range is real distance, not pixels)
   await page.evaluate(() => { window.__fake.map.zoom = 19; window.__fake.map.fire('move'); });
   await page.waitForTimeout(150);

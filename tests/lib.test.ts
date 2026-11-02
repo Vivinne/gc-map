@@ -149,7 +149,7 @@ test('city circles: city from the handout location, count = buildings, region pl
   assert.equal(cityClickZoom(9), CITY_TOP_ZOOM + 0.5);
 });
 
-import { viewContainsPoint, edgeMarkers, edgeMarkersExpanding, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
+import { avoidObstacles, viewContainsPoint, edgeMarkers, edgeMarkersExpanding, PHONE_FULL_BOUNDS, POLAR_LAT, SCALE_1KM_MPP, densestCenter, zoomForMetersPerPixel } from '../src/lib/geo';
 test('densestCenter picks the middle of the most crowded group', () => {
   assert.equal(densestCenter([]), null);
   // three buildings within 300 m, one 20 km away: the centre is the middle of the three
@@ -202,4 +202,15 @@ test('viewContainsPoint: 1 km scale view of 1000 x 600 px', () => {
   assert.ok(viewContainsPoint(c, z, 1000, 600, { lng: 12.5, lat: 41.9 })); // about 0.8 km east
   assert.ok(!viewContainsPoint(c, z, 1000, 600, { lng: 13.0, lat: 41.9 })); // about 38 km east
   assert.ok(!viewContainsPoint(c, z, 1000, 600, { lng: 12.49, lat: 41.95 })); // about 5.5 km north
+});
+
+test('avoidObstacles: markers slide along the edge clear of page buttons and of each other', () => {
+  const w = 1000;
+  const h = 600;
+  const button = { x: 880, y: 440, w: 104, h: 44 }; // like Full map at the bottom right
+  const out = avoidObstacles([{ x: 976, y: 460 }, { x: 976, y: 462 }, { x: 500, y: 24 }], [button], w, h);
+  const clear = (m: { x: number; y: number }) => m.x + 16 <= button.x || m.x - 16 >= button.x + button.w || m.y + 16 <= button.y || m.y - 16 >= button.y + button.h;
+  assert.ok(clear(out[0]!) && clear(out[1]!));
+  assert.ok(Math.hypot(out[0]!.x - out[1]!.x, out[0]!.y - out[1]!.y) >= 32, 'two markers do not overlap');
+  assert.deepEqual(out[2], { x: 500, y: 24 }, 'a free marker stays');
 });

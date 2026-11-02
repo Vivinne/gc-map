@@ -298,3 +298,65 @@ export function viewContainsPoint(center: { lng: number; lat: number }, zoom: nu
   const dy = my(pt.lat) - my(center.lat);
   return Math.abs(dx) <= w / 2 && Math.abs(dy) <= h / 2;
 }
+
+export interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * Slides each marker along the viewport edge (the rectangle `inset` px inside a w x h view) until a `size` px circle at its centre no longer
+ * overlaps any of the `obstacles` (page buttons) or an earlier marker. The nearest free spot along the edge wins; with none free the marker stays.
+ */
+export function avoidObstacles<T extends { x: number; y: number }>(markers: readonly T[], obstacles: readonly Rect[], w: number, h: number, inset = 24, size = 32, step = 4): T[] {
+  const W = Math.max(w - 2 * inset, 1);
+  const H = Math.max(h - 2 * inset, 1);
+  const total = 2 * (W + H);
+  const at = (t: number): { x: number; y: number } => {
+    let u = ((t % total) + total) % total;
+    if (u <= W) return { x: inset + u, y: inset };
+    u -= W;
+    if (u <= H) return { x: inset + W, y: inset + u };
+    u -= H;
+    if (u <= W) return { x: inset + W - u, y: inset + H };
+    u -= W;
+    return { x: inset, y: inset + H - u };
+  };
+  const param = (x: number, y: number): number => {
+    const dTop = Math.abs(y - inset);
+    const dRight = Math.abs(x - (inset + W));
+    const dBottom = Math.abs(y - (inset + H));
+    const dLeft = Math.abs(x - inset);
+    const m = Math.min(dTop, dRight, dBottom, dLeft);
+    if (m === dTop) return Math.min(Math.max(x - inset, 0), W);
+    if (m === dRight) return W + Math.min(Math.max(y - inset, 0), H);
+    if (m === dBottom) return W + H + Math.min(Math.max(inset + W - x, 0), W);
+    return 2 * W + H + Math.min(Math.max(inset + H - y, 0), H);
+  };
+  const r = size / 2 + 3;
+  const hits = (x: number, y: number, rects: readonly Rect[]) => rects.some((o) => x + r > o.x && x - r < o.x + o.w && y + r > o.y && y - r < o.y + o.h);
+  const placed: Rect[] = [];
+  return markers.map((m) => {
+    const rects = [...obstacles, ...placed];
+    let best = { x: m.x, y: m.y };
+    if (hits(m.x, m.y, rects)) {
+      const t0 = param(m.x, m.y);
+      for (let d = step; d <= total / 2; d += step) {
+        const a = at(t0 + d);
+        const b = at(t0 - d);
+        if (!hits(a.x, a.y, rects)) {
+          best = a;
+          break;
+        }
+        if (!hits(b.x, b.y, rects)) {
+          best = b;
+          break;
+        }
+      }
+    }
+    placed.push({ x: best.x - size / 2, y: best.y - size / 2, w: size, h: size });
+    return { ...m, x: best.x, y: best.y };
+  });
+}
