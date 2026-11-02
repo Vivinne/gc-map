@@ -21,7 +21,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 /* ---------- Layout: the map fills the window, the tag panel floats above it ---------- */
 .app { --credit-h: 17px; position: relative; height: 100dvh; overflow: hidden; }
 .stage { position: absolute; inset: 0 0 var(--credit-h) 0; background: #e8e4da; }
-.side { position: absolute; z-index: 6; top: 12px; left: 12px; display: flex; flex-direction: column; width: 296px; max-height: calc(100% - 24px - var(--credit-h)); overflow: hidden; background: #fff; border: 3px solid var(--ink); }
+.side { position: absolute; z-index: 6; top: 12px; left: 12px; display: flex; flex-direction: column; width: 197px; max-height: calc(100% - 24px - var(--credit-h)); overflow: hidden; background: #fff; border: 3px solid var(--ink); }
 .side-top { display: flex; align-items: stretch; flex: none; border-bottom: 3px solid var(--ink); }
 .side-top .brand { flex: 1; min-width: 0; }
 .menu-btn { display: flex; flex: none; flex-direction: column; justify-content: center; gap: 4px; width: 46px; min-height: 52px; padding: 0 12px; background: var(--ink); border: 0; border-radius: 0; cursor: pointer; }
@@ -41,8 +41,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .tabs { display: none; }
 
 /* ---------- Tag panel ---------- */
-.brand { background: var(--ink); color: #fff; padding: 8px 12px; }
-.brand h1 { margin: 0; font-size: 16px; letter-spacing: 0.03em; line-height: 1.25; }
+.brand { display: flex; align-items: center; background: var(--ink); color: #fff; padding: 8px 8px; } /* heading centred between the top and the bottom of the block */
+.brand h1 { margin: 0; font-size: 14px; letter-spacing: 0.02em; line-height: 1.25; white-space: nowrap; }
 
 .controls { display: grid; gap: 6px; padding: 10px 12px; border-bottom: 3px solid var(--ink); }
 .search { width: 100%; padding: 6px 9px; font: inherit; font-size: 13px; background: #fff; border: 3px solid var(--ink); border-radius: 0; }
