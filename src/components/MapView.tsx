@@ -444,32 +444,24 @@ export default function MapView({ fc, cities, selectedPid, bounds, focus, active
     onBack?.();
   };
 
-  const goEdge = (key: string) => {
+  // A direction button: move (zoom unchanged) to the middle of the most crowded group of the buildings in that direction (all cities merged into it)
+  const goEdge = (keys: string[]) => {
     const map = mapRef.current;
-    const f = latest.current.cities.features.find((c) => c.properties.city === key);
-    if (!map || !f) return;
-    const set = new Set(JSON.parse(f.properties.pids) as string[]);
-    const c = map.getCenter();
-    let best: [number, number] = f.geometry.coordinates;
-    let bd = Infinity;
-    for (const p of latest.current.fc.features) {
-      if (!set.has(p.properties.pid)) continue;
-      const q = p.geometry.coordinates;
-      const d = Math.hypot(q[0] - c.lng, q[1] - c.lat);
-      if (d < bd) {
-        bd = d;
-        best = q;
-      }
-    }
+    if (!map) return;
+    const set = new Set<string>();
+    for (const f of latest.current.cities.features) if (keys.includes(f.properties.city)) for (const id of JSON.parse(f.properties.pids) as string[]) set.add(id);
+    const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
+    const c = densestCenter(pts);
+    if (!c) return;
     pushRef.current();
-    easeAway(best, map.getZoom());
+    easeAway([c.lng, c.lat], map.getZoom());
   };
 
   return (
     <>
       <div ref={box} className="map" data-testid="map" />
       {edges.map((m) => (
-        <button key={m.key} type="button" className="edge-dot" data-testid="edge-dot" style={{ left: m.x, top: m.y }} aria-label={`${m.n} buildings in this direction`} onClick={() => goEdge(m.key)}>
+        <button key={m.key} type="button" className="edge-dot" data-testid="edge-dot" style={{ left: m.x, top: m.y }} aria-label={`${m.n} buildings in this direction`} onClick={() => goEdge(m.keys)}>
           {m.n}
         </button>
       ))}

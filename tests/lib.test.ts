@@ -175,6 +175,7 @@ test('edgeMarkers: 2 nearest directions; bearings within 20 degrees merge (middl
   ], 1000, 600);
   assert.deepEqual(m.map((e) => e.key), ['east', 'west']);
   assert.equal(m[0]!.n, 8);
+  assert.deepEqual(m[0]!.keys, ['east', 'east2']);
   assert.ok(m[0]!.y > 300 && m[0]!.y < 600 - 24, 'the direction is between the two bearings: ' + m[0]!.y);
   assert.equal(m[1]!.n, 2);
   // 25 degrees apart: two directions

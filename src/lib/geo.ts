@@ -220,8 +220,10 @@ export interface EdgeItem {
   y: number;
 }
 export interface EdgeMarker {
-  /** Key of the nearest city of the group (the click target) */
+  /** Key of the nearest city of the group */
   key: string;
+  /** Keys of all cities merged into this direction (the nearest first) */
+  keys: string[];
   /** Number of buildings in the group */
   n: number;
   /** Position on the viewport edge in px */
@@ -242,21 +244,22 @@ export function edgeMarkers(items: readonly EdgeItem[], w: number, h: number, in
     .map((it) => ({ it, a: Math.atan2(it.y - cy, it.x - cx), d: Math.hypot(it.x - cx, it.y - cy) }))
     .filter((o) => Number.isFinite(o.d) && o.d > 0)
     .sort((p, q) => p.d - q.d);
-  const groups: { key: string; n: number; sx: number; sy: number }[] = [];
+  const groups: { key: string; keys: string[]; n: number; sx: number; sy: number }[] = [];
   const limit = (mergeDeg * Math.PI) / 180;
   for (const { it, a } of outside) {
     const g = groups.find((q) => Math.abs(((a - Math.atan2(q.sy, q.sx) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) < limit);
     if (g) {
       g.n += it.n;
+      g.keys.push(it.key);
       g.sx += Math.cos(a);
       g.sy += Math.sin(a);
-    } else if (groups.length < max) groups.push({ key: it.key, n: it.n, sx: Math.cos(a), sy: Math.sin(a) });
+    } else if (groups.length < max) groups.push({ key: it.key, keys: [it.key], n: it.n, sx: Math.cos(a), sy: Math.sin(a) });
   }
   return groups.map((g) => {
     const dx = g.sx;
     const dy = g.sy;
     const k = Math.min((cx - inset) / Math.abs(dx || 1e-9), (cy - inset) / Math.abs(dy || 1e-9));
-    return { key: g.key, n: g.n, x: cx + dx * k, y: cy + dy * k };
+    return { key: g.key, keys: g.keys, n: g.n, x: cx + dx * k, y: cy + dy * k };
   });
 }
 
