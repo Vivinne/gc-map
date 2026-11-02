@@ -114,7 +114,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   await page.evaluate((ps) => { window.__fake.ease = null; window.__fake.hits = [{ properties: { region: 'Italy South', n: ps.length, w: 12, s: 37, e: 15, nn: 41, pids: JSON.stringify(ps.map((p) => p.id)) } }]; window.__fake.map.fireLayer('click', 'regions', { point: { x: 5, y: 5 } }); }, south);
   await page.waitForFunction(() => window.__fake.ease);
   const re = await page.evaluate(() => window.__fake.ease);
-  assert.ok(re.zoom > 5 && re.zoom < 8, 'A scattered region goes to a wide view (50 or 100 km on the scale bar), not 1 km: ' + re.zoom);
+  assert.ok(re.zoom > 12, 'A region with fewer than 20 buildings goes to the 1 km view: ' + re.zoom);
   assert.ok(south.some((p) => Math.abs(p.points[0].lat - re.center[1]) < 0.01), 'Centred on its most crowded group');
   ok('Region number below 20 -> straight to the middle of its most crowded group');
   // Nearby cities merge so circles never overlap: clustered city sources summing the counts and uniting the bounds

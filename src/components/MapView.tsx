@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { dataset } from '../lib/data';
-import { CITY_TOP_ZOOM, REGION_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, scaleKmFor, avoidObstacles, distanceM, edgeMarkersExpanding, pointsOutside, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type RegionCollection, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, REGION_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, pointsOutside, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type RegionCollection, type PointCollection } from '../lib/geo';
 
 /** The coordinates of the buildings listed in a city feature's `pids` */
 const cityPoints = (pids: string, byPid: Map<string, [number, number]>): { pid: string; lng: number; lat: number }[] =>
@@ -110,7 +110,7 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
       attributionControl: false, // the credit line below the map carries the attribution
     });
     mapRef.current = map;
-    map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: false }), 'top-right');
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     // The + / - buttons move ZOOM_BUTTON_STEP levels per click (the built-in control moves one)
     map.getContainer()?.addEventListener?.('click', (ev) => {
       const t = ev.target as Element | null;
@@ -274,7 +274,7 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
           const set = new Set(pids);
           const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
           const c = densestCenter(pts) ?? { lng: (b[0][0] + b[1][0]) / 2, lat: (b[0][1] + b[1][1]) / 2 };
-          moveTo([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP * scaleKmFor(pts, merged ? undefined : String(pr.city ?? '')))));
+          moveTo([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)));
         };
         const pidsOf = (v: unknown): string[] => {
           try {
@@ -300,7 +300,7 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
           const ids = new Set(JSON.parse(String(pr.pids ?? '[]')) as string[]);
           const pts = latest.current.fc.features.filter((f) => ids.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
           const c = densestCenter(pts);
-          if (c) return easeAwayRef.current([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP * scaleKmFor(pts))));
+          if (c) return easeAwayRef.current([c.lng, c.lat], Math.min(17, zoomForMetersPerPixel(c.lat, SCALE_1KM_MPP)));
         }
         const cam = map.cameraForBounds(b, { padding: 40, maxZoom: 9 });
         if (cam?.center) easeAwayRef.current(cam.center as [number, number], Math.max(cam.zoom ?? REGION_TOP_ZOOM, REGION_TOP_ZOOM + 0.2));

@@ -198,29 +198,6 @@ export interface RegionCollection {
   outliers: string[];
 }
 
-/** Scale-bar distances (km) a number can zoom to */
-export type ScaleKm = 100 | 50 | 3 | 1;
-
-/** Fixed scale for named cities that are dense: 3 km (Venice, Berlin) or 1 km (Milan, Paris, Barcelona, Rome, Florence, London) */
-export const CITY_SCALE_KM: Readonly<Record<string, ScaleKm>> = { Venice: 3, Berlin: 3, Milan: 1, Paris: 1, Barcelona: 1, Rome: 1, Florence: 1, London: 1 };
-
-/** Median distance (km) from each building of a group to its nearest neighbour; 0 for a single building */
-export function medianNearestKm(pts: readonly { lng: number; lat: number }[]): number {
-  if (pts.length < 2) return 0;
-  const d = pts.map((p, i) => Math.min(...pts.filter((_, j) => j !== i).map((q) => distanceM(p, q)))).sort((a, b) => a - b);
-  return (d[Math.floor(d.length / 2)] as number) / 1000;
-}
-
-/**
- * Scale (km on the scale bar) a number zooms to: scattered groups get a wide view (neighbours 100 km or more apart: 100 km, e.g. Finland;
- * 20-100 km apart: 50 km, e.g. the Netherlands, France outside Paris, the Veneto), dense named cities their fixed 3 km / 1 km, and any other dense group 1 km.
- */
-export function scaleKmFor(pts: readonly { lng: number; lat: number }[], city?: string): ScaleKm {
-  if (city && CITY_SCALE_KM[city]) return CITY_SCALE_KM[city] as ScaleKm;
-  const nn = medianNearestKm(pts);
-  return nn >= 100 ? 100 : nn >= 20 ? 50 : 1;
-}
-
 /** A building farther than this (m) from the mean position of the rest of its region is drawn as its own dot */
 export const REGION_FAR_M = 300_000;
 
