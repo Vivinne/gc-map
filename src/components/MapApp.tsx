@@ -180,10 +180,6 @@ export default function MapApp() {
             placeholder="Search"
             aria-label="Search"
           />
-          <label className="hide-edges">
-            <input type="checkbox" checked={hideEdges} onChange={(e) => setHideEdges(e.target.checked)} data-testid="hide-edges" />
-            <span>Hide direction buttons</span>
-          </label>
           {groups.map((g) => {
             const isOpen = openGroups.has(g.id);
             const nChecked = g.tags.filter((t) => tags.has(t.id)).length;
@@ -236,6 +232,10 @@ export default function MapApp() {
       </aside>
 
       <main className="stage">
+        <label className="hide-edges">
+          <input type="checkbox" checked={hideEdges} onChange={(e) => setHideEdges(e.target.checked)} data-testid="hide-edges" />
+          <span>Hide Direction</span>
+        </label>
         <button type="button" className="fullmap" onClick={() => showFullMap()}>Full map</button>
         <MapView hideEdges={hideEdges} fc={fc} selectedPid={selectedId} cities={cities} bounds={bounds} focus={focus} active={tab === 'map'} onPick={onPick} onBack={() => setSelectedId('')} onDeselect={() => setSelectedId('')} />
         {selected && (

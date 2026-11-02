@@ -4,13 +4,20 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type CircleLayerSpecification, type GeoJSONSource, type Map as MLMap, type SymbolLayerSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { dataset } from '../lib/data';
-import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+import { CITY_TOP_ZOOM, POLAR_LAT, SAME_SPOT_ZOOM, FULL_MAP_CENTER, FULL_MAP_MPP, SCALE_1KM_MPP, OTHERS_VIEW_M, countryBounds, nearestPlace, densestCenter, avoidObstacles, distanceM, edgeMarkersExpanding, pointsOutside, isSameSpot, viewContainsPoint, zoomForMetersPerPixel, type CityCollection, type EdgeMarker, type LngLatBounds, type PointCollection } from '../lib/geo';
+
+/** The coordinates of the buildings listed in a city feature's `pids` */
+const cityPoints = (pids: string, byPid: Map<string, [number, number]>): { lng: number; lat: number }[] =>
+  (JSON.parse(pids) as string[]).flatMap((id) => { const c = byPid.get(id); return c ? [{ lng: c[0], lat: c[1] }] : []; });
 
 // OpenFreeMap: no API key or sign-up needed; keep the attribution at the bottom-right of the basemap
 /** Zoom levels the map zooms out when the building panel is closed */
 /** Zoom levels per click on the + / - buttons (2 = four times the scale) */
 const ZOOM_BUTTON_STEP = 2;
 const CLOSE_ZOOM_OUT = 0.7;
+/** Phones show a smaller map, so closing the panel zooms out farther */
+const CLOSE_ZOOM_OUT_PHONE = 1.7;
+const closeZoomOut = (): number => (typeof window !== 'undefined' && window.matchMedia?.('(max-width: 900px)').matches ? CLOSE_ZOOM_OUT_PHONE : CLOSE_ZOOM_OUT);
 const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
 const SOURCE = 'places';
 /** One numbered point per city; drawn below the city zoom, the single markers above it */
@@ -123,11 +130,21 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
       const w = el.clientWidth;
       const h = el.clientHeight;
       const mc = map.getCenter();
-      const items = latest.current.cities.features.map((f) => {
-        const p = map.project(f.geometry.coordinates);
-        const dist = distanceM({ lng: mc.lng, lat: mc.lat }, { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] });
-        return { key: f.properties.city, n: f.properties.n, x: p.x, y: p.y, dist };
-      });
+      // A city gets a direction button only while some of its buildings are outside the view, and the button points at the nearest of those
+      // (a city whose middle is off screen but whose buildings are all in view has no button; one you are standing in has a button only for what is out of view)
+      const byPid = new Map(latest.current.fc.features.map((f) => [f.properties.pid, f.geometry.coordinates as [number, number]]));
+      const zoom = map.getZoom();
+      const items: { key: string; n: number; x: number; y: number; dist: number }[] = [];
+      for (const f of latest.current.cities.features) {
+        const out = pointsOutside(cityPoints(f.properties.pids, byPid), { lng: mc.lng, lat: mc.lat }, zoom, w, h);
+        let best: { x: number; y: number; dist: number } | null = null;
+        for (const [lng, lat] of out.map((q) => [q.lng, q.lat] as const)) {
+          const p = map.project([lng, lat]);
+          const dist = distanceM({ lng: mc.lng, lat: mc.lat }, { lng, lat });
+          if (!best || dist < best.dist) best = { x: p.x, y: p.y, dist };
+        }
+        if (best) items.push({ key: f.properties.city, n: f.properties.n, ...best });
+      }
       // Cities within 150 km first; when none is outside the view, the limit doubles (300, 600 km ...) until one is found
       // Direction buttons stay clear of the page buttons (menu, Full map, Back) and of the tag panel
       const o = el.getBoundingClientRect();
@@ -331,7 +348,7 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     const map = mapRef.current;
     if (!map || !ready || !focus) return;
     const opts = focus as { initial?: boolean; shrink?: boolean };
-    const dz = opts.shrink ? CLOSE_ZOOM_OUT : 0;
+    const dz = opts.shrink ? closeZoomOut() : 0;
     const dur = (ms: number) => (opts.initial ? 0 : ms);
     if (focus.kind === 'point') {
       // Zoom so that the view reaches radiusKm from the point along the shorter map side
@@ -370,7 +387,7 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
     const skip = keepView.current || moved;
     keepView.current = false;
     if (!map || !ready || !was || selectedPid || skip) return;
-    map.easeTo({ zoom: Math.max(map.getZoom() - CLOSE_ZOOM_OUT, 1), duration: 400 });
+    map.easeTo({ zoom: Math.max(map.getZoom() - closeZoomOut(), 1), duration: 400 });
   }, [selectedPid, focus?.nonce, ready]);
 
   // Back: zoom to the size of the country the current building is in (the open building, else the one nearest the view centre); the panel closes
@@ -408,9 +425,12 @@ export default function MapView({ hideEdges = false, fc, cities, selectedPid, bo
       latest.current.onPick([all[0] as string]);
       return;
     }
-    const set = new Set<string>(all);
-    const pts = latest.current.fc.features.filter((f) => set.has(f.properties.pid)).map((f) => ({ lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }));
-    const c = densestCenter(pts);
+    // Only the buildings out of the current view count, so the button always leads somewhere new
+    const byPid = new Map(latest.current.fc.features.map((f) => [f.properties.pid, f.geometry.coordinates as [number, number]]));
+    const mc = map.getCenter();
+    const box2 = map.getContainer().getBoundingClientRect();
+    const away = pointsOutside(cityPoints(top.properties.pids, byPid), { lng: mc.lng, lat: mc.lat }, map.getZoom(), box2.width, box2.height);
+    const c = densestCenter(away.length ? away : cityPoints(top.properties.pids, byPid));
     if (!c) return;
     easeAway([c.lng, c.lat], map.getZoom());
   };

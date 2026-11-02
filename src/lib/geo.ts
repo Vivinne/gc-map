@@ -310,6 +310,11 @@ export function edgeMarkersExpanding(items: readonly (EdgeItem & { dist: number 
   }
 }
 
+/** The points that lie outside the view with this centre and zoom (w x h px) */
+export function pointsOutside<T extends { lng: number; lat: number }>(pts: readonly T[], center: { lng: number; lat: number }, zoom: number, w: number, h: number): T[] {
+  return pts.filter((p) => !viewContainsPoint(center, zoom, w, h, p));
+}
+
 /** True when the point lies inside the view that has this centre and zoom in a w x h px map (Web Mercator, 512 px tiles as in MapLibre) */
 export function viewContainsPoint(center: { lng: number; lat: number }, zoom: number, w: number, h: number, pt: { lng: number; lat: number }): boolean {
   const world = 512 * 2 ** zoom;

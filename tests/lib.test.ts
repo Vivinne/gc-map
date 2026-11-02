@@ -226,3 +226,11 @@ test('countryBounds / nearestPlace: Back goes to the size of the building\'s cou
   assert.equal(nearestPlace([a, b, c], 9, 45)?.place.id, 'b');
   assert.equal(nearestPlace([], 9, 45), null);
 });
+
+test('pointsOutside: only the buildings out of the view count for a direction button', async () => {
+  const { pointsOutside } = await import('../src/lib/geo');
+  const pts = [{ lng: 2.17, lat: 41.39 }, { lng: 2.18, lat: 41.4 }, { lng: 2.3, lat: 41.45 }];
+  // 390 x 640 px at zoom 13 is about 4.7 x 7.7 km: the first two are in view, the third (about 12 km away) is not
+  assert.deepEqual(pointsOutside(pts, { lng: 2.175, lat: 41.395 }, 13, 390, 640), [pts[2]]);
+  assert.deepEqual(pointsOutside(pts.slice(0, 2), { lng: 2.175, lat: 41.395 }, 13, 390, 640), []);
+});
