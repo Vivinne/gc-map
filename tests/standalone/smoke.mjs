@@ -157,7 +157,7 @@ async function open({ pinned = true, fallback = true } = {}) {
   const sel = await page.evaluate(() => window.__fake.filters.at(-1));
   assert.deepEqual(sel, ['selected', ['==', ['get', 'pid'], colosseum]]);
   const fly = await page.evaluate(() => window.__fake.fly.at(-1));
-  assert.ok(Math.abs(fly.zoom - 15.5) < 0.15, `500 m around the point: ${fly.zoom}`);
+  assert.ok(fly.zoom >= 10.6 && fly.zoom <= 15.65, `City view first, deeper only when buildings overlap (never past 500 m): ${fly.zoom}`);
   ok('Marker click -> detail panel, selection-ring filter, flyTo');
 
   // Several entries at one spot: one of them is shown directly (no chooser)

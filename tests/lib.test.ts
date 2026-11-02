@@ -267,3 +267,16 @@ test('toRegionCollection: far buildings are drawn as dots and left out of the re
   assert.deepEqual(r.outliers, ['marseille']);
   assert.equal(r.features.find((f) => f.properties.region === 'France')!.properties.n, 6);
 });
+
+test('selectionView: whole city first, nearest neighbour for the overlap check', async () => {
+  const { selectionView } = await import('../src/lib/geo');
+  const pt = (lat: number, lng: number) => [{ id: 'p', sub: '', lat, lng, precision: 'page' as const, note: '', sourceUrl: '', status: '' }];
+  const a = mk({ id: 'a', loc: 'Rome', points: pt(41.9, 12.5) });
+  const b = mk({ id: 'b', loc: 'Rome', points: pt(41.9009, 12.5) }); // about 100 m north of a
+  const c = mk({ id: 'c', loc: 'Rome', points: pt(41.95, 12.55) }); // about 7 km away
+  const v = selectionView([a, b, c], a);
+  assert.ok(v.minSepM > 90 && v.minSepM < 110, String(v.minSepM));
+  assert.ok(v.cityKm > 7 && v.cityKm < 9, String(v.cityKm)); // farthest building about 7 km, with margin
+  assert.equal(selectionView([a], a).cityKm, 3);
+  assert.equal(selectionView([a], a).minSepM, Infinity);
+});

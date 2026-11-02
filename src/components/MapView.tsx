@@ -23,6 +23,8 @@ const SOURCE = 'places';
 /** One numbered point per city; drawn below the city zoom, the single markers above it */
 const CITY_SOURCE = 'cities';
 const REGION_SOURCE = 'regions';
+/** Selecting a building: the nearest other building must be at least this many px away, else the map zooms in more */
+const SEPARATION_PX = 24;
 /** A region number below this goes straight to the middle of its most crowded group when clicked */
 const REGION_DIRECT_N = 20;
 /** City circle radius (px, fixed); circles whose centres are closer than the diameter overlap, so they are merged (counts summed) */
@@ -39,7 +41,7 @@ type GeoData = Parameters<GeoJSONSource['setData']>[0];
 
 
 export type FocusTarget =
-  | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; nonce: number }
+  | { kind: 'point'; lng: number; lat: number; /** The view shows this many km around the point (along the shorter map side) */ radiusKm: number; /** With `cityKm`: the view shows the building's whole city (this many km around it) and only zooms in further when the nearest other building would be closer than SEPARATION_PX on screen; `radiusKm` is then the deepest zoom allowed */ cityKm?: number; minSepM?: number; nonce: number }
   | { kind: 'bounds'; bounds: [[number, number], [number, number]]; blendWith?: [[number, number], [number, number]]; /** Fit exactly these bounds with almost no margin */ exact?: boolean; /** The building panel was open and is closing: end CLOSE_ZOOM_OUT levels farther out */ shrink?: boolean; /** First view after loading the page: jump there, no animation, not a Back step */ initial?: boolean; nonce: number };
 
 interface Props {
@@ -384,8 +386,15 @@ export default function MapView({ hideEdges = false, fc, cities, regions, select
       // Zoom so that the view reaches radiusKm from the point along the shorter map side
       const el = map.getContainer();
       const px = Math.max(100, Math.min(el.clientWidth, el.clientHeight));
-      const mpp = (focus.radiusKm * 2000) / px;
-      const zoom = Math.log2((78271.517 * Math.cos((focus.lat * Math.PI) / 180)) / mpp);
+      let mpp = (focus.radiusKm * 2000) / px;
+      if (focus.cityKm) {
+        // City view first; zoom in only until the nearest other building is SEPARATION_PX away (never deeper than radiusKm)
+        let m = (focus.cityKm * 2000) / px;
+        if (focus.minSepM && focus.minSepM / m < SEPARATION_PX) m = focus.minSepM / SEPARATION_PX;
+        mpp = Math.max(mpp, m);
+      }
+      let zoom = Math.log2((78271.517 * Math.cos((focus.lat * Math.PI) / 180)) / mpp);
+      if (focus.cityKm) zoom = Math.max(zoom, CITY_TOP_ZOOM + 0.1); // the building itself must be drawn as a dot, not inside a city circle
       map.flyTo({ center: [focus.lng, focus.lat], zoom: Math.min(Math.max(zoom, 1), 19), essential: true });
     }
     else if (focus.exact) {

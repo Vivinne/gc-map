@@ -3,7 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { dataset, unlocated } from '../lib/data';
 import { filterPlaces } from '../lib/filter';
-import { HOME_BOUNDS, PHONE_FULL_BOUNDS, boundsOf, toCityCollection, toFeatureCollection, toRegionCollection } from '../lib/geo';
+import { HOME_BOUNDS, PHONE_FULL_BOUNDS, boundsOf, toCityCollection, selectionView, toFeatureCollection, toRegionCollection } from '../lib/geo';
 import { formatHash, parseHash } from '../lib/hash';
 import { buildGroups, matchesTags } from '../lib/tags';
 import type { Place, Point } from '../lib/types';
@@ -101,7 +101,8 @@ export default function MapApp() {
     nonce.current += 1;
     if (p.points.length === 1) {
       const pt = p.points[0] as Point;
-      setFocus({ kind: 'point', lng: pt.lng, lat: pt.lat, radiusKm: 0.5, nonce: nonce.current });
+      const { cityKm, minSepM } = selectionView(dataset.places, p);
+      setFocus({ kind: 'point', lng: pt.lng, lat: pt.lat, radiusKm: 0.5, cityKm, minSepM, nonce: nonce.current });
     } else if (p.points.length > 1) {
       const b = boundsOf([p]);
       if (b) setFocus({ kind: 'bounds', bounds: b, nonce: nonce.current });

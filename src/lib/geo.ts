@@ -165,6 +165,24 @@ export function cityOf(p: Place): string {
   return raw.replace(/[（(].*?[）)]/g, '').replace(/附近/g, '').trim();
 }
 
+/** Half-size (km) of the view that shows a building's whole city, and the distance (m) to its nearest neighbour (for the overlap check) */
+export function selectionView(places: readonly Place[], place: Place): { cityKm: number; minSepM: number } {
+  const me = place.points[0];
+  if (!me) return { cityKm: 3, minSepM: Infinity };
+  const city = cityOf(place);
+  let far = 0;
+  let near = Infinity;
+  for (const p of places) {
+    if (p === place || p.id === place.id) continue;
+    for (const q of p.points) {
+      const d = distanceM({ lng: me.lng, lat: me.lat }, { lng: q.lng, lat: q.lat });
+      if (d > 1 && d < near) near = d;
+      if (city && cityOf(p) === city && d > far) far = d;
+    }
+  }
+  return { cityKm: Math.min(Math.max((far * 1.15) / 1000, 3), 40), minSepM: near };
+}
+
 /** Below this zoom (the phone's Full map) the circles are regions, not cities: Italy north / centre / south, France, the United Kingdom ... each get one number */
 export const REGION_TOP_ZOOM = 3;
 
