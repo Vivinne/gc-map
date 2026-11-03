@@ -1,5 +1,6 @@
 'use client';
 
+import type { Collection } from '../lib/collections';
 import { isEmpty, type Filters } from '../lib/filter';
 import { COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, ascii, citiesOf, shortYear, type Building } from '../lib/model';
 import type { EraId } from '../lib/types';
@@ -9,6 +10,7 @@ interface Props {
   filters: Filters;
   counts: { styles: Record<EraId, number>; countries: Record<string, number>; examYears: Record<number, number>; exam: number; starred: number };
   results: Building[];
+  collections: Collection[];
   selectedId: string;
   onFilters(f: Filters): void;
   onClear(): void;
@@ -18,7 +20,7 @@ interface Props {
 }
 
 /** Filters and the list: cities by size, or the matching buildings once a filter is on */
-export default function IndexPanel({ filters: f, counts, results, selectedId, onFilters, onClear, onCity, onSelect, onHoverCity }: Props) {
+export default function IndexPanel({ filters: f, counts, results, collections, selectedId, onFilters, onClear, onCity, onSelect, onHoverCity }: Props) {
   const toggle = <K extends 'styles' | 'countries' | 'examYears'>(key: K, v: Filters[K][number]) => {
     const arr = f[key] as unknown[];
     onFilters({ ...f, [key]: arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v] });
@@ -60,6 +62,15 @@ export default function IndexPanel({ filters: f, counts, results, selectedId, on
               <Icon name={f.starred ? 'starOn' : 'star'} size={13} />
               <span className="n">{counts.starred}</span>
             </button>
+            {collections.map((c) => {
+              const on = f.col?.id === c.id;
+              return (
+                <button type="button" key={c.id} aria-pressed={on} className={chipCls(on, c.ids.length)} onClick={() => onFilters({ ...f, col: on ? null : { id: c.id, name: c.name, ids: c.ids } })}>
+                  {c.name}
+                  <span className="n">{c.ids.length}</span>
+                </button>
+              );
+            })}
           </div>
           {f.exam && (
             <div className="chips years">

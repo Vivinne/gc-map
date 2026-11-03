@@ -152,3 +152,69 @@ test('code files contain no Chinese characters (UI strings, comments, tests)', (
   for (const r of roots) walk(new URL(`../${r}`, import.meta.url).pathname);
   assert.deepEqual(bad, []);
 });
+
+// ---------- quiz ----------
+import { PAIRS, askable, question, record, valueOf, EMPTY_QUIZ, cleanQuiz } from '../src/lib/quiz';
+import * as Col from '../src/lib/collections';
+
+test('quiz: 12 pairs, every askable building gets four distinct choices with one right answer', () => {
+  assert.equal(PAIRS.length, 12);
+  for (const p of PAIRS) {
+    for (const b of askable(BUILDINGS, p).slice(0, 40)) {
+      const q = question(b, p, BUILDINGS, 7);
+      assert.ok(q, `${b.id} ${p}`);
+      assert.equal(new Set(q.options).size, q.options.length);
+      assert.equal(q.options.length, 4, `${b.id} ${p}`);
+      assert.ok(q.options.includes(q.answer));
+    }
+  }
+});
+
+test('quiz: wrong choices are never also right for the prompt', () => {
+  const [ask, ans] = ['city', 'name'] as const;
+  for (const b of BUILDINGS.filter((x) => x.city === 'Rome').slice(0, 10)) {
+    const q = question(b, 'city>name', BUILDINGS, 3)!;
+    const rome = new Set(BUILDINGS.filter((x) => valueOf(x, ask) === 'Rome').map((x) => valueOf(x, ans)));
+    assert.equal(q.options.filter((o) => rome.has(o)).length, 1);
+  }
+});
+
+test('quiz: buildings without an architect are not asked about architects', () => {
+  assert.ok(askable(BUILDINGS, 'name>architect').every((b) => valueOf(b, 'architect')));
+  assert.ok(askable(BUILDINGS, 'name>architect').length < BUILDINGS.length);
+});
+
+test('quiz: record keeps scores and the missed list', () => {
+  const b = BUILDINGS[0]!;
+  const q = question(b, 'name>city', BUILDINGS, 1)!;
+  let s = record(EMPTY_QUIZ, q, false);
+  assert.deepEqual(s.score['name>city'], { right: 0, total: 1 });
+  assert.deepEqual(s.wrong, [`${b.id}|name>city`]);
+  s = record(s, q, true);
+  assert.deepEqual(s.score['name>city'], { right: 1, total: 2 });
+  assert.deepEqual(s.wrong, []);
+  assert.deepEqual(cleanQuiz({ score: { 'x>y': 1 }, wrong: ['nope|name>city', 5] }, new Set(BY_ID.keys())), EMPTY_QUIZ);
+});
+
+test('collections: create, rename, toggle, move, remove, file round trip', () => {
+  let c = Col.create([], '  Florence   trip ', 1);
+  c = Col.create(c, 'Exam', 2);
+  assert.deepEqual(c.map((x) => x.name), ['Florence trip', 'Exam']);
+  assert.equal(Col.create(c, '   ').length, 2);
+  const id = c[0]!.id;
+  c = Col.toggleIn(c, id, BUILDINGS[0]!.id);
+  assert.deepEqual(c[0]!.ids, [BUILDINGS[0]!.id]);
+  c = Col.move(c, id, 1);
+  assert.equal(c[1]!.id, id);
+  c = Col.rename(c, id, 'Tuscany');
+  const back = Col.fromFile(Col.toFile({ seen: ['nope', BUILDINGS[1]!.id], starred: [], collections: c, quiz: null }));
+  assert.deepEqual(back.seen, [BUILDINGS[1]!.id]);
+  assert.deepEqual(back.collections.map((x) => [x.name, x.ids.length]), [['Exam', 0], ['Tuscany', 1]]);
+  assert.throws(() => Col.fromFile('{"a":1}'));
+  assert.equal(Col.remove(c, id).length, 1);
+});
+
+test('filter: a collection narrows the list', () => {
+  const ids = [BUILDINGS[0]!.id, BUILDINGS[5]!.id];
+  assert.equal(apply({ ...EMPTY, col: { id: 'c', name: 'C', ids } }, new Set()).length, 2);
+});

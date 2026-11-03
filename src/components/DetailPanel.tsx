@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { Collection } from '../lib/collections';
 import { CITY_BUILDINGS, CITY_NO, ERAS, type Building } from '../lib/model';
 import Facts from './Facts';
 import { Icon } from './Icons';
@@ -87,6 +88,10 @@ interface CardProps {
   onNext(): void;
   onClose(): void;
   onStar(): void;
+  /** The user's collections; the star button opens a menu to put the building in any of them */
+  collections: Collection[];
+  onToggleCol(colId: string): void;
+  onCreateCol(name: string): void;
   onBack(): void;
   onSelect(id: string): void;
   onHover(id: string): void;
@@ -98,11 +103,13 @@ interface CardProps {
  * The card folds to its title; the other buildings of the city (number, name, direction) are a folded
  * section at the end, so they never outweigh the building itself.
  */
-export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, onBack, onSelect, onHover }: CardProps) {
+export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, collections, onToggleCol, onCreateCol, onBack, onSelect, onHover }: CardProps) {
   const city = CITY_BUILDINGS.get(b.city) ?? [];
   const many = city.length > 1;
   const [folded, setFolded] = useState(false);
   const [othersOpen, setOthersOpen] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const kept = starred || collections.some((c) => c.ids.includes(b.id));
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
     body.current?.scrollTo({ top: 0 });
@@ -127,8 +134,8 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
             </button>
           </>
         )}
-        <button type="button" className={`c-ic${starred ? ' on' : ''}`} aria-pressed={starred} aria-label="Star" title="Star" onClick={onStar}>
-          <Icon name={starred ? 'starOn' : 'star'} size={14} />
+        <button type="button" className={`c-ic${kept ? ' on' : ''}`} aria-expanded={menu} aria-haspopup="menu" aria-label="Collect" title="Collect" onClick={() => setMenu(!menu)}>
+          <Icon name={kept ? 'starOn' : 'star'} size={14} />
         </button>
         <button type="button" className="c-ic" aria-label={folded ? 'Unfold' : 'Fold'} aria-expanded={!folded} title={folded ? 'Unfold' : 'Fold'} onClick={() => setFolded(!folded)}>
           <Icon name={folded ? 'expand' : 'collapse'} size={12} />
@@ -137,6 +144,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
           <Icon name="close" size={12} />
         </button>
       </div>
+      {menu && <CollectMenu b={b} starred={starred} collections={collections} onStar={onStar} onToggle={onToggleCol} onCreate={onCreateCol} onClose={() => setMenu(false)} />}
       <div className="c-top" style={{ background: ERAS[b.era].color }} onClick={folded ? () => setFolded(false) : undefined}>
         <h1>
           {many && <span className="c-no">{CITY_NO.get(b.id)}</span>}
@@ -220,5 +228,55 @@ export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole
         ))}
       </ol>
     </Sheet>
+  );
+}
+
+/** Star menu: Starred plus every collection, each a check; a new collection takes the building at once */
+function CollectMenu({ b, starred, collections, onStar, onToggle, onCreate, onClose }: { b: Building; starred: boolean; collections: Collection[]; onStar(): void; onToggle(id: string): void; onCreate(name: string): void; onClose(): void }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [name, setName] = useState('');
+  useEffect(() => {
+    const down = (e: PointerEvent) => {
+      const t = e.target as HTMLElement;
+      if (box.current && !box.current.contains(t) && !t.closest('[aria-label="Collect"]')) onClose();
+    };
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && (e.stopPropagation(), onClose());
+    window.addEventListener('pointerdown', down);
+    window.addEventListener('keydown', key, true);
+    return () => {
+      window.removeEventListener('pointerdown', down);
+      window.removeEventListener('keydown', key, true);
+    };
+  }, [onClose]);
+  return (
+    <div className="c-menu" role="menu" ref={box} aria-label={`Collect ${b.name}`}>
+      <button type="button" role="menuitemcheckbox" aria-checked={starred} className={`cm-row${starred ? ' on' : ''}`} onClick={onStar}>
+        <Icon name={starred ? 'starOn' : 'star'} size={14} />
+        <span>Starred</span>
+      </button>
+      {collections.map((c) => {
+        const on = c.ids.includes(b.id);
+        return (
+          <button type="button" role="menuitemcheckbox" aria-checked={on} key={c.id} className={`cm-row${on ? ' on' : ''}`} onClick={() => onToggle(c.id)}>
+            <span className="cm-box">{on && <Icon name="check" size={11} />}</span>
+            <span>{c.name}</span>
+          </button>
+        );
+      })}
+      <form
+        className="cm-new"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!name.trim()) return;
+          onCreate(name);
+          setName('');
+        }}
+      >
+        <input value={name} maxLength={40} placeholder="New collection" aria-label="New collection" onChange={(e) => setName(e.target.value)} />
+        <button type="submit" className="c-ic" aria-label="Add collection" disabled={!name.trim()}>
+          <Icon name="plus" size={13} />
+        </button>
+      </form>
+    </div>
   );
 }

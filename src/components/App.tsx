@@ -4,12 +4,15 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, type Mode } from '../lib/hash';
 import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear, type Building } from '../lib/model';
+import * as Col from '../lib/collections';
+import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import type { EraId } from '../lib/types';
 import { BuildingCard, CityPanel, cityOrder } from './DetailPanel';
 import EraBand from './EraBand';
 import { Icon } from './Icons';
 import IndexPanel from './IndexPanel';
+import MeView from './MeView';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import ReviewView from './ReviewView';
 import SearchPalette from './SearchPalette';
@@ -47,6 +50,14 @@ export default function App() {
   const [filters, setFiltersRaw] = useState<Filters>(initial.filters);
   const [seen, setSeen] = useState<Set<string>>(() => new Set(load<string[]>('seen', [])));
   const [starred, setStarred] = useState<Set<string>>(() => new Set(load<string[]>('starred', [])));
+  const [collections, setCollections] = useState<Col.Collection[]>(() => {
+    try {
+      return Col.fromFile(Col.toFile({ seen: [], starred: [], collections: load<Col.Collection[]>('collections', []), quiz: null })).collections;
+    } catch {
+      return [];
+    }
+  });
+  const [quiz, setQuiz] = useState<QuizStore>(() => cleanQuiz(load<unknown>('quiz', EMPTY_QUIZ), new Set(BY_ID.keys())));
   const [palette, setPalette] = useState<string | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
   const [hoverCity, setHoverCity] = useState('');
@@ -91,6 +102,20 @@ export default function App() {
   useEffect(() => {
     save('starred', [...starred]);
   }, [starred]);
+  useEffect(() => {
+    save('collections', collections);
+    // A collection filter follows its collection (renamed, emptied or deleted)
+    setFiltersRaw((f) => {
+      if (!f.col) return f;
+      const c = collections.find((x) => x.id === f.col!.id);
+      if (!c) return { ...f, col: null };
+      if (c.name === f.col.name && c.ids.join() === f.col.ids.join()) return f;
+      return { ...f, col: { id: c.id, name: c.name, ids: c.ids } };
+    });
+  }, [collections]);
+  useEffect(() => {
+    save('quiz', quiz);
+  }, [quiz]);
   useEffect(() => {
     // Clear any old view address (#m=...&b=...) so a reload never restores it
     if (window.location.hash) window.history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -169,6 +194,52 @@ export default function App() {
       return n;
     });
   }, []);
+  const showOnMap = useCallback(
+    (next: Filters) => {
+      setFiltersRaw(next);
+      setSelId('');
+      setCity('');
+      setMode('map');
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13)));
+    },
+    [starred],
+  );
+  const exportFile = useCallback(() => {
+    const text = Col.toFile({ seen: [...seen], starred: [...starred], collections, quiz });
+    try {
+      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gc-atlas-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setToast({ id: Date.now(), text: 'Export failed' });
+    }
+  }, [seen, starred, collections, quiz]);
+  const importFile = useCallback((text: string) => {
+    try {
+      const p = Col.fromFile(text);
+      // Import adds to what is here: union of seen and stars, collections with the same name are merged
+      setSeen((s) => new Set([...s, ...p.seen]));
+      setStarred((s) => new Set([...s, ...p.starred]));
+      setCollections((cur) => {
+        let out = [...cur];
+        for (const c of p.collections) {
+          const same = out.find((x) => x.name === c.name);
+          if (same) out = out.map((x) => (x === same ? { ...x, ids: [...new Set([...x.ids, ...c.ids])] } : x));
+          else out = [...out, { ...c, id: Col.newId(out, Date.now() + out.length) }];
+        }
+        return out;
+      });
+      if (p.quiz) setQuiz(cleanQuiz(p.quiz, new Set(BY_ID.keys())));
+      setToast({ id: Date.now(), text: `Imported: ${p.collections.length} collections, ${p.starred.length} starred` });
+    } catch {
+      setToast({ id: Date.now(), text: 'Not a GC Atlas file' });
+    }
+  }, []);
   const toggleStyle = useCallback((id: EraId) => {
     setFiltersRaw((f) => ({ ...f, styles: f.styles.includes(id) ? f.styles.filter((x) => x !== id) : [...f.styles, id] }));
   }, []);
@@ -204,14 +275,17 @@ export default function App() {
         else if (city) closeCity();
         return;
       }
-      if (mode === 'review') {
+      if (mode === 'review' || mode === 'me') {
         if (e.key === 'm') setMode('map');
         if (e.key === 't') setMode('timeline');
+        if (mode === 'me' && e.key === 'r') setMode('review');
+        if (mode === 'review' && e.key === 'u') setMode('me');
         return;
       }
       if (e.key === 'm') setMode('map');
       else if (e.key === 't') setMode('timeline');
       else if (e.key === 'r') setMode('review');
+      else if (e.key === 'u') setMode('me');
       else if (e.key === 'ArrowRight' && selId) step(1);
       else if (e.key === 'ArrowLeft' && selId) step(-1);
       else if (e.key === 's' && selId) toggleStar(selId);
@@ -223,10 +297,11 @@ export default function App() {
   }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
   // ---------- pieces ----------
-  const modes: [Mode, string, 'map' | 'time' | 'cards', string][] = [
+  const modes: [Mode, string, 'map' | 'time' | 'cards' | 'me', string][] = [
     ['map', 'Map', 'map', 'M'],
     ['timeline', 'Timeline', 'time', 'T'],
     ['review', 'Review', 'cards', 'R'],
+    ['me', 'Me', 'me', 'U'],
   ];
 
   const index = (
@@ -234,6 +309,7 @@ export default function App() {
       filters={filters}
       counts={counts}
       results={results}
+      collections={collections}
       selectedId={selId}
       onFilters={(f) => setFiltersRaw(f)}
       onClear={clearAll}
@@ -246,8 +322,8 @@ export default function App() {
     />
   );
 
-  const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who].filter(Boolean).length;
-  const band = mode !== 'review' && (
+  const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who, filters.col].filter(Boolean).length;
+  const band = mode !== 'review' && mode !== 'me' && (
     <footer
       className={`band${mobile ? '' : ' dock'}`}
       style={!mobile ? { left: (filtersOpen ? 352 : 0) + 16, right: 16 } : undefined}
@@ -287,7 +363,7 @@ export default function App() {
           </div>
         </header>
       ) : (
-        mode !== 'review' && (
+        mode !== 'review' && mode !== 'me' && (
           <header className="m-top">
             <button type="button" className="m-search" onClick={() => setPalette('')}>
               <Icon name="search" size={17} />
@@ -316,7 +392,7 @@ export default function App() {
 
 
       <main className="main" ref={mainRef}>
-        {!mobile && filtersOpen && mode !== 'review' && (
+        {!mobile && filtersOpen && mode !== 'review' && mode !== 'me' && (
           <div className="drawer">
             <div className="drawer-h">
               <b>{results.length}</b>
@@ -353,6 +429,15 @@ export default function App() {
               onNext={() => step(1)}
               onClose={closeCity}
               onStar={() => toggleStar(selected.id)}
+              collections={collections}
+              onToggleCol={(id) => setCollections((c) => Col.toggleIn(c, id, selected.id))}
+              onCreateCol={(name) =>
+                setCollections((c) => {
+                  const next = Col.create(c, name);
+                  const made = next[next.length - 1];
+                  return made && next.length > c.length ? Col.toggleIn(next, made.id, selected.id) : next;
+                })
+              }
               onBack={() => {
                 setSelId('');
                 mapRef.current?.showCity(selected.city);
@@ -396,6 +481,31 @@ export default function App() {
                 }}
               />
             )}
+          </div>
+        )}
+        {mode === 'me' && (
+          <div className="pane on">
+            <MeView
+              mobile={mobile}
+              starred={starred}
+              collections={collections}
+              quiz={quiz}
+              onQuiz={setQuiz}
+              onOpen={(id) => {
+                setMode('map');
+                select(id);
+              }}
+              onShowStarred={() => showOnMap({ ...EMPTY, starred: true })}
+              onShowCollection={(c) => showOnMap({ ...EMPTY, col: { id: c.id, name: c.name, ids: c.ids } })}
+              onCreate={(name) => setCollections((c) => Col.create(c, name))}
+              onRename={(id, name) => setCollections((c) => Col.rename(c, id, name))}
+              onDelete={(id) => setCollections((c) => Col.remove(c, id))}
+              onMove={(id, by) => setCollections((c) => Col.move(c, id, by))}
+              onToggleIn={(colId, b) => setCollections((c) => Col.toggleIn(c, colId, b))}
+              onUnstar={toggleStar}
+              onExport={exportFile}
+              onImport={importFile}
+            />
           </div>
         )}
         {mode === 'review' && (

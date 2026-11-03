@@ -2,7 +2,7 @@ import { EMPTY, type Filters } from './filter';
 import { COUNTRIES, ERA_ORDER } from './model';
 import type { EraId } from './types';
 
-export type Mode = 'map' | 'timeline' | 'review';
+export type Mode = 'map' | 'timeline' | 'review' | 'me';
 
 export interface UrlState {
   mode: Mode;
@@ -49,6 +49,7 @@ export function parseHash(hash: string): UrlState {
     range: r ? [Number(r[1]), Number(r[2])] : null,
     q: p.get('q') ?? '',
     who: p.get('w') ?? '',
+    col: null,
   };
   return { mode, b: p.get('b') ?? '', city: p.get('c') ?? '', filters };
 }

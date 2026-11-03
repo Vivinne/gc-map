@@ -15,14 +15,16 @@ export interface Filters {
   q: string;
   /** Architect kept as a list filter (exact display value) */
   who: string;
+  /** One of the user's collections (its ids are kept in step with the collection) */
+  col: { id: string; name: string; ids: string[] } | null;
 }
 
-export const EMPTY: Filters = { styles: [], countries: [], exam: false, examYears: [], starred: false, range: null, q: '', who: '' };
+export const EMPTY: Filters = { styles: [], countries: [], exam: false, examYears: [], starred: false, range: null, q: '', who: '', col: null };
 
-export type FilterKey = 'styles' | 'countries' | 'exam' | 'range' | 'q' | 'who' | 'starred';
+export type FilterKey = 'styles' | 'countries' | 'exam' | 'range' | 'q' | 'who' | 'starred' | 'col';
 
 export function isEmpty(f: Filters): boolean {
-  return !f.styles.length && !f.countries.length && !f.exam && !f.starred && !f.range && !f.q && !f.who;
+  return !f.styles.length && !f.countries.length && !f.exam && !f.starred && !f.range && !f.q && !f.who && !f.col;
 }
 
 export function matchesQuery(b: Building, q: string): boolean {
@@ -45,6 +47,7 @@ export function matches(b: Building, f: Filters, starred: ReadonlySet<string>, s
   if (skip !== 'range' && f.range && (b.y0 == null || b.y0 < f.range[0] || b.y0 > f.range[1])) return false;
   if (skip !== 'q' && f.q && !matchesQuery(b, f.q)) return false;
   if (skip !== 'who' && f.who && b.who !== f.who) return false;
+  if (skip !== 'col' && f.col && !f.col.ids.includes(b.id)) return false;
   return true;
 }
 
@@ -86,6 +89,7 @@ export function describe(f: Filters): string {
   if (f.range) parts.push(`${fmt(f.range[0])} to ${fmt(f.range[1])}`);
   if (f.exam) parts.push(f.examYears.length ? `asked in ${f.examYears.join(', ')}` : 'asked in previous years');
   if (f.who) parts.push(f.who);
+  if (f.col) parts.push(f.col.name);
   if (f.q) parts.push(`"${f.q}"`);
   return parts.join(', ');
 }

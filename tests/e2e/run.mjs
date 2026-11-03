@@ -122,6 +122,10 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.waitForTimeout(300);
   await page.keyboard.press('s');
   check('star toggles', (await page.locator('.c-ic.on').count()) === 1);
+  await page.locator('.c-ic[aria-label="Collect"]').click();
+  check('star opens the collect menu', (await page.locator('.c-menu .cm-row').count()) === 1);
+  await page.keyboard.press('Escape');
+  check('Esc closes the menu first', (await page.locator('.c-menu').count()) === 0 && (await page.locator('.side.card').count()) === 1);
   check('seen counter counts', /^4\/204/.test((await page.locator('.seen').innerText()).trim()), (await page.locator('.seen').innerText()).trim());
   await page.keyboard.press('Escape');
   check('Esc goes back to the city list', (await page.locator('.side.card').count()) === 0 && (await page.locator('.citypanel').count()) === 1);
@@ -206,6 +210,38 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.waitForTimeout(150);
   check('got it counts', /1\/204/.test(await page.locator('.r-prog').innerText()));
 
+  // Me: cross quiz and collections
+  await page.keyboard.press('u');
+  await page.waitForTimeout(300);
+  check('me opens', (await page.locator('.me .qz-grid').count()) === 1 && (await page.locator('.modes .on').textContent()).includes('Me'));
+  check('quiz shows four choices', (await page.locator('.qz-o').count()) === 4);
+  await page.locator('.qz-c[aria-label="Building to City"]').click();
+  await page.waitForTimeout(100);
+  check('pair choice changes the question', /Building\s*City/i.test(await page.locator('.qz-k').innerText()));
+  await page.keyboard.press('1');
+  check('answer is marked', (await page.locator('.qz-o.ok').count()) === 1 && /\/1$/.test((await page.locator('.qz-sess').innerText()).trim()));
+  check('pair score shows', /%/.test(await page.locator('.qz-c.on').innerText()));
+  await shot(page, 'd8-me');
+  await page.locator('.qz-after .btn').click();
+  check('next question', (await page.locator('.qz-o.ok').count()) === 0);
+  await page.locator('.col-new input').fill('Florence trip');
+  await page.keyboard.press('Enter');
+  check('collection created', (await page.locator('.col').count()) === 2 && (await page.locator('.col-name', { hasText: 'Florence trip' }).count()) === 1);
+  await page.locator('.qz-o').first().click();
+  await page.locator('.qz-b').click();
+  await page.waitForTimeout(900);
+  check('quiz answer opens on map', (await page.locator('.side.card').count()) === 1);
+  await page.locator('.c-ic[aria-label="Collect"]').click();
+  await page.locator('.cm-row', { hasText: 'Florence trip' }).click();
+  check('building added to the collection', (await page.locator('.cm-row.on', { hasText: 'Florence trip' }).count()) === 1);
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('u');
+  await page.waitForTimeout(200);
+  check('collection counts it', /Florence trip\s*1/.test(await page.locator('.col-name', { hasText: 'Florence trip' }).innerText()));
+  await page.locator('[aria-label="Show Florence trip on the map"]').click();
+  await page.waitForTimeout(900);
+  check('collection shows on the map as a filter', (await page.locator('.modes .on').textContent()).includes('Map') && (await page.locator('.fbtn .badge').innerText()) === '1');
+
   await page.keyboard.press('m');
   await page.reload();
   await page.waitForSelector('.overlay', { timeout: 15000 });
@@ -213,6 +249,10 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   check('reload resets the view', (await page.locator('.side').count()) === 0 && (await page.locator('.eb-blk.on').count()) === 0 && (await page.locator('.fbtn .badge').count()) === 0 && (await page.locator('.modes .on').textContent()).includes('Map'));
   check('reload keeps personal progress', !/^0\//.test((await page.locator('.seen').innerText()).trim()));
   check('reload leaves no view address', (await page.evaluate(() => location.hash)) === '');
+  await page.keyboard.press('u');
+  await page.waitForTimeout(200);
+  check('reload keeps collections', (await page.locator('.col-name', { hasText: 'Florence trip' }).count()) === 1);
+  await page.keyboard.press('m');
   check('no script errors (desktop)', errors.length === 0, errors.join(' | '));
   await page.close();
 }
@@ -230,7 +270,7 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
 {
   const { page, errors } = await open({ width: 390, height: 844 });
   await shot(page, 'm1-home');
-  check('phone tab bar', (await page.locator('.tabbar button').count()) === 3);
+  check('phone tab bar', (await page.locator('.tabbar button').count()) === 4);
   await page.locator('.m-chips .chip[aria-label="All filters and list"]').click();
   check('phone list sheet', (await page.locator('.m-sheet').count()) === 1);
   await page.locator('.m-sheet .city', { hasText: 'Milan' }).click();
@@ -246,6 +286,10 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.waitForTimeout(400);
   await shot(page, 'm3-review');
   check('phone review', (await page.locator('.rcard').count()) === 1);
+  await page.locator('.tabbar button', { hasText: /^Me$/ }).click();
+  await page.waitForTimeout(400);
+  await shot(page, 'm5-me');
+  check('phone me: quiz fits', (await page.locator('.qz-o').count()) === 4 && (await page.evaluate(() => document.querySelector('.me').scrollWidth - document.querySelector('.me').clientWidth)) <= 0);
   await page.locator('.tabbar button', { hasText: 'Timeline' }).click();
   await page.waitForTimeout(400);
   await shot(page, 'm4-timeline');
