@@ -574,7 +574,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const a = pr([bb.getWest(), bb.getNorth()]);
       const c = pr([bb.getEast(), bb.getSouth()]);
       inset = (
-        <button type="button" className="inset" style={{ left: padding.left + 16, top: padding.top + 16 }} onClick={() => showCity(insetCity)} aria-label={`Show all of ${insetCity}`}>
+        <button type="button" className="inset" style={{ left: 16, top: padding.top + 16 }} onClick={() => showCity(insetCity)} aria-label={`Show all of ${insetCity}`}>
           <span className="ih">
             <b>{insetCity}</b>
             <span>{cityItems.length}</span>
@@ -606,7 +606,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       {overlay}
       {inset}
       {outside.total > 0 && !(compact && selected) && (
-        <div className="away" style={compact ? { left: 16, bottom: padding.bottom + 30 } : { left: padding.left + 16, bottom: 60 + 30 }}>
+        <div className="away" style={compact ? { left: 16, bottom: padding.bottom + 30 } : { left: 16, bottom: 60 + 30 }}>
           {awayOpen &&
             outside.groups.map(([k, v]) => (
               <button
@@ -630,7 +630,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         </div>
       )}
       {scale && !(compact && selected) && (
-        <div className="scale" style={compact ? { left: 16, bottom: padding.bottom + 8 } : { left: padding.left + 16, bottom: 60 }}>
+        <div className="scale" style={compact ? { left: 16, bottom: padding.bottom + 8 } : { left: 16, bottom: 60 }}>
           {scale.label}
           <i style={{ width: scale.px }} />
         </div>

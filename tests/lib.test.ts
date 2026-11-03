@@ -7,7 +7,6 @@ import { EMPTY, apply, tagCounts, type Filters } from '../src/lib/filter';
 import { clusterAt, donutRadius, distance, regionOf, stacks, worldPx, MIN_DONUT } from '../src/lib/geo';
 import { formatHash, parseHash } from '../src/lib/hash';
 import { BUILDINGS, BY_ID, citiesOf, shortYear, startYear } from '../src/lib/model';
-import { again, gotIt, newDeck, syncDeck, AGAIN_GAP } from '../src/lib/review';
 import { search } from '../src/lib/search';
 
 const none = new Set<string>();
@@ -65,7 +64,7 @@ test('tag counts are "if this tag were added"', () => {
 });
 
 test('address hash round trip', () => {
-  const s = { mode: 'review' as const, b: 'pantheon-rome', city: 'Rome', filters: { ...EMPTY, styles: ['ancient' as const], countries: ['Italy'], exam: true, examYears: [2016], range: [-500, 1500] as [number, number], q: 'dome', who: 'Hadrian', starred: true } };
+  const s = { mode: 'me' as const, b: 'pantheon-rome', city: 'Rome', filters: { ...EMPTY, styles: ['ancient' as const], countries: ['Italy'], exam: true, examYears: [2016], range: [-500, 1500] as [number, number], q: 'dome', who: 'Hadrian', starred: true } };
   assert.deepEqual(parseHash(formatHash(s)), s);
   assert.deepEqual(parseHash('#s=bogus&k=Mars&y=1990'), { mode: 'map', b: '', city: '', filters: EMPTY });
 });
@@ -86,22 +85,6 @@ test('period band: block widths fill the band, year scale is monotonic', () => {
     else assert.ok(x! >= 0 && x! <= 1000);
   }
   assert.ok(xOfYear(bl, 1500) < xOfYear(bl, 1900));
-});
-
-test('review deck: got it retires, again comes back a few cards later', () => {
-  const ids = BUILDINGS.map((b) => b.id);
-  let d = newDeck(ids, 7);
-  assert.equal(new Set(d.queue).size, ids.length);
-  const first = d.queue[0]!;
-  d = again(d);
-  assert.equal(d.queue.indexOf(first), AGAIN_GAP);
-  assert.equal(d.again[first], 1);
-  const cur = d.queue[0]!;
-  d = gotIt(d);
-  assert.ok(d.known.includes(cur) && !d.queue.includes(cur));
-  const synced = syncDeck({ ...d, queue: [...d.queue, 'gone'] }, ids, 1);
-  assert.ok(!synced.queue.includes('gone'));
-  assert.equal(synced.queue.length + synced.known.length, ids.length);
 });
 
 test('search groups architects, cities and buildings; note text matches', () => {

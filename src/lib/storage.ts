@@ -1,5 +1,5 @@
 /**
- * Per-browser study progress (seen buildings, stars, last viewed, review deck).
+ * Per-browser study progress (seen buildings, stars, collections, quiz results).
  * Browser storage can be missing or throw (private mode, sandboxed frames), so every access is guarded
  * and the app keeps working from memory.
  */

@@ -2,7 +2,7 @@ import { EMPTY, type Filters } from './filter';
 import { COUNTRIES, ERA_ORDER } from './model';
 import type { EraId } from './types';
 
-export type Mode = 'map' | 'review' | 'me';
+export type Mode = 'map' | 'me';
 
 export interface UrlState {
   mode: Mode;
@@ -15,7 +15,7 @@ export interface UrlState {
 
 export const DEFAULT_STATE: UrlState = { mode: 'map', b: '', city: '', filters: EMPTY };
 
-/** URL hash: m=review&b=pantheon-rome&c=Rome&s=ancient,modern&k=Italy&e=1&y=2016&r=1850~2026&q=corb&w=Le%20Corbusier&st=1 */
+/** URL hash: m=me&b=pantheon-rome&c=Rome&s=ancient,modern&k=Italy&e=1&y=2016&r=1850~2026&q=corb&w=Le%20Corbusier&st=1 */
 export function formatHash(s: UrlState): string {
   const p = new URLSearchParams();
   if (s.mode !== 'map') p.set('m', s.mode);
@@ -38,7 +38,7 @@ export function parseHash(hash: string): UrlState {
   const p = new URLSearchParams(hash.replace(/^#/, ''));
   const list = (k: string) => (p.get(k) ?? '').split(',').filter(Boolean);
   const m = p.get('m');
-  const mode: Mode = m === 'review' || m === 'me' ? m : 'map';
+  const mode: Mode = m === 'me' ? m : 'map';
   const r = (p.get('r') ?? '').match(/^(-?\d+)~(-?\d+)$/);
   const filters: Filters = {
     styles: list('s').filter((x): x is EraId => (ERA_ORDER as string[]).includes(x)),

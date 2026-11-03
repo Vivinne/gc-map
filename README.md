@@ -1,17 +1,16 @@
 # GC Atlas
 
-General Culture buildings (handout C3 §6.1–6.15, 204 rows) as a map, a review deck and a personal area (quiz, collections).
+General Culture buildings (handout C3 §6.1–6.15, 204 rows) as a map and a personal area (quiz, results, collections).
 All 204 buildings are located; every coordinate has a source (see "Data flow").
 
 ## Views
 
-The map fills the window under a 48 px top bar (filters, search, Map / Review / Me, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
+The map fills the window under a 48 px top bar (filters, search, Map / Me, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
 
 | View | Key | What it does |
 |---|---|---|
 | Map | `M` | Buttons at the lower right: zoom in, zoom out, **Country** (the open building's country, else the one at the centre) and **Full map** (Europe). City circles (ring segments = share of each style, number = buildings) at country scale. Click a circle: the city opens with its list (the largest city of a merged circle). From city scale, numbered pins: the number is the building's place in its city, 1 = oldest. Numbers are shown for one city at a time; other cities' buildings are plain dots. Entries at one spot fan out. Buildings of the open city that are off screen or under a panel sit on the edge of the visible area as numbered markers pointing at them. |
-| Review | `R` | Cards for all 204 buildings (or the 76 of TEST-ARCHED): position and the data lines first, the name after **Show answer** (`Space`). **Again** (`1`) brings the card back four cards later, **Got it** (`2`) retires it. |
-| Me | `U` | **Quiz**: a 4 x 4 grid picks what is shown and what is asked among building, style, architect and city (12 pairs, or **Mixed**); each cell shows the score for that pair. Scope: all, TEST-ARCHED, starred, a collection or a style. Four choices (`1`-`4`), `Enter` for the next; wrong choices are never also right for the prompt, and buildings with no architect are not asked about architects. **Missed** asks the missed questions again until answered right. **Collections**: Starred plus collections you name (add, rename, move up, delete with a second click); the map button shows a collection on the map as a filter. **Export / Import** moves seen, stars, collections and quiz scores to another browser as a JSON file (import adds to what is there). |
+| Me | `U` | **Quiz**: pick the type in a 4 x 4 grid (what is shown and what is asked among building, style, architect and city; 12 pairs, or **Mixed**; each cell shows the score for that pair), the scope (all, TEST-ARCHED, starred, a collection or a style) and the number of questions (5 / 10 / 20 / 30), then **Start**. While it runs: progress bar, **Restart** (new questions, same set-up) and **End** (stops and keeps what was answered). Four choices (`1`-`4`), `Enter` for the next; wrong choices are never also right for the prompt; buildings with no architect are not asked about architects. The result lists the missed questions (right answer and yours) with **Again**, **Missed only** and **New quiz**; **Missed** on the set-up asks every question still missed. **Results**: quizzes, questions and share correct; a chart of the share correct per quiz (last 30, hover for details), bars by type, and a table. **Collections**: Starred plus collections you name (add, rename, move up, delete with a second click); the map button shows a collection on the map as a filter. **Export / Import** moves seen, stars, collections and quiz results to another browser as a JSON file (import adds to what is there). |
 
 Any building is two clicks away: a city circle (or a period block, or a city in the filters), then a pin or a list row.
 
@@ -25,7 +24,7 @@ Data lines in English: built spans with Chinese wording are replaced for display
 
 Phone (up to 900 px wide): search and style chips on top, the period band above the tab bar, filters and cities in a sheet, the city list and the building card as bottom sheets.
 
-Reloading the page is a reset: full map, nothing selected, no filters; an old view address (`#...`) is cleared and ignored. Seen buildings, stars, collections, quiz scores and review progress are kept in the browser (localStorage; the page works without it).
+Reloading the page is a reset: full map, nothing selected, no filters; an old view address (`#...`) is cleared and ignored. Seen buildings, stars, collections and quiz results are kept in the browser (localStorage; the page works without it).
 
 ## Run
 
@@ -79,11 +78,10 @@ Priority: `geo-manual.csv` > `geo-raw.txt` > `geo-estimate.csv`.
 | `src/lib/band.ts` | Period band geometry (blocks, ticks, year at a position) |
 | `src/lib/geo.ts` | Distances, screen-space city circles, same-spot groups, regions |
 | `src/lib/search.ts` | Grouped search |
-| `src/lib/review.ts` | Review deck |
 | `src/lib/quiz.ts` | Cross quiz: pairs, questions, scores |
 | `src/lib/collections.ts` | Collections, export / import file |
 | `src/lib/hash.ts`, `storage.ts` | View state, browser storage |
-| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, review, me |
+| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, me |
 
 All code, comments and UI text are English; the study notes in `content/` and the data files keep their original wording.
 
@@ -91,7 +89,7 @@ All code, comments and UI text are English; the study notes in `content/` and th
 
 ```bash
 npm run typecheck
-npm test        # unit tests: years, filters, tag counts, address state, band scale, review deck, quiz, collections, search, circle overlap, data rules, no Chinese characters in code
+npm test        # unit tests: years, filters, tag counts, address state, band scale, quiz, collections, search, circle overlap, data rules, no Chinese characters in code
 npm run site && npm run e2e   # Chromium flows on site/index.html (desktop and phone), screenshots in .e2e/
 ```
 

@@ -14,7 +14,6 @@ import { Icon } from './Icons';
 import IndexPanel from './IndexPanel';
 import MeView from './MeView';
 import MapView, { type MapHandle, type Padding } from './MapView';
-import ReviewView from './ReviewView';
 import SearchPalette from './SearchPalette';
 
 const MOBILE_QUERY = '(max-width: 900px)';
@@ -40,7 +39,7 @@ function useMedia(q: string): boolean {
 
 export default function App() {
   // A reload is a reset: the page always opens on the full map with nothing selected and no filters.
-  // Personal data (seen, stars, review progress) stays.
+  // Personal data (seen, stars, collections, quiz results) stays.
   const initial = DEFAULT_STATE;
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [selId, setSelId] = useState(BY_ID.has(initial.b) ? initial.b : '');
@@ -288,14 +287,11 @@ export default function App() {
         else if (city) closeCity();
         return;
       }
-      if (mode === 'review' || mode === 'me') {
+      if (mode === 'me') {
         if (e.key === 'm') setMode('map');
-        if (mode === 'me' && e.key === 'r') setMode('review');
-        if (mode === 'review' && e.key === 'u') setMode('me');
         return;
       }
       if (e.key === 'm') setMode('map');
-      else if (e.key === 'r') setMode('review');
       else if (e.key === 'u') setMode('me');
       else if (e.key === 'ArrowRight' && selId) step(1);
       else if (e.key === 'ArrowLeft' && selId) step(-1);
@@ -308,9 +304,8 @@ export default function App() {
   }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
   // ---------- pieces ----------
-  const modes: [Mode, string, 'map' | 'cards' | 'me', string][] = [
+  const modes: [Mode, string, 'map' | 'me', string][] = [
     ['map', 'Map', 'map', 'M'],
-    ['review', 'Review', 'cards', 'R'],
     ['me', 'Me', 'me', 'U'],
   ];
 
@@ -333,10 +328,10 @@ export default function App() {
   );
 
   const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who, filters.col].filter(Boolean).length;
-  const band = mode !== 'review' && mode !== 'me' && (
+  const band = mode !== 'me' && (
     <footer
       className={`band${mobile ? '' : ' dock'}`}
-      style={!mobile ? { left: (filtersOpen ? 352 : 0) + 16, right: 16 } : undefined}
+      style={!mobile ? { left: 16, right: 16 } : undefined}
     >
       <EraBand base={bandBase} styles={filters.styles} onToggleStyle={toggleStyle} />
     </footer>
@@ -373,7 +368,7 @@ export default function App() {
           </div>
         </header>
       ) : (
-        mode !== 'review' && mode !== 'me' && (
+        mode !== 'me' && (
           <header className="m-top">
             <button type="button" className="m-search" onClick={() => setPalette('')}>
               <Icon name="search" size={17} />
@@ -402,7 +397,7 @@ export default function App() {
 
 
       <main className="main" ref={mainRef}>
-        {!mobile && filtersOpen && mode !== 'review' && mode !== 'me' && (
+        {!mobile && filtersOpen && mode !== 'me' && (
           <div className="drawer">
             <div className="drawer-h">
               <b>{results.length}</b>
@@ -490,19 +485,6 @@ export default function App() {
               onUnstar={toggleStar}
               onExport={exportFile}
               onImport={importFile}
-            />
-          </div>
-        )}
-        {mode === 'review' && (
-          <div className="pane on">
-            <ReviewView
-              mobile={mobile}
-              onSeen={(id) => setSeen((s) => (s.has(id) ? s : new Set(s).add(id)))}
-              onOpen={(id) => {
-                setMode('map');
-                select(id);
-              }}
-              onExit={() => setMode('map')}
             />
           </div>
         )}
