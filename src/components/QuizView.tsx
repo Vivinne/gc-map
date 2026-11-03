@@ -111,11 +111,16 @@ function Dropdown({ label, value, options, onPick }: { label: string; value: str
   return (
     <div className="qv-dd" ref={box}>
       <span className="qv-l">{label}</span>
-      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="listbox" aria-expanded={open} aria-label={label} onClick={() => setOpen(!open)}>
+      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="listbox" aria-expanded={open} aria-label={`${label}: ${cur.label}${cur.n != null ? ` ${cur.n}` : ''}`} onClick={() => setOpen(!open)}>
         {cur.color && <i className="sw" style={{ background: cur.color }} />}
         {cur.star && <Icon name="starOn" size={13} />}
         <span className="v">{cur.label}</span>
-        {cur.n != null && <span className="n">{cur.n}</span>}
+        {cur.n != null && (
+          <>
+            {' '}
+            <span className="n">{cur.n}</span>
+          </>
+        )}
         <Icon name="down" size={13} />
       </button>
       {open && (

@@ -58,7 +58,7 @@ export default function IndexPanel({ filters: f, counts, results, collections, s
               TEST-ARCHED
               <span className="n">{counts.exam}</span>
             </button>
-            <button type="button" aria-pressed={f.starred} aria-label="Starred" className={chipCls(f.starred, counts.starred)} onClick={() => onFilters({ ...f, starred: !f.starred })}>
+            <button type="button" aria-pressed={f.starred} aria-label={`Starred ${counts.starred}`} className={chipCls(f.starred, counts.starred)} onClick={() => onFilters({ ...f, starred: !f.starred })}>
               <Icon name={f.starred ? 'starOn' : 'star'} size={13} />
               <span className="n">{counts.starred}</span>
             </button>

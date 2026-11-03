@@ -22,6 +22,17 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
   const [cur, setCur] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  // Keyboard users: when the palette closes, focus goes back to the search button instead of being lost on the page
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
+    return () => {
+      window.requestAnimationFrame(() => {
+        if (document.activeElement && document.activeElement !== document.body) return;
+        const back = opener?.isConnected ? opener : document.querySelector<HTMLElement>('.search, .m-search');
+        back?.focus({ preventScroll: true });
+      });
+    };
+  }, []);
   const res = useMemo(() => search(q), [q]);
 
   useEffect(() => {
