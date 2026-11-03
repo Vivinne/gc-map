@@ -247,7 +247,7 @@ export default function App() {
   const band = mode !== 'review' && (
     <footer
       className={`band${mobile ? '' : ' dock'}`}
-      style={!mobile ? { left: (filtersOpen ? 352 : 0) + 16, right: (panelOpen ? 372 : 0) + 16 } : undefined}
+      style={!mobile ? { left: (filtersOpen ? 352 : 0) + 16, right: 16 } : undefined}
     >
       <EraBand base={bandBase} styles={filters.styles} onToggleStyle={toggleStyle} />
     </footer>

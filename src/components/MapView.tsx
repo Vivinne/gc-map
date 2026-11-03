@@ -128,6 +128,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       bump();
       onReady?.();
     });
+    // Once street tiles arrive, their water layer draws the coasts from zoom 6. The 1:50m offline land
+    // would otherwise show its coarse outline through (sea colour on real land near coasts), so from
+    // zoom 6 the background becomes land and the offline land layer stops.
+    let tilesOk = false;
+    map.on('data', (e) => {
+      if (tilesOk || (e as { sourceId?: string }).sourceId !== 'ofm' || !(e as { tile?: unknown }).tile) return;
+      tilesOk = true;
+      map.setPaintProperty('sea', 'background-color', ['step', ['zoom'], SEA, 6, LAND]);
+      map.setLayerZoomRange('land', 0, 6);
+    });
     mapRef.current = map;
     setLayer(map.getCanvasContainer());
     const ro = new ResizeObserver(() => map.resize());
@@ -378,13 +388,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       }
       const isFocus = (p: Pin) => p.b.city === focus;
       const placed: Box[] = pins.map((p) => (isFocus(p) ? { x1: p.x - 11, x2: p.x + 11, y1: p.y - 11, y2: p.y + 11 } : { x1: p.x - 6, x2: p.x + 6, y1: p.y - 6, y2: p.y + 6 }));
-      // Names: the open and the pointed building always; the rest only from street scale, where they fit
-      const named = zoom >= 14.5;
-      const rank = (p: Pin) => (selected && p.b.id === selected.id ? 0 : p.b.id === hot ? 1 : p.b.exams.length ? 2 : 3);
+      // Names: the open and the pointed building in a black tag; every other building of the city in small
+      // grey type wherever it fits, so the surroundings read without competing with the open building.
+      // Names never run under the side panel or the band.
+      const area = { x1: 2, y1: 2, x2: W - (compact ? 2 : padRef.current.right), y2: H - (compact ? padRef.current.bottom : 60) };
+      const rank = (p: Pin) => (selected && p.b.id === selected.id ? 0 : p.b.id === hot ? 1 : 2);
       for (const p of [...pins].sort((a, c) => rank(a) - rank(c))) {
         const strong = (!!selected && p.b.id === selected.id) || p.b.id === hot;
-        if (!strong && !named) continue;
-        const pos = placeLabel(p.x, p.y, p.b.name, strong, placed, W, H, 15);
+        if (!strong && !isFocus(p)) continue;
+        const pos = placeLabel(p.x, p.y, p.b.name, strong ? 'strong' : 'soft', placed, area, 15);
         if (pos) labels.push(<PlaceLabel key={`t-${p.b.id}`} {...pos} text={p.b.name} strong={strong} />);
       }
       for (const p of pins) {
@@ -593,7 +605,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       {overlay}
       {inset}
       {outside.total > 0 && !(compact && selected) && (
-        <div className="away" style={{ left: padding.left + 16, bottom: padding.bottom + 30 }}>
+        <div className="away" style={compact ? { left: 16, bottom: padding.bottom + 30 } : { left: padding.left + 16, bottom: 60 + 30 }}>
           {awayOpen &&
             outside.groups.map(([k, v]) => (
               <button
@@ -617,12 +629,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         </div>
       )}
       {scale && !(compact && selected) && (
-        <div className="scale" style={{ left: padding.left + 16, bottom: padding.bottom }}>
+        <div className="scale" style={compact ? { left: 16, bottom: padding.bottom + 8 } : { left: padding.left + 16, bottom: 60 }}>
           {scale.label}
           <i style={{ width: scale.px }} />
         </div>
       )}
-      <div className="ctrls" style={compact ? { right: 12, top: padding.top + 4 } : { right: padding.right + 16, bottom: padding.bottom }}>
+      <div className="ctrls" style={compact ? { right: 12, top: padding.top + 4 } : { right: 16, bottom: 60 }}>
         <button type="button" aria-label="Zoom in" onClick={() => map?.zoomIn({ duration: motion(250) })}>
           <Icon name="plus" />
         </button>
@@ -699,23 +711,27 @@ interface Box {
 }
 
 let measureCtx: CanvasRenderingContext2D | null = null;
-function textWidth(text: string, strong: boolean): number {
+type LabelKind = 'strong' | 'soft' | 'city';
+const FONT: Record<LabelKind, [number, number]> = { strong: [750, 13.5], soft: [500, 11], city: [600, 12] };
+
+function textWidth(text: string, kind: LabelKind | boolean): number {
+  const k: LabelKind = kind === true ? 'strong' : kind === false ? 'city' : kind;
   if (!measureCtx) measureCtx = document.createElement('canvas').getContext('2d');
   if (!measureCtx) return text.length * 7;
-  measureCtx.font = `${strong ? 750 : 600} ${strong ? 13.5 : 12}px "Archivo Variable", "Noto Sans TC", sans-serif`;
+  measureCtx.font = `${FONT[k][0]} ${FONT[k][1]}px "Archivo Variable", "Noto Sans TC", sans-serif`;
   return measureCtx.measureText(text).width;
 }
 
-function placeLabel(x: number, y: number, text: string, strong: boolean, placed: Box[], W: number, H: number, gap = 12) {
-  const fs = strong ? 13.5 : 12;
-  const tw = textWidth(text, strong);
+function placeLabel(x: number, y: number, text: string, kind: LabelKind, placed: Box[], area: Box, gap = 12) {
+  const fs = FONT[kind][1];
+  const tw = textWidth(text, kind);
   const cands: [number, number, 'start' | 'end' | 'middle'][] = [
     [gap, 4, 'start'], [-gap, 4, 'end'], [0, -gap - 2, 'middle'], [0, gap + 10, 'middle'], [gap - 2, -gap + 3, 'start'], [-gap + 2, -gap + 3, 'end'], [gap - 2, gap + 4, 'start'], [-gap + 2, gap + 4, 'end'],
   ];
   for (const [dx, dy, anchor] of cands) {
     const x1 = anchor === 'start' ? x + dx : anchor === 'end' ? x + dx - tw : x - tw / 2;
     const b = { x1: x1 - 3, x2: x1 + tw + 3, y1: y + dy - fs, y2: y + dy + 4 };
-    if (b.x1 < 2 || b.x2 > W - 2 || b.y1 < 2 || b.y2 > H - 2) continue;
+    if (b.x1 < area.x1 || b.x2 > area.x2 || b.y1 < area.y1 || b.y2 > area.y2) continue;
     if (placed.some((o) => !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2))) continue;
     placed.push(b);
     return { x: x1, y: y + dy, w: tw };
@@ -735,7 +751,7 @@ function PlaceLabel({ x, y, w, text, strong }: { x: number; y: number; w: number
     );
   }
   return (
-    <g className="place-lbl">
+    <g className="place-lbl soft">
       <text x={x} y={y} className="halo">
         {text}
       </text>
