@@ -235,6 +235,11 @@ export default function App() {
       });
       return;
     }
+    // In-app browsers (LINE, Facebook, Messenger, Instagram, WeChat) drop file downloads without a word
+    if (/\bLine\/|FBAN|FBAV|FB_IAB|Instagram|MicroMessenger/i.test(navigator.userAgent)) {
+      setToast({ id: Date.now(), text: 'This app cannot save files. Open the page in Safari or Chrome to export.' });
+      return;
+    }
     try {
       const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
       const a = document.createElement('a');

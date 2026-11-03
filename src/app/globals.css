@@ -37,7 +37,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .chip:active, .btn:active, .row:active, .city:active, .rel:active, .r-row:active, .ctrls button:active { transform: translateY(1px); }
 
 /* ---------- grid ---------- */
-.app { position: relative; height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--top-h) minmax(0, 1fr); overflow: hidden; }
+.app { position: relative; height: 100vh; height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--top-h) minmax(0, 1fr); overflow: hidden; }
 .app.mode-me, .app.mode-quiz { grid-template-rows: var(--top-h) minmax(0, 1fr); }
 .top { grid-column: 1 / -1; display: flex; align-items: stretch; border-bottom: 1px solid var(--rule); background: #fff; z-index: 5; }
 .index { grid-column: 1; grid-row: 2; min-height: 0; border-right: 1px solid var(--rule); background: #fff; display: flex; flex-direction: column; z-index: 3; }
@@ -232,7 +232,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 
 /* ---------- search ---------- */
 .scrim { position: fixed; inset: 0; z-index: 20; background: rgba(14, 18, 22, 0.55); display: flex; justify-content: center; align-items: flex-start; padding-top: 72px; }
-.pal { width: min(900px, calc(100vw - 48px)); background: #fff; display: flex; flex-direction: column; max-height: calc(100dvh - 120px); }
+.pal { width: min(900px, calc(100vw - 48px)); background: #fff; display: flex; flex-direction: column; max-height: calc(100vh - 120px); max-height: calc(100dvh - 120px); }
 .pal-in { display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 16px 0 20px; border-bottom: 2px solid #000; flex: none; }
 .pal-in input { flex: 1; min-width: 0; border: 0; outline: 0; font: inherit; font-size: 21px; font-weight: 600; background: transparent; }
 .pal-in .cnt { font-size: 12.5px; color: var(--mute); white-space: nowrap; }
@@ -578,7 +578,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile .side.sheet:not(.full) .c-body { max-height: 24vh; }
 .citypanel .grab i, .card .grab i { background: #c9cfd6; }
 .is-mobile .scrim { padding: 0; }
-.is-mobile .pal { width: 100vw; height: 100dvh; max-height: none; }
+.is-mobile .pal { width: 100vw; height: 100vh; height: 100dvh; max-height: none; }
 .is-mobile .pal-in { padding-top: env(safe-area-inset-top); height: calc(58px + env(safe-area-inset-top)); }
 .is-mobile .pal-in input { font-size: 18px; }
 .is-mobile .hit .loc { display: none; }
