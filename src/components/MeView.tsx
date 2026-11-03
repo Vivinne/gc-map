@@ -59,11 +59,11 @@ export default function MeView(p: MeProps) {
   const all = useMemo(() => countStatus(BUILDINGS, by), [by]);
   const week = recent(quiz.log, Date.now(), 7 * DAY);
   const tested = BUILDINGS.length - all.untested;
+  const [part, setPart] = useState<Part>('overview');
 
-  return (
-    <div className={`me${p.mobile ? ' m' : ''}`}>
-      <div className="me-g">
-        <Tile n={seen.size} of={BUILDINGS.length} label="Seen" />
+  const tiles = (
+    <>
+      <Tile n={seen.size} of={BUILDINGS.length} label="Seen" />
         <Tile n={tested} of={BUILDINGS.length} label="Tested" />
         <Tile n={all.mastered} of={BUILDINGS.length} label="Mastered" />
         <div className="k">
@@ -73,11 +73,9 @@ export default function MeView(p: MeProps) {
             <i style={{ width: week.total ? `${(week.right / week.total) * 100}%` : 0 }} />
           </div>
         </div>
-        <Mastery {...p} by={by} />
-        <PractiseNext {...p} />
-        <PerDay log={quiz.log} />
-        <Recent quiz={quiz} />
-        <Collections {...p} />
+    </>
+  );
+  const device = (
         <div className="me-foot">
           <h2>Another device</h2>
           <span className="note">Seen, stars, collections and quiz results</span>
@@ -100,10 +98,66 @@ export default function MeView(p: MeProps) {
             />
           </label>
         </div>
+  );
+
+  // Phone: one part at a time, each about a screen high
+  if (p.mobile) {
+    return (
+      <div className="me m">
+        <nav className="me-parts" role="tablist" aria-label="Me">
+          {PARTS.map(([k, label]) => (
+            <button type="button" role="tab" key={k} aria-selected={part === k} className={part === k ? 'on' : ''} onClick={() => setPart(k)}>
+              {label}
+            </button>
+          ))}
+        </nav>
+        <div className="me-g">
+          {part === 'overview' && (
+            <>
+              {tiles}
+              <PractiseNext {...p} />
+            </>
+          )}
+          {part === 'mastery' && <Mastery {...p} by={by} />}
+          {part === 'history' && (
+            <>
+              <PerDay log={quiz.log} />
+              <Recent quiz={quiz} />
+            </>
+          )}
+          {part === 'collections' && (
+            <>
+              <Collections {...p} />
+              {device}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="me">
+      <div className="me-g">
+        {tiles}
+        <Mastery {...p} by={by} />
+        <PractiseNext {...p} />
+        <PerDay log={quiz.log} />
+        <Recent quiz={quiz} />
+        <Collections {...p} />
+        {device}
       </div>
     </div>
   );
 }
+
+type Part = 'overview' | 'mastery' | 'history' | 'collections';
+const PARTS: [Part, string][] = [
+  ['overview', 'Overview'],
+  ['mastery', 'Mastery'],
+  ['history', 'History'],
+  ['collections', 'Collections'],
+];
 
 function Tile({ n, of, label }: { n: number; of: number; label: string }) {
   return (

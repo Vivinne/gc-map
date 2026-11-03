@@ -318,6 +318,11 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.waitForTimeout(400);
   await shot(page, 'm5-me');
   check('phone me fits', (await page.locator('.me .k').count()) === 4 && (await page.evaluate(() => document.querySelector('.me').scrollWidth - document.querySelector('.me').clientWidth)) <= 0);
+  check('phone me in four parts', (await page.locator('.me-parts button').count()) === 4 && (await page.locator('.me-mastery').count()) === 0);
+  await page.locator('.me-parts button', { hasText: 'Mastery' }).click();
+  check('phone mastery part', (await page.locator('.me-mastery').count()) === 1 && (await page.locator('.me .k').count()) === 0);
+  await page.locator('.me-parts button', { hasText: 'Collections' }).click();
+  check('phone collections part', (await page.locator('.me-cols').count()) === 1 && (await page.locator('.me-foot').count()) === 1);
   await page.locator('.tabbar button', { hasText: /^Map$/ }).click();
   await page.waitForTimeout(400);
   await page.locator('.m-search').click();
