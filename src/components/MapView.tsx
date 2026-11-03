@@ -171,10 +171,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       fitAll: (list) => (list.length ? fitTo(list, 6) : undefined),
       fitTo,
       showCity,
-      home: () => {
-        const p = padRef.current;
-        mapRef.current?.fitBounds(EUROPE, { padding: { top: p.top + 20, right: p.right + 20, bottom: p.bottom + 20, left: p.left + 20 }, duration: motion(650) });
-      },
+      home: () => homeView(),
       showBuilding: (b) => {
         const city = CITY_BUILDINGS.get(b.city) ?? [b];
         if (city.length > 1) {
@@ -189,8 +186,25 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     [fitTo, showCity, motion],
   );
 
+  const homeView = useCallback(() => {
+    const p = padRef.current;
+    mapRef.current?.fitBounds(EUROPE, { padding: { top: p.top + 20, right: p.right + 20, bottom: p.bottom + 20, left: p.left + 20 }, duration: motion(650) });
+  }, [motion]);
+
   const map = mapRef.current;
   const zoom = map ? map.getZoom() : 4;
+  // Country of the open building or city (region for the "Others" group); without one, of the view centre
+  const countryOf = useMemo(() => {
+    let ref: Building | undefined = selected ?? (insetCity ? CITY_BUILDINGS.get(insetCity)?.[0] : undefined);
+    if (!ref && map) {
+      const c = map.getCenter();
+      ref = nearest({ ...BUILDINGS[0]!, id: '', lng: c.lng, lat: c.lat }, BUILDINGS, 1)[0]?.b;
+    }
+    if (!ref) return null;
+    const key = regionOf(ref);
+    return BUILDINGS.filter((b) => regionOf(b) === key);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, insetCity, map, frame]);
   // A city in focus (open building) switches to numbered pins earlier, so its whole extent can show as pins
   const detail = zoom >= DETAIL_ZOOM || (!!insetCity && zoom >= 10);
   const zBucket = Math.floor(zoom * 2) / 2;
@@ -608,15 +622,18 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           <i style={{ width: scale.px }} />
         </div>
       )}
-      <div className="ctrls" style={{ right: padding.right + 16, bottom: padding.bottom }}>
+      <div className="ctrls" style={compact ? { right: 12, top: padding.top + 4 } : { right: padding.right + 16, bottom: padding.bottom }}>
         <button type="button" aria-label="Zoom in" onClick={() => map?.zoomIn({ duration: motion(250) })}>
           <Icon name="plus" />
         </button>
         <button type="button" aria-label="Zoom out" onClick={() => map?.zoomOut({ duration: motion(250) })}>
           <Icon name="minus" />
         </button>
-        <button type="button" aria-label="Show every result" title="Show every result (F)" onClick={() => (buildings.length ? fitTo(buildings, 6) : undefined)}>
-          <Icon name="fit" />
+        <button type="button" aria-label="Country" title="Country" disabled={!countryOf} onClick={() => countryOf && fitTo(countryOf, 9)}>
+          <Icon name="flag" />
+        </button>
+        <button type="button" aria-label="Full map" title="Full map" onClick={() => homeView()}>
+          <Icon name="globe" />
         </button>
       </div>
       <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: 16, bottom: compact ? 2 : 2 }}>

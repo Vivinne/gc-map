@@ -117,7 +117,7 @@ export default function App() {
 
   // ---------- map padding (panels that cover the map) ----------
   const padding: Padding = mobile
-    ? { top: 8, right: 48, bottom: panelOpen ? Math.round(mainHeight * 0.46) : 0, left: 0 }
+    ? { top: 8, right: 56, bottom: panelOpen ? Math.round(mainHeight * 0.46) : 0, left: 0 }
     : { top: 0, right: panelOpen ? 372 : 0, bottom: 60, left: filtersOpen ? 352 : 0 };
 
   // ---------- actions ----------

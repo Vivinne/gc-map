@@ -1,10 +1,20 @@
-export type IconName = 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'time' | 'cards' | 'undo';
+export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'time' | 'cards' | 'undo';
 
 /** Line icons drawn on a 16 px grid; colour follows the text colour */
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
   const p = { width: size, height: size, viewBox: '0 0 16 16', 'aria-hidden': true, focusable: false } as const;
   const s = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.9 } as const;
   switch (name) {
+    case 'globe':
+      return (<svg {...p}><circle cx="8" cy="8" r="6.3" {...s} strokeWidth={1.6} /><path d="M1.7 8h12.6M8 1.7c2.2 2.3 2.2 10.3 0 12.6M8 1.7c-2.2 2.3-2.2 10.3 0 12.6" {...s} strokeWidth={1.4} /></svg>);
+    case 'flag':
+      return (<svg {...p}><path d="M3.5 14.5V2M3.5 2.5h9l-2 3 2 3h-9" {...s} strokeWidth={1.7} strokeLinejoin="round" /></svg>);
+    case 'collapse':
+      return (<svg {...p}><path d="M3 11h10" {...s} strokeWidth={2} /></svg>);
+    case 'expand':
+      return (<svg {...p}><rect x="3" y="3" width="10" height="10" {...s} strokeWidth={1.8} /></svg>);
+    case 'down':
+      return (<svg {...p}><path d="M3 6l5 5 5-5" {...s} /></svg>);
     case 'search':
       return (<svg {...p}><circle cx="6.8" cy="6.8" r="4.8" {...s} /><path d="M10.4 10.4 14.5 14.5" {...s} strokeWidth={2.1} /></svg>);
     case 'plus':

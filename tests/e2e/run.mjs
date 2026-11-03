@@ -64,7 +64,12 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   check('data lines have no Chinese and no labels', !/[\u3400-\u9fff]/.test(lines.join('')));
   const supp = await page.locator('.facts > *').last().innerText();
   check('exam years last, written once', supp.trim() === '\u3010TEST-ARCHED 2007 / 2012 / 2016\u3011', supp);
+  check('other buildings start folded', (await page.locator('.side.card .others').count()) === 0 && /Rome\s*25/.test(await page.locator('.others-h').innerText()));
+  await page.locator('.others-h').click();
   check('other buildings with a direction arrow', (await page.locator('.others .o-row').count()) === 25 && (await page.locator('.others .o-row .dir').count()) === 25);
+  const cardBox = await page.locator('.side.card').boundingBox();
+  const listBox = await page.locator('.side.card .others').boundingBox();
+  check('the list stays secondary (at most 240 px)', listBox.height <= 241, `${listBox.height}px of ${cardBox.height}px`);
   const inView = await page.evaluate(() => [...document.querySelectorAll('.overlay .pin text, .overlay .edge text')].map((t) => t.textContent));
   check('whole city in view after opening', ['1', '24', '25', '26'].every((n) => inView.includes(n)), inView.length + ' pins');
   const panel = await page.locator('.side.card').boundingBox();
@@ -73,6 +78,12 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
 
   await page.locator('.others .o-row', { hasText: 'Colosseum' }).hover();
   check('list hover lights the pin', (await page.locator('.overlay .pin.hot, .overlay .edge.hot').count()) === 1);
+  const h1Before = await page.locator('.side.card h1').boundingBox();
+  await page.locator('.c-ic[aria-label="Fold"]').click();
+  check('card folds to its title', (await page.locator('.side.card .c-body').count()) === 0 && (await page.locator('.side.card h1').count()) === 1);
+  await page.locator('.c-ic[aria-label="Unfold"]').click();
+  const h1After = await page.locator('.side.card h1').boundingBox();
+  check('controls do not move the content', Math.abs(h1Before.y - h1After.y) < 1 && (await page.locator('.side.card .c-body').count()) === 1);
 
   // Zoom in: off-screen buildings of the city sit on the view edge, pointing at them; the inset shows the city
   await page.locator('.ctrls button[aria-label="Zoom in"]').click();
@@ -95,11 +106,23 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.waitForTimeout(900);
   check('an edge marker opens its building', (await page.locator('.side.card h1').innerText()).includes(otherName.toUpperCase()), otherName);
 
+  // Country and full map
+  await page.locator('.ctrls button[aria-label="Country"]').click();
+  await page.waitForTimeout(900);
+  const italy = await page.evaluate(() => document.querySelectorAll('.overlay .donut, .overlay .dot').length);
+  check('country button shows the whole country', italy >= 5, String(italy));
+  await page.locator('.ctrls button[aria-label="Full map"]').click();
+  await page.waitForTimeout(900);
+  check('full map button returns to Europe', (await page.locator('.overlay .donut').count()) >= 5);
+  await page.locator('.c-back').click();
+  await page.waitForTimeout(900);
+  await page.locator('.citypanel .o-row', { hasText: 'Pantheon' }).click();
+  await page.waitForTimeout(900);
   await page.keyboard.press('ArrowRight');
   await page.waitForTimeout(300);
   await page.keyboard.press('s');
   check('star toggles', (await page.locator('.c-ic.on').count()) === 1);
-  check('seen counter counts', /^3\/204/.test((await page.locator('.seen').innerText()).trim()));
+  check('seen counter counts', /^4\/204/.test((await page.locator('.seen').innerText()).trim()), (await page.locator('.seen').innerText()).trim());
   await page.keyboard.press('Escape');
   check('Esc goes back to the city list', (await page.locator('.side.card').count()) === 0 && (await page.locator('.citypanel').count()) === 1);
   await page.keyboard.press('Escape');
