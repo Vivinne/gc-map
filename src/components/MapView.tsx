@@ -353,7 +353,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const onDown = (e: React.PointerEvent) => {
     down.current = [e.clientX, e.clientY];
   };
-  const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < 5;
+  // A finger moves a little during a tap: allow more on phones before a tap counts as a drag
+  const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
   const hot = hoverId || pinHover;
 
   let overlay: React.ReactNode = null;
@@ -366,6 +367,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     };
     const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
     const marks: React.ReactNode[] = [];
+    // Phones: a finger-sized invisible target over every dot and pin (drawn last, so it is on top)
+    const hits: React.ReactNode[] = [];
+    const hit = (key: string, x: number, y: number, id: string) => {
+      if (!compact) return;
+      hits.push(<circle key={`h-${key}`} className="mk hit" cx={x} cy={y} r={20} onPointerDown={onDown} onClick={(e) => isClick(e) && onSelect(id)} />);
+    };
     const labels: React.ReactNode[] = [];
 
     if (!detail) {
@@ -375,6 +382,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           for (const b of c.items) {
             const [x, y] = proj(b.lng, b.lat);
             if (!inView(x, y)) continue;
+            hit(b.id, x, y, b.id);
             marks.push(
               <circle key={b.id} className="mk dot" cx={x} cy={y} r={5.5} fill={ERAS[b.era].color} onPointerDown={onDown} onClick={(e) => isClick(e) && onSelect(b.id)}>
                 <title>{b.name}</title>
@@ -507,6 +515,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       for (const p of pins) {
         const isSel = !!selected && p.b.id === selected.id;
         const isHot = p.b.id === hot;
+        hit(p.b.id, p.x, p.y, p.b.id);
         if (!isFocus(p) && !isSel) {
           marks.push(
             <circle
@@ -648,6 +657,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       <>
         <svg className="overlay" width={W} height={H}>
           {marks}
+          {hits}
           {labels}
         </svg>
         {tipEl}
