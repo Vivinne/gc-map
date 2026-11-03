@@ -56,10 +56,20 @@ export default function App() {
   const [toast, setToast] = useState<Toast | null>(null);
   const [hoverCity, setHoverCity] = useState('');
   const [sheet, setSheet] = useState(false);
-  const [resumeHidden, setResumeHidden] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [bandOpen, setBandOpen] = useState(false);
+  const [hoverId, setHoverId] = useState('');
   const mobile = useMedia(MOBILE_QUERY);
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)');
   const mapRef = useRef<MapHandle>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const [mainHeight, setMainHeight] = useState(600);
+  useEffect(() => {
+    if (!mainRef.current) return;
+    const ro = new ResizeObserver(([e]) => e && setMainHeight(e.contentRect.height));
+    ro.observe(mainRef.current);
+    return () => ro.disconnect();
+  }, []);
   const [mapReady, setMapReady] = useState(false);
 
   // Derived lists (deferred so chips respond at once and the map follows)
@@ -128,8 +138,8 @@ export default function App() {
 
   // ---------- map padding (panels that cover the map) ----------
   const padding: Padding = mobile
-    ? { top: 8, right: 0, bottom: selected && mode === 'map' ? Math.round(window.innerHeight * 0.48) : 0, left: 0 }
-    : { top: 0, right: selected ? 380 : 0, bottom: 0, left: 0 };
+    ? { top: 8, right: 44, bottom: selected && mode === 'map' ? Math.round(mainHeight * 0.46) : 0, left: 0 }
+    : { top: 0, right: selected ? 372 : 0, bottom: 52, left: filtersOpen ? 336 : 0 };
 
   // ---------- actions ----------
   const select = useCallback(
@@ -209,6 +219,7 @@ export default function App() {
       if (typing || palette !== null || e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === 'Escape') {
         if (sheet) setSheet(false);
+        else if (filtersOpen) setFiltersOpen(false);
         else if (selId) closeDetail();
         else if (city) setCity('');
         return;
@@ -224,12 +235,12 @@ export default function App() {
       else if (e.key === 'ArrowRight' && selId) step(1);
       else if (e.key === 'ArrowLeft' && selId) step(-1);
       else if (e.key === 's' && selId) toggleStar(selId);
-      else if (e.key === 'f' && mode === 'map') mapRef.current?.fitAll(results);
+      else if (e.key === 'f') setFiltersOpen((o) => !o);
       else if (/^[1-8]$/.test(e.key)) toggleStyle(ERA_ORDER[Number(e.key) - 1]!);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail]);
+  }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, filtersOpen]);
 
   // ---------- pieces ----------
   const highlight = useMemo(() => {
@@ -274,15 +285,23 @@ export default function App() {
     />
   );
 
+  const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who].filter(Boolean).length;
   const band = mode !== 'review' && (
-    <footer className="band">
+    <footer
+      className={`band${!mobile ? ` dock${bandOpen || filters.range ? ' open' : ''}` : ''}`}
+      style={!mobile ? { left: (filtersOpen && mode === 'map' ? 336 : 0) + 16, right: (selected && mode === 'map' ? 372 : 0) + 16 } : undefined}
+      onPointerEnter={() => setBandOpen(true)}
+      onPointerLeave={() => setBandOpen(false)}
+      onFocus={() => setBandOpen(true)}
+      onBlur={() => setBandOpen(false)}
+    >
       {!mobile && (
         <div className="band-meta">
           <b>{filters.range ? describe({ ...EMPTY, range: filters.range }) : filters.styles.length ? filters.styles.map((s) => ERAS[s].label).join(', ') : 'All periods'}</b>
-          <span>{filters.range ? 'Drag the handles to change the span. Double-click the band to reset.' : 'Click a block to show one style. Drag across the band to pick a span.'}</span>
+          <span>{filters.range ? 'Drag the handles. Double-click to reset.' : 'Click a block or drag across'}</span>
         </div>
       )}
-      <EraBand base={bandBase} shown={results} styles={filters.styles} range={filters.range} highlight={highlight} compact={mobile} onToggleStyle={toggleStyle} onRange={setRange} />
+      <EraBand base={bandBase} shown={results} styles={filters.styles} range={filters.range} highlight={highlight} compact={mobile} slim={!mobile && !(bandOpen || !!filters.range)} onToggleStyle={toggleStyle} onRange={setRange} />
     </footer>
   );
 
@@ -298,6 +317,11 @@ export default function App() {
             <Icon name="search" size={17} />
             <span className="ph">Search buildings, architects, cities</span>
             <kbd>/</kbd>
+          </button>
+          <button type="button" className={`fbtn${filtersOpen ? ' open' : ''}${activeFilters ? ' on' : ''}`} aria-expanded={filtersOpen} onClick={() => setFiltersOpen((o) => !o)} title="Filters and lists (F)">
+            <Icon name="filter" size={16} />
+            Filters
+            {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
           </button>
           <nav className="modes" aria-label="Views">
             {modes.map(([m, label, icon, key]) => (
@@ -346,15 +370,29 @@ export default function App() {
         )
       )}
 
-      {!mobile && mode !== 'review' && index}
 
-      <main className="main">
+      <main className="main" ref={mainRef}>
+        {!mobile && filtersOpen && mode !== 'review' && (
+          <div className="drawer">
+            <div className="drawer-h">
+              <b>Filters</b>
+              <span>{results.length} buildings</span>
+              <button type="button" className="icon-btn" aria-label="Close filters" onClick={() => setFiltersOpen(false)}>
+                <Icon name="close" size={13} />
+              </button>
+            </div>
+            {index}
+          </div>
+        )}
+        {!mobile && band}
         <div className={`pane map-pane${mode === 'map' ? ' on' : ''}`} aria-hidden={mode !== 'map'}>
           <MapView
             ref={mapRef}
             buildings={results}
             selected={selected}
             hoverCity={hoverCity}
+            hoverId={hoverId}
+            insetCity={selected?.city ?? city}
             padding={padding}
             reducedMotion={reducedMotion}
             compact={mobile}
@@ -362,45 +400,6 @@ export default function App() {
             onCity={focusCity}
             onReady={() => setMapReady(true)}
           />
-          {!mobile && !selected && !resumeHidden && mode === 'map' && (
-            <div className="resume">
-              <button type="button" className="r-close" aria-label="Hide" onClick={() => setResumeHidden(true)}>
-                <Icon name="close" size={11} />
-              </button>
-              {lastB ? (
-                <button type="button" className="r-row" onClick={() => select(lastB.id)}>
-                  <i className="sq" style={{ background: ERAS[lastB.era].color }} />
-                  <span className="r-tx">
-                    <span className="r-k">Continue where you stopped</span>
-                    <span className="r-t">{lastB.name}</span>
-                    <span className="r-s">{[lastB.yearShort, lastB.city].filter(Boolean).join(', ')}</span>
-                  </span>
-                </button>
-              ) : (
-                <button type="button" className="r-row" onClick={() => setPalette('')}>
-                  <i className="sq dark">
-                    <Icon name="search" size={14} />
-                  </i>
-                  <span className="r-tx">
-                    <span className="r-k">Start anywhere</span>
-                    <span className="r-t">Search a name or click a city</span>
-                    <span className="r-s">Press / from any view</span>
-                  </span>
-                </button>
-              )}
-              <button type="button" className="r-row" onClick={() => setMode('review')}>
-                <i className="sq dark">
-                  <Icon name="cards" size={14} />
-                </i>
-                <span className="r-tx">
-                  <span className="r-k">Review</span>
-                  <span className="r-t">All {TOTAL} buildings</span>
-                  <span className="r-s">{reviewKnown ? `${reviewKnown} known so far` : 'Clue first, name second'}</span>
-                </span>
-                <kbd>R</kbd>
-              </button>
-            </div>
-          )}
           {selected && mode === 'map' && (
             <DetailPanel
               b={selected}
@@ -412,6 +411,8 @@ export default function App() {
               onClose={closeDetail}
               onStar={() => toggleStar(selected.id)}
               onSelect={(id) => select(id)}
+              onWholeCity={(c) => mapRef.current?.showCity(c)}
+              onHover={setHoverId}
             />
           )}
         </div>
@@ -455,7 +456,7 @@ export default function App() {
         )}
       </main>
 
-      {band}
+      {mobile && band}
 
       {mobile && (
         <nav className="tabbar" aria-label="Views">

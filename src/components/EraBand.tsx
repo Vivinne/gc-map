@@ -15,13 +15,15 @@ interface Props {
   /** Ticks drawn taller (current city or selection) */
   highlight: ReadonlySet<string>;
   compact?: boolean;
+  /** Collapsed strip: 22 px blocks with names and counts, no ticks or axis */
+  slim?: boolean;
   onToggleStyle(id: EraId): void;
   onRange(r: [number, number] | null): void;
 }
 
 const H = 44;
 
-export default function EraBand({ base, shown, styles, range, highlight, compact, onToggleStyle, onRange }: Props) {
+export default function EraBand({ base, shown, styles, range, highlight, compact, slim, onToggleStyle, onRange }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(800);
   const [drag, setDrag] = useState<{ mode: 'new' | 'a' | 'b'; x0: number; a: number; b: number; moved: boolean } | null>(null);
@@ -76,6 +78,26 @@ export default function EraBand({ base, shown, styles, range, highlight, compact
   };
 
   const label = (id: EraId) => (id === 'c19' ? '19th c.' : ERAS[id].label);
+
+  if (slim) {
+    return (
+      <div className="band-svg-box slim" ref={box}>
+        <svg width={width} height={22} className="band-svg" role="group" aria-label="Periods (point at the band to open it)">
+          {bl.map((b) => {
+            const off = styles.length > 0 && !styles.includes(b.id);
+            return (
+              <g key={b.id} opacity={off ? 0.3 : 1}>
+                <rect x={b.x} y={0} width={b.w} height={22} fill={ERAS[b.id].color} />
+                <text x={b.x + 6} y={15} className="band-n slim">
+                  {b.w > 96 ? `${label(b.id)} ${b.count}` : b.count}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    );
+  }
 
   return (
     <div className={`band-svg-box${compact ? ' compact' : ''}`} ref={box}>

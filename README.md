@@ -5,22 +5,22 @@ All 204 buildings are located; every coordinate has a source (see "Data flow").
 
 ## Views
 
+The map fills the window under a 48 px top bar (search, Filters, Map / Timeline / Review, seen count).
+
 | View | Key | What it does |
 |---|---|---|
-| Map | `M` | City circles (ring segments = share of each style, number = buildings) at country scale; single buildings with names from zoom 11.5. Click a circle to zoom in, a dot to open the building. Several entries at one spot are a black square with a count; click it to choose. Buttons on the lower left jump to results outside the view. |
-| Timeline | `T` | One lane per country, buildings placed by start year. Follows every filter and the period band. Hover shows the notes, click opens the building on the map. |
+| Map | `M` | City circles (ring segments = share of each style, number = buildings) at country scale. From city scale, numbered pins: the number is the building's place in its city, 1 = oldest (start year). Numbers are shown for one city at a time (the open building's city, else the city with most pins in view); other cities' buildings are plain dots. Entries at one spot fan out into separate pins. Names show for the open building, the one under the pointer, and from street scale wherever they fit. |
+| Timeline | `T` | Desktop: one lane per country, buildings placed by start year. Phone: one column, oldest first, sticky century (or decade) headings, country chips. Click opens the building on the map. |
 | Review | `R` | Cards for all 204 buildings (or the 76 asked in previous years): position, built span, place, architect and style first; the name after **Show answer** (`Space`). **Again** (`1`) brings the card back four cards later, **Got it** (`2`) retires it. Progress stays in this browser. |
 
-Always on screen (except Review):
-
-- **Index (left)**: style, country, "Asked in previous years" (with year tags 2007–2019 when on) and Starred filters. Inside one group tags are a union; across groups they intersect. The number on a tag is what you would get if you added it. With no filter, the list shows cities by size with a style-share bar; with filters, the matching buildings by year; inside a city, its buildings (oldest first / A to Z / asked first).
-- **Period band (bottom)**: one solid block per style, width by number of buildings, a white tick per building. Click a block to toggle that style, drag across to keep a span of years, drag the black handles to change it, double-click to reset. Each change shows a short note with **Undo**.
+- **Filters** (button or `F`): a drawer over the left of the map with style, country, "Asked in previous years" (with year tags 2007–2019), Starred, and the list (cities by size, or the matching buildings, or one city's buildings). Inside one group tags are a union; across groups they intersect. The number on a tag is what you would get if you added it. The button shows how many filters are on.
+- **Period band**: a slim strip over the bottom of the map; it opens on pointer or focus (and stays open while a span is set). One solid block per style, width by number of buildings, a white tick per building. Click a block to toggle that style, drag across to keep a span of years, drag the handles to change it, double-click to reset. Each change shows a short note with **Undo**.
 - **Search** (`/` or `Ctrl/Cmd+K`): buildings, architects, cities and note text (Chinese notes included). `Up/Down` move, `Enter` opens, `Tab` keeps the text as a list filter.
-- **Building panel**: NAME, `built span, place`, architect, a full-width dash, the summary, the `[year TEST-ARCHED]` line (full-width brackets) for buildings asked in previous years, the three nearest buildings with distances and up to three of the same style in the same city. `Left/Right` step through the current list, `S` stars, `Esc` closes. Opening a building counts it as seen (top bar).
+- **Building card** (340 px): number and NAME, `built span, place`, architect, a full-width dash, the summary, the `[year TEST-ARCHED]` line (full-width brackets) for buildings asked in previous years. Below it, every building of the same city with the map numbers and the distance from this one (by year / nearest first / asked first); pointing at a row lights its pin. A city with one building lists the nearest buildings instead. Opening a building fits the whole city on the map; **Whole city** does the same later. While zoomed into part of the city an overview inset (top left) shows the whole city and the current view; click it to see all. `Left/Right` step through the list, `S` stars, `Esc` closes (the drawer first, if open). Opening a building counts it as seen.
 
-Other keys: `1`–`8` toggle the styles in band order, `F` fits the map to the results.
+Other keys: `1`–`8` toggle the styles in band order.
 
-Phone (up to 900 px wide): search bar and style chips on top, the period band above the tab bar (Map / Timeline / Review), the full index in the **List** sheet, the building as a bottom sheet (tap or drag the handle to expand, drag down to close), swipe a revealed review card right for "got it", left for "again".
+Phone (up to 900 px wide): search bar and style chips on top, the period band above the tab bar (Map / Timeline / Review), the filters and list in the **List** sheet, the building card as a bottom sheet (tap or drag the handle to expand, drag down to close), swipe a revealed review card right for "got it", left for "again".
 
 The view (mode, building, city, filters) is kept in the address, e.g. `#m=timeline&s=modern&e=1&r=1900~1950`, so it can be bookmarked or shared. Seen buildings, stars and review progress are kept in the browser (localStorage; the page works without it).
 

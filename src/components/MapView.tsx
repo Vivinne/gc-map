@@ -4,8 +4,9 @@ import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { basemap } from '../lib/basemap';
-import { MIN_DONUT, boundsOf, clusterAt, donutRadius, nearest, regionOf, stacks, type Cluster } from '../lib/geo';
-import { BUILDINGS, ERAS, ERA_ORDER, type Building } from '../lib/model';
+import { MIN_DONUT, boundsOf, clusterAt, donutRadius, nearest, regionOf, type Cluster } from '../lib/geo';
+import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, type Building } from '../lib/model';
+import { geoMercator } from 'd3-geo';
 import { Icon } from './Icons';
 
 export const DETAIL_ZOOM = 11.5;
@@ -23,7 +24,10 @@ export interface Padding {
 export interface MapHandle {
   fitAll(list: Building[]): void;
   fitTo(list: Building[], maxZoom?: number): void;
+  /** Open a building: the whole city comes into view (a lone building: its nearest neighbour too) */
   showBuilding(b: Building): void;
+  /** Fit every building of a city */
+  showCity(city: string): void;
   home(): void;
 }
 
@@ -31,6 +35,10 @@ interface Props {
   buildings: Building[];
   selected: Building | null;
   hoverCity: string;
+  /** Building highlighted from a list (pointer over its row) */
+  hoverId: string;
+  /** City shown in the overview inset while zoomed in (the open building's city) */
+  insetCity: string;
   padding: Padding;
   reducedMotion: boolean;
   /** Phone layout: side widgets give way to the building sheet */
@@ -74,15 +82,18 @@ function styleSpec(): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, selected, hoverCity, padding, reducedMotion, compact, onSelect, onCity, onReady } = props;
+  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady } = props;
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [layer, setLayer] = useState<HTMLElement | null>(null);
   const [frame, setFrame] = useState(0);
-  const [stackPick, setStackPick] = useState<{ lng: number; lat: number; items: Building[] } | null>(null);
   const [tip, setTip] = useState<Cluster | null>(null);
+  const [pinHover, setPinHover] = useState('');
+  const [awayOpen, setAwayOpen] = useState(false);
   const padRef = useRef(padding);
   padRef.current = padding;
+  const compactRef = useRef(!!compact);
+  compactRef.current = !!compact;
   const motion = useCallback((ms: number) => (reducedMotion ? 0 : ms), [reducedMotion]);
 
   useEffect(() => {
@@ -136,7 +147,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const b = boundsOf(list);
       if (!map || !b) return;
       const p = padRef.current;
-      const extra = 50;
+      const extra = compactRef.current ? 24 : 56;
       map.fitBounds(b, {
         padding: { top: p.top + extra, right: p.right + extra, bottom: p.bottom + extra, left: p.left + extra },
         maxZoom,
@@ -146,62 +157,66 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     [motion],
   );
 
+  const showCity = useCallback(
+    (city: string) => {
+      const items = CITY_BUILDINGS.get(city) ?? [];
+      if (items.length) fitTo(items, 15);
+    },
+    [fitTo],
+  );
+
   useImperativeHandle(
     ref,
     () => ({
       fitAll: (list) => (list.length ? fitTo(list, 6) : undefined),
       fitTo,
+      showCity,
       home: () => {
         const p = padRef.current;
         mapRef.current?.fitBounds(EUROPE, { padding: { top: p.top + 20, right: p.right + 20, bottom: p.bottom + 20, left: p.left + 20 }, duration: motion(650) });
       },
       showBuilding: (b) => {
-        const map = mapRef.current;
-        if (!map) return;
-        const p = padRef.current;
-        // Zoom so the nearest other building stays in view (context), never past street level,
-        // and never so far out that names are hidden
-        const near = nearest(b, BUILDINGS, 1)[0];
-        const c = map.getContainer();
-        const side = Math.max(200, Math.min(c.clientWidth - p.left - p.right, c.clientHeight - p.top - p.bottom));
-        let z = 15;
-        if (near) {
-          const mpp = near.d / (0.12 * side);
-          z = Math.log2((40075016.686 * Math.cos((b.lat * Math.PI) / 180)) / (512 * mpp));
+        const city = CITY_BUILDINGS.get(b.city) ?? [b];
+        if (city.length > 1) {
+          // Whole city, at least city scale so the numbered pins show
+          fitTo(city, 15);
+          return;
         }
-        z = Math.max(DETAIL_ZOOM + 0.2, Math.min(14.5, z));
-        map.easeTo({ center: [b.lng, b.lat], zoom: z, padding: p, duration: motion(600) });
+        const near = nearest(b, BUILDINGS, 1)[0];
+        fitTo(near ? [b, near.b] : [b], 14);
       },
     }),
-    [fitTo, motion],
+    [fitTo, showCity, motion],
   );
 
   const map = mapRef.current;
   const zoom = map ? map.getZoom() : 4;
-  const detail = zoom >= DETAIL_ZOOM;
+  // A city in focus (open building) switches to numbered pins earlier, so its whole extent can show as pins
+  const detail = zoom >= DETAIL_ZOOM || (!!insetCity && zoom >= 10);
   const zBucket = Math.floor(zoom * 2) / 2;
 
   const clusters = useMemo(() => (detail ? [] : clusterAt(buildings, zBucket)), [buildings, zBucket, detail]);
-  const piles = useMemo(() => (detail ? stacks(buildings) : []), [buildings, detail]);
 
   useEffect(() => {
-    setStackPick(null);
     setTip(null);
+    setAwayOpen(false);
   }, [buildings, detail]);
 
   // Buildings outside the current view, grouped by region
   const outside = useMemo(() => {
-    if (!map) return [];
+    if (!map) return { total: 0, groups: [] as [string, Building[]][] };
     const bb = map.getBounds();
     const groups = new Map<string, Building[]>();
+    let total = 0;
     for (const b of buildings) {
       if (bb.contains([b.lng, b.lat])) continue;
+      total++;
       const k = regionOf(b);
       const arr = groups.get(k);
       if (arr) arr.push(b);
       else groups.set(k, [b]);
     }
-    return [...groups.entries()].sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+    return { total, groups: [...groups.entries()].sort((a, b) => b[1].length - a[1].length) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, buildings, frame]);
 
@@ -210,6 +225,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     down.current = [e.clientX, e.clientY];
   };
   const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < 5;
+  const hot = hoverId || pinHover;
 
   let overlay: React.ReactNode = null;
   if (map && layer) {
@@ -222,9 +238,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
     const marks: React.ReactNode[] = [];
     const labels: React.ReactNode[] = [];
-    const cityLabels: { key: string; x: number; y: number; r: number; text: string; hot: boolean }[] = [];
 
     if (!detail) {
+      const cityLabels: { key: string; x: number; y: number; r: number; text: string; hot: boolean }[] = [];
       for (const c of clusters) {
         if (c.items.length < MIN_DONUT) {
           for (const b of c.items) {
@@ -241,7 +257,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const [x, y] = proj(c.lng, c.lat);
         if (!inView(x, y)) continue;
         const r = donutRadius(c.items.length);
-        const hot = hoverCity === c.name || tip === c;
+        const isHot = hoverCity === c.name || tip === c;
         marks.push(
           <g
             key={c.key}
@@ -257,14 +273,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
               else fitTo(c.items);
             }}
           >
-            {hot && <circle r={r + 6} className="donut-hot" />}
+            {isHot && <circle r={r + 6} className="donut-hot" />}
             <Donut items={c.items} r={r} />
             <text className="donut-n" y={4.3} textAnchor="middle">
               {c.items.length}
             </text>
           </g>,
         );
-        if (c.items.length >= 5 || hot) cityLabels.push({ key: c.key, x, y, r, text: clusterName(c), hot });
+        if (c.items.length >= 5 || isHot) cityLabels.push({ key: c.key, x, y, r, text: clusterName(c), hot: isHot });
       }
       // City names: right of the circle first, then left, below, above; never over another circle or name
       const occupied: Box[] = [];
@@ -292,46 +308,115 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         }
       }
     } else {
-      const placed: Box[] = [];
-      const items: { x: number; y: number; pile: { items: Building[]; lng: number; lat: number } }[] = [];
-      for (const pile of piles) {
-        const [x, y] = proj(pile.lng, pile.lat);
-        if (!inView(x, y)) continue;
-        items.push({ x, y, pile });
-        placed.push({ x1: x - 8, x2: x + 8, y1: y - 8, y2: y + 8 });
+      // Numbered pins (number = place in its city, 1 = oldest). Entries at one spot fan out in a small ring;
+      // pins closer than one pin width are pushed apart so every number stays readable.
+      type Pin = { b: Building; x: number; y: number };
+      const pins: Pin[] = [];
+      const spots = new Map<string, Pin[]>();
+      for (const b of buildings) {
+        const [x, y] = proj(b.lng, b.lat);
+        if (!inView(x, y, 60)) continue;
+        const k = `${b.lng.toFixed(4)},${b.lat.toFixed(4)}`;
+        const pin = { b, x, y };
+        pins.push(pin);
+        const arr = spots.get(k);
+        if (arr) arr.push(pin);
+        else spots.set(k, [pin]);
       }
-      // Labels: selected first, then those asked in previous years, then the rest; skipped where they would collide
-      const rank = (p: { items: Building[] }) => (selected && p.items.includes(selected) ? 0 : p.items.some((b) => b.exams.length) ? 1 : 2);
-      for (const it of [...items].sort((a, b) => rank(a.pile) - rank(b.pile))) {
-        const isSel = !!selected && it.pile.items.includes(selected);
-        const text = it.pile.items.length > 1 ? `${shortStack(it.pile.items)} (${it.pile.items.length})` : it.pile.items[0]!.name;
-        const pos = placeLabel(it.x, it.y, text, isSel, placed, W, H);
-        if (!pos) continue;
-        labels.push(<PlaceLabel key={`t-${it.pile.items[0]!.id}`} {...pos} text={text} strong={isSel} />);
+      for (const group of spots.values()) {
+        if (group.length < 2) continue;
+        group.forEach((p, i) => {
+          const a = (i / group.length) * Math.PI * 2 - Math.PI / 2;
+          p.x += Math.cos(a) * 13;
+          p.y += Math.sin(a) * 13;
+        });
       }
-      for (const it of items) {
-        const { x, y, pile } = it;
-        if (pile.items.length > 1) {
-          marks.push(
-            <g key={`s-${pile.items[0]!.id}`} className="mk pile" transform={`translate(${x},${y})`} onPointerDown={onDown} onClick={(e) => isClick(e) && setStackPick(pile)}>
-              <rect x={-10} y={-10} width={20} height={20} />
-              <text y={4.5} textAnchor="middle">
-                {pile.items.length}
-              </text>
-            </g>,
-          );
-        } else {
-          const b = pile.items[0]!;
-          if (selected && b.id === selected.id) continue;
-          marks.push(
-            <circle key={b.id} className={`mk dot${b.exams.length ? ' asked' : ''}`} cx={x} cy={y} r={6.5} fill={ERAS[b.era].color} onPointerDown={onDown} onClick={(e) => isClick(e) && onSelect(b.id)}>
-              <title>{b.name}</title>
-            </circle>,
-          );
+      const MIN = 21;
+      if (pins.length <= 120) {
+        for (let it = 0; it < 12; it++) {
+          let moved = false;
+          for (let i = 0; i < pins.length; i++) {
+            for (let j = i + 1; j < pins.length; j++) {
+              const a = pins[i]!;
+              const c = pins[j]!;
+              const dx = c.x - a.x;
+              const dy = c.y - a.y;
+              const d = Math.hypot(dx, dy) || 0.01;
+              if (d >= MIN) continue;
+              const push = (MIN - d) / 2;
+              a.x -= (dx / d) * push;
+              a.y -= (dy / d) * push;
+              c.x += (dx / d) * push;
+              c.y += (dy / d) * push;
+              moved = true;
+            }
+          }
+          if (!moved) break;
         }
       }
+      // Numbers belong to one city at a time (the open building's or the focused one; else the city with the
+      // most pins in view). Buildings of other cities stay small plain dots, so no number appears twice.
+      let focus = insetCity;
+      if (!focus) {
+        const n = new Map<string, number>();
+        for (const p of pins) n.set(p.b.city, (n.get(p.b.city) ?? 0) + 1);
+        focus = [...n.entries()].sort((a, c) => c[1] - a[1])[0]?.[0] ?? '';
+      }
+      const isFocus = (p: Pin) => p.b.city === focus;
+      const placed: Box[] = pins.map((p) => (isFocus(p) ? { x1: p.x - 11, x2: p.x + 11, y1: p.y - 11, y2: p.y + 11 } : { x1: p.x - 6, x2: p.x + 6, y1: p.y - 6, y2: p.y + 6 }));
+      // Names: the open and the pointed building always; the rest only from street scale, where they fit
+      const named = zoom >= 14.5;
+      const rank = (p: Pin) => (selected && p.b.id === selected.id ? 0 : p.b.id === hot ? 1 : p.b.exams.length ? 2 : 3);
+      for (const p of [...pins].sort((a, c) => rank(a) - rank(c))) {
+        const strong = (!!selected && p.b.id === selected.id) || p.b.id === hot;
+        if (!strong && !named) continue;
+        const pos = placeLabel(p.x, p.y, p.b.name, strong, placed, W, H, 15);
+        if (pos) labels.push(<PlaceLabel key={`t-${p.b.id}`} {...pos} text={p.b.name} strong={strong} />);
+      }
+      for (const p of pins) {
+        const isSel = !!selected && p.b.id === selected.id;
+        const isHot = p.b.id === hot;
+        if (!isFocus(p) && !isSel) {
+          marks.push(
+            <circle
+              key={p.b.id}
+              className={`mk dot other${isHot ? ' hot' : ''}`}
+              cx={p.x}
+              cy={p.y}
+              r={6}
+              fill={ERAS[p.b.era].color}
+              onPointerDown={onDown}
+              onPointerEnter={() => setPinHover(p.b.id)}
+              onPointerLeave={() => setPinHover((h) => (h === p.b.id ? '' : h))}
+              onClick={(e) => isClick(e) && onSelect(p.b.id)}
+            >
+              <title>{`${p.b.name} (${p.b.city})`}</title>
+            </circle>,
+          );
+          continue;
+        }
+        const r = isSel ? 12.5 : 10;
+        marks.push(
+          <g
+            key={p.b.id}
+            className={`mk pin${isSel ? ' sel' : ''}${isHot ? ' hot' : ''}${p.b.exams.length ? ' asked' : ''}`}
+            transform={`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`}
+            onPointerDown={onDown}
+            onPointerEnter={() => setPinHover(p.b.id)}
+            onPointerLeave={() => setPinHover((h) => (h === p.b.id ? '' : h))}
+            onClick={(e) => isClick(e) && onSelect(p.b.id)}
+          >
+            {isSel && <circle r={21} fill={ERAS[p.b.era].color} opacity={0.22} />}
+            <circle r={r} fill={ERAS[p.b.era].color} />
+            <text y={4} textAnchor="middle">
+              {CITY_NO.get(p.b.id) ?? ''}
+            </text>
+            <title>{p.b.name}</title>
+          </g>,
+        );
+      }
     }
-    if (selected) {
+    if (selected && !detail) {
       const [x, y] = proj(selected.lng, selected.lat);
       if (inView(x, y)) {
         marks.push(
@@ -360,42 +445,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       );
     }
 
-    let pickEl: React.ReactNode = null;
-    if (stackPick) {
-      const [x, y] = proj(stackPick.lng, stackPick.lat);
-      pickEl = (
-        <div
-          className="stack-pick"
-          style={{ left: Math.min(x + 16, W - 290), top: Math.max(8, Math.min(y - 10, H - 40 - stackPick.items.length * 38)) }}
-          onPointerDown={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
-        >
-          <div className="sp-h">
-            Same place, {stackPick.items.length} entries
-            <button type="button" aria-label="Close" onClick={() => setStackPick(null)}>
-              <Icon name="close" size={12} />
-            </button>
-          </div>
-          {stackPick.items.map((b) => (
-            <button
-              type="button"
-              key={b.id}
-              className="sp-row"
-              onClick={() => {
-                setStackPick(null);
-                onSelect(b.id);
-              }}
-            >
-              <i style={{ background: ERAS[b.era].color }} />
-              <span>{b.name}</span>
-              <em>{b.yearShort}</em>
-            </button>
-          ))}
-        </div>
-      );
-    }
-
     overlay = createPortal(
       <>
         <svg className="overlay" width={W} height={H}>
@@ -403,7 +452,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           {labels}
         </svg>
         {tipEl}
-        {pickEl}
       </>,
       layer,
     );
@@ -419,19 +467,73 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     scale = { label: m >= 1000 ? `${m / 1000} km` : `${m} m`, px: m / mpp };
   }
 
+  // City overview while zoomed into part of it
+  let inset: React.ReactNode = null;
+  const cityItems = insetCity ? (CITY_BUILDINGS.get(insetCity) ?? []) : [];
+  if (map && cityItems.length > 1 && !compact) {
+    const bb = map.getBounds();
+    const all = cityItems.every((b) => bb.contains([b.lng, b.lat]));
+    if (!all && detail) {
+      const iw = 200;
+      const ih = 150;
+      const pr = geoMercator().fitExtent([[12, 12], [iw - 12, ih - 12]], { type: 'MultiPoint', coordinates: cityItems.map((b) => [b.lng, b.lat]) });
+      const a = pr([bb.getWest(), bb.getNorth()]);
+      const c = pr([bb.getEast(), bb.getSouth()]);
+      inset = (
+        <button type="button" className="inset" style={{ left: padding.left + 16, top: padding.top + 16 }} onClick={() => showCity(insetCity)} aria-label={`Show all of ${insetCity}`}>
+          <span className="ih">
+            <b>{insetCity}</b>
+            <span>{cityItems.length} buildings, click for all</span>
+          </span>
+          <svg width={iw} height={ih}>
+            <defs>
+              <clipPath id="inset-clip">
+                <rect width={iw} height={ih} />
+              </clipPath>
+            </defs>
+            <g clipPath="url(#inset-clip)">
+              {cityItems.map((b) => {
+                const p = pr([b.lng, b.lat]);
+                if (!p) return null;
+                const on = selected?.id === b.id;
+                return <circle key={b.id} cx={p[0]} cy={p[1]} r={on ? 4.5 : 3} fill={ERAS[b.era].color} stroke={on ? '#000' : '#fff'} strokeWidth={on ? 1.5 : 0.8} />;
+              })}
+              {a && c && <rect x={a[0]} y={a[1]} width={Math.max(4, c[0] - a[0])} height={Math.max(4, c[1] - a[1])} fill="none" stroke="#000" strokeWidth={2.5} />}
+            </g>
+          </svg>
+        </button>
+      );
+    }
+  }
+
   return (
     <div className="map-box">
       <div ref={box} className="map-canvas" />
       {overlay}
-      {outside.length > 0 && !(compact && selected) && (
+      {inset}
+      {outside.total > 0 && !(compact && selected) && (
         <div className="away" style={{ left: padding.left + 16, bottom: padding.bottom + 52 }}>
-          {outside.map(([k, v]) => (
-            <button type="button" key={k} className="chip away-chip" onClick={() => fitTo(v, 12)}>
-              {k}
-              <span className="n">{v.length}</span>
-              <Icon name="right" size={12} />
-            </button>
-          ))}
+          {awayOpen &&
+            outside.groups.map(([k, v]) => (
+              <button
+                type="button"
+                key={k}
+                className="chip away-chip"
+                onClick={() => {
+                  setAwayOpen(false);
+                  fitTo(v, 12);
+                }}
+              >
+                {k}
+                <span className="n">{v.length}</span>
+                <Icon name="right" size={12} />
+              </button>
+            ))}
+          <button type="button" className={`chip away-chip${awayOpen ? ' on' : ''}`} aria-expanded={awayOpen} onClick={() => setAwayOpen((o) => !o)}>
+            Outside this view
+            <span className="n">{outside.total}</span>
+            <Icon name={awayOpen ? 'close' : 'right'} size={12} />
+          </button>
         </div>
       )}
       {scale && !(compact && selected) && (
@@ -460,13 +562,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
 export default MapView;
 
-/** Name for a circle: the city; several cities are "<city> area"; many cities of one country are the country */
+/** Name for a circle: the city, or "<largest city> area" when it holds several cities */
 function clusterName(c: Cluster): string {
-  if (c.cities.size === 1) return c.name;
-  const countries = new Set(c.items.map((b) => b.country));
-  const only = [...countries][0];
-  if (c.cities.size >= 4 && countries.size === 1 && only && only !== 'Others') return only;
-  return `${c.name} area`;
+  return c.cities.size === 1 ? c.name : `${c.name} area`;
 }
 
 function Donut({ items, r }: { items: Building[]; r: number }) {
@@ -525,11 +623,11 @@ function textWidth(text: string, strong: boolean): number {
   return measureCtx.measureText(text).width;
 }
 
-function placeLabel(x: number, y: number, text: string, strong: boolean, placed: Box[], W: number, H: number) {
+function placeLabel(x: number, y: number, text: string, strong: boolean, placed: Box[], W: number, H: number, gap = 12) {
   const fs = strong ? 13.5 : 12;
   const tw = textWidth(text, strong);
   const cands: [number, number, 'start' | 'end' | 'middle'][] = [
-    [12, 4, 'start'], [-12, 4, 'end'], [0, -14, 'middle'], [0, 22, 'middle'], [10, -9, 'start'], [-10, -9, 'end'], [10, 16, 'start'], [-10, 16, 'end'],
+    [gap, 4, 'start'], [-gap, 4, 'end'], [0, -gap - 2, 'middle'], [0, gap + 10, 'middle'], [gap - 2, -gap + 3, 'start'], [-gap + 2, -gap + 3, 'end'], [gap - 2, gap + 4, 'start'], [-gap + 2, gap + 4, 'end'],
   ];
   for (const [dx, dy, anchor] of cands) {
     const x1 = anchor === 'start' ? x + dx : anchor === 'end' ? x + dx - tw : x - tw / 2;
@@ -565,15 +663,3 @@ function PlaceLabel({ x, y, w, text, strong }: { x: number; y: number; w: number
   );
 }
 
-/** Label for several entries at one spot: their shared leading words, else the first name */
-function shortStack(items: Building[]): string {
-  const words = items.map((b) => b.name.split(/\s+/));
-  const out: string[] = [];
-  const first = words[0] ?? [];
-  for (let i = 0; i < first.length; i++) {
-    const w = first[i];
-    if (w && words.every((ws) => ws[i] === w)) out.push(w);
-    else break;
-  }
-  return out.length ? out.join(' ') : (items[0]?.name ?? '');
-}

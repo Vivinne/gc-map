@@ -101,3 +101,11 @@ export function citiesOf(list: Building[]): { city: string; items: Building[] }[
   }
   return [...m.entries()].map(([city, items]) => ({ city, items: items.sort(byYear) })).sort((a, b) => b.items.length - a.items.length || a.city.localeCompare(b.city));
 }
+
+/** Buildings of each city, oldest first (all buildings, so numbers do not change while filtering) */
+export const CITY_BUILDINGS: Map<string, Building[]> = new Map(citiesOf(BUILDINGS).map((c) => [c.city, c.items]));
+
+/** Map number of a building inside its city: 1 = oldest (by start year, then name; undated last) */
+export const CITY_NO: Map<string, number> = new Map(
+  [...CITY_BUILDINGS.values()].flatMap((items) => items.map((b, i) => [b.id, i + 1] as [string, number])),
+);
