@@ -445,7 +445,15 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   }
 
   // ---------- set-up ----------
-  const typeOpts: Opt[] = TYPE_ORDER.map((t, k) => ({ id: t, label: typeLabel(t), rule: k === 3 || k === 6 || t === 'mixed' }));
+  // The question type as two short choices: what is shown, and what is asked (the other three fields)
+  const [see, ask] = setup.type === 'mixed' ? ['any', ''] : setup.type.split('>');
+  const seeOpts: Opt[] = [...FIELDS.map((f) => ({ id: f, label: FIELD_LABEL[f] })), { id: 'any', label: 'Any', rule: true }];
+  const askOpts: Opt[] = see === 'any' ? [{ id: '', label: 'Any' }] : FIELDS.filter((f) => f !== see).map((f) => ({ id: f, label: FIELD_LABEL[f] }));
+  const pickSee = (v: string) => {
+    if (v === 'any') return setSetup({ type: 'mixed' });
+    const keep = ask && ask !== v ? ask : v === 'name' ? 'city' : 'name';
+    setSetup({ type: `${v}>${keep}` as PairChoice });
+  };
   const scopeOpts: Opt[] = scopes
     .filter((s) => !/^(country|year):/.test(s.id) || s.id === scope.id)
     .map((s) => ({ id: s.id, label: s.label, n: s.items.length, color: s.color, star: s.id === 'starred', rule: s.id.startsWith('era:') && s.id === `era:${ERA_ORDER[0]}` }));
@@ -459,7 +467,8 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
         </div>
         <div className="bd">
           <div className="qv-fields">
-            <Dropdown label="Question" value={setup.type} options={typeOpts} onPick={(id) => setSetup({ type: id as PairChoice })} />
+            <Dropdown label="You see" value={see!} options={seeOpts} onPick={pickSee} />
+            <Dropdown label="You answer" value={ask ?? ''} options={askOpts} onPick={(id) => id && setSetup({ type: `${see}>${id}` as PairChoice })} />
             <Dropdown label="Buildings" value={scope.id} options={scopeOpts} onPick={(id) => setSetup({ scope: id })} />
             <Dropdown label="Questions" value={String(setup.count)} options={countOpts} onPick={(id) => setSetup({ count: Number(id) })} />
           </div>

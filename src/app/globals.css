@@ -482,7 +482,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qv-main { grid-column: span 8; }
 .qv-side { grid-column: span 4; }
 .qv .bd { min-height: 0; }
-.qv-fields { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 12px; padding: 4px 0 8px; }
+.qv-fields { display: grid; grid-template-columns: 1fr 1fr 1.6fr 0.8fr; gap: 12px; padding: 4px 0 8px; }
 .qv-dd { position: relative; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .qv-l, .qv-k { font-size: 11.5px; font-weight: 700; color: var(--mute); text-transform: uppercase; letter-spacing: 0.04em; }
 .qv-box { width: 100%; height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #fff; box-shadow: inset 0 0 0 1px #cdd3da; font-weight: 650; }
@@ -543,7 +543,8 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qv .act .n { font-weight: 500; opacity: 0.7; }
 .qv.m { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 12px; }
 .qv.m .qv-main, .qv.m .qv-side { grid-column: 1 / -1; }
-.qv.m .qv-fields { grid-template-columns: 1fr; }
+.qv.m .qv-fields { grid-template-columns: 1fr 1fr; }
+.qv.m .qv-fields .qv-dd:nth-child(3) { grid-column: 1 / -1; }
 .qv.m .qv-rl, .qv.m .qv-side .bd { max-height: none; }
 
 /* ---------- toast ---------- */
