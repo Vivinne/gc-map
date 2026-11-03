@@ -595,3 +595,4 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .me.m .me-mastery .hd { min-height: 0; }
 .is-mobile .sheet .c-tools, .is-mobile .sheet .c-top, .is-mobile .sheet .cp-top { touch-action: none; }
 .qv .hd .rt { text-decoration: none; }
+.map-fail { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; font-weight: 700; color: var(--mute); background: var(--sea); }

@@ -20,6 +20,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* the street tiles come from OpenFreeMap: open the connection while the app script loads */}
+        <link rel="preconnect" href="https://tiles.openfreemap.org" crossOrigin="anonymous" />
+      </head>
       <body>{children}</body>
     </html>
   );

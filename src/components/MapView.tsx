@@ -121,6 +121,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const [tip, setTip] = useState<Cluster | null>(null);
   const [pinHover, setPinHover] = useState('');
   const [awayOpen, setAwayOpen] = useState(false);
+  // WebGL missing or blocked: the map cannot start; the rest of the app (list, quiz, me) keeps working
+  const [noMap, setNoMap] = useState(false);
   const padRef = useRef(padding);
   padRef.current = padding;
   const compactRef = useRef(!!compact);
@@ -129,18 +131,24 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
   useEffect(() => {
     if (!box.current) return;
-    const map = new maplibregl.Map({
-      container: box.current,
-      style: styleSpec(),
-      bounds: EUROPE,
-      fitBoundsOptions: { padding: 30 },
-      attributionControl: false,
-      renderWorldCopies: false,
-      maxZoom: 18,
-      minZoom: 1.2,
-      dragRotate: false,
-      pitchWithRotate: false,
-    });
+    let map: MlMap;
+    try {
+      map = new maplibregl.Map({
+        container: box.current,
+        style: styleSpec(),
+        bounds: EUROPE,
+        fitBoundsOptions: { padding: 30 },
+        attributionControl: false,
+        renderWorldCopies: false,
+        maxZoom: 18,
+        minZoom: 1.2,
+        dragRotate: false,
+        pitchWithRotate: false,
+      });
+    } catch {
+      setNoMap(true);
+      return;
+    }
     map.touchZoomRotate.disableRotation();
     map.on('error', () => {
       /* tile server unreachable: the offline layers keep working */
@@ -694,6 +702,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   return (
     <div className="map-box">
       <div ref={box} className="map-canvas" />
+      {noMap && (
+        <p className="map-fail" role="alert">
+          The map needs WebGL, which this browser has turned off. The list, Quiz and Me still work.
+        </p>
+      )}
       {overlay}
       {inset}
       {outside.total > 0 && !(compact && selected) && (
@@ -714,7 +727,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
                 <Icon name="right" size={12} />
               </button>
             ))}
-          <button type="button" className={`chip away-chip${awayOpen ? ' on' : ''}`} aria-expanded={awayOpen} aria-label="Outside this view" title="Outside this view" onClick={() => setAwayOpen((o) => !o)}>
+          <button type="button" className={`chip away-chip${awayOpen ? ' on' : ''}`} aria-expanded={awayOpen} aria-label={`+${outside.total} outside this view`} title="Outside this view" onClick={() => setAwayOpen((o) => !o)}>
             <span className="n">+{outside.total}</span>
             <Icon name={awayOpen ? 'close' : 'right'} size={12} />
           </button>
