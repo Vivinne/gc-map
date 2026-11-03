@@ -13,6 +13,7 @@ import EraBand from './EraBand';
 import { Icon } from './Icons';
 import IndexPanel from './IndexPanel';
 import MeView from './MeView';
+import QuizView, { type QuizRequest } from './QuizView';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import SearchPalette from './SearchPalette';
 
@@ -54,6 +55,7 @@ export default function App() {
       return [];
     }
   });
+  const [quizReq, setQuizReq] = useState<QuizRequest | null>(null);
   const [quiz, setQuiz] = useState<QuizStore>(() => cleanQuiz(load<unknown>('quiz', EMPTY_QUIZ), new Set(BY_ID.keys())));
   const [palette, setPalette] = useState<string | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
@@ -287,12 +289,15 @@ export default function App() {
         else if (city) closeCity();
         return;
       }
-      if (mode === 'me') {
+      if (mode === 'me' || mode === 'quiz') {
         if (e.key === 'm') setMode('map');
+        if (e.key === 'q' && mode === 'me') setMode('quiz');
+        if (e.key === 'u' && mode === 'quiz') setMode('me');
         return;
       }
       if (e.key === 'm') setMode('map');
       else if (e.key === 'u') setMode('me');
+      else if (e.key === 'q') setMode('quiz');
       else if (e.key === 'ArrowRight' && selId) step(1);
       else if (e.key === 'ArrowLeft' && selId) step(-1);
       else if (e.key === 's' && selId) toggleStar(selId);
@@ -304,8 +309,9 @@ export default function App() {
   }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
   // ---------- pieces ----------
-  const modes: [Mode, string, 'map' | 'me', string][] = [
+  const modes: [Mode, string, 'map' | 'cards' | 'me', string][] = [
     ['map', 'Map', 'map', 'M'],
+    ['quiz', 'Quiz', 'cards', 'Q'],
     ['me', 'Me', 'me', 'U'],
   ];
 
@@ -328,7 +334,7 @@ export default function App() {
   );
 
   const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who, filters.col].filter(Boolean).length;
-  const band = mode !== 'me' && (
+  const band = mode === 'map' && (
     <footer
       className={`band${mobile ? '' : ' dock'}`}
       style={!mobile ? { left: 16, right: 16 } : undefined}
@@ -368,7 +374,7 @@ export default function App() {
           </div>
         </header>
       ) : (
-        mode !== 'me' && (
+        mode === 'map' && (
           <header className="m-top">
             <button type="button" className="m-search" onClick={() => setPalette('')}>
               <Icon name="search" size={17} />
@@ -397,7 +403,7 @@ export default function App() {
 
 
       <main className="main" ref={mainRef}>
-        {!mobile && filtersOpen && mode !== 'me' && (
+        {!mobile && filtersOpen && mode === 'map' && (
           <div className="drawer">
             <div className="drawer-h">
               <b>{results.length}</b>
@@ -463,26 +469,38 @@ export default function App() {
             />
           )}
         </div>
-        {mode === 'me' && (
-          <div className="pane on">
-            <MeView
+        {mode === 'quiz' && (
+          <div className="pane on quizv">
+            <QuizView
               mobile={mobile}
               starred={starred}
               collections={collections}
               quiz={quiz}
+              request={quizReq}
               onQuiz={setQuiz}
               onOpen={(id) => {
                 setMode('map');
                 select(id);
               }}
-              onShowStarred={() => showOnMap({ ...EMPTY, starred: true })}
-              onShowCollection={(c) => showOnMap({ ...EMPTY, col: { id: c.id, name: c.name, ids: c.ids } })}
+            />
+          </div>
+        )}
+        {mode === 'me' && (
+          <div className="pane on">
+            <MeView
+              mobile={mobile}
+              seen={seen}
+              starred={starred}
+              collections={collections}
+              quiz={quiz}
+              onQuiz={(r) => {
+                setQuizReq({ ...r, nonce: Date.now() });
+                setMode('quiz');
+              }}
+              onMap={showOnMap}
               onCreate={(name) => setCollections((c) => Col.create(c, name))}
               onRename={(id, name) => setCollections((c) => Col.rename(c, id, name))}
               onDelete={(id) => setCollections((c) => Col.remove(c, id))}
-              onMove={(id, by) => setCollections((c) => Col.move(c, id, by))}
-              onToggleIn={(colId, b) => setCollections((c) => Col.toggleIn(c, colId, b))}
-              onUnstar={toggleStar}
               onExport={exportFile}
               onImport={importFile}
             />

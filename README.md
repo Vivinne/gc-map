@@ -5,12 +5,13 @@ All 204 buildings are located; every coordinate has a source (see "Data flow").
 
 ## Views
 
-The map fills the window under a 48 px top bar (filters, search, Map / Me, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
+The map fills the window under a 48 px top bar (filters, search, Map / Quiz / Me, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
 
 | View | Key | What it does |
 |---|---|---|
 | Map | `M` | Buttons at the lower right: zoom in, zoom out, **Country** (the open building's country, else the one at the centre) and **Full map** (Europe). City circles (ring segments = share of each style, number = buildings) at country scale. Click a circle: the city opens with its list (the largest city of a merged circle). From city scale, numbered pins: the number is the building's place in its city, 1 = oldest. Numbers are shown for one city at a time; other cities' buildings are plain dots. Entries at one spot fan out. Buildings of the open city that are off screen or under a panel sit on the edge of the visible area as numbered markers pointing at them. |
-| Me | `U` | **Quiz**: pick the type in a 4 x 4 grid (what is shown and what is asked among building, style, architect and city; 12 pairs, or **Mixed**; each cell shows the score for that pair), the scope (all, TEST-ARCHED, starred, a collection or a style) and the number of questions (5 / 10 / 20 / 30), then **Start**. While it runs: progress bar, **Restart** (new questions, same set-up) and **End** (stops and keeps what was answered). Four choices (`1`-`4`), `Enter` for the next; wrong choices are never also right for the prompt; buildings with no architect are not asked about architects. The result lists the missed questions (right answer and yours) with **Again**, **Missed only** and **New quiz**; **Missed** on the set-up asks every question still missed. **Results**: quizzes, questions and share correct; a chart of the share correct per quiz (last 30, hover for details), bars by type, and a table. **Collections**: Starred plus collections you name (add, rename, move up, delete with a second click); the map button shows a collection on the map as a filter. **Export / Import** moves seen, stars, collections and quiz results to another browser as a JSON file (import adds to what is there). |
+| Quiz | `Q` | Set-up: type in a 4 x 4 grid (what is shown and what is asked among building, style, architect and city; 12 pairs, or **Mixed**; each cell shows the score for that pair), scope (all, TEST-ARCHED, starred, a collection or a style) and number of questions (5 / 10 / 20 / 30), then **Start**; **Missed** asks the questions still missed. While it runs: progress bar, **Restart** (new questions, same set-up), **End** (stops and keeps what was answered); four choices (`1`-`4`), `Enter` for the next. Wrong choices are never also right for the prompt; buildings with no architect are not asked about architects. The result lists the missed questions with **Again**, **Missed only** and **New quiz**. |
+| Me | `U` | Personal centre on one 12-column grid with fixed card heights (choosing something never moves the layout). Tiles: seen, tested, mastered (of 204), share correct in the last 7 days. **Mastery**: one bar per group, split into mastered (last two answers right), learning, weak (last answer wrong) and not tested; groups by style, TEST-ARCHED (all and per year), country, collections, or type (share right per pair). Clicking a row selects it; the bar under the card then shows it with **Map** (that group as a filter) and **Quiz** (starts a quiz on it). **Practise next**: buildings whose last answer was wrong, most misses first, with the field that was missed, and **Quiz these**. **Correct per day** (last 14 days with answers), **Recent quizzes**, **Collections** (Starred and named collections: select, rename, delete with a second click, map, quiz; new collection). **Another device**: save progress to a file and load it in another browser (seen, stars, collections, quiz results; loading adds to what is there). |
 
 Any building is two clicks away: a city circle (or a period block, or a city in the filters), then a pin or a list row.
 
@@ -24,7 +25,7 @@ Data lines in English: built spans with Chinese wording are replaced for display
 
 Phone (up to 900 px wide): search and style chips on top, the period band above the tab bar, filters and cities in a sheet, the city list and the building card as bottom sheets.
 
-Reloading the page is a reset: full map, nothing selected, no filters; an old view address (`#...`) is cleared and ignored. Seen buildings, stars, collections and quiz results are kept in the browser (localStorage; the page works without it).
+Reloading the page is a reset: full map, nothing selected, no filters; an old view address (`#...`) is cleared and ignored. Seen buildings, stars, collections and quiz results (every answer, last 3000) are kept in the browser (localStorage; the page works without it).
 
 ## Run
 
@@ -79,9 +80,10 @@ Priority: `geo-manual.csv` > `geo-raw.txt` > `geo-estimate.csv`.
 | `src/lib/geo.ts` | Distances, screen-space city circles, same-spot groups, regions |
 | `src/lib/search.ts` | Grouped search |
 | `src/lib/quiz.ts` | Cross quiz: pairs, questions, scores |
+| `src/lib/mastery.ts` | Mastery per building, groups, per-day share, practise next |
 | `src/lib/collections.ts` | Collections, export / import file |
 | `src/lib/hash.ts`, `storage.ts` | View state, browser storage |
-| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, me |
+| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, quiz, me |
 
 All code, comments and UI text are English; the study notes in `content/` and the data files keep their original wording.
 

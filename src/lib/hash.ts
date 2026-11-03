@@ -2,7 +2,7 @@ import { EMPTY, type Filters } from './filter';
 import { COUNTRIES, ERA_ORDER } from './model';
 import type { EraId } from './types';
 
-export type Mode = 'map' | 'me';
+export type Mode = 'map' | 'quiz' | 'me';
 
 export interface UrlState {
   mode: Mode;
@@ -38,7 +38,7 @@ export function parseHash(hash: string): UrlState {
   const p = new URLSearchParams(hash.replace(/^#/, ''));
   const list = (k: string) => (p.get(k) ?? '').split(',').filter(Boolean);
   const m = p.get('m');
-  const mode: Mode = m === 'me' ? m : 'map';
+  const mode: Mode = m === 'me' || m === 'quiz' ? m : 'map';
   const r = (p.get('r') ?? '').match(/^(-?\d+)~(-?\d+)$/);
   const filters: Filters = {
     styles: list('s').filter((x): x is EraId => (ERA_ORDER as string[]).includes(x)),

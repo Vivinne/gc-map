@@ -1,6 +1,7 @@
 'use client';
 
 import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
+import { flushSync } from 'react-dom';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { basemap } from '../lib/basemap';
@@ -122,7 +123,22 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         setFrame((f) => f + 1);
       });
     };
-    map.on('move', bump);
+    // The overlay is redrawn in the same frame as the map: a redraw one frame later makes the marks
+    // lag behind the canvas and shake while the map is dragged (most visible on phones)
+    // (a microtask still runs before that frame is painted, and never inside a React render)
+    let queued = false;
+    map.on('move', () => {
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+      if (queued) return;
+      queued = true;
+      queueMicrotask(() => {
+        queued = false;
+        flushSync(() => setFrame((f) => f + 1));
+      });
+    });
     map.on('resize', bump);
     map.on('load', () => {
       bump();

@@ -104,16 +104,28 @@ export interface QuizStore {
   wrong: string[];
   /** Past quizzes, oldest first */
   history: Session[];
+  /** Every answer, oldest first: building, pair, right or wrong, time (ms) */
+  log: LogEntry[];
 }
 
-export const HISTORY_MAX = 200;
-export const EMPTY_QUIZ: QuizStore = { score: {}, wrong: [], history: [] };
+export interface LogEntry {
+  id: string;
+  pair: Pair;
+  ok: boolean;
+  t: number;
+}
 
-export function record(s: QuizStore, q: Question, ok: boolean): QuizStore {
+export const LOG_MAX = 3000;
+
+export const HISTORY_MAX = 200;
+export const EMPTY_QUIZ: QuizStore = { score: {}, wrong: [], history: [], log: [] };
+
+export function record(s: QuizStore, q: Question, ok: boolean, t = Date.now()): QuizStore {
   const key = `${q.id}|${q.pair}`;
   const cur = s.score[q.pair] ?? { right: 0, total: 0 };
   const wrong = ok ? s.wrong.filter((w) => w !== key) : [...s.wrong.filter((w) => w !== key), key];
-  return { ...s, score: { ...s.score, [q.pair]: { right: cur.right + (ok ? 1 : 0), total: cur.total + 1 } }, wrong };
+  const log = [...s.log, { id: q.id, pair: q.pair, ok, t }].slice(-LOG_MAX);
+  return { ...s, score: { ...s.score, [q.pair]: { right: cur.right + (ok ? 1 : 0), total: cur.total + 1 } }, wrong, log };
 }
 
 export function addSession(s: QuizStore, x: Session): QuizStore {
@@ -176,5 +188,11 @@ export function cleanQuiz(raw: unknown, ids: ReadonlySet<string>): QuizStore {
         .map((x) => ({ t: x.t, type: String(x.type ?? ''), scope: String(x.scope ?? ''), n: Number.isFinite(x.n) ? x.n : x.total, total: x.total, right: x.right }))
         .slice(-HISTORY_MAX)
     : [];
-  return { score, wrong, history };
+  const log = Array.isArray(r.log)
+    ? r.log
+        .filter((x): x is LogEntry => !!x && typeof x.id === 'string' && ids.has(x.id) && PAIRS.includes(x.pair) && typeof x.ok === 'boolean' && Number.isFinite(x.t))
+        .map((x) => ({ id: x.id, pair: x.pair, ok: x.ok, t: x.t }))
+        .slice(-LOG_MAX)
+    : [];
+  return { score, wrong, history, log };
 }

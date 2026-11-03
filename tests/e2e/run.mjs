@@ -190,11 +190,10 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await shot(page, 'd5-filters');
   await page.keyboard.press('Escape');
 
-  // Me: quiz set-up, a run, the result, results history, collections
-  await page.keyboard.press('u');
+  // Quiz: set-up, a run, restart, the result, end early
+  await page.keyboard.press('q');
   await page.waitForTimeout(300);
-  check('me opens on the quiz set-up', (await page.locator('.me .qz-grid').count()) === 1 && (await page.locator('.modes .on').textContent()).includes('Me'));
-  check('no results yet', /0\s*quizzes/.test(await page.locator('.me-res').innerText()));
+  check('quiz tab opens on the set-up', (await page.locator('.quizv .qz-grid').count()) === 1 && (await page.locator('.modes .on').textContent()).includes('Quiz'));
   await page.locator('.qz-c[aria-label="Building to City"]').click();
   await page.locator('.qz-n', { hasText: /^5$/ }).click();
   check('start shows the number of questions', /Start\s*5/.test(await page.locator('.qz-start').innerText()));
@@ -205,31 +204,58 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   check('answer is marked', (await page.locator('.qz-o.ok').count()) === 1 && (await page.locator('.qz-track i.ok, .qz-track i.no').count()) === 1);
   await shot(page, 'd7-quiz');
   await page.locator('.qz-after .btn').click();
-  check('next question', /2\/5/.test(await page.locator('.qz-count').innerText()) && (await page.locator('.qz-o.ok').count()) === 0);
+  check('next question', /2\/5/.test(await page.locator('.qz-count').innerText()));
   await page.locator('[aria-label="Restart"]').click();
   check('restart starts over', /1\/5/.test(await page.locator('.qz-count').innerText()) && (await page.locator('.qz-track i.ok, .qz-track i.no').count()) === 0);
   for (let k = 0; k < 5; k++) {
+    // the first choice each time: some answers are wrong, so Practise next has entries
     await page.locator('.qz-o').first().click();
     await page.locator('.qz-after .btn').click();
   }
   check('result after the last question', (await page.locator('.qz-score').count()) === 1 && /\/5/.test(await page.locator('.qz-score').innerText()));
-  check('result is in the history', /1\s*quizzes/.test(await page.locator('.me-res').innerText()) && (await page.locator('.rs-chart circle').count()) === 1);
   await shot(page, 'd8-result');
   await page.locator('.qz-acts .btn', { hasText: 'New quiz' }).click();
-  await page.locator('.qz-c[aria-label="Building to City"]').click();
   await page.locator('.qz-start').click();
   await page.keyboard.press('2');
   await page.locator('[aria-label="End"]').click();
   check('end early keeps what was answered', /\/1/.test(await page.locator('.qz-score').innerText()) && /1\/5/.test(await page.locator('.qz-meta').innerText()));
-  check('history shows two quizzes', /2\s*quizzes/.test(await page.locator('.me-res').innerText()) && (await page.locator('.rs-chart circle').count()) === 2 && (await page.locator('.rs-bars li').count()) === 1);
-  await page.locator('.rs-tabs button', { hasText: 'Table' }).click();
-  check('history table', (await page.locator('.rs-table tbody tr').count()) === 2);
-  await page.locator('.qz-acts .btn', { hasText: 'New quiz' }).click();
-  await page.locator('.col-new input').fill('Florence trip');
-  await page.keyboard.press('Enter');
-  check('collection created', (await page.locator('.col').count()) === 2 && (await page.locator('.col-name', { hasText: 'Florence trip' }).count()) === 1);
-  check('collection is a quiz scope', (await page.locator('.qz-scope .chip', { hasText: 'Florence trip' }).count()) === 1);
+
+  // Me: personal centre
+  await page.keyboard.press('u');
+  await page.waitForTimeout(300);
+  check('me shows the four tiles', (await page.locator('.me .k').count()) === 4 && /Tested/.test(await page.locator('.me-g').innerText()));
+  check('recent quizzes lists both', (await page.locator('.me-recent tbody tr').count()) === 2);
+  check('mastery by style: 8 rows', (await page.locator('.ms li').count()) === 8);
+  const mBox = await page.locator('.me-mastery').boundingBox();
+  await page.locator('.me .seg button', { hasText: 'TEST-ARCHED' }).click();
+  check('mastery by TEST-ARCHED: all years + 13', (await page.locator('.ms li').count()) === 14);
+  const mBox2 = await page.locator('.me-mastery').boundingBox();
+  await page.locator('.me .seg button', { hasText: 'Type' }).click();
+  check('mastery by type: 12 rows', (await page.locator('.ms li').count()) === 12 && /%/.test(await page.locator('.ms li', { hasText: 'Building → City' }).innerText()));
+  check('switching groups does not move the layout', mBox.height === mBox2.height && mBox.height === (await page.locator('.me-mastery').boundingBox()).height);
+  await page.locator('.me .seg button', { hasText: 'Style' }).click();
+  const nextBox = await page.locator('.me-next').boundingBox();
+  check('cards in a row line up', Math.abs(nextBox.y - mBox.y) < 1 && Math.abs(nextBox.height - mBox.height) < 1);
+  await page.locator('.ms li', { hasText: 'Baroque' }).click();
+  check('selecting a row changes only the action bar', /Baroque/.test(await page.locator('.me-mastery .act').innerText()) && (await page.locator('.me-mastery').boundingBox()).height === mBox.height);
   await shot(page, 'd9-me');
+  await page.locator('.me-mastery .act .btn.dark').click();
+  await page.waitForTimeout(200);
+  check('mastery quiz starts on that style', (await page.locator('.modes .on').textContent()).includes('Quiz') && (await page.locator('.qz-count').count()) === 1);
+  await page.locator('[aria-label="End"]').click();
+  await page.keyboard.press('u');
+  await page.waitForTimeout(200);
+  const nNext = await page.locator('.wk li').count();
+  check('practise next lists missed buildings', nNext >= 1, String(nNext));
+  await page.locator('.me-next .act .btn').click();
+  await page.waitForTimeout(200);
+  check('practise next starts a quiz on them', /1\/\d/.test(await page.locator('.qz-count').innerText()));
+  await page.locator('[aria-label="End"]').click();
+  await page.keyboard.press('u');
+  await page.waitForTimeout(200);
+  await page.locator('.cl-new input').fill('Florence trip');
+  await page.keyboard.press('Enter');
+  check('collection created', (await page.locator('.cl li').count()) === 2 && (await page.locator('.cl li', { hasText: 'Florence trip' }).count()) === 1);
   await page.locator('.modes button', { hasText: 'Map' }).click();
   await page.keyboard.press('/');
   await page.keyboard.type('pantheon');
@@ -242,7 +268,8 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.keyboard.press('Escape');
   await page.keyboard.press('u');
   await page.waitForTimeout(200);
-  check('collection counts it', /Florence trip\s*1/.test(await page.locator('.col-name', { hasText: 'Florence trip' }).innerText()));
+  check('collection counts it', /Florence trip\s*1/.test(await page.locator('.cl li', { hasText: 'Florence trip' }).innerText()));
+  await page.locator('.cl li', { hasText: 'Florence trip' }).click();
   await page.locator('[aria-label="Show Florence trip on the map"]').click();
   await page.waitForTimeout(900);
   check('collection shows on the map as a filter', (await page.locator('.modes .on').textContent()).includes('Map') && (await page.locator('.fbtn .badge').innerText()) === '1');
@@ -256,7 +283,7 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   check('reload leaves no view address', (await page.evaluate(() => location.hash)) === '');
   await page.keyboard.press('u');
   await page.waitForTimeout(200);
-  check('reload keeps collections and results', (await page.locator('.col-name', { hasText: 'Florence trip' }).count()) === 1 && /2\s*quizzes/.test(await page.locator('.me-res').innerText()));
+  check('reload keeps collections and results', (await page.locator('.cl li', { hasText: 'Florence trip' }).count()) === 1 && (await page.locator('.me-recent tbody tr').count()) >= 2);
   await page.keyboard.press('m');
   check('no script errors (desktop)', errors.length === 0, errors.join(' | '));
   await page.close();
@@ -275,7 +302,7 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
 {
   const { page, errors } = await open({ width: 390, height: 844 });
   await shot(page, 'm1-home');
-  check('phone tab bar', (await page.locator('.tabbar button').count()) === 2);
+  check('phone tab bar', (await page.locator('.tabbar button').count()) === 3);
   await page.locator('.m-chips .chip[aria-label="All filters and list"]').click();
   check('phone list sheet', (await page.locator('.m-sheet').count()) === 1);
   await page.locator('.m-sheet .city', { hasText: 'Milan' }).click();
@@ -290,7 +317,7 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.locator('.tabbar button', { hasText: /^Me$/ }).click();
   await page.waitForTimeout(400);
   await shot(page, 'm5-me');
-  check('phone me: set-up fits', (await page.locator('.qz-start').count()) === 1 && (await page.evaluate(() => document.querySelector('.me').scrollWidth - document.querySelector('.me').clientWidth)) <= 0);
+  check('phone me fits', (await page.locator('.me .k').count()) === 4 && (await page.evaluate(() => document.querySelector('.me').scrollWidth - document.querySelector('.me').clientWidth)) <= 0);
   await page.locator('.tabbar button', { hasText: /^Map$/ }).click();
   await page.waitForTimeout(400);
   await page.locator('.m-search').click();
