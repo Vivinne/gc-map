@@ -710,7 +710,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       {overlay}
       {inset}
       {outside.total > 0 && !(compact && selected) && (
-        <div className="away" style={compact ? { left: 16, bottom: padding.bottom + 30 } : { left: 16, bottom: 60 + 30 }}>
+        <div className="away" style={compact ? { left: 16, bottom: padding.bottom + 44 } : { left: 16, bottom: 60 + 30 }}>
           {awayOpen &&
             outside.groups.map(([k, v]) => (
               <button
@@ -734,12 +734,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         </div>
       )}
       {scale && !(compact && selected) && (
-        <div className="scale" style={compact ? { left: 16, bottom: padding.bottom + 8 } : { left: 16, bottom: 60 }}>
+        <div className="scale" style={compact ? { left: 16, bottom: padding.bottom + 22 } : { left: 16, bottom: 60 }}>
           {scale.label}
           <i style={{ width: scale.px }} />
         </div>
       )}
-      <div className="ctrls" style={compact ? { right: 12, top: padding.top + 4 } : { right: 16, bottom: 60 }}>
+      <div className="ctrls" style={compact ? { right: padding.right > 56 ? padding.right + 4 : 12, top: padding.top + 4 } : { right: 16, bottom: 60 }}>
         {!compact && (
           <>
             <button type="button" aria-label="Zoom in" onClick={() => { btnZoom.current = true; map?.zoomIn({ duration: motion(250) }); }}>

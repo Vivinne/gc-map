@@ -17,6 +17,13 @@ interface Props {
   onKeep(q: string): void;
 }
 
+// Last kind of input on the page, to tell keyboard use from pointer use
+let lastInput: 'key' | 'pointer' = 'pointer';
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', () => (lastInput = 'key'), true);
+  window.addEventListener('pointerdown', () => (lastInput = 'pointer'), true);
+}
+
 export default function SearchPalette({ initial, mobile, onClose, onOpen, onArchitect, onCity, onKeep }: Props) {
   const [q, setQ] = useState(initial);
   const [cur, setCur] = useState(0);
@@ -25,11 +32,13 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
   // Keyboard users: when the palette closes, focus goes back to the search button instead of being lost on the page
   useEffect(() => {
     const opener = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
+    // only when the palette was opened from the keyboard ("/" or Enter on the button): after a click or a tap
+    // no focus ring is left on the search bar
+    const byKey = lastInput === 'key';
     return () => {
       window.requestAnimationFrame(() => {
+        if (!byKey) return;
         if (document.activeElement && document.activeElement !== document.body) return;
-        // touch screens: no focus ring left on the search bar after a tap
-        if (window.matchMedia('(pointer: coarse)').matches) return;
         const back = opener?.isConnected ? opener : document.querySelector<HTMLElement>('.search, .m-search');
         back?.focus({ preventScroll: true });
       });
