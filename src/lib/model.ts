@@ -127,6 +127,7 @@ export function ascii(s: string): string {
 
 /** English style name: the part in brackets of the handout heading ("Ancient Rome"), without its note */
 export function styleName(b: Place): string {
+  if (b.styleShown) return b.styleShown;
   const m = b.style.match(/\uff08([^\uff09]+)\uff09/);
   const en = (m ? m[1]! : b.style).split(/[\uff1a:]/)[0]!.trim();
   return en;

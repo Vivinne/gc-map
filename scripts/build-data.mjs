@@ -344,6 +344,19 @@ function main() {
       p.nationBox = round(box);
     }
   }
+  // One style for buildings filed under a combined heading (data/style-split.txt, reviewed by the user)
+  for (const l of dataLines('data/style-split.txt')) {
+    const [n, st, era] = l.split('|').map((x) => x.trim());
+    const p = places.find((x) => x.name === n);
+    if (!p) { errors.push(`style-split.txt: no building named "${n}"`); continue; }
+    p.styleShown = st;
+    if (era) {
+      if (!ERAS.some((e) => e.id === era)) errors.push(`style-split.txt: bad era id ${era}`);
+      p.eras = [...new Set([era, ...p.eras.filter((e) => e !== p.era)])];
+      p.era = era;
+    }
+  }
+  for (const p of places) p.styleShown ??= '';
   const unlocated = [];
   for (const p of places) {
     const m = misses.filter((x) => x.name === p.name && !p.points.some((pt) => pt.sub === x.sub));

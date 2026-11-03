@@ -1,0 +1,69 @@
+# display name | style shown (one style from a combined handout heading) | era id when it moves to another era group
+# Draft reviewed by the user 2026-11-03 (Palladio and the St. Peter's dome: Renaissance; Rietveld's late works: Modernism; Louvre Museum: Modernism).
+# Only the display changes; the handout keeps its headings.
+Louvre Museum | Modernism | modern
+Basilica di San Lorenzo | Renaissance
+Ospedale degli Innocenti (Foundling Hospital) | Renaissance
+Santa Maria del Fiore Dome | Renaissance
+Pazzi Chapel (Santa Croce) | Renaissance
+Palazzo Medici Riccardi | Renaissance
+Palazzo Rucellai | Renaissance
+Sforza Castle | Renaissance
+Tempio Malatestiano | Renaissance
+Ca' Granda | Renaissance
+Santa Maria Novella (Facade) | Renaissance
+Pienza Cathedral | Renaissance
+Camera degli Sposi | Renaissance
+Sant'Andrea | Renaissance
+Santa Maria presso San Satiro | Renaissance
+Church of San Bernardino | Renaissance
+Palazzo Gondi | Renaissance
+Santa Maria delle Grazie | Renaissance
+Tempietto | Renaissance
+San Maurizio al Monastero Maggiore | Renaissance
+Cortile del Belvedere | Renaissance
+St. Peter's Basilica | Renaissance
+Laurentian Library | Mannerism
+Palazzo Te | Mannerism
+Fontainebleau | Mannerism
+Piazza del Campidoglio | Mannerism
+St. Peter's Basilica Dome | Renaissance
+Basilica Palladiana | Renaissance
+Palladio's Villas | Renaissance
+Palazzo Marino | Mannerism
+Villa Farnese | Mannerism
+Uffizi | Mannerism
+Vasari Corridor | Mannerism
+Villa Capra (La Rotonda) | Renaissance
+Il Redentore | Renaissance
+Quirinal Palace | Mannerism
+AEG Turbine Factory | Modernism
+Robie House | Modernism
+Fagus Factory | Modernism
+Sommerfeld House | Bauhaus
+Millard House | Modernism
+Pavillon de l'Esprit Nouveau | Modernism
+Schröder House | De Stijl
+Bauhaus Dessau Building | Bauhaus
+Weissenhof Estate | Modernism
+Weissenhof Double House | Modernism
+Barcelona Pavilion | Modernism
+Chrysler Building | Art Deco
+Villa Savoye | Modernism
+Müller House | Modernism
+Paimio Sanatorium | Modernism
+Empire State Building | Art Deco
+Viipuri Library | Modernism
+Fallingwater | Modernism
+Villa Mairea | Modernism
+Kaufmann Desert House | Modernism
+MIT Baker House | Modernism
+Glass House | Modernism
+Unité d'Habitation | Modernism
+Notre-Dame-du-Haut (Ronchamp) | Modernism
+Dutch Pavilion | Modernism
+Seagram Building | Modernism
+Guggenheim Museum New York | Modernism
+Sainte Marie de La Tourette | Modernism
+Neue Nationalgalerie | Modernism
+Van Gogh Museum | Modernism

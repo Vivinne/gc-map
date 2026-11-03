@@ -44,6 +44,8 @@ export interface Place {
   /** Past-exam years in which this building was a topic (data/exams.txt) */
   exams: number[];
   style: string;
+  /** One style for a building filed under a combined heading (data/style-split.txt); empty = the heading */
+  styleShown: string;
   styleId: string;
   era: EraId;
   /** Every style tag the building counts under: its own era plus any extras (data/extra-styles.txt) */
