@@ -652,12 +652,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         </div>
       )}
       <div className="ctrls" style={compact ? { right: 12, top: padding.top + 4 } : { right: 16, bottom: 60 }}>
-        <button type="button" aria-label="Zoom in" onClick={() => map?.zoomIn({ duration: motion(250) })}>
-          <Icon name="plus" />
-        </button>
-        <button type="button" aria-label="Zoom out" onClick={() => map?.zoomOut({ duration: motion(250) })}>
-          <Icon name="minus" />
-        </button>
+        {!compact && (
+          <>
+            <button type="button" aria-label="Zoom in" onClick={() => map?.zoomIn({ duration: motion(250) })}>
+              <Icon name="plus" />
+            </button>
+            <button type="button" aria-label="Zoom out" onClick={() => map?.zoomOut({ duration: motion(250) })}>
+              <Icon name="minus" />
+            </button>
+          </>
+        )}
         <button type="button" aria-label="Country" title="Country" disabled={!countryOf} onClick={() => countryOf && fitTo(countryOf, 9)}>
           <Icon name="flag" />
         </button>
@@ -665,7 +669,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           <Icon name="globe" />
         </button>
       </div>
-      <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: 16, bottom: compact ? 2 : 2 }}>
+      <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: compact ? 12 : 16, bottom: compact ? 42 : 2 }}>
         Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors
       </div>
     </div>

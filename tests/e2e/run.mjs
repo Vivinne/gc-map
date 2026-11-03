@@ -303,7 +303,7 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   const { page, errors } = await open({ width: 390, height: 844 });
   await shot(page, 'm1-home');
   check('phone tab bar', (await page.locator('.tabbar button').count()) === 3);
-  await page.locator('.m-chips .chip[aria-label="All filters and list"]').click();
+  await page.locator('.m-fbtn').click();
   check('phone list sheet', (await page.locator('.m-sheet').count()) === 1);
   await page.locator('.m-sheet .city', { hasText: 'Milan' }).click();
   await page.waitForTimeout(1200);

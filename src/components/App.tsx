@@ -144,7 +144,7 @@ export default function App() {
 
   // ---------- map padding (panels that cover the map) ----------
   const padding: Padding = mobile
-    ? { top: 8, right: 56, bottom: panelOpen ? Math.round(mainHeight * 0.46) : 0, left: 0 }
+    ? { top: 8, right: 56, bottom: panelOpen ? Math.round(mainHeight * 0.44) : 44, left: 0 }
     : { top: 0, right: panelOpen ? 372 : 0, bottom: 60, left: filtersOpen ? 352 : 0 };
 
   // ---------- actions ----------
@@ -334,11 +334,9 @@ export default function App() {
   );
 
   const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who, filters.col].filter(Boolean).length;
-  const band = mode === 'map' && (
-    <footer
-      className={`band${mobile ? '' : ' dock'}`}
-      style={!mobile ? { left: 16, right: 16 } : undefined}
-    >
+  // Phone: the band floats over the bottom of the map and steps aside while a sheet is open
+  const band = mode === 'map' && !(mobile && panelOpen) && (
+    <footer className={`band dock${mobile ? ' m' : ''}`} style={!mobile ? { left: 16, right: 16 } : undefined}>
       <EraBand base={bandBase} styles={filters.styles} onToggleStyle={toggleStyle} />
     </footer>
   );
@@ -383,20 +381,10 @@ export default function App() {
                 {seen.size}/{TOTAL}
               </span>
             </button>
-            <div className="m-chips">
-              <button type="button" className={`chip${filters.exam ? ' on' : ''}`} onClick={() => setFiltersRaw({ ...filters, exam: !filters.exam, examYears: [] })}>
-                TEST-ARCHED <span className="n">{counts.exam}</span>
-              </button>
-              {ERA_ORDER.map((e) => (
-                <button type="button" key={e} className={`chip${filters.styles.includes(e) ? ' on' : ''}`} onClick={() => toggleStyle(e)}>
-                  <i className="sw" style={{ background: ERAS[e].color }} />
-                  {ERAS[e].label}
-                </button>
-              ))}
-              <button type="button" className={`chip${!isEmpty(filters) ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label="All filters and list">
-                <Icon name="filter" size={15} />
-              </button>
-            </div>
+            <button type="button" className={`m-fbtn${activeFilters ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label="All filters and list">
+              <Icon name="filter" size={17} />
+              {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
+            </button>
           </header>
         )
       )}
@@ -414,7 +402,7 @@ export default function App() {
             {index}
           </div>
         )}
-        {!mobile && band}
+        {band}
         <div className={`pane map-pane${mode === 'map' ? ' on' : ''}`} aria-hidden={mode !== 'map'}>
           <MapView
             ref={mapRef}
@@ -508,7 +496,6 @@ export default function App() {
         )}
       </main>
 
-      {mobile && band}
 
       {mobile && (
         <nav className="tabbar" aria-label="Views">

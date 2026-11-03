@@ -23,7 +23,7 @@ Any building is two clicks away: a city circle (or a period block, or a city in 
 
 Data lines in English: built spans with Chinese wording are replaced for display by `data/years-display.txt`; styles show the English part of the handout heading; architects keep full names, rulers their short names (`data/architects.txt`).
 
-Phone (up to 900 px wide): search and style chips on top, the period band above the tab bar, filters and cities in a sheet, the city list and the building card as bottom sheets.
+Phone (up to 900 px wide): one row on top (search, filters button), the period band floating over the bottom of the map (hidden while a sheet is open), no zoom buttons (pinch), the tab bar, filters and cities in a sheet, the city list and the building card as bottom sheets.
 
 Reloading the page is a reset: full map, nothing selected, no filters; an old view address (`#...`) is cleared and ignored. Seen buildings, stars, collections and quiz results (every answer, last 3000) are kept in the browser (localStorage; the page works without it).
 
