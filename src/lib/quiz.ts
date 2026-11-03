@@ -28,10 +28,23 @@ export const FIELD_LABEL: Record<Field, string> = { name: 'Building', style: 'St
 export type Pair = `${Field}>${Field}`;
 export const PAIRS: Pair[] = FIELDS.flatMap((a) => FIELDS.filter((b) => b !== a).map((b) => `${a}>${b}` as Pair));
 
+/** A style heading as a list with slashes: "Renaissance and Mannerism" -> "Renaissance / Mannerism",
+ *  "Arts and Crafts, Art Nouveau and Secession" -> "Arts and Crafts / Art Nouveau / Secession" (a name
+ *  before a comma keeps its own "and") */
+export function slashed(style: string): string {
+  const parts = style.split(/,\s*/);
+  const last = parts.pop()!;
+  return [...parts, ...last.split(/\s+and\s+/)].join(' / ').replace(/\s+and\s+/g, ' & ');
+}
+
 export function valueOf(b: Building, f: Field): string {
-  if (f === 'name') return b.name;
-  if (f === 'style') return styleName(b);
-  if (f === 'architect') return ascii(whoOf(b));
+  if (f === 'name') return b.name.replace(/\s+and\s+/g, ' & ');
+  if (f === 'style') return slashed(styleName(b));
+  if (f === 'architect') {
+    const w = ascii(whoOf(b));
+    // a list of people ("A, B and C") becomes "A / B / C"; a firm name ("Shreve, Lamb & Harmon") stays
+    return /\sand\s/.test(w) ? slashed(w) : w;
+  }
   return b.city;
 }
 
