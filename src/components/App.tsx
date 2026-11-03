@@ -18,6 +18,9 @@ import MapView, { type MapHandle, type Padding } from './MapView';
 import SearchPalette from './SearchPalette';
 
 const MOBILE_QUERY = '(max-width: 900px)';
+const LANDSCAPE_QUERY = '(max-width: 900px) and (orientation: landscape) and (max-height: 500px)';
+/** Width of the side card on a sideways phone (kept in step with globals.css) */
+const SIDE_CARD = 0.46;
 const TOTAL = BUILDINGS.length;
 
 interface Toast {
@@ -69,6 +72,8 @@ export default function App() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [hoverId, setHoverId] = useState('');
   const mobile = useMedia(MOBILE_QUERY);
+  // A phone held sideways: the card sits at the right of the map instead of over its bottom
+  const wide = useMedia(LANDSCAPE_QUERY);
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)');
   const mapRef = useRef<MapHandle>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -148,7 +153,9 @@ export default function App() {
 
   // ---------- map padding (panels that cover the map) ----------
   const padding: Padding = mobile
-    ? { top: 8, right: 56, bottom: panelOpen ? Math.round(mainHeight * 0.44) : 44, left: 0 }
+    ? wide
+      ? { top: 8, right: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 56, bottom: 44, left: 0 }
+      : { top: 8, right: 56, bottom: panelOpen ? Math.round(mainHeight * 0.44) : 44, left: 0 }
     : { top: 0, right: panelOpen ? 372 : 0, bottom: 60, left: filtersOpen ? 352 : 0 };
 
   // ---------- actions ----------

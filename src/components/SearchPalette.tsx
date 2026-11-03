@@ -28,6 +28,8 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
     return () => {
       window.requestAnimationFrame(() => {
         if (document.activeElement && document.activeElement !== document.body) return;
+        // touch screens: no focus ring left on the search bar after a tap
+        if (window.matchMedia('(pointer: coarse)').matches) return;
         const back = opener?.isConnected ? opener : document.querySelector<HTMLElement>('.search, .m-search');
         back?.focus({ preventScroll: true });
       });

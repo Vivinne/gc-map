@@ -576,6 +576,13 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile .c-tools { padding-top: 12px; height: 52px; }
 .is-mobile .c-top h1 { font-size: 19px; }
 .is-mobile .side.sheet:not(.full) .c-body { max-height: 24vh; }
+/* phone held sideways (short and wide): the card is a panel at the right of the map, its text scrolls */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .is-mobile .side.sheet, .is-mobile .side.citypanel.sheet, .is-mobile .side.sheet.full { top: 0; bottom: 0; left: auto; right: 0; width: 46%; height: 100%; max-height: none; box-shadow: -1px 0 0 var(--rule); }
+  .is-mobile .side.sheet:not(.full) .c-body { max-height: none; flex: 1 1 auto; }
+  .is-mobile .side.sheet .grab { display: none; }
+  .is-mobile .c-tools { padding-top: 0; height: 40px; }
+}
 .citypanel .grab i, .card .grab i { background: #c9cfd6; }
 .is-mobile .scrim { padding: 0; }
 .is-mobile .pal { width: 100vw; height: 100vh; height: 100dvh; max-height: none; }
@@ -596,3 +603,4 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile .sheet .c-tools, .is-mobile .sheet .c-top, .is-mobile .sheet .cp-top { touch-action: none; }
 .qv .hd .rt { text-decoration: none; }
 .map-fail { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; font-weight: 700; color: var(--mute); background: var(--sea); }
+.crash { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; font-weight: 700; }

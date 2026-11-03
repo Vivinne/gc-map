@@ -17,6 +17,8 @@ export interface Block {
 
 export const GAP = 2;
 const MIN_SHARE = 0.035;
+/** Smallest block width in px (WCAG 2.5.8 target size) */
+const MIN_PX = 24;
 
 /**
  * Year span of every block (fixed, so the band does not jump while filtering). Styles overlap in time and
@@ -51,9 +53,24 @@ export function blocks(width: number, list: Building[]): Block[] {
   const weights = counts.map((c) => Math.max(c / total, MIN_SHARE));
   const wsum = weights.reduce((a, b) => a + b, 0);
   const usable = width - GAP * (ERA_ORDER.length - 1);
+  // Every block is at least MIN_PX wide (a finger-sized target on narrow phones); the rest is shared by weight
+  const ws = weights.map((w) => (usable * w) / wsum);
+  const minPx = Math.min(MIN_PX, usable / ERA_ORDER.length);
+  for (let pass = 0; pass < ERA_ORDER.length; pass++) {
+    const fixed = ws.map((w) => w <= minPx + 1e-6);
+    const free = usable - fixed.filter(Boolean).length * minPx;
+    const fw = weights.reduce((a, w, i) => a + (fixed[i] ? 0 : w), 0);
+    let changed = false;
+    ws.forEach((_, i) => {
+      const w = fixed[i] ? minPx : fw > 0 ? (free * (weights[i] ?? 0)) / fw : minPx;
+      if (Math.abs(w - (ws[i] ?? 0)) > 1e-6) changed = true;
+      ws[i] = Math.max(minPx, w);
+    });
+    if (!changed) break;
+  }
   let x = 0;
   return ERA_ORDER.map((id, i) => {
-    const w = (usable * (weights[i] ?? 0)) / wsum;
+    const w = ws[i] ?? 0;
     const b = { id, x, w, count: counts[i] ?? 0, min: SPANS[id][0], max: SPANS[id][1] };
     x += w + GAP;
     return b;

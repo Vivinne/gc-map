@@ -100,5 +100,5 @@ npm run site && npm run e2e   # Chromium flows on site/index.html (desktop and p
 ## Not verified
 
 - Street tiles from OpenFreeMap: the authoring environment cannot reach the tile server, so all checks ran on the offline basemap only.
-- Publishing to GitHub Pages under `/gc-map/atlas/` has not been done.
+- Published on GitHub Pages at https://vivinne.github.io/gc-map/atlas/ (build with `BASE_PATH=/gc-map/atlas npm run build`, then replace `atlas/` on the gh-pages branch with `out/`).
 - Coordinates other than the five checked on Google Maps by the project owner are "to be verified".
