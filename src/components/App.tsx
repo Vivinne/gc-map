@@ -269,7 +269,25 @@ export default function App() {
       setToast({ id: Date.now(), text: 'Not a GC Atlas file' });
     }
   }, []);
+  // A category tag (style block, filter chip) was chosen: once the list follows, the map frames what it
+  // now shows, so the user sees where that category is; an open card or city closes
+  const fitNext = useRef(false);
+  const pickCategory = useCallback((next: Filters | ((f: Filters) => Filters)) => {
+    fitNext.current = true;
+    setSelId('');
+    setCity('');
+    setFiltersRaw(next);
+  }, []);
+  useEffect(() => {
+    if (!fitNext.current) return;
+    fitNext.current = false;
+    if (mode === 'map' && results.length && !isEmpty(dFilters)) mapRef.current?.fitAll(results);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results]);
   const toggleStyle = useCallback((id: EraId) => {
+    fitNext.current = true;
+    setSelId('');
+    setCity('');
     setFiltersRaw((f) => ({ ...f, styles: f.styles.includes(id) ? f.styles.filter((x) => x !== id) : [...f.styles, id] }));
   }, []);
   const clearAll = useCallback(() => {
@@ -329,7 +347,7 @@ export default function App() {
       results={results}
       collections={collections}
       selectedId={selId}
-      onFilters={(f) => setFiltersRaw(f)}
+      onFilters={pickCategory}
       onClear={clearAll}
       onCity={focusCity}
       onSelect={(id) => {
