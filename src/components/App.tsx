@@ -417,6 +417,17 @@ export default function App() {
             onSelect={(id) => select(id, { fly: false })}
             onCity={focusCity}
             onReady={() => setMapReady(true)}
+            onHome={() => {
+              // The full map is the map at its plainest: nothing selected, no filters, no panels
+              setSelId('');
+              setCity('');
+              setFiltersRaw(EMPTY);
+              setFiltersOpen(false);
+              setSheet(false);
+              setHoverId('');
+              setHoverCity('');
+              window.requestAnimationFrame(() => mapRef.current?.home());
+            }}
           />
           {mode === 'map' && selected && (
             <BuildingCard

@@ -201,3 +201,11 @@ test('filter: a collection narrows the list', () => {
   const ids = [BUILDINGS[0]!.id, BUILDINGS[5]!.id];
   assert.equal(apply({ ...EMPTY, col: { id: 'c', name: 'C', ids } }, new Set()).length, 2);
 });
+
+test('every building knows its nation; Country frames one nation, never a whole continent', async () => {
+  const { regionOf } = await import('../src/lib/geo');
+  assert.ok(BUILDINGS.every((b) => b.nation));
+  const spain = BUILDINGS.filter((b) => b.nation === 'Spain');
+  assert.ok(spain.length >= 10 && spain.every((b) => regionOf(b) === 'Spain'));
+  assert.ok(!BUILDINGS.some((b) => regionOf(b) === 'Elsewhere in Europe'));
+});

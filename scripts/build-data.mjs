@@ -4,6 +4,9 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { geoArea, geoContains, geoDistance } from 'd3-geo';
+import { feature } from 'topojson-client';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const P = (...a) => resolve(ROOT, ...a);
@@ -295,6 +298,33 @@ function main() {
     style: r.style.name, styleId: r.style.id, era: r.era, eras: r.eras,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
   }));
+  // Nation of each building from its first coordinate (Natural Earth 1:10m country polygons), so the
+  // map's Country button can frame the real country of a building filed under "Others" (e.g. Spain)
+  {
+    const req = createRequire(import.meta.url);
+    const topo = JSON.parse(readFileSync(req.resolve('world-atlas/countries-10m.json'), 'utf8'));
+    // A ring wound the wrong way covers the rest of the globe (area above a hemisphere): leave those out of the test
+    const nations = feature(topo, topo.objects.countries).features;
+    const sane = nations.filter((n) => geoArea(n) < 2 * Math.PI);
+    for (const p of places) {
+      const pt = p.points[0];
+      if (!pt) { p.nation = ''; continue; }
+      const at = [pt.lng, pt.lat];
+      let f = sane.find((n) => geoContains(n, at));
+      if (!f) {
+        // On an island or coast missing from the outline: the country with the closest outline point
+        let best = Infinity;
+        for (const n of nations) {
+          const polys = n.geometry?.type === 'Polygon' ? [n.geometry.coordinates] : n.geometry?.coordinates ?? [];
+          for (const poly of polys) for (const ring of poly) for (const c of ring) {
+            const d = geoDistance(at, c);
+            if (d < best) { best = d; f = n; }
+          }
+        }
+      }
+      p.nation = f?.properties?.name ?? '';
+    }
+  }
   const unlocated = [];
   for (const p of places) {
     const m = misses.filter((x) => x.name === p.name && !p.points.some((pt) => pt.sub === x.sub));

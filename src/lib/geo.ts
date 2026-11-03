@@ -136,6 +136,7 @@ export function stacks(list: Building[]): { lng: number; lat: number; items: Bui
 /** Region name for buildings outside the view: the country tag, with "Others" split by area */
 export function regionOf(b: Building): string {
   if (b.country !== 'Others') return b.country;
+  if (b.nation) return b.nation;
   if (b.lng < -25) return 'Americas';
   if (b.lng > 35 || b.lat < 30) return 'Asia and Middle East';
   return 'Elsewhere in Europe';

@@ -47,6 +47,8 @@ interface Props {
   onSelect(id: string): void;
   onCity(city: string): void;
   onReady?(): void;
+  /** Full map button: the parent clears selection and filters, then the map shows Europe */
+  onHome?(): void;
 }
 
 function styleSpec(): StyleSpecification {
@@ -83,7 +85,7 @@ function styleSpec(): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady } = props;
+  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady, onHome } = props;
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [layer, setLayer] = useState<HTMLElement | null>(null);
@@ -665,7 +667,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         <button type="button" aria-label="Country" title="Country" disabled={!countryOf} onClick={() => countryOf && fitTo(countryOf, 9)}>
           <Icon name="flag" />
         </button>
-        <button type="button" aria-label="Full map" title="Full map" onClick={() => homeView()}>
+        <button type="button" aria-label="Full map" title="Full map" onClick={() => (onHome ? onHome() : homeView())}>
           <Icon name="globe" />
         </button>
       </div>

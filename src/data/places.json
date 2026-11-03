@@ -133,7 +133,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Tal_der_Tempel",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "parthenon-athens",
@@ -164,7 +165,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Parthenon",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Greece"
   },
   {
    "id": "erechtheion-athens",
@@ -195,7 +197,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Acropolis_of_Athens",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Greece"
   },
   {
    "id": "cloaca-maxima-rome",
@@ -226,7 +229,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Cloaca_Maxima",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "aqua-appia-rome",
@@ -257,7 +261,8 @@
      "sourceUrl": "https://aroundus.com/p/8123240-aqua-appia",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "domus-aurea-rome",
@@ -292,7 +297,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Domus_Aurea",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "colosseum-rome",
@@ -323,7 +329,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Colosseum",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "pantheon-rome",
@@ -354,7 +361,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Pantheon,_Rome",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "basilica-of-maxentius-and-constantine-rome",
@@ -385,7 +393,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Maxentius",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "arch-of-constantine-rome",
@@ -416,7 +425,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Arch_of_Constantine",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "roman-forum-and-imperial-fora-rome",
@@ -447,7 +457,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Roman_Forum",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "colonne-di-san-lorenzo-milan",
@@ -478,7 +489,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Colonne_di_San_Lorenzo",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "mediolanum-imperial-palace-district-circo-thermae-herculeae-milan",
@@ -509,7 +521,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Milan",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "hagia-sophia-istanbul",
@@ -542,7 +555,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Hagia_Sophia",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Turkey"
   },
   {
    "id": "basilica-di-san-marco-venice",
@@ -573,7 +587,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_San_Marco",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "basilica-di-sant-ambrogio-milan",
@@ -604,7 +619,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Sant'Ambrogio",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "mont-saint-michel-abbey-mont-saint-michel",
@@ -635,7 +651,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Mont-Saint-Michel",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "parma-baptistery-parma",
@@ -666,7 +683,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Parma_Baptistery",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "pisa-cathedral-and-leaning-tower-pisa",
@@ -709,7 +727,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Leaning_Tower_of_Pisa",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "san-miniato-al-monte-florence",
@@ -740,7 +759,8 @@
      "sourceUrl": "https://it.wikipedia.org/wiki/Basilica_di_San_Miniato_al_Monte",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "basilica-of-saint-denis-saint-denis",
@@ -771,7 +791,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Basilika_Saint-Denis",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "notre-dame-de-mantes-la-jolie-mantes",
@@ -802,7 +823,8 @@
      "sourceUrl": "https://travel.sygic.com/en/poi/notre-dame-de-mantes-poi:4841495",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "notre-dame-de-paris-paris",
@@ -833,7 +855,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Notre-Dame_de_Paris",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "chartres-cathedral-chartres",
@@ -864,7 +887,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Chartres_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "bourges-cathedral-bourges",
@@ -895,7 +919,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Bourges_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "reims-cathedral-reims",
@@ -926,7 +951,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Reims_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "amiens-cathedral-amiens",
@@ -957,7 +983,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Amiens_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "salisbury-cathedral-salisbury",
@@ -988,7 +1015,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Salisbury_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "strasbourg-cathedral-strasbourg",
@@ -1019,7 +1047,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Strasbourg_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "castel-del-monte-puglia",
@@ -1050,7 +1079,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Castel_del_Monte,_Apulia",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "sainte-chapelle-paris",
@@ -1081,7 +1111,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sainte-Chapelle",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "cologne-cathedral-cologne",
@@ -1112,7 +1143,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Cologne_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "cathedrale-sainte-croix-d-orleans-orleans",
@@ -1143,7 +1175,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Orl%C3%A9ans_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "duomo-di-milano-milan",
@@ -1174,7 +1207,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Milan_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "seville-cathedral-seville",
@@ -1205,7 +1239,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Seville_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "santa-maria-del-fiore-main-body-florence",
@@ -1236,7 +1271,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Florence_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "siena-cathedral-siena",
@@ -1269,7 +1305,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Siena_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "basilica-di-san-francesco-d-assisi-assisi",
@@ -1302,7 +1339,8 @@
      "sourceUrl": "https://latitude.to/articles-by-country/it/italy/6702/basilica-of-san-francesco-dassisi",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "bargello-museum-florence",
@@ -1335,7 +1373,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Bargello",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-croce-florence",
@@ -1370,7 +1409,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-croce-pazzi-chapel-florence",
@@ -1402,7 +1442,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "scrovegni-chapel-padua",
@@ -1435,7 +1476,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Scrovegni_Chapel",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "ospedale-degli-innocenti-foundling-hospital-florence",
@@ -1466,7 +1508,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Ospedale_degli_Innocenti",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-maria-del-fiore-dome-florence",
@@ -1497,7 +1540,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Florence_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "pazzi-chapel-santa-croce-florence",
@@ -1528,7 +1572,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-medici-riccardi-florence",
@@ -1559,7 +1604,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Medici_Riccardi",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "tempio-malatestiano-rimini",
@@ -1592,7 +1638,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Tempio_Malatestiano",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "ca-granda-milan",
@@ -1623,7 +1670,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Ospedale_Maggiore_(Mailand)",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-rucellai-florence",
@@ -1654,7 +1702,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Rucellai",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-maria-novella-facade-florence",
@@ -1687,7 +1736,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_Novella",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "sant-andrea-mantua",
@@ -1718,7 +1768,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Sant'Andrea,_Mantua",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "camera-degli-sposi-mantua",
@@ -1749,7 +1800,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Ducale_(Mantua)",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-maria-presso-san-satiro-milan",
@@ -1780,7 +1832,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_presso_San_Satiro",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-gondi-florence",
@@ -1811,7 +1864,8 @@
      "sourceUrl": "https://aroundus.com/p/8125110-palazzo-gondi",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-maria-delle-grazie-tribuna-milan",
@@ -1844,7 +1898,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_delle_Grazie,_Milan",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "tempietto-rome",
@@ -1875,7 +1930,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/San_Pietro_in_Montorio",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "cortile-del-belvedere-vatican",
@@ -1906,7 +1962,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Cortile_del_Belvedere",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "st-peters-first-design-vatican",
@@ -1937,7 +1994,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "san-maurizio-al-monastero-maggiore-milan",
@@ -1968,7 +2026,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/San_Maurizio_al_Monastero_Maggiore",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "fontainebleau-fontainebleau",
@@ -1999,7 +2058,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palace_of_Fontainebleau",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "palazzo-te-mantua",
@@ -2030,7 +2090,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Te",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "laurentian-library-florence",
@@ -2061,7 +2122,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Biblioteca_Medicea_Laurenziana",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "piazza-del-campidoglio-rome",
@@ -2092,7 +2154,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_del_Campidoglio",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "st-peters-dome-vatican",
@@ -2123,7 +2186,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "basilica-palladiana-vicenza",
@@ -2154,7 +2218,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_Palladiana",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palladio-s-villas-veneto",
@@ -2217,7 +2282,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Villa_Pojana",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-marino-milan",
@@ -2248,7 +2314,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Marino",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "villa-farnese-caprarola",
@@ -2279,7 +2346,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Farnese_(Caprarola)",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "uffizi-florence",
@@ -2310,7 +2378,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Uffizi",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "vasari-corridor-florence",
@@ -2341,7 +2410,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Vasari_Corridor",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "villa-capra-la-rotonda-vicenza",
@@ -2374,7 +2444,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Villa_La_Rotonda",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "il-redentore-venice",
@@ -2405,7 +2476,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Il_Redentore",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "sforza-castle-milan",
@@ -2436,7 +2508,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sforza_Castle",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "basilica-di-san-lorenzo-florence",
@@ -2467,7 +2540,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_San_Lorenzo,_Florence",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "pienza-cathedral-pienza",
@@ -2498,7 +2572,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Pienza_Cathedral",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "church-of-san-bernardino-urbino",
@@ -2531,7 +2606,8 @@
      "sourceUrl": "https://www.komoot.com/highlight/4266733",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "quirinal-palace-rome",
@@ -2565,7 +2641,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Quirinal_Palace",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "louvre-museum-paris",
@@ -2598,7 +2675,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Louvre",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "gesu-church-of-the-gesu-rome",
@@ -2629,7 +2707,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Church_of_the_Ges%C3%B9",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "baldacchino-st-peter-s-vatican",
@@ -2660,7 +2739,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-maria-della-salute-venice",
@@ -2691,7 +2771,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_della_Salute",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "san-carlo-alle-quattro-fontane-rome",
@@ -2722,7 +2803,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/San_Carlo_alle_Quattro_Fontane",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "sant-ivo-alla-sapienza-rome",
@@ -2755,7 +2837,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Ivo_alla_Sapienza",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "fontana-dei-quattro-fiumi-rome",
@@ -2786,7 +2869,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_Navona",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "piazza-san-pietro-vatican",
@@ -2817,7 +2901,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Square",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-maria-della-pace-rome",
@@ -2848,7 +2933,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Maria_della_Pace",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "sant-andrea-al-quirinale-rome",
@@ -2879,7 +2965,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Andrea_al_Quirinale",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palace-of-versailles-versailles",
@@ -2912,7 +2999,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palace_of_Versailles",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "scala-regia-vatican",
@@ -2943,7 +3031,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Apostolic_Palace",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "cappella-della-sindone-turin",
@@ -2976,7 +3065,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Chapel_of_the_Holy_Shroud",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "san-bernardino-alle-ossa-milan",
@@ -3007,7 +3097,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/San_Bernardino_alle_Ossa",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzina-di-caccia-di-stupinigi-turin",
@@ -3038,7 +3129,8 @@
      "sourceUrl": "https://latitude.to/articles-by-country/it/italy/39287/palazzina-di-caccia-of-stupinigi",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "trevi-fountain-rome",
@@ -3069,7 +3161,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Trevi_Fountain",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "royal-palace-of-caserta-caserta",
@@ -3102,7 +3195,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Royal_Palace_of_Caserta",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "teatro-alla-scala-milan",
@@ -3133,7 +3227,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/La_Scala",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-reale-milan-milan",
@@ -3164,7 +3259,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Royal_Palace_of_Milan",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-belgioioso-milan",
@@ -3195,7 +3291,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Belgioioso",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "st-peters-facade-nave-vatican",
@@ -3226,7 +3323,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "santa-susanna-rome",
@@ -3257,7 +3355,8 @@
      "sourceUrl": "https://travel.sygic.com/cs/poi/church-of-saint-susanna-poi:54849",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "ecstasy-of-saint-teresa-rome",
@@ -3288,7 +3387,8 @@
      "sourceUrl": "https://latitude.to/articles-by-country/it/italy/11535/santa-maria-della-vittoria",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "sant-ignazio-di-loyola-rome",
@@ -3319,7 +3419,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Ignazio,_Rome",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-montecitorio-rome",
@@ -3352,7 +3453,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Montecitorio",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-madama-rome",
@@ -3385,7 +3487,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Madama,_Rome",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "hermitage-museum-saint-petersburg",
@@ -3418,7 +3521,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Hermitage_Museum",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Russia"
   },
   {
    "id": "capodimonte-museum-naples",
@@ -3452,7 +3556,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Museo_di_Capodimonte",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "basilique-du-sacre-c-ur-paris",
@@ -3483,7 +3588,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Sacr%C3%A9-C%C5%93ur_de_Montmartre",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "mole-antonelliana-turin",
@@ -3514,7 +3620,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Mole_Antonelliana",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "arco-della-pace-milan",
@@ -3545,7 +3652,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Arco_della_Pace",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "pantheon-paris",
@@ -3576,7 +3684,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Panth%C3%A9on,_Paris",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "arc-de-triomphe-arc-du-carrousel-paris",
@@ -3607,7 +3716,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Arc_de_Triomphe",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "altes-museum-berlin",
@@ -3638,7 +3748,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Altes_Museum",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "alte-pinakothek-munich",
@@ -3669,7 +3780,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Alte_Pinakothek",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "konigsplatz-munich",
@@ -3700,7 +3812,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/K%C3%B6nigsplatz_(M%C3%BCnchen)",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "palazzo-del-viminale-rome",
@@ -3733,7 +3846,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_del_Viminale",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-della-farnesina-rome",
@@ -3766,7 +3880,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_della_Farnesina",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "prado-museum-madrid",
@@ -3799,7 +3914,8 @@
      "sourceUrl": "https://www.latlong.net/place/museo-del-prado-madrid-spain-23210.html",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "bibliotheque-sainte-genevieve-paris",
@@ -3830,7 +3946,8 @@
      "sourceUrl": "https://travel.sygic.com/en/poi/sainte-genevieve-library-poi:54976",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "crystal-palace-london",
@@ -3863,7 +3980,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/The_Crystal_Palace",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "eiffel-tower-paris",
@@ -3896,7 +4014,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Eiffel_Tower",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "red-house-kent",
@@ -3927,7 +4046,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Red_House,_Bexleyheath",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "secession-building-vienna",
@@ -3960,7 +4080,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Secession_Building",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Austria"
   },
   {
    "id": "casa-galimberti-milan",
@@ -3991,7 +4112,8 @@
      "sourceUrl": "https://aroundus.com/p/8123249-casa-galimberti",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-castiglioni-milan",
@@ -4022,7 +4144,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Castiglioni",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "sagrada-familia-barcelona",
@@ -4055,7 +4178,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "casa-vicens-barcelona",
@@ -4088,7 +4212,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Vicens",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "palau-guell-barcelona",
@@ -4121,7 +4246,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palau_G%C3%BCell",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "casa-batllo-barcelona",
@@ -4154,7 +4280,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Batll%C3%B3",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "casa-mila-barcelona",
@@ -4187,7 +4314,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Mil%C3%A0",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "park-guell-barcelona",
@@ -4220,7 +4348,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Park_G%C3%BCell",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "colonia-guell-barcelona",
@@ -4253,7 +4382,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Col%C3%B2nia_G%C3%BCell",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "tassel-house-brussels",
@@ -4286,7 +4416,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/H%C3%B4tel_Tassel",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Belgium"
   },
   {
    "id": "glasgow-school-of-art-glasgow",
@@ -4319,7 +4450,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Glasgow_School_of_Art",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "palais-stoclet-brussels",
@@ -4352,7 +4484,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Stoclet_Palace",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Belgium"
   },
   {
    "id": "schroder-house-utrecht",
@@ -4385,7 +4518,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Rietveld_Schr%C3%B6der_House",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Netherlands"
   },
   {
    "id": "pavillon-de-l-esprit-nouveau-paris",
@@ -4416,7 +4550,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Pavillon_de_l'Esprit_Nouveau",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "bauhaus-dessau-building-dessau",
@@ -4449,7 +4584,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Bauhaus_Dessau",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "weissenhof-estate-stuttgart",
@@ -4480,7 +4616,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Weissenhof_Estate",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "villa-savoye-poissy",
@@ -4514,7 +4651,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Villa_Savoye",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "barcelona-pavilion-barcelona",
@@ -4547,7 +4685,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Barcelona_Pavilion",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "fallingwater-pennsylvania",
@@ -4580,7 +4719,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Fallingwater",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "unite-d-habitation",
@@ -4611,7 +4751,8 @@
      "sourceUrl": "https://structurae.net/structures/20003307",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "notre-dame-du-haut-ronchamp-ronchamp",
@@ -4642,7 +4783,8 @@
      "sourceUrl": "https://latitude.to/articles-by-country/fr/france/7548/notre-dame-du-haut",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "aeg-turbine-factory-berlin",
@@ -4675,7 +4817,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/AEG-Turbinenfabrik",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "chrysler-building-new-york",
@@ -4708,7 +4851,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Chrysler_Building",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "empire-state-building-new-york",
@@ -4739,7 +4883,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Empire_State_Building",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "seagram-building-new-york",
@@ -4770,7 +4915,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Seagram_Building",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "neue-nationalgalerie-berlin",
@@ -4801,7 +4947,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Neue_Nationalgalerie",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "guggenheim-museum-new-york-new-york",
@@ -4834,7 +4981,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Solomon_R._Guggenheim_Museum",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "muller-house-prague",
@@ -4865,7 +5013,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Villa_M%C3%BCller",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Czechia"
   },
   {
    "id": "paimio-sanatorium-paimio",
@@ -4898,7 +5047,8 @@
      "sourceUrl": "https://latitude.to/articles-by-country/fi/finland/28486/paimio-sanatorium",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Finland"
   },
   {
    "id": "mit-baker-house-cambridge",
@@ -4929,7 +5079,8 @@
      "sourceUrl": "https://exhibits.lib.ttu.edu/s/archlib/item/41850",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "robie-house-chicago",
@@ -4962,7 +5113,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Robie_House",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "glass-house-new-canaan",
@@ -4995,7 +5147,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Glass_House_(New_Canaan,_Connecticut)",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "weissenhof-double-house-stuttgart",
@@ -5028,7 +5181,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Weissenhof_Estate",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "sainte-marie-de-la-tourette-eveux",
@@ -5061,7 +5215,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sainte_Marie_de_La_Tourette",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "van-gogh-museum-amsterdam",
@@ -5094,7 +5249,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Van_Gogh_Museum",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Netherlands"
   },
   {
    "id": "dutch-pavilion-venice",
@@ -5127,7 +5283,8 @@
      "sourceUrl": "https://aroundus.com/p/8222083-dutch-pavilion",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "villa-mairea-noormarkku",
@@ -5160,7 +5317,8 @@
      "sourceUrl": "https://aroundus.com/p/11461113-villa-mairea",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Finland"
   },
   {
    "id": "viipuri-library-vyborg",
@@ -5193,7 +5351,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Vyborg_Library",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Russia"
   },
   {
    "id": "kaufmann-desert-house-palm-springs",
@@ -5226,7 +5385,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Kaufmann_Desert_House",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "millard-house-pasadena",
@@ -5259,7 +5419,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Millard_House",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "fagus-factory-alfeld",
@@ -5292,7 +5453,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Fagus_Factory",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "sommerfeld-house-berlin",
@@ -5325,7 +5487,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Haus_Sommerfeld",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "casa-del-fascio-como",
@@ -5358,7 +5521,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Casa_del_Fascio_(Como)",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "qt8-milan",
@@ -5389,7 +5553,8 @@
      "sourceUrl": "https://audiala.com/en/italy/milan/qt8",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "asilo-sant-elia-como",
@@ -5420,7 +5585,8 @@
      "sourceUrl": "https://aroundus.com/p/8132223-asilo-sant-elia",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "pirelli-tower-milan",
@@ -5451,7 +5617,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Pirelli_Tower",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "torre-velasca-milan",
@@ -5482,7 +5649,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Torre_Velasca",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "nakagin-capsule-tower-tokyo",
@@ -5513,7 +5681,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Nakagin_Capsule_Tower",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Japan"
   },
   {
    "id": "centre-pompidou-paris",
@@ -5544,7 +5713,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Centre_Pompidou",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "tomba-brion",
@@ -5575,7 +5745,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Brion_tomb",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "guggenheim-museum-bilbao-bilbao",
@@ -5610,7 +5781,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Guggenheim_Museum_Bilbao",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "maxxi-rome",
@@ -5643,7 +5815,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/MAXXI",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "gallaratese-quarter-milan",
@@ -5674,7 +5847,8 @@
      "sourceUrl": "https://bamwor.com/en/countries/italy/cities/gallaratese",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "generali-tower-citylife-milan",
@@ -5707,7 +5881,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Generali_Tower",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "palazzo-dell-arte-triennale-milan",
@@ -5738,7 +5913,8 @@
      "sourceUrl": "https://aroundus.com/p/8130801-",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "polimi-campus-nord-milan",
@@ -5769,7 +5945,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Milano_Bovisa_railway_station",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "museo-castelvecchio-verona",
@@ -5800,7 +5977,8 @@
      "sourceUrl": "https://latitude.to/articles-by-country/it/italy/32594/castelvecchio-museum",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   },
   {
    "id": "louvre-pyramid-paris",
@@ -5831,7 +6009,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Louvre_Pyramid",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "grande-arche-paris",
@@ -5862,7 +6041,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Grande_Arche",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "bibliotheque-nationale-de-france-paris",
@@ -5893,7 +6073,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Biblioth%C3%A8que_nationale_de_France",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "musee-d-orsay-paris",
@@ -5926,7 +6107,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Mus%C3%A9e_d'Orsay",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "louvre-abu-dhabi-abu-dhabi",
@@ -5957,7 +6139,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Louvre_Abu_Dhabi",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Arab Emirates"
   },
   {
    "id": "philharmonie-de-paris-paris",
@@ -5988,7 +6171,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Philharmonie_de_Paris",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "France"
   },
   {
    "id": "lloyd-s-building-london",
@@ -6019,7 +6203,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Lloyd's_building",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "the-gherkin-london",
@@ -6050,7 +6235,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/The_Gherkin",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "london-city-hall-london",
@@ -6081,7 +6267,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/City_Hall_(London)",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "grand-court-london",
@@ -6112,7 +6299,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Queen_Elizabeth_II_Great_Court",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "reichstag-glass-dome-berlin",
@@ -6143,7 +6331,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Reichstag_building",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "jewish-museum-berlin-berlin",
@@ -6176,7 +6365,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Jewish_Museum_Berlin",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "dancing-house-prague",
@@ -6209,7 +6399,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Dancing_House",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Czechia"
   },
   {
    "id": "vitra-fire-station",
@@ -6240,7 +6431,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Vitra_Fire_Station",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "phaeno-science-center",
@@ -6271,7 +6463,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Phaeno_Science_Center",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "wexner-center",
@@ -6302,7 +6495,8 @@
      "sourceUrl": "https://latitude.to/articles-by-country/us/united-states/23472/wexner-center-for-the-arts",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "salk-institute",
@@ -6333,7 +6527,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Salk_Institute_for_Biological_Studies",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "vanna-venturi-house",
@@ -6364,7 +6559,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Vanna_Venturi_House",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "space-needle-seattle",
@@ -6397,7 +6593,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Space_Needle",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "petronas-twin-towers-kuala-lumpur",
@@ -6430,7 +6627,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Petronas_Towers",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Malaysia"
   },
   {
    "id": "allianz-arena-munich",
@@ -6463,7 +6661,8 @@
      "sourceUrl": "https://www.latlong.net/place/allianz-arena-munich-germany-31644.html",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Germany"
   },
   {
    "id": "marques-de-riscal-hotel-elciego",
@@ -6496,7 +6695,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Marqu%25C3%25A9s_de_Riscal_Hotel",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Spain"
   },
   {
    "id": "tate-modern-london",
@@ -6529,7 +6729,8 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Tate_Modern",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United Kingdom"
   },
   {
    "id": "metropolitan-museum-of-art-new-york",
@@ -6562,7 +6763,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Metropolitan_Museum_of_Art",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "United States of America"
   },
   {
    "id": "nevsky-prospect-saint-petersburg",
@@ -6595,7 +6797,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Nevsky_Prospect",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Russia"
   },
   {
    "id": "north-doors-florence-baptistery-florence",
@@ -6628,7 +6831,8 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Florence_Baptistery",
      "status": "Supplementary - to be verified"
     }
-   ]
+   ],
+   "nation": "Italy"
   }
  ]
 }

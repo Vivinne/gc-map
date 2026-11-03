@@ -35,6 +35,8 @@ export interface Place {
   note: string;
   /** One- or two-sentence summary shown in the detail panel (data/entries.txt) */
   summary: string;
+  /** Nation the first coordinate lies in (Natural Earth names, e.g. "Spain"); used to frame a country on the map */
+  nation: string;
   /** Country tag (data/countries.txt); empty when the handout gives no location */
   country: string;
   /** Past-exam years in which this building was a topic (data/exams.txt) */
