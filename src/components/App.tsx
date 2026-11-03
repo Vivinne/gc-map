@@ -277,14 +277,6 @@ export default function App() {
     setCity('');
   }, [setFilters]);
 
-  // Show the selection from the address once the map can move
-  useEffect(() => {
-    if (mapReady && selected && mode === 'map') {
-      mapRef.current?.showBuilding(selected);
-      setSeen((s) => (s.has(selected.id) ? s : new Set(s).add(selected.id)));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapReady]);
 
   // ---------- keyboard ----------
   useEffect(() => {
@@ -429,7 +421,12 @@ export default function App() {
             padding={padding}
             reducedMotion={reducedMotion}
             compact={mobile}
-            onSelect={(id) => select(id, { fly: false })}
+            onSelect={(id) => {
+              // A pin picked on the map is the building to read about: keep it and its surroundings in view
+              select(id, { fly: false });
+              const b = BY_ID.get(id);
+              if (b) window.requestAnimationFrame(() => window.requestAnimationFrame(() => mapRef.current?.focus(b)));
+            }}
             onCity={focusCity}
             onReady={() => setMapReady(true)}
             onHome={() => {

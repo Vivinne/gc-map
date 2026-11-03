@@ -33,45 +33,59 @@ interface SheetProps {
   children: React.ReactNode;
   className: string;
   label: string;
+  /** Card only: a swipe down on the top of the sheet folds it (like the fold button), a swipe up unfolds */
+  folded?: boolean;
+  onFold?(folded: boolean): void;
 }
 
 /** Desktop: a card at the right of the map. Phone: a bottom sheet that expands by tap or drag on its top edge */
-function Sheet({ mobile, onClose, children, className, label }: SheetProps) {
+function Sheet({ mobile, onClose, children, className, label, folded, onFold }: SheetProps) {
   const [full, setFull] = useState(false);
-  const drag = useRef<{ y: number; dy: number } | null>(null);
+  const drag = useRef<{ y: number; dy: number; id: number } | null>(null);
   const [dy, setDy] = useState(0);
+  // The drag starts on the top of the sheet (handle, controls strip, title), never on a button
+  const onDown = (e: React.PointerEvent) => {
+    const t = e.target as Element;
+    if (!t.closest('.grab, .c-tools, .c-top, .cp-top') || t.closest('button:not(.grab)')) return;
+    drag.current = { y: e.clientY, dy: 0, id: e.pointerId };
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent) => {
+    if (!drag.current || drag.current.id !== e.pointerId) return;
+    drag.current.dy = e.clientY - drag.current.y;
+    if (Math.abs(drag.current.dy) > 6) setDy(drag.current.dy);
+  };
+  const onUp = (e: React.PointerEvent) => {
+    if (!drag.current || drag.current.id !== e.pointerId) return;
+    const d = drag.current.dy;
+    const onGrab = !!document.elementFromPoint(e.clientX, e.clientY - d)?.closest('.grab');
+    drag.current = null;
+    setDy(0);
+    if (Math.abs(d) < 6) {
+      if (onGrab) setFull(!full);
+      return;
+    }
+    if (d < -40) {
+      if (onFold && folded) onFold(false);
+      else setFull(true);
+    } else if (d > 40) {
+      if (full) setFull(false);
+      else if (onFold && !folded) onFold(true);
+      else if (!onFold) onClose();
+    }
+  };
   return (
     <section
       className={`side ${className}${mobile ? ` sheet${full ? ' full' : ''}` : ''}`}
       aria-label={label}
       style={mobile && dy ? { transform: `translateY(${Math.max(-200, dy)}px)`, transition: 'none' } : undefined}
+      onPointerDown={mobile ? onDown : undefined}
+      onPointerMove={mobile ? onMove : undefined}
+      onPointerUp={mobile ? onUp : undefined}
+      onPointerCancel={mobile ? () => ((drag.current = null), setDy(0)) : undefined}
     >
       {mobile && (
-        <div
-          className="grab"
-          role="button"
-          aria-label={full ? 'Shrink' : 'Expand'}
-          onPointerDown={(e) => {
-            (e.target as Element).setPointerCapture(e.pointerId);
-            drag.current = { y: e.clientY, dy: 0 };
-          }}
-          onPointerMove={(e) => {
-            if (!drag.current) return;
-            drag.current.dy = e.clientY - drag.current.y;
-            setDy(drag.current.dy);
-          }}
-          onPointerUp={() => {
-            const d = drag.current?.dy ?? 0;
-            drag.current = null;
-            setDy(0);
-            if (Math.abs(d) < 6) setFull(!full);
-            else if (d < -40) setFull(true);
-            else if (d > 60) {
-              if (full) setFull(false);
-              else onClose();
-            }
-          }}
-        >
+        <div className="grab" role="button" aria-label={full ? 'Shrink' : 'Expand'}>
           <i />
         </div>
       )}
@@ -117,7 +131,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
     body.current?.scrollTo({ top: 0 });
   }, [b.id]);
   return (
-    <Sheet mobile={mobile} onClose={onClose} className={`card${folded ? ' folded' : ''}`} label={b.name}>
+    <Sheet mobile={mobile} onClose={onClose} className={`card${folded ? ' folded' : ''}`} label={b.name} folded={folded} onFold={setFolded}>
       <div className="c-tools">
         {many && (
           <button type="button" className="c-back" onClick={onBack} title={`All of ${b.city}`}>

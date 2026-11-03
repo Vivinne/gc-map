@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom';
 import { basemap } from '../lib/basemap';
 import { MIN_DONUT, boundsOf, clusterAt, donutRadius, nearest, regionOf, type Cluster } from '../lib/geo';
 import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, type Building } from '../lib/model';
-import { geoMercator } from 'd3-geo';
+import { geoMercator, geoPath } from 'd3-geo';
 import { Icon } from './Icons';
 
 export const DETAIL_ZOOM = 11.5;
@@ -30,6 +30,8 @@ export interface MapHandle {
   /** Fit every building of a city */
   showCity(city: string): void;
   home(): void;
+  /** A building picked on the map: bring it to the middle of the visible area, keeping the zoom */
+  focus(b: Building): void;
 }
 
 interface Props {
@@ -51,6 +53,21 @@ interface Props {
   onHome?(): void;
   /** The user zoomed out to the panorama (scale bar at 500 km or more): the parent clears the view */
   onPanorama?(): void;
+}
+
+const LOCATORS = new Map<string, { pr: (p: [number, number]) => [number, number] | null; land: string }>();
+/** Small projection of Europe (or the world) and its land outline, made once per size */
+function locator(world: boolean, w: number, h: number) {
+  const key = `${world}-${w}`;
+  let l = LOCATORS.get(key);
+  if (!l) {
+    const extent = world ? [[-165, -50], [178, 72]] : [[-11, 35], [42, 63]];
+    const pr = geoMercator().fitExtent([[2, 2], [w - 2, h - 2]], { type: 'MultiPoint', coordinates: extent });
+    const land = geoPath(pr).digits(1)(basemap().land as never) ?? '';
+    l = { pr: (p) => pr(p) as [number, number] | null, land };
+    LOCATORS.set(key, l);
+  }
+  return l;
 }
 
 function styleSpec(): StyleSpecification {
@@ -237,6 +254,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       fitTo,
       showCity,
       home: () => homeView(),
+      focus: (b) => {
+        const p = padRef.current;
+        // offset, not padding: easeTo keeps a padding for later camera moves
+        const bottom = compactRef.current ? p.bottom : p.bottom + 44;
+        mapRef.current?.easeTo({ center: [b.lng, b.lat], offset: [(p.left - p.right) / 2, (p.top - bottom) / 2], duration: motion(450) });
+      },
       showBuilding: (b) => {
         const city = CITY_BUILDINGS.get(b.city) ?? [b];
         if (city.length > 1) {
@@ -532,10 +555,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const t = Math.min(tx, ty);
         edge.push({ b, x: cx + dx * t, y: cy + dy * t, a: Math.atan2(dy, dx) });
       }
-      // the city inset (desktop, top left) covers that corner: markers there move just past it
-      if (!compact) {
-        const ix2 = pad.left + 16 + 200 + 14;
-        const iy2 = pad.top + 16 + 182 + 14;
+      // the locator (top left) covers that corner: markers there move just past it
+      {
+        const ix2 = (compact ? 12 + 112 : 16 + 176) + 14;
+        const iy2 = pad.top + (compact ? 4 + 80 : 16 + 124) + 14;
         for (const e of edge) {
           if (e.x >= ix2 || e.y >= iy2) continue;
           if (Math.abs(e.y - r0.y1) < 1) e.x = ix2;
@@ -630,43 +653,36 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     scale = { label: m >= 1000 ? `${m / 1000} km` : `${m} m`, px: m / mpp };
   }
 
-  // City overview while zoomed into part of it
+  // Locator, always shown: where the view (and the open building) sits on the map of Europe, or of the
+  // world when the view is outside Europe
   let inset: React.ReactNode = null;
-  const cityItems = insetCity ? (CITY_BUILDINGS.get(insetCity) ?? []) : [];
-  if (map && cityItems.length > 1 && !compact) {
+  if (map) {
+    const ctr = map.getCenter();
+    const world = !(ctr.lng > -25 && ctr.lng < 45 && ctr.lat > 30 && ctr.lat < 72);
+    const lw = compact ? 112 : 176;
+    const lh = compact ? 80 : 124;
+    const loc = locator(world, lw, lh);
     const bb = map.getBounds();
-    const all = cityItems.every((b) => bb.contains([b.lng, b.lat]));
-    if (!all && detail) {
-      const iw = 200;
-      const ih = 150;
-      const pr = geoMercator().fitExtent([[12, 12], [iw - 12, ih - 12]], { type: 'MultiPoint', coordinates: cityItems.map((b) => [b.lng, b.lat]) });
-      const a = pr([bb.getWest(), bb.getNorth()]);
-      const c = pr([bb.getEast(), bb.getSouth()]);
-      inset = (
-        <button type="button" className="inset" style={{ left: 16, top: padding.top + 16 }} onClick={() => showCity(insetCity)} aria-label={`Show all of ${insetCity}`}>
-          <span className="ih">
-            <b>{insetCity}</b>
-            <span>{cityItems.length}</span>
-          </span>
-          <svg width={iw} height={ih}>
-            <defs>
-              <clipPath id="inset-clip">
-                <rect width={iw} height={ih} />
-              </clipPath>
-            </defs>
-            <g clipPath="url(#inset-clip)">
-              {cityItems.map((b) => {
-                const p = pr([b.lng, b.lat]);
-                if (!p) return null;
-                const on = selected?.id === b.id;
-                return <circle key={b.id} cx={p[0]} cy={p[1]} r={on ? 4.5 : 3} fill={ERAS[b.era].color} stroke={on ? '#000' : '#fff'} strokeWidth={on ? 1.5 : 0.8} />;
-              })}
-              {a && c && <rect x={a[0]} y={a[1]} width={Math.max(4, c[0] - a[0])} height={Math.max(4, c[1] - a[1])} fill="none" stroke="#000" strokeWidth={2.5} />}
-            </g>
-          </svg>
-        </button>
-      );
-    }
+    const a = loc.pr([Math.max(-179, bb.getWest()), Math.min(84, bb.getNorth())]);
+    const c = loc.pr([Math.min(179, bb.getEast()), Math.max(-84, bb.getSouth())]);
+    const here = selected ? loc.pr([selected.lng, selected.lat]) : null;
+    const rw = a && c ? c[0] - a[0] : 0;
+    const rh = a && c ? c[1] - a[1] : 0;
+    const cc = loc.pr([ctr.lng, ctr.lat]);
+    inset = (
+      <div className={`locator${compact ? ' m' : ''}`} style={{ left: compact ? 12 : 16, top: padding.top + (compact ? 4 : 16) }} aria-hidden="true">
+        <svg width={lw} height={lh}>
+          <rect width={lw} height={lh} className="lc-sea" />
+          <path d={loc.land} className="lc-land" />
+          {a && c && rw >= 8 && rh >= 8 ? (
+            <rect x={a[0]} y={a[1]} width={rw} height={rh} className="lc-view" />
+          ) : (
+            cc && <circle cx={cc[0]} cy={cc[1]} r={6} className="lc-view" />
+          )}
+          {here && <circle cx={here[0]} cy={here[1]} r={3.5} className="lc-here" />}
+        </svg>
+      </div>
+    );
   }
 
   return (

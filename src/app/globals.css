@@ -469,6 +469,13 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .others .o-row .sq { width: 10px; height: 10px; flex: none; margin: 0 6px 0 2px; }
 .others .o-row .nm em { font-style: normal; color: var(--mute); font-weight: 500; font-size: 12px; margin-left: 8px; }
 
+.locator { position: absolute; z-index: 5; pointer-events: none; background: #fff; box-shadow: 0 0 0 1px var(--rule); padding: 0; }
+.locator svg { display: block; }
+.lc-sea { fill: var(--sea); }
+.lc-land { fill: #c9cfd6; stroke: #fff; stroke-width: 0.5; }
+.lc-view { fill: rgba(0, 0, 0, 0.08); stroke: #000; stroke-width: 2; }
+.lc-here { fill: #000; stroke: #fff; stroke-width: 1.5; }
+
 /* ---------- toast ---------- */
 .toast { position: fixed; z-index: 15; left: 50%; transform: translateX(-50%); bottom: calc(var(--band-h) + 16px); display: flex; align-items: center; gap: 10px; background: #000; color: #fff; padding: 0 6px 0 14px; min-height: 42px; font-size: 13.5px; font-weight: 600; max-width: calc(100vw - 32px); animation: rise 140ms ease-out; }
 .toast button { background: #fff; color: #000; font-weight: 700; height: 30px; padding: 0 12px; margin-left: 6px; }
@@ -515,3 +522,4 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 }
 .me.m .me-mastery .hd h2, .me.m .me-cols .hd { display: none; }
 .me.m .me-mastery .hd { min-height: 0; }
+.is-mobile .sheet .c-tools, .is-mobile .sheet .c-top, .is-mobile .sheet .cp-top { touch-action: none; }
