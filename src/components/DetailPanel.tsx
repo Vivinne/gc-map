@@ -123,6 +123,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
   const many = city.length > 1;
   const [folded, setFolded] = useState(false);
   const [othersOpen, setOthersOpen] = useState(false);
+  const [nearOpen, setNearOpen] = useState(false);
   const [menu, setMenu] = useState(false);
   const near = many ? [] : nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2).map((x) => x.b);
   const kept = starred || collections.some((c) => c.ids.includes(b.id));
@@ -200,24 +201,28 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
           )}
           {!many && near.length > 0 && (
             // A city with no other building: the two nearest landmarks and the way to them
-            <div className="others-box open near">
-              <div className="others-h static">
+            <div className={`others-box near${nearOpen ? ' open' : ''}`}>
+              <button type="button" className="others-h" aria-expanded={nearOpen} onClick={() => setNearOpen(!nearOpen)}>
                 <span>Nearest</span>
-              </div>
+                <span className="n">{near.length}</span>
+                <Icon name="down" size={12} />
+              </button>
+              {nearOpen && (
               <ol className="others" aria-label="Nearest buildings" onPointerLeave={() => onHover('')}>
-                {near.map((x) => (
-                  <li key={x.id}>
-                    <button type="button" className="o-row" onClick={() => onSelect(x.id)} onPointerEnter={() => onHover(x.id)} onFocus={() => onHover(x.id)}>
-                      <span className="sq" style={{ background: ERAS[x.era].color }} />
-                      <span className="nm">
-                        {x.name}
-                        <em>{x.city}</em>
-                      </span>
-                      <Arrow deg={bearing(b, x)} />
-                    </button>
-                  </li>
-                ))}
-              </ol>
+                  {near.map((x) => (
+                    <li key={x.id}>
+                      <button type="button" className="o-row" onClick={() => onSelect(x.id)} onPointerEnter={() => onHover(x.id)} onFocus={() => onHover(x.id)}>
+                        <span className="sq" style={{ background: ERAS[x.era].color }} />
+                        <span className="nm">
+                          {x.name}
+                          <em>{x.city}</em>
+                        </span>
+                        <Arrow deg={bearing(b, x)} />
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              )}
             </div>
           )}
         </>
