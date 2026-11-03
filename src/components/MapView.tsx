@@ -261,15 +261,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       showCity,
       home: () => homeView(),
       focus: (b) => {
-        const m = mapRef.current;
-        if (!m) return;
-        // Picked from far out (a dot at country scale): zoom in to its city so the place makes sense
-        if (m.getZoom() < DETAIL_ZOOM) {
-          const city = CITY_BUILDINGS.get(b.city) ?? [b];
-          if (city.length > 1) fitTo(city, 15);
-          else fitTo(alone(b), 14);
-          return;
-        }
         const p = padRef.current;
         // offset, not padding: easeTo keeps a padding for later camera moves
         const bottom = compactRef.current ? p.bottom : p.bottom + 44;
