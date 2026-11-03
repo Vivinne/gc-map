@@ -352,7 +352,7 @@ for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
 {
   const { page, errors } = await open({ width: 1440, height: 900 });
   const title = async () => (await page.locator('.side.card h1').innerText()).replace(/^\d+\s*/, '').trim();
-  for (const n of ['cologne cathedral', 'pantheon', 'sagrada', 'fallingwater']) {
+  for (const n of ['pantheon', 'sagrada', 'santa maria delle grazie']) {
     await page.keyboard.press('/');
     await page.keyboard.type(n);
     await page.waitForTimeout(150);
@@ -365,7 +365,18 @@ for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.locator('.c-tools [aria-label="Previous"]').click();
     await page.waitForTimeout(700);
     const t2 = await title();
-    check(`next then previous comes back (${n})`, t0 === t2 && t0 !== t1, `${t0} > ${t1} > ${t2}`);
+    check(`next then previous comes back, inside the city (${n})`, t0 === t2 && t0 !== t1, `${t0} > ${t1} > ${t2}`);
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
+  }
+  for (const n of ['cologne cathedral', 'villa savoye', 'hagia sophia']) {
+    await page.keyboard.press('/');
+    await page.keyboard.type(n);
+    await page.waitForTimeout(150);
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(900);
+    const rows = await page.locator('.others-box.near .o-row').count();
+    check(`one-building city: no previous / next, the two nearest listed (${n})`, (await page.locator('.c-tools [aria-label="Next"]').count()) === 0 && rows === 2 && (await page.locator('.others-box.near .arrow, .others-box.near svg').count()) >= 2, String(rows));
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
   }

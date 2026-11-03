@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { Collection } from '../lib/collections';
-import { CITY_BUILDINGS, CITY_NO, ERAS, type Building } from '../lib/model';
+import { nearest } from '../lib/geo';
+import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, type Building } from '../lib/model';
 import Facts from './Facts';
 import { Icon } from './Icons';
 
@@ -109,6 +110,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
   const [folded, setFolded] = useState(false);
   const [othersOpen, setOthersOpen] = useState(false);
   const [menu, setMenu] = useState(false);
+  const near = many ? [] : nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2).map((x) => x.b);
   const kept = starred || collections.some((c) => c.ids.includes(b.id));
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -180,6 +182,28 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
                     ))}
                 </ol>
               )}
+            </div>
+          )}
+          {!many && near.length > 0 && (
+            // A city with no other building: the two nearest landmarks and the way to them
+            <div className="others-box open near">
+              <div className="others-h static">
+                <span>Nearest</span>
+              </div>
+              <ol className="others" aria-label="Nearest buildings" onPointerLeave={() => onHover('')}>
+                {near.map((x) => (
+                  <li key={x.id}>
+                    <button type="button" className="o-row" onClick={() => onSelect(x.id)} onPointerEnter={() => onHover(x.id)} onFocus={() => onHover(x.id)}>
+                      <span className="sq" style={{ background: ERAS[x.era].color }} />
+                      <span className="nm">
+                        {x.name}
+                        <em>{x.city}</em>
+                      </span>
+                      <Arrow deg={bearing(b, x)} />
+                    </button>
+                  </li>
+                ))}
+              </ol>
             </div>
           )}
         </>

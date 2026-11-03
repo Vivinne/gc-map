@@ -89,16 +89,13 @@ export default function App() {
   const selected = selId ? (BY_ID.get(selId) ?? null) : null;
 
 
-  // Order used by Previous / Next: the city's list (map numbers); a one-building city steps through the
-  // same nation by year. The list is fixed when a building is opened, so Next then Previous comes back
-  // even when Next lands in another city.
-  const [stepList, setStepList] = useState<Building[] | null>(null);
+  // Previous / Next step through the buildings of the same city (map numbers), and only show when the
+  // city has other buildings; a one-building city lists its nearest landmarks in the card instead
   const nav = useMemo(() => {
     if (!selected) return null;
-    let list = stepList && stepList.some((b) => b.id === selected.id) ? stepList : cityOrder(selected.city);
-    if (list.length < 2) list = BUILDINGS.filter((b) => b.nation === selected.nation).sort(byYear);
+    const list = cityOrder(selected.city);
     return { list, index: list.findIndex((b) => b.id === selected.id) };
-  }, [selected, stepList]);
+  }, [selected]);
   const panelOpen = mode === 'map' && (!!selected || !!city);
 
   // ---------- persistence ----------
@@ -156,12 +153,11 @@ export default function App() {
 
   // ---------- actions ----------
   const select = useCallback(
-    (id: string, opts: { fly?: boolean; keepOrder?: boolean } = {}) => {
+    (id: string, opts: { fly?: boolean } = {}) => {
       const b = BY_ID.get(id);
       if (!b) return;
       setSelId(id);
       setCity(b.city);
-      if (!opts.keepOrder) setStepList(null);
       setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
       setSheet(false);
       if (opts.fly !== false) window.requestAnimationFrame(() => mapRef.current?.showBuilding(b));
@@ -200,8 +196,7 @@ export default function App() {
     (d: number) => {
       if (!nav || nav.list.length < 2) return;
       const i = (nav.index + d + nav.list.length) % nav.list.length;
-      setStepList(nav.list);
-      select(nav.list[i]!.id, { keepOrder: true });
+      select(nav.list[i]!.id);
     },
     [nav, select],
   );

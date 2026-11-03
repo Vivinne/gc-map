@@ -164,12 +164,18 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       byUser = Date.now() - lastInput < 1200 || btnZoom.current;
       btnZoom.current = false;
     });
+    const atPanorama = () => (40075016.686 * Math.cos((map.getCenter().lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom()) * 110 >= 500000;
+    // Noted during the move too: a long wheel or pinch gesture can end in a small last step
+    let crossed = false;
+    map.on('zoom', () => {
+      if ((byUser || Date.now() - lastInput < 1200) && map.getZoom() < startZoom - 0.01 && atPanorama()) crossed = true;
+    });
     map.on('moveend', () => {
       const user = byUser || Date.now() - lastInput < 1200;
       byUser = false;
-      if (!user || map.getZoom() >= startZoom - 0.01) return;
-      const mpp = (40075016.686 * Math.cos((map.getCenter().lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom());
-      if (mpp * 110 >= 500000) panoRef.current?.();
+      const hit = crossed || (user && map.getZoom() < startZoom - 0.01 && atPanorama());
+      crossed = false;
+      if (hit && atPanorama()) panoRef.current?.();
     });
     map.on('load', () => {
       bump();
@@ -238,8 +244,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           fitTo(city, 15);
           return;
         }
-        const near = nearest(b, BUILDINGS, 1)[0];
-        fitTo(near ? [b, near.b] : [b], 14);
+        // A one-building city: the building and its two nearest landmarks (listed in the card)
+        const near = nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2).map((x) => x.b);
+        fitTo([b, ...near], 14);
       },
     }),
     [fitTo, showCity, motion],
