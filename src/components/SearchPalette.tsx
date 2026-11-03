@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ERAS, whoOf } from '../lib/model';
+import { ERAS, ascii, shortYear } from '../lib/model';
 import { search, type Hit } from '../lib/search';
-import { examLine } from './DetailPanel';
+import Facts from './Facts';
 import { Icon } from './Icons';
 
 interface Props {
@@ -28,7 +28,9 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
     input.current?.focus();
     input.current?.select();
   }, []);
-  useEffect(() => setCur(0), [q]);
+  useEffect(() => {
+    setCur(0);
+  }, [q]);
   useEffect(() => {
     listRef.current?.querySelector('[data-cur="true"]')?.scrollIntoView({ block: 'nearest' });
   }, [cur]);
@@ -73,11 +75,8 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
         <button type="button" key={`a-${h.who}`} {...common}>
           <span className="av">{initials(h.who)}</span>
           <span className="nm">{h.who}</span>
-          <span className="loc">
-            {h.items.length} building{h.items.length > 1 ? 's' : ''}
-            {ys.length ? `, ${Math.min(...ys)} to ${Math.max(...ys)}` : ''}
-          </span>
-          {!mobile && <span className="act">Show all</span>}
+          <span className="loc">{ys.length ? `${Math.min(...ys)}\u2013${Math.max(...ys)}` : ''}</span>
+          <span className="cnt-n">{h.items.length}</span>
         </button>
       );
     }
@@ -88,8 +87,8 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
             <Icon name="map" size={14} />
           </span>
           <span className="nm">{h.city}</span>
-          <span className="loc">{h.items.length} buildings</span>
-          {!mobile && <span className="act">Go to city</span>}
+          <span className="loc" />
+          <span className="cnt-n">{h.items.length}</span>
         </button>
       );
     }
@@ -99,8 +98,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
         <i className="sq" style={{ background: ERAS[b.era].color }} />
         <span className="nm">{b.name}</span>
         <span className="loc">{b.city}</span>
-        <span className="yr">{b.yearShort}</span>
-        <span className={`ex${b.exams.length ? '' : ' ghost'}`}>{b.exams.length ? 'E' : ''}</span>
+        <span className="yr">{ascii(shortYear(b.built))}</span>
       </button>
     );
   };
@@ -114,7 +112,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
             ref={input}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search buildings, architects, cities, notes"
+            placeholder="Search"
             aria-label="Search"
             role="combobox"
             aria-expanded={res.flat.length > 0}
@@ -122,22 +120,18 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
             autoComplete="off"
             spellCheck={false}
           />
-          {q && <span className="cnt">{res.matched.length + res.architects.length + res.cities.length} results</span>}
           <button type="button" className="kbd-btn" onClick={onClose} aria-label="Close search">
-            {mobile ? <Icon name="close" size={14} /> : <kbd>Esc</kbd>}
+            <Icon name="close" size={14} />
           </button>
         </div>
         <div className="pal-body">
           <div className="pal-res" id="pal-results" role="listbox" ref={listRef}>
-            {!q.trim() && <p className="pal-empty">Type a building, an architect, a city or any word from the notes.</p>}
-            {q.trim() && res.flat.length === 0 && <p className="pal-empty">Nothing matches &ldquo;{q}&rdquo;. Try fewer letters or another spelling.</p>}
-            {res.architects.length > 0 && <h5>Architect</h5>}
+            {q.trim() && res.flat.length === 0 && <p className="pal-empty">0</p>}
             {res.architects.map(item)}
-            {res.cities.length > 0 && <h5>City</h5>}
             {res.cities.map(item)}
-            {res.buildings.length > 0 && <h5>Buildings</h5>}
+            {res.architects.length + res.cities.length > 0 && res.buildings.length > 0 && <hr />}
             {res.buildings.map(item)}
-            {res.matched.length > res.buildings.length && <p className="pal-more">{res.matched.length - res.buildings.length} more. Press Tab to list them all.</p>}
+            {res.matched.length > res.buildings.length && <p className="pal-more">+{res.matched.length - res.buildings.length}</p>}
           </div>
           {!mobile && (
             <div className="pal-prev">
@@ -145,34 +139,17 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
                 <>
                   <div className="pv-head" style={{ background: ERAS[preview.era].color }}>
                     <h2>{preview.name.toUpperCase()}</h2>
-                    <p>{[preview.year, preview.locLabel].filter(Boolean).join(', ').toLowerCase()}</p>
                   </div>
-                  <p className="who">{whoOf(preview)}</p>
-                  <p className="sum">{preview.summary}</p>
-                  {preview.exams.length > 0 && <p className="exam">{examLine(preview)}</p>}
+                  <Facts b={preview} />
                 </>
               )}
             </div>
           )}
         </div>
-        {!mobile && (
-          <div className="pal-foot">
-            <span>
-              <kbd>{'\u2191'}</kbd>
-              <kbd>{'\u2193'}</kbd> Move
-            </span>
-            <span>
-              <kbd>Enter</kbd> Open
-            </span>
-            <span>
-              <kbd>Tab</kbd> Keep as list filter
-            </span>
-            <span className="r">Matches names, places, architects and note text</span>
-          </div>
-        )}
         {mobile && q.trim() && res.matched.length > 0 && (
           <button type="button" className="btn dark pal-keep" onClick={() => onKeep(q.trim())}>
-            Show {res.matched.length} on the map
+            <Icon name="map" size={16} />
+            {res.matched.length}
           </button>
         )}
       </div>

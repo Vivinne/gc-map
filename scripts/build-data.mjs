@@ -152,7 +152,7 @@ function main() {
   const { rows, styles } = parseHandout(readFileSync(P('content/handout-c3-s6.md'), 'utf8'));
   const errors = [], warns = [];
 
-  // Full architect names (data/architects.txt)
+  // Displayed person names (data/architects.txt): full names for architects, short common names for rulers
   const ARCH = new Map(dataLines('data/architects.txt').map((l) => l.split('|').map((x) => x.trim())));
   for (const r of rows) r.who = ARCH.get(r.who) ?? r.who;
 
@@ -169,6 +169,10 @@ function main() {
     r.year = e.span || r.year;
     r.summary = e.summary;
   }
+  // English built span for display (data/years-display.txt); rows not listed show their span as written
+  const BUILT = new Map(dataLines('data/years-display.txt').map((l) => l.split('|').map((x) => x.trim())));
+  for (const n of BUILT.keys()) if (!rows.some((r) => r.name === n)) errors.push(`years-display.txt: name matches no handout row: ${n}`);
+  for (const r of rows) r.built = BUILT.get(r.name) ?? r.year;
   const COUNTRIES = ['Italy', 'France', 'Germany', 'United Kingdom', 'United States', 'Others'];
   const cmap = new Map(dataLines('data/countries.txt').map((l) => l.split('|').map((x) => x.trim())));
   for (const r of rows) {
@@ -287,7 +291,7 @@ function main() {
   const DISP = new Map(dataLines('data/doc-display.txt').map((l) => { const [k, n, lc, w] = l.split('|').map((x) => x.trim()); return [k, { n, lc, w }]; }));
   for (const k of DISP.keys()) if (!rows.some((r) => r.name === k)) errors.push(`doc-display.txt: no building named "${k}"`);
   const places = rows.map((r) => ({
-    id: r.id, name: DISP.get(r.name)?.n || r.name, loc: r.loc, locLabel: DISP.get(r.name)?.lc || r.loc, year: r.year, who: DISP.get(r.name)?.w || r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
+    id: r.id, name: DISP.get(r.name)?.n || r.name, loc: r.loc, locLabel: DISP.get(r.name)?.lc || r.loc, year: r.year, built: r.built, who: DISP.get(r.name)?.w || r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
     style: r.style.name, styleId: r.style.id, era: r.era, eras: r.eras,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
   }));

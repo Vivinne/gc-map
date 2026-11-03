@@ -1,11 +1,12 @@
-# handout value | full name shown in the detail panel (values not listed are shown as written in the handout)
-Nero | Nero Claudius Caesar
-Hadrian | Publius Aelius Hadrianus (Hadrian)
-Maxentius／Constantine | Marcus Aurelius Valerius Maxentius／Flavius Valerius Constantinus (Constantine the Great)
-Constantine | Flavius Valerius Constantinus (Constantine the Great)
-Maximianus | Marcus Aurelius Valerius Maximianus (Maximian)
+# handout value | name shown in the detail panel (values not listed are shown as written in the handout)
+# Architects get their full names; rulers and patrons (emperors, kings) their common short names (user, 2026-11-03).
+Nero | Nero
+Hadrian | Hadrian
+Maxentius／Constantine | Maxentius / Constantine
+Constantine | Constantine
+Maximianus | Maximian
 Anthemius／Isidore | Anthemius of Tralles／Isidore of Miletus
-Friedrich II | Friedrich II von Hohenstaufen
+Friedrich II | Friedrich II
 Brunelleschi | Filippo Brunelleschi
 Michelozzo | Michelozzo di Bartolomeo
 Alberti | Leon Battista Alberti

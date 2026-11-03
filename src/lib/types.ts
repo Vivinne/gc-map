@@ -29,6 +29,8 @@ export interface Place {
   /** Location as shown to readers (data/doc-display.txt); `loc` stays the key for city grouping and country */
   locLabel: string;
   year: string;
+  /** Built span as displayed: English only (data/years-display.txt), else the span as written */
+  built: string;
   who: string;
   note: string;
   /** One- or two-sentence summary shown in the detail panel (data/entries.txt) */

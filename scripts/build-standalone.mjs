@@ -14,7 +14,7 @@ function bundle(hashState) {
     entryPoints: [new URL('../src/standalone/main.tsx', import.meta.url).pathname],
     bundle: true,
     write: false,
-    minify: true,
+    minify: process.env.NO_MINIFY !== "1",
     format: 'iife',
     target: ['es2020', 'safari15'],
     jsx: 'automatic',

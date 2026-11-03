@@ -5,24 +5,27 @@ All 204 buildings are located; every coordinate has a source (see "Data flow").
 
 ## Views
 
-The map fills the window under a 48 px top bar (search, Filters, Map / Timeline / Review, seen count).
+The map fills the window under a 48 px top bar (filters, search, Map / Timeline / Review, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
 
 | View | Key | What it does |
 |---|---|---|
-| Map | `M` | City circles (ring segments = share of each style, number = buildings) at country scale. From city scale, numbered pins: the number is the building's place in its city, 1 = oldest (start year). Numbers are shown for one city at a time (the open building's city, else the city with most pins in view); other cities' buildings are plain dots. Entries at one spot fan out into separate pins. Names show for the open building, the one under the pointer, and from street scale wherever they fit. |
-| Timeline | `T` | Desktop: one lane per country, buildings placed by start year. Phone: one column, oldest first, sticky century (or decade) headings, country chips. Click opens the building on the map. |
-| Review | `R` | Cards for all 204 buildings (or the 76 asked in previous years): position, built span, place, architect and style first; the name after **Show answer** (`Space`). **Again** (`1`) brings the card back four cards later, **Got it** (`2`) retires it. Progress stays in this browser. |
+| Map | `M` | City circles (ring segments = share of each style, number = buildings) at country scale. Click a circle: the city opens with its list (the largest city of a merged circle). From city scale, numbered pins: the number is the building's place in its city, 1 = oldest. Numbers are shown for one city at a time; other cities' buildings are plain dots. Entries at one spot fan out. Buildings of the open city that are off screen or under a panel sit on the edge of the visible area as numbered markers pointing at them. |
+| Timeline | `T` | Desktop: one lane per country, buildings placed by start year. Phone: one column, oldest first, sticky century (or decade) headings, country chips. |
+| Review | `R` | Cards for all 204 buildings (or the 76 of TEST-ARCHED): position and the data lines first, the name after **Show answer** (`Space`). **Again** (`1`) brings the card back four cards later, **Got it** (`2`) retires it. |
 
-- **Filters** (button or `F`): a drawer over the left of the map with style, country, "Asked in previous years" (with year tags 2007–2019), Starred, and the list (cities by size, or the matching buildings, or one city's buildings). Inside one group tags are a union; across groups they intersect. The number on a tag is what you would get if you added it. The button shows how many filters are on.
-- **Period band**: a slim strip over the bottom of the map; it opens on pointer or focus (and stays open while a span is set). One solid block per style, width by number of buildings, a white tick per building. Click a block to toggle that style, drag across to keep a span of years, drag the handles to change it, double-click to reset. Each change shows a short note with **Undo**.
-- **Search** (`/` or `Ctrl/Cmd+K`): buildings, architects, cities and note text (Chinese notes included). `Up/Down` move, `Enter` opens, `Tab` keeps the text as a list filter.
-- **Building card** (340 px): number and NAME, `built span, place`, architect, a full-width dash, the summary, the `[year TEST-ARCHED]` line (full-width brackets) for buildings asked in previous years. Below it, every building of the same city with the map numbers and the distance from this one (by year / nearest first / asked first); pointing at a row lights its pin. A city with one building lists the nearest buildings instead. Opening a building fits the whole city on the map; **Whole city** does the same later. While zoomed into part of the city an overview inset (top left) shows the whole city and the current view; click it to see all. `Left/Right` step through the list, `S` stars, `Esc` closes (the drawer first, if open). Opening a building counts it as seen.
+Any building is two clicks away: a city circle (or a period block, or a city in the filters), then a pin or a list row.
 
-Other keys: `1`–`8` toggle the styles in band order.
+- **City list** (right): the city's name and count, every building with its map number. Close or `Esc`.
+- **Building card** (340 px, right): number and NAME; three English data lines with no field labels (built span and place, person, style); the summary; supplementary notes last in small grey italic (sub-buildings, `[TEST-ARCHED 2007 / 2012 / 2016]` in full-width brackets). Below, the other buildings of the city with their numbers and an arrow pointing at each. Back to the city list, previous / next (by number), star, close. Opening a building fits its whole city on the map; while zoomed in, an inset (top left) shows the whole city and the current view.
+- **Period band**: a 28 px strip over the bottom of the map, one block per style, width by number of buildings, the number inside; click a block to show only that period, again to undo. The name shows as a tooltip.
+- **Filters** (button or `F`): style, country, TEST-ARCHED (with year tags 2007–2019), starred, and the cities by size (or the matching buildings once a filter is on). Inside one group tags are a union; across groups they intersect; tag numbers are what you would get if you added the tag.
+- **Search** (`/` or `Ctrl/Cmd+K`): buildings, architects, cities and note text. `Up/Down`, `Enter` opens, `Tab` keeps the text as a filter.
 
-Phone (up to 900 px wide): search bar and style chips on top, the period band above the tab bar (Map / Timeline / Review), the filters and list in the **List** sheet, the building card as a bottom sheet (tap or drag the handle to expand, drag down to close), swipe a revealed review card right for "got it", left for "again".
+Data lines in English: built spans with Chinese wording are replaced for display by `data/years-display.txt`; styles show the English part of the handout heading; architects keep full names, rulers their short names (`data/architects.txt`).
 
-The view (mode, building, city, filters) is kept in the address, e.g. `#m=timeline&s=modern&e=1&r=1900~1950`, so it can be bookmarked or shared. Seen buildings, stars and review progress are kept in the browser (localStorage; the page works without it).
+Phone (up to 900 px wide): search and style chips on top, the period band above the tab bar, filters and cities in a sheet, the city list and the building card as bottom sheets.
+
+The view (mode, building, city, filters) is kept in the address, e.g. `#m=timeline&s=modern&e=1`. Seen buildings, stars and review progress are kept in the browser (localStorage; the page works without it).
 
 ## Run
 
@@ -50,6 +53,7 @@ The map draws its own basemap from `src/data/basemap.json` (Natural Earth, publi
 | `data/geo-raw.txt` | Coordinate overlay, five fields per line (key, sub, lang:title, coordinate, note; fields separated by a vertical bar). A page field of `lang:Title` means a Wikipedia page; `url:https://…` means another web page. A coordinate of `NONE` records that no coordinate was found. For a row with no handout location, the note must start with `Supplementary location: City` |
 | `data/geo-manual.csv` | Manual coordinates or overrides: `name,sub,lat,lng,source_url,note`. Overrides `geo-raw.txt` for the same `name` + `sub`; rows with empty lat/lng are skipped |
 | `data/geo-estimate.csv` | Intentionally empty (header only). Memory estimates are forbidden; every coordinate must come from a source |
+| `data/years-display.txt` | `handout name | built span as displayed`: English-only spans for the rows whose span is written with Chinese wording (digits, centuries as `15th`, start to completion only) |
 | `data/entries.txt` | One line per handout row: `name`, built span, summary (vertical-bar separated). The span replaces the handout year in the display; the summary is shown in the detail panel. A missing row fails the build |
 | `data/architects.txt` | `handout value | full name`: the architect line in the detail panel shows the full name; unlisted values are shown as written |
 | `data/countries.txt` | `handout location | country tag` (Italy, France, Germany, United Kingdom, United States, Others). Rows with no handout location are keyed by building name, using the supplementary location in `geo-raw.txt`. Vatican is listed under Italy |

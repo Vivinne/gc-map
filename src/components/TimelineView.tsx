@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BUILDINGS, COUNTRIES, ERAS, byYear, formatYear, whoOf, type Building } from '../lib/model';
-import { examLine } from './DetailPanel';
+import { BUILDINGS, COUNTRIES, ERAS, byYear, formatYear, type Building } from '../lib/model';
+import Facts from './Facts';
 import MiniMap from './MiniMap';
 
 interface Props {
@@ -53,7 +53,6 @@ export default function TimelineView({ list, range, selectedId, mobile, onOpen }
   }, [mobile]);
 
   const dated = useMemo(() => list.filter((b) => b.y0 != null).sort(byYear), [list]);
-  const undated = list.length - dated.length;
 
   // Domain in reference units: the band range if set, else the span of the shown buildings
   const [d0, d1] = useMemo(() => {
@@ -165,26 +164,17 @@ export default function TimelineView({ list, range, selectedId, mobile, onOpen }
             );
           })}
         </svg>
-        {list.length === 0 && <p className="empty tl-empty">No building matches every filter. Remove a tag or reset the period band.</p>}
+        {list.length === 0 && <p className="empty tl-empty">0</p>}
       </div>
       {!mobile && (
         <aside className="tl-side">
           <MiniMap width={236} height={170} items={dated} hot={hover} />
-          <p className="tl-cap">Map shows the same filter</p>
-          {undated > 0 && <p className="tl-cap">{undated} without a year are not on the timeline</p>}
           {hb && (
             <div className="tcard">
-              <p className="tl-k">{hover ? 'Under the pointer' : 'Selected'}</p>
               <div className="th" style={{ background: ERAS[hb.era].color }}>
                 {hb.name.toUpperCase()}
-                <span>{[hb.year, hb.locLabel].filter(Boolean).join(', ').toLowerCase()}</span>
               </div>
-              <p className="who">{whoOf(hb)}</p>
-              <p className="sum">{hb.summary}</p>
-              {hb.exams.length > 0 && <p className="exam">{examLine(hb)}</p>}
-              <div className="ta">
-                <span>Click to open on the map</span>
-              </div>
+              <Facts b={hb} />
             </div>
           )}
         </aside>

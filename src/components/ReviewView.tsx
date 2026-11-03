@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BUILDINGS, BY_ID, ERAS, whoOf } from '../lib/model';
+import { BUILDINGS, BY_ID, ERAS, dataLines } from '../lib/model';
 import { again, gotIt, newDeck, syncDeck, type Deck } from '../lib/review';
 import { load, save } from '../lib/storage';
-import { examLine } from './DetailPanel';
+import Facts from './Facts';
 import { Icon } from './Icons';
 import MiniMap from './MiniMap';
 
@@ -34,7 +34,9 @@ export default function ReviewView({ mobile, onSeen, onOpen, onExit }: Props) {
     setShown(false);
     save('deck-choice', deckId);
   }, [deckId]);
-  useEffect(() => save(`deck-${deckId}`, deck), [deck, deckId]);
+  useEffect(() => {
+    save(`deck-${deckId}`, deck);
+  }, [deck, deckId]);
 
   const card = deck.queue[0] ? BY_ID.get(deck.queue[0]) : undefined;
   const total = IDS[deckId].length;
@@ -79,8 +81,8 @@ export default function ReviewView({ mobile, onSeen, onOpen, onExit }: Props) {
         <div className="r-deck" role="radiogroup" aria-label="Cards">
           {(
             [
-              ['all', `All buildings ${IDS.all.length}`],
-              ['asked', `Asked in previous years ${IDS.asked.length}`],
+              ['all', `All ${IDS.all.length}`],
+              ['asked', `TEST-ARCHED ${IDS.asked.length}`],
             ] as const
           ).map(([k, l]) => (
             <button type="button" key={k} role="radio" aria-checked={deckId === k} className={`chip${deckId === k ? ' on' : ''}`} onClick={() => setDeckId(k)}>
@@ -90,7 +92,7 @@ export default function ReviewView({ mobile, onSeen, onOpen, onExit }: Props) {
         </div>
         <div className="r-prog">
           <span>
-            <b>{deck.known.length}</b> of {total} known
+            <b>{deck.known.length}</b>/{total}
           </span>
           <div className="bar">
             <i style={{ width: `${(deck.known.length / total) * 100}%` }} />
@@ -100,10 +102,11 @@ export default function ReviewView({ mobile, onSeen, onOpen, onExit }: Props) {
 
       {!card ? (
         <div className="r-done">
-          <h2>All {total} cards known.</h2>
-          <p>Start again to go through them in a new order.</p>
-          <button type="button" className="btn dark" onClick={() => setDeck(newDeck(IDS[deckId], Date.now()))}>
-            Start again
+          <h2>
+            {total}/{total}
+          </h2>
+          <button type="button" className="btn dark" aria-label="Start again" title="Start again" onClick={() => setDeck(newDeck(IDS[deckId], Date.now()))}>
+            <Icon name="undo" size={16} />
           </button>
         </div>
       ) : (
@@ -127,60 +130,43 @@ export default function ReviewView({ mobile, onSeen, onOpen, onExit }: Props) {
           >
             <div className="rc-head" style={{ background: ERAS[card.era].color }}>
               {shown ? (
-                <>
-                  <h2>{card.name.toUpperCase()}</h2>
-                  <p>{[card.year, card.locLabel].filter(Boolean).join(', ').toLowerCase()}</p>
-                </>
+                <h2>{card.name.toUpperCase()}</h2>
               ) : (
-                <h2 className="q">Which building is this?</h2>
+                <h2 className="q">?</h2>
               )}
             </div>
             <div className="rc-body">
               <MiniMap width={mobile ? 320 : 360} height={mobile ? 150 : 200} items={[]} focus={focus} />
-              <dl>
-                <dt>Built</dt>
-                <dd>{card.year || '\u2014'}</dd>
-                <dt>Place</dt>
-                <dd>{card.locLabel || '\u2014'}</dd>
-                {whoOf(card) && (
-                  <>
-                    <dt>Architect</dt>
-                    <dd>{whoOf(card)}</dd>
-                  </>
-                )}
-                <dt>Style</dt>
-                <dd>{ERAS[card.era].label}</dd>
-              </dl>
+              <div className="rc-data">
+                {dataLines(card).map((l, i) => (
+                  <p key={i}>{l}</p>
+                ))}
+              </div>
             </div>
             {shown ? (
               <div className="rc-ans">
-                <p className="sum">{card.summary}</p>
-                {card.exams.length > 0 && <p className="exam">{examLine(card)}</p>}
-                <button type="button" className="link" onClick={() => onOpen(card.id)}>
-                  Open on the map
+                <Facts b={card} data={false} />
+                <button type="button" className="icon-btn" aria-label="Open on the map" title="Open on the map" onClick={() => onOpen(card.id)}>
+                  <Icon name="map" size={16} />
                 </button>
               </div>
-            ) : (
-              <div className="hidden-name">Name hidden</div>
-            )}
+            ) : null}
           </div>
           {!shown ? (
             <button type="button" className="btn dark big" onClick={reveal}>
-              Show answer {!mobile && <kbd>Space</kbd>}
+              Show answer
             </button>
           ) : (
             <div className="r-after">
               <button type="button" className="btn big" onClick={() => answer(false)}>
-                Again {!mobile && <kbd>1</kbd>}
+                Again
               </button>
               <button type="button" className="btn dark big" onClick={() => answer(true)}>
-                Got it {!mobile && <kbd>2</kbd>}
+                Got it
               </button>
             </div>
           )}
-          <p className="r-note">
-            {shown ? (mobile ? 'Swipe right for got it, left for again.' : 'Again brings the card back a few cards later.') : `${deck.queue.length} cards left in this round.`}
-          </p>
+
         </div>
       )}
     </div>

@@ -109,3 +109,36 @@ export const CITY_BUILDINGS: Map<string, Building[]> = new Map(citiesOf(BUILDING
 export const CITY_NO: Map<string, number> = new Map(
   [...CITY_BUILDINGS.values()].flatMap((items) => items.map((b, i) => [b.id, i + 1] as [string, number])),
 );
+
+/** Full-width punctuation from the notes as plain ASCII, for the English data lines */
+export function ascii(s: string): string {
+  return s
+    .replace(/\uff08/g, ' (')
+    .replace(/\uff09/g, ')')
+    .replace(/\s*\uff0f\s*/g, ' / ')
+    .replace(/\s*\uff0b\s*/g, ' + ')
+    .replace(/\uff1b/g, '; ')
+    .replace(/\uff0c/g, ', ')
+    .replace(/\uff1a/g, ': ')
+    .replace(/\(\s+/g, '(')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+/** English style name: the part in brackets of the handout heading ("Ancient Rome"), without its note */
+export function styleName(b: Place): string {
+  const m = b.style.match(/\uff08([^\uff09]+)\uff09/);
+  const en = (m ? m[1]! : b.style).split(/[\uff1a:]/)[0]!.trim();
+  return en;
+}
+
+/** The three data lines of a building card: built span and place, person, style (English only) */
+export function dataLines(b: Building): string[] {
+  const built = b.built && b.built !== '\u2014' ? ascii(b.built) : '';
+  return [[built, b.locLabel].filter(Boolean).join(', '), ascii(whoOf(b)), styleName(b)].filter(Boolean);
+}
+
+/** Supplementary line: years the building was a topic in TEST-ARCHED */
+export function examNote(b: Place): string {
+  return b.exams.length ? `\u3010TEST-ARCHED ${b.exams.join(' / ')}\u3011` : '';
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { COUNTRIES, ERAS, byYear, formatYear, type Building } from '../lib/model';
+import { COUNTRIES, ERAS, ascii, byYear, formatYear, shortYear, type Building } from '../lib/model';
 
 interface Props {
   list: Building[];
@@ -76,16 +76,13 @@ export default function TimelineList({ list, selectedId, onOpen }: Props) {
               {g.items.map((b) => (
                 <li key={b.id}>
                   <button type="button" className={`tlv-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onOpen(b.id)}>
-                    <span className="tlv-yr">{b.yearShort}</span>
+                    <span className="tlv-yr">{ascii(shortYear(b.built))}</span>
                     <span className="tlv-spine" style={{ background: ERAS[b.era].color }}>
                       <i style={{ borderColor: ERAS[b.era].color }} />
                     </span>
                     <span className="tlv-tx">
                       <b>{b.name}</b>
-                      <em>
-                        {b.city}
-                        {b.exams.length > 0 && <span className="ex">E</span>}
-                      </em>
+                      <em>{b.city}</em>
                     </span>
                   </button>
                 </li>
@@ -93,8 +90,7 @@ export default function TimelineList({ list, selectedId, onOpen }: Props) {
             </ol>
           </section>
         ))}
-        {dated.length === 0 && <p className="empty">No building matches every filter. Remove a tag or reset the period band.</p>}
-        {undated > 0 && <p className="tlv-note">{undated} without a year are not on the timeline.</p>}
+        {dated.length === 0 && <p className="empty">0</p>}
       </div>
     </div>
   );

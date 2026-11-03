@@ -1,0 +1,38 @@
+# handout name | built span as displayed (English only; source wording stays in entries.txt)
+# Rule (user, 2026-10-30 and 2026-11-03): digits only; centuries as "15th"; only construction start and completion;
+# completion unknown -> "1882-"; several spans of one row -> earliest start to latest completion; decades as "1560s".
+Valle dei Templi | BC 6th–BC 5th
+Cloaca Maxima | BC 6th–
+Domus Aurea | AD 64–68
+Basilica of Maxentius and Constantine | 308–315
+Roman Forum and Imperial Fora | BC 6th–AD 113
+Colonne di San Lorenzo | 2nd–4th
+Mediolanum Imperial Palace District, Circo, Thermae Herculeae | 286–4th
+Basilica di Sant'Ambrogio | 379–12th
+Pisa Cathedral and Leaning Tower | 1063–1372
+Basilica of Saint-Denis | 1135–1144
+Notre-Dame de Mantes-la-Jolie | 1170–1220
+Bourges Cathedral | 1195–1230
+Reims Cathedral | 1211–1275
+Amiens Cathedral | 1220–1270
+Salisbury Cathedral | 1220–1258
+Castel del Monte | 1240–1250
+Siena Cathedral | 1215–1263
+Santa Croce - Pazzi Chapel | 1441–1478
+Pazzi Chapel (Santa Croce) | 1441–1478
+Tempio Malatestiano | 1450–1468
+Ca' Granda | 1456–17th
+Santa Maria presso San Satiro | 1478–1482
+Palazzo Gondi | 1490–1501
+Tempietto | 1502–1510
+Cortile del Belvedere | 1505–1560s
+Fontainebleau | 1528–1570
+Palladio's Villas | 1549–1559
+Villa Capra (La Rotonda) | 1566–1570
+Sforza Castle | 1450–1499
+San Carlo alle Quattro Fontane | 1634–1646
+Palazzina di Caccia di Stupinigi | 1729–1731
+Sant'Ignazio di Loyola | 1626–1650
+Arc de Triomphe／Arc du Carrousel | 1806–1836
+Sagrada Família | 1882–
+QT8 | 1946–1950s

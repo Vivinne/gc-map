@@ -269,8 +269,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             onClick={(e) => {
               if (!isClick(e)) return;
               setTip(null);
-              if (c.cities.size === 1) onCity(c.name);
-              else fitTo(c.items);
+              // One click opens the city (the largest one of a merged circle) with its list
+              onCity(c.name);
             }}
           >
             {isHot && <circle r={r + 6} className="donut-hot" />}
@@ -416,6 +416,73 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         );
       }
     }
+    // Buildings of the focused city that are off screen (or under a panel): a numbered marker on the edge of
+    // the visible area, its point aimed at the building, so the direction of every other building stays clear
+    const edgeCity = insetCity;
+    if (edgeCity && detail) {
+      const pad = padRef.current;
+      // inner frame: clear of the panels, the band, the scale and the zoom buttons
+      const r0 = { x1: pad.left + 22, y1: pad.top + 22, x2: W - pad.right - 22 - (compact ? 0 : 52), y2: H - pad.bottom - 22 - (compact ? 0 : 44) };
+      const cx = (r0.x1 + r0.x2) / 2;
+      const cy = (r0.y1 + r0.y2) / 2;
+      const edge: { b: Building; x: number; y: number; a: number }[] = [];
+      for (const b of buildings) {
+        if (b.city !== edgeCity) continue;
+        const [x, y] = proj(b.lng, b.lat);
+        if (x >= r0.x1 - 12 && x <= r0.x2 + 12 && y >= r0.y1 - 12 && y <= r0.y2 + 12) continue;
+        const dx = x - cx;
+        const dy = y - cy;
+        const tx = dx > 0 ? (r0.x2 - cx) / dx : dx < 0 ? (r0.x1 - cx) / dx : Infinity;
+        const ty = dy > 0 ? (r0.y2 - cy) / dy : dy < 0 ? (r0.y1 - cy) / dy : Infinity;
+        const t = Math.min(tx, ty);
+        edge.push({ b, x: cx + dx * t, y: cy + dy * t, a: Math.atan2(dy, dx) });
+      }
+      // the city inset (desktop, top left) covers that corner: markers there move just past it
+      if (!compact) {
+        const ix2 = pad.left + 16 + 200 + 14;
+        const iy2 = pad.top + 16 + 182 + 14;
+        for (const e of edge) {
+          if (e.x >= ix2 || e.y >= iy2) continue;
+          if (Math.abs(e.y - r0.y1) < 1) e.x = ix2;
+          else e.y = iy2;
+        }
+      }
+      // keep markers on one edge apart
+      edge.sort((p, q) => p.a - q.a);
+      for (let i = 1; i < edge.length; i++) {
+        const p = edge[i - 1]!;
+        const q = edge[i]!;
+        if (Math.hypot(q.x - p.x, q.y - p.y) < 24) {
+          const alongX = Math.abs(q.y - r0.y1) < 1 || Math.abs(q.y - r0.y2) < 1;
+          if (alongX) q.x = Math.min(r0.x2, p.x + 24);
+          else q.y = Math.min(r0.y2, p.y + 24);
+        }
+      }
+      for (const e of edge) {
+        e.x = Math.min(r0.x2, Math.max(r0.x1, e.x));
+        e.y = Math.min(r0.y2, Math.max(r0.y1, e.y));
+        const deg = (e.a * 180) / Math.PI + 90;
+        const isHot = e.b.id === hot;
+        marks.push(
+          <g
+            key={`edge-${e.b.id}`}
+            className={`mk edge${isHot ? ' hot' : ''}`}
+            transform={`translate(${e.x.toFixed(1)},${e.y.toFixed(1)})`}
+            onPointerDown={onDown}
+            onPointerEnter={() => setPinHover(e.b.id)}
+            onPointerLeave={() => setPinHover((h) => (h === e.b.id ? '' : h))}
+            onClick={(ev) => isClick(ev) && onSelect(e.b.id)}
+          >
+            <path d="M0,-19 L6,-10 L-6,-10 Z" transform={`rotate(${deg})`} fill={ERAS[e.b.era].color} />
+            <circle r={10} fill={ERAS[e.b.era].color} />
+            <text y={4} textAnchor="middle">
+              {CITY_NO.get(e.b.id) ?? ''}
+            </text>
+            <title>{e.b.name}</title>
+          </g>,
+        );
+      }
+    }
     if (selected && !detail) {
       const [x, y] = proj(selected.lng, selected.lat);
       if (inView(x, y)) {
@@ -436,11 +503,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const parts = [...tip.cities.entries()].sort((a, b) => b[1] - a[1]);
       tipEl = (
         <div className="map-tip" style={{ left: Math.min(x + r + 10, W - 250), top: y + r + 4 }}>
-          <b>{clusterName(tip)}</b>
-          <span>
-            {tip.items.length} buildings{parts.length > 1 ? `: ${parts.map(([k, v]) => `${k} ${v}`).join(', ')}` : ''}
-          </span>
-          <span className="k">Click to zoom in</span>
+          {parts.map(([k, v]) => (
+            <span key={k}>
+              <b>{k}</b> {v}
+            </span>
+          ))}
         </div>
       );
     }
@@ -483,7 +550,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         <button type="button" className="inset" style={{ left: padding.left + 16, top: padding.top + 16 }} onClick={() => showCity(insetCity)} aria-label={`Show all of ${insetCity}`}>
           <span className="ih">
             <b>{insetCity}</b>
-            <span>{cityItems.length} buildings, click for all</span>
+            <span>{cityItems.length}</span>
           </span>
           <svg width={iw} height={ih}>
             <defs>
@@ -512,7 +579,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       {overlay}
       {inset}
       {outside.total > 0 && !(compact && selected) && (
-        <div className="away" style={{ left: padding.left + 16, bottom: padding.bottom + 52 }}>
+        <div className="away" style={{ left: padding.left + 16, bottom: padding.bottom + 30 }}>
           {awayOpen &&
             outside.groups.map(([k, v]) => (
               <button
@@ -529,20 +596,19 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
                 <Icon name="right" size={12} />
               </button>
             ))}
-          <button type="button" className={`chip away-chip${awayOpen ? ' on' : ''}`} aria-expanded={awayOpen} onClick={() => setAwayOpen((o) => !o)}>
-            Outside this view
-            <span className="n">{outside.total}</span>
+          <button type="button" className={`chip away-chip${awayOpen ? ' on' : ''}`} aria-expanded={awayOpen} aria-label="Outside this view" title="Outside this view" onClick={() => setAwayOpen((o) => !o)}>
+            <span className="n">+{outside.total}</span>
             <Icon name={awayOpen ? 'close' : 'right'} size={12} />
           </button>
         </div>
       )}
       {scale && !(compact && selected) && (
-        <div className="scale" style={{ left: padding.left + 16, bottom: padding.bottom + 14 }}>
+        <div className="scale" style={{ left: padding.left + 16, bottom: padding.bottom }}>
           {scale.label}
           <i style={{ width: scale.px }} />
         </div>
       )}
-      <div className="ctrls" style={{ right: padding.right + 14, bottom: padding.bottom + 14 }}>
+      <div className="ctrls" style={{ right: padding.right + 16, bottom: padding.bottom }}>
         <button type="button" aria-label="Zoom in" onClick={() => map?.zoomIn({ duration: motion(250) })}>
           <Icon name="plus" />
         </button>
@@ -553,7 +619,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           <Icon name="fit" />
         </button>
       </div>
-      <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: padding.right + 64, bottom: padding.bottom + 4 }}>
+      <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: 16, bottom: compact ? 2 : 2 }}>
         Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors
       </div>
     </div>

@@ -1,17 +1,15 @@
 'use client';
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
-import { EMPTY, apply, describe, isEmpty, tagCounts, type Filters } from '../lib/filter';
+import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, formatHash, parseHash, type Mode } from '../lib/hash';
-import { BUILDINGS, BY_ID, ERAS, ERA_ORDER, byYear, type Building } from '../lib/model';
-import type { Deck } from '../lib/review';
-import { nearest } from '../lib/geo';
+import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear, type Building } from '../lib/model';
 import { load, save } from '../lib/storage';
 import type { EraId } from '../lib/types';
-import DetailPanel from './DetailPanel';
+import { BuildingCard, CityPanel, cityOrder } from './DetailPanel';
 import EraBand from './EraBand';
 import { Icon } from './Icons';
-import IndexPanel, { type CitySort } from './IndexPanel';
+import IndexPanel from './IndexPanel';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import ReviewView from './ReviewView';
 import SearchPalette from './SearchPalette';
@@ -48,16 +46,13 @@ export default function App() {
   const [selId, setSelId] = useState(BY_ID.has(initial.b) ? initial.b : '');
   const [city, setCity] = useState(initial.city);
   const [filters, setFiltersRaw] = useState<Filters>(initial.filters);
-  const [citySort, setCitySort] = useState<CitySort>('year');
   const [seen, setSeen] = useState<Set<string>>(() => new Set(load<string[]>('seen', [])));
   const [starred, setStarred] = useState<Set<string>>(() => new Set(load<string[]>('starred', [])));
-  const [last, setLast] = useState<string>(() => load<string>('last', ''));
   const [palette, setPalette] = useState<string | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
   const [hoverCity, setHoverCity] = useState('');
   const [sheet, setSheet] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [bandOpen, setBandOpen] = useState(false);
   const [hoverId, setHoverId] = useState('');
   const mobile = useMedia(MOBILE_QUERY);
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)');
@@ -76,43 +71,27 @@ export default function App() {
   const dFilters = useDeferredValue(filters);
   const results = useMemo(() => apply(dFilters, starred).sort(byYear), [dFilters, starred]);
   const counts = useMemo(() => tagCounts(filters, starred), [filters, starred]);
-  const bandBase = useMemo(() => apply({ ...dFilters, styles: [], range: null }, starred), [dFilters, starred]);
+  const bandBase = useMemo(() => apply({ ...dFilters, styles: [] }, starred), [dFilters, starred]);
   const selected = selId ? (BY_ID.get(selId) ?? null) : null;
 
-  const cityItems = useMemo(() => {
-    if (!city) return [];
-    const items = results.filter((b) => b.city === city);
-    if (citySort === 'az') return [...items].sort((a, b) => a.name.localeCompare(b.name));
-    if (citySort === 'asked') return [...items].sort((a, b) => Number(b.exams.length > 0) - Number(a.exams.length > 0) || byYear(a, b));
-    return items;
-  }, [city, results, citySort]);
 
-  // Order used by Previous / Next and the "n of N" line
+  // Order used by Previous / Next: the city's list (style groups, then year); a one-building city steps
+  // through the same country by year
   const nav = useMemo(() => {
     if (!selected) return null;
-    let list: Building[];
-    let label: string;
-    if (city && cityItems.some((b) => b.id === selected.id)) {
-      list = cityItems;
-      label = `in ${city}`;
-    } else if (!isEmpty(filters) && results.some((b) => b.id === selected.id)) {
-      list = results;
-      label = 'in this list';
-    } else {
-      list = BUILDINGS.filter((b) => b.city === selected.city).sort(byYear);
-      label = `in ${selected.city}`;
-      // A city with one building: step through the nearest buildings instead
-      if (list.length < 2) {
-        list = [selected, ...nearest(selected, BUILDINGS, 9).map((n) => n.b)];
-        label = 'nearby';
-      }
-    }
-    return { list, index: list.findIndex((b) => b.id === selected.id), label };
-  }, [selected, city, cityItems, filters, results]);
+    let list = cityOrder(selected.city);
+    if (list.length < 2) list = BUILDINGS.filter((b) => b.country === selected.country).sort(byYear);
+    return { list, index: list.findIndex((b) => b.id === selected.id) };
+  }, [selected]);
+  const panelOpen = mode === 'map' && (!!selected || !!city);
 
   // ---------- persistence ----------
-  useEffect(() => save('seen', [...seen]), [seen]);
-  useEffect(() => save('starred', [...starred]), [starred]);
+  useEffect(() => {
+    save('seen', [...seen]);
+  }, [seen]);
+  useEffect(() => {
+    save('starred', [...starred]);
+  }, [starred]);
   useEffect(() => {
     if (!HASH_STATE) return;
     const h = formatHash({ mode, b: selId, city, filters });
@@ -138,8 +117,8 @@ export default function App() {
 
   // ---------- map padding (panels that cover the map) ----------
   const padding: Padding = mobile
-    ? { top: 8, right: 44, bottom: selected && mode === 'map' ? Math.round(mainHeight * 0.46) : 0, left: 0 }
-    : { top: 0, right: selected ? 372 : 0, bottom: 52, left: filtersOpen ? 336 : 0 };
+    ? { top: 8, right: 48, bottom: panelOpen ? Math.round(mainHeight * 0.46) : 0, left: 0 }
+    : { top: 0, right: panelOpen ? 372 : 0, bottom: 60, left: filtersOpen ? 352 : 0 };
 
   // ---------- actions ----------
   const select = useCallback(
@@ -147,9 +126,8 @@ export default function App() {
       const b = BY_ID.get(id);
       if (!b) return;
       setSelId(id);
+      setCity(b.city);
       setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
-      setLast(id);
-      save('last', id);
       setSheet(false);
       if (opts.fly !== false) window.requestAnimationFrame(() => mapRef.current?.showBuilding(b));
     },
@@ -159,14 +137,19 @@ export default function App() {
   const focusCity = useCallback(
     (c: string) => {
       setCity(c);
+      setSelId('');
       setSheet(false);
-      const items = results.filter((b) => b.city === c);
-      mapRef.current?.fitTo(items.length ? items : BUILDINGS.filter((b) => b.city === c));
+      setFiltersOpen(false);
+      mapRef.current?.showCity(c);
     },
-    [results],
+    [],
   );
 
   const closeDetail = useCallback(() => setSelId(''), []);
+  const closeCity = useCallback(() => {
+    setSelId('');
+    setCity('');
+  }, []);
   const step = useCallback(
     (d: number) => {
       if (!nav || nav.list.length < 2) return;
@@ -186,14 +169,8 @@ export default function App() {
   const toggleStyle = useCallback((id: EraId) => {
     setFiltersRaw((f) => ({ ...f, styles: f.styles.includes(id) ? f.styles.filter((x) => x !== id) : [...f.styles, id] }));
   }, []);
-  const setRange = useCallback(
-    (r: [number, number] | null) => {
-      setFilters({ ...filters, range: r }, (n) => (r ? `Showing ${n} buildings, ${describe({ ...EMPTY, range: r })}` : `Period reset, ${n} buildings`));
-    },
-    [filters, setFilters],
-  );
   const clearAll = useCallback(() => {
-    setFilters(EMPTY, () => `Filters cleared, ${TOTAL} buildings`);
+    setFilters(EMPTY, () => `${TOTAL} buildings`);
     setCity('');
   }, [setFilters]);
 
@@ -221,7 +198,7 @@ export default function App() {
         if (sheet) setSheet(false);
         else if (filtersOpen) setFiltersOpen(false);
         else if (selId) closeDetail();
-        else if (city) setCity('');
+        else if (city) closeCity();
         return;
       }
       if (mode === 'review') {
@@ -240,19 +217,9 @@ export default function App() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, filtersOpen]);
+  }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
   // ---------- pieces ----------
-  const highlight = useMemo(() => {
-    const s = new Set<string>();
-    if (city) for (const b of cityItems) s.add(b.id);
-    if (selected) s.add(selected.id);
-    return s;
-  }, [city, cityItems, selected]);
-
-  const reviewKnown = load<Deck | null>('deck-all', null)?.known.length ?? 0;
-  const lastB = last ? BY_ID.get(last) : undefined;
-
   const modes: [Mode, string, 'map' | 'time' | 'cards', string][] = [
     ['map', 'Map', 'map', 'M'],
     ['timeline', 'Timeline', 'time', 'T'],
@@ -264,19 +231,10 @@ export default function App() {
       filters={filters}
       counts={counts}
       results={results}
-      city={city}
-      cityItems={cityItems}
-      citySort={citySort}
       selectedId={selId}
-      seen={seen}
       onFilters={(f) => setFiltersRaw(f)}
       onClear={clearAll}
       onCity={focusCity}
-      onLeaveCity={() => {
-        setCity('');
-        mapRef.current?.fitAll(results);
-      }}
-      onCitySort={setCitySort}
       onSelect={(id) => {
         if (mode !== 'map') setMode('map');
         select(id);
@@ -288,20 +246,10 @@ export default function App() {
   const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who].filter(Boolean).length;
   const band = mode !== 'review' && (
     <footer
-      className={`band${!mobile ? ` dock${bandOpen || filters.range ? ' open' : ''}` : ''}`}
-      style={!mobile ? { left: (filtersOpen && mode === 'map' ? 336 : 0) + 16, right: (selected && mode === 'map' ? 372 : 0) + 16 } : undefined}
-      onPointerEnter={() => setBandOpen(true)}
-      onPointerLeave={() => setBandOpen(false)}
-      onFocus={() => setBandOpen(true)}
-      onBlur={() => setBandOpen(false)}
+      className={`band${mobile ? '' : ' dock'}`}
+      style={!mobile ? { left: (filtersOpen ? 352 : 0) + 16, right: (panelOpen ? 372 : 0) + 16 } : undefined}
     >
-      {!mobile && (
-        <div className="band-meta">
-          <b>{filters.range ? describe({ ...EMPTY, range: filters.range }) : filters.styles.length ? filters.styles.map((s) => ERAS[s].label).join(', ') : 'All periods'}</b>
-          <span>{filters.range ? 'Drag the handles. Double-click to reset.' : 'Click a block or drag across'}</span>
-        </div>
-      )}
-      <EraBand base={bandBase} shown={results} styles={filters.styles} range={filters.range} highlight={highlight} compact={mobile} slim={!mobile && !(bandOpen || !!filters.range)} onToggleStyle={toggleStyle} onRange={setRange} />
+      <EraBand base={bandBase} styles={filters.styles} onToggleStyle={toggleStyle} />
     </footer>
   );
 
@@ -309,33 +257,27 @@ export default function App() {
     <div className={`app mode-${mode}${mobile ? ' is-mobile' : ''}`}>
       {!mobile ? (
         <header className="top">
-          <div className="brand">
-            <b>GC Atlas</b>
-            <span>{TOTAL} buildings</span>
-          </div>
-          <button type="button" className="search" onClick={() => setPalette('')}>
-            <Icon name="search" size={17} />
-            <span className="ph">Search buildings, architects, cities</span>
-            <kbd>/</kbd>
-          </button>
-          <button type="button" className={`fbtn${filtersOpen ? ' open' : ''}${activeFilters ? ' on' : ''}`} aria-expanded={filtersOpen} onClick={() => setFiltersOpen((o) => !o)} title="Filters and lists (F)">
+          <div className="brand">GC Atlas</div>
+          <button type="button" className={`fbtn${filtersOpen ? ' open' : ''}${activeFilters ? ' on' : ''}`} aria-expanded={filtersOpen} aria-label="Filters" onClick={() => setFiltersOpen((o) => !o)} title="Filters (F)">
             <Icon name="filter" size={16} />
-            Filters
             {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
+          </button>
+          <button type="button" className="search" onClick={() => setPalette('')} title="Search (/)">
+            <Icon name="search" size={16} />
+            <span className="ph">{filters.q || 'Search'}</span>
           </button>
           <nav className="modes" aria-label="Views">
             {modes.map(([m, label, icon, key]) => (
-              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} onClick={() => setMode(m)}>
-                <Icon name={icon} size={18} />
+              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} onClick={() => setMode(m)} title={`${label} (${key})`}>
+                <Icon name={icon} size={17} />
                 {label}
-                <kbd>{key}</kbd>
               </button>
             ))}
           </nav>
-          <div className="seen" title="Buildings you have opened">
-            <div className="t">
-              {seen.size} seen <span>of {TOTAL}</span>
-            </div>
+          <div className="seen" title="Buildings opened">
+            <span>
+              {seen.size}/{TOTAL}
+            </span>
             <div className="bar">
               <i style={{ width: `${(seen.size / TOTAL) * 100}%` }} />
             </div>
@@ -346,14 +288,14 @@ export default function App() {
           <header className="m-top">
             <button type="button" className="m-search" onClick={() => setPalette('')}>
               <Icon name="search" size={17} />
-              <span>{filters.q ? filters.q : 'Search buildings, architects, cities'}</span>
+              <span>{filters.q || 'Search'}</span>
               <span className="m-seen">
                 {seen.size}/{TOTAL}
               </span>
             </button>
             <div className="m-chips">
               <button type="button" className={`chip${filters.exam ? ' on' : ''}`} onClick={() => setFiltersRaw({ ...filters, exam: !filters.exam, examYears: [] })}>
-                Asked <span className="n">{counts.exam}</span>
+                TEST-ARCHED <span className="n">{counts.exam}</span>
               </button>
               {ERA_ORDER.map((e) => (
                 <button type="button" key={e} className={`chip${filters.styles.includes(e) ? ' on' : ''}`} onClick={() => toggleStyle(e)}>
@@ -363,7 +305,6 @@ export default function App() {
               ))}
               <button type="button" className={`chip${!isEmpty(filters) ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label="All filters and list">
                 <Icon name="filter" size={15} />
-                List
               </button>
             </div>
           </header>
@@ -375,8 +316,7 @@ export default function App() {
         {!mobile && filtersOpen && mode !== 'review' && (
           <div className="drawer">
             <div className="drawer-h">
-              <b>Filters</b>
-              <span>{results.length} buildings</span>
+              <b>{results.length}</b>
               <button type="button" className="icon-btn" aria-label="Close filters" onClick={() => setFiltersOpen(false)}>
                 <Icon name="close" size={13} />
               </button>
@@ -400,18 +340,32 @@ export default function App() {
             onCity={focusCity}
             onReady={() => setMapReady(true)}
           />
-          {selected && mode === 'map' && (
-            <DetailPanel
+          {mode === 'map' && selected && (
+            <BuildingCard
               b={selected}
-              position={nav ? { index: nav.index + 1, total: nav.list.length, label: nav.label } : null}
               starred={starred.has(selected.id)}
               mobile={mobile}
+              canStep={!!nav && nav.list.length > 1}
               onPrev={() => step(-1)}
               onNext={() => step(1)}
-              onClose={closeDetail}
+              onClose={closeCity}
               onStar={() => toggleStar(selected.id)}
+              onBack={() => {
+                setSelId('');
+                mapRef.current?.showCity(selected.city);
+              }}
               onSelect={(id) => select(id)}
-              onWholeCity={(c) => mapRef.current?.showCity(c)}
+              onHover={setHoverId}
+            />
+          )}
+          {mode === 'map' && !selected && city && CITY_BUILDINGS.has(city) && (
+            <CityPanel
+              city={city}
+              mobile={mobile}
+              selectedId={selId}
+              onSelect={(id) => select(id)}
+              onClose={closeCity}
+              onWhole={() => mapRef.current?.showCity(city)}
               onHover={setHoverId}
             />
           )}
@@ -472,9 +426,9 @@ export default function App() {
       {mobile && sheet && (
         <div className="m-sheet" role="dialog" aria-label="Filters and list">
           <div className="m-sheet-h">
-            <b>{results.length} buildings</b>
-            <button type="button" className="btn dark" onClick={() => setSheet(false)}>
-              Done
+            <b>{results.length}</b>
+            <button type="button" className="icon-btn" aria-label="Close" onClick={() => setSheet(false)}>
+              <Icon name="close" size={14} />
             </button>
           </div>
           {index}
@@ -483,7 +437,6 @@ export default function App() {
 
       {toast && (
         <div className="toast" role="status" key={toast.id}>
-          <Icon name="check" size={14} />
           <span>{toast.text}</span>
           {toast.undo && (
             <button
@@ -514,7 +467,7 @@ export default function App() {
             setCity('');
             setMode('map');
             const next = { ...filters, who, q: '' };
-            setFilters(next, (n) => `Showing ${n} buildings by ${who}`);
+            setFilters(next, (n) => `${who}: ${n}`);
             window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13));
           }}
           onCity={(c) => {
@@ -525,7 +478,7 @@ export default function App() {
           onKeep={(q) => {
             setPalette(null);
             const next = { ...filters, q };
-            setFilters(next, (n) => `Showing ${n} matches for "${q}"`);
+            setFilters(next, (n) => `${q}: ${n}`);
             if (mode === 'map') window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13));
           }}
         />
