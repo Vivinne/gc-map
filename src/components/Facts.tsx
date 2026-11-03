@@ -1,7 +1,7 @@
 import { ascii, dataLines, examNote, type Building } from '../lib/model';
 
 /**
- * Body of a building everywhere it appears (card, search preview, timeline, review answer):
+ * Body of a building everywhere it appears (card, search preview, review answer):
  * the English data lines (no field labels), the summary, then supplementary notes last in small grey italic.
  */
 export default function Facts({ b, data = true, summary = true }: { b: Building; data?: boolean; summary?: boolean }) {

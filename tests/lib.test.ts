@@ -65,7 +65,7 @@ test('tag counts are "if this tag were added"', () => {
 });
 
 test('address hash round trip', () => {
-  const s = { mode: 'timeline' as const, b: 'pantheon-rome', city: 'Rome', filters: { ...EMPTY, styles: ['ancient' as const], countries: ['Italy'], exam: true, examYears: [2016], range: [-500, 1500] as [number, number], q: 'dome', who: 'Hadrian', starred: true } };
+  const s = { mode: 'review' as const, b: 'pantheon-rome', city: 'Rome', filters: { ...EMPTY, styles: ['ancient' as const], countries: ['Italy'], exam: true, examYears: [2016], range: [-500, 1500] as [number, number], q: 'dome', who: 'Hadrian', starred: true } };
   assert.deepEqual(parseHash(formatHash(s)), s);
   assert.deepEqual(parseHash('#s=bogus&k=Mars&y=1990'), { mode: 'map', b: '', city: '', filters: EMPTY });
 });

@@ -1,16 +1,15 @@
 # GC Atlas
 
-General Culture buildings (handout C3 §6.1–6.15, 204 rows) as a map, a timeline and a review deck.
+General Culture buildings (handout C3 §6.1–6.15, 204 rows) as a map, a review deck and a personal area (quiz, collections).
 All 204 buildings are located; every coordinate has a source (see "Data flow").
 
 ## Views
 
-The map fills the window under a 48 px top bar (filters, search, Map / Timeline / Review / Me, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
+The map fills the window under a 48 px top bar (filters, search, Map / Review / Me, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
 
 | View | Key | What it does |
 |---|---|---|
 | Map | `M` | Buttons at the lower right: zoom in, zoom out, **Country** (the open building's country, else the one at the centre) and **Full map** (Europe). City circles (ring segments = share of each style, number = buildings) at country scale. Click a circle: the city opens with its list (the largest city of a merged circle). From city scale, numbered pins: the number is the building's place in its city, 1 = oldest. Numbers are shown for one city at a time; other cities' buildings are plain dots. Entries at one spot fan out. Buildings of the open city that are off screen or under a panel sit on the edge of the visible area as numbered markers pointing at them. |
-| Timeline | `T` | Desktop: one lane per country, buildings placed by start year. Phone: one column, oldest first, sticky century (or decade) headings, country chips. |
 | Review | `R` | Cards for all 204 buildings (or the 76 of TEST-ARCHED): position and the data lines first, the name after **Show answer** (`Space`). **Again** (`1`) brings the card back four cards later, **Got it** (`2`) retires it. |
 | Me | `U` | **Quiz**: a 4 x 4 grid picks what is shown and what is asked among building, style, architect and city (12 pairs, or **Mixed**); each cell shows the score for that pair. Scope: all, TEST-ARCHED, starred, a collection or a style. Four choices (`1`-`4`), `Enter` for the next; wrong choices are never also right for the prompt, and buildings with no architect are not asked about architects. **Missed** asks the missed questions again until answered right. **Collections**: Starred plus collections you name (add, rename, move up, delete with a second click); the map button shows a collection on the map as a filter. **Export / Import** moves seen, stars, collections and quiz scores to another browser as a JSON file (import adds to what is there). |
 
@@ -84,7 +83,7 @@ Priority: `geo-manual.csv` > `geo-raw.txt` > `geo-estimate.csv`.
 | `src/lib/quiz.ts` | Cross quiz: pairs, questions, scores |
 | `src/lib/collections.ts` | Collections, export / import file |
 | `src/lib/hash.ts`, `storage.ts` | View state, browser storage |
-| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, timeline, review, me |
+| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, review, me |
 
 All code, comments and UI text are English; the study notes in `content/` and the data files keep their original wording.
 

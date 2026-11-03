@@ -9,7 +9,7 @@ export const EXAM_YEARS = Array.from({ length: 13 }, (_, i) => 2007 + i);
 export interface Building extends Place {
   /** City key used for grouping: the display location without a trailing two-letter country code */
   city: string;
-  /** Start year used for sorting, the band and the timeline (BC negative); null when the source gives none */
+  /** Start year used for sorting, the band and lists (BC negative); null when the source gives none */
   y0: number | null;
   /** Short year shown in lists (first part of the built span, as written) */
   yearShort: string;

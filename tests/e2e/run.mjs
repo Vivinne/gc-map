@@ -185,18 +185,6 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.locator('.drawer .chip', { hasText: 'TEST-ARCHED' }).click();
   await shot(page, 'd5-filters');
   await page.keyboard.press('Escape');
-  await page.keyboard.press('t');
-  await page.waitForTimeout(600);
-  check('timeline draws items', (await page.locator('.tl-item').count()) > 10);
-  await page.locator('.tl-item').nth(8).hover();
-  await page.waitForTimeout(200);
-  check('timeline hover preview', (await page.locator('.tl-side .tcard').count()) === 1);
-  await shot(page, 'd6-timeline');
-  await page.locator('.tl-item').nth(8).click();
-  await page.waitForTimeout(900);
-  check('timeline click opens on map', (await page.locator('.side.card').count()) === 1 && (await page.locator('.modes .on').textContent()).includes('Map'));
-  await page.keyboard.press('Escape');
-  await page.keyboard.press('Escape');
 
   // Review
   await page.keyboard.press('r');
@@ -270,7 +258,7 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
 {
   const { page, errors } = await open({ width: 390, height: 844 });
   await shot(page, 'm1-home');
-  check('phone tab bar', (await page.locator('.tabbar button').count()) === 4);
+  check('phone tab bar', (await page.locator('.tabbar button').count()) === 3);
   await page.locator('.m-chips .chip[aria-label="All filters and list"]').click();
   check('phone list sheet', (await page.locator('.m-sheet').count()) === 1);
   await page.locator('.m-sheet .city', { hasText: 'Milan' }).click();
@@ -290,15 +278,8 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.waitForTimeout(400);
   await shot(page, 'm5-me');
   check('phone me: quiz fits', (await page.locator('.qz-o').count()) === 4 && (await page.evaluate(() => document.querySelector('.me').scrollWidth - document.querySelector('.me').clientWidth)) <= 0);
-  await page.locator('.tabbar button', { hasText: 'Timeline' }).click();
+  await page.locator('.tabbar button', { hasText: /^Map$/ }).click();
   await page.waitForTimeout(400);
-  await shot(page, 'm4-timeline');
-  check('phone timeline in one column', (await page.locator('.tlv-row').count()) > 50);
-  await page.locator('.tlv-filter .chip', { hasText: 'France' }).click();
-  check('phone timeline country filter', (await page.locator('.tlv-row').count()) === 30);
-  await page.locator('.tlv-row', { hasText: 'Villa Savoye' }).click();
-  await page.waitForTimeout(900);
-  check('phone timeline opens the building', /VILLA SAVOYE$/.test((await page.locator('.side.card h1').innerText()).trim()));
   await page.locator('.m-search').click();
   await page.keyboard.type('bramante');
   await page.waitForTimeout(200);

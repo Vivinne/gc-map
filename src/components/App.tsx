@@ -16,8 +16,6 @@ import MeView from './MeView';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import ReviewView from './ReviewView';
 import SearchPalette from './SearchPalette';
-import TimelineList from './TimelineList';
-import TimelineView from './TimelineView';
 
 const MOBILE_QUERY = '(max-width: 900px)';
 const TOTAL = BUILDINGS.length;
@@ -292,13 +290,11 @@ export default function App() {
       }
       if (mode === 'review' || mode === 'me') {
         if (e.key === 'm') setMode('map');
-        if (e.key === 't') setMode('timeline');
         if (mode === 'me' && e.key === 'r') setMode('review');
         if (mode === 'review' && e.key === 'u') setMode('me');
         return;
       }
       if (e.key === 'm') setMode('map');
-      else if (e.key === 't') setMode('timeline');
       else if (e.key === 'r') setMode('review');
       else if (e.key === 'u') setMode('me');
       else if (e.key === 'ArrowRight' && selId) step(1);
@@ -312,9 +308,8 @@ export default function App() {
   }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
   // ---------- pieces ----------
-  const modes: [Mode, string, 'map' | 'time' | 'cards' | 'me', string][] = [
+  const modes: [Mode, string, 'map' | 'cards' | 'me', string][] = [
     ['map', 'Map', 'map', 'M'],
-    ['timeline', 'Timeline', 'time', 'T'],
     ['review', 'Review', 'cards', 'R'],
     ['me', 'Me', 'me', 'U'],
   ];
@@ -473,31 +468,6 @@ export default function App() {
             />
           )}
         </div>
-        {mode === 'timeline' && (
-          <div className="pane on">
-            {mobile ? (
-              <TimelineList
-                list={results}
-                selectedId={selId}
-                onOpen={(id) => {
-                  setMode('map');
-                  select(id);
-                }}
-              />
-            ) : (
-              <TimelineView
-                list={results}
-                range={filters.range}
-                selectedId={selId}
-                mobile={false}
-                onOpen={(id) => {
-                  setMode('map');
-                  select(id);
-                }}
-              />
-            )}
-          </div>
-        )}
         {mode === 'me' && (
           <div className="pane on">
             <MeView
