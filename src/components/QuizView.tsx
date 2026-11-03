@@ -65,21 +65,88 @@ interface Props {
   onOpen(id: string): void;
 }
 
-
 interface Setup {
   type: PairChoice;
   scope: string;
   count: number;
 }
 
-interface Answer {
-  q: Question;
-  picked: string;
+/** A pick per question; null = skipped or not answered yet */
+type Picks = (string | null)[];
+
+type Phase =
+  | { kind: 'setup' }
+  | { kind: 'run'; qs: Question[]; i: number; picks: Picks; seen: number; label: string; scope: string }
+  | { kind: 'done'; qs: Question[]; picks: Picks; label: string; scope: string; again: () => void };
+
+/** Question types in the order users ask for them: from the building first, then back to it, then the rest */
+const TYPE_ORDER: PairChoice[] = ['name>city', 'name>architect', 'name>style', 'city>name', 'architect>name', 'style>name', 'city>style', 'city>architect', 'style>city', 'style>architect', 'architect>city', 'architect>style', 'mixed'];
+
+interface Opt {
+  id: string;
+  label: string;
+  n?: number;
+  color?: string;
+  star?: boolean;
+  /** A rule above this option */
+  rule?: boolean;
 }
 
-type Phase = { kind: 'setup' } | { kind: 'run'; qs: Question[]; i: number; answers: Answer[]; missedOnly: boolean } | { kind: 'done'; qs: Question[]; answers: Answer[]; setup: Setup; missedOnly: boolean };
+/** Drop-down: a box with the value; the menu opens under it and closes on a pick, outside click or Esc */
+function Dropdown({ label, value, options, onPick }: { label: string; value: string; options: Opt[]; onPick(id: string): void }) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const cur = options.find((o) => o.id === value) ?? options[0]!;
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: PointerEvent) => box.current && !box.current.contains(e.target as Node) && setOpen(false);
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && (e.stopPropagation(), setOpen(false));
+    window.addEventListener('pointerdown', down);
+    window.addEventListener('keydown', key, true);
+    return () => {
+      window.removeEventListener('pointerdown', down);
+      window.removeEventListener('keydown', key, true);
+    };
+  }, [open]);
+  return (
+    <div className="qv-dd" ref={box}>
+      <span className="qv-l">{label}</span>
+      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="listbox" aria-expanded={open} aria-label={label} onClick={() => setOpen(!open)}>
+        {cur.color && <i className="sw" style={{ background: cur.color }} />}
+        {cur.star && <Icon name="starOn" size={13} />}
+        <span className="v">{cur.label}</span>
+        {cur.n != null && <span className="n">{cur.n}</span>}
+        <Icon name="down" size={13} />
+      </button>
+      {open && (
+        <ul className="qv-menu" role="listbox" aria-label={label}>
+          {options.map((o) => (
+            <li key={o.id} className={o.rule ? 'rule' : ''}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={o.id === value}
+                className={o.id === value ? 'on' : ''}
+                disabled={o.n === 0}
+                onClick={() => {
+                  onPick(o.id);
+                  setOpen(false);
+                }}
+              >
+                {o.color && <i className="sw" style={{ background: o.color }} />}
+                {o.star && <Icon name="starOn" size={13} />}
+                <span className="v">{o.label}</span>
+                {o.n != null && <span className="n">{o.n}</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
-/** Quiz: set-up (type, scope, number of questions), the run (restart / end) and the result */
+/** Quiz: set-up with three drop-downs, the run (answers shown only at the end; Next always works), the result */
 export default function QuizView({ active, mobile, starred, collections, quiz, request, onQuiz, onOpen }: Props) {
   const [setup, setSetupRaw] = useState<Setup>(() => {
     const s = load<Partial<Setup>>('quiz-setup', {});
@@ -93,22 +160,23 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
       return n;
     });
   const [phase, setPhase] = useState<Phase>({ kind: 'setup' });
-  const nextRef = useRef<HTMLButtonElement>(null);
-
   const [extra, setExtra] = useState<QuizScope | null>(null);
   const scopes = useMemo(() => quizScopes(starred, collections, extra), [starred, collections, extra]);
-  const scope = scopes.find((s) => s.id === setup.scope) ?? scopes[0]!;
-  const missedHere = useMemo(() => {
-    const ids = new Set(scope.items.map((b) => b.id));
-    return quiz.wrong.filter((w) => ids.has(w.split('|')[0]!));
-  }, [quiz.wrong, scope]);
+  const scope = scopes.find((s) => s.id === setup.scope) ?? scopes.find((s) => s.id === 'all')!;
   const cap = capacity(scope.items, setup.type);
+  const missedAll = useMemo(() => [...quiz.wrong].reverse(), [quiz.wrong]);
 
-  const start = (s: Setup, missedOnly = false, missed?: string[]) => {
-    const pool = (scopes.find((x) => x.id === s.scope) ?? scopes[0]!).items;
-    const qs = buildQuiz(pool, s.type, s.count, BUILDINGS, Math.floor(Math.random() * 1e9), missedOnly ? (missed ?? missedHere) : undefined);
+  const begin = (qs: Question[], label: string, scopeLabel: string) => {
     if (!qs.length) return;
-    setPhase({ kind: 'run', qs, i: 0, answers: [], missedOnly });
+    setPhase({ kind: 'run', qs, i: 0, picks: qs.map(() => null), seen: 1, label, scope: scopeLabel });
+  };
+  const startSetup = (s: Setup) => {
+    const pool = (scopes.find((x) => x.id === s.scope) ?? scope).items;
+    const sc = scopes.find((x) => x.id === s.scope) ?? scope;
+    begin(buildQuiz(pool, s.type, s.count, BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(s.type), sc.label);
+  };
+  const startMissed = (entries: string[], scopeLabel = 'Missed') => {
+    begin(buildQuiz([], 'mixed', Math.min(30, entries.length), BUILDINGS, Math.floor(Math.random() * 1e9), entries), 'Missed', scopeLabel);
   };
 
   // A request from Me: set the scope (and type) and start
@@ -118,240 +186,300 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     handled.current = request.nonce;
     setExtra(request.extra ?? null);
     const next = { ...setup, scope: request.scope, ...(request.type ? { type: request.type } : {}) };
-    if (!request.extra) setSetup({ scope: request.scope, ...(request.type ? { type: request.type } : {}) });
-    else setSetupRaw(next);
+    if (request.extra) setSetupRaw(next);
+    else setSetup({ scope: request.scope, ...(request.type ? { type: request.type } : {}) });
+    if (request.missed) return startMissed(request.missed, request.extra?.label ?? 'Missed');
     const pool = request.extra && request.extra.id === request.scope ? request.extra.items : (quizScopes(starred, collections).find((x) => x.id === request.scope) ?? { items: BUILDINGS }).items;
-    const qs = buildQuiz(pool, next.type, next.count, BUILDINGS, Math.floor(Math.random() * 1e9), request.missed);
-    setPhase(qs.length ? { kind: 'run', qs, i: 0, answers: [], missedOnly: !!request.missed } : { kind: 'setup' });
+    const label = request.extra?.label ?? quizScopes(starred, collections).find((x) => x.id === request.scope)?.label ?? 'All';
+    begin(buildQuiz(pool, next.type, next.count, BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(next.type), label);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
 
-  const finish = (qs: Question[], answers: Answer[], missedOnly: boolean) => {
-    const right = answers.filter((a) => a.picked === a.q.answer).length;
-    const session: Session = { t: Date.now(), type: missedOnly ? 'missed' : setup.type, scope: scope.label, n: qs.length, total: answers.length, right };
-    onQuiz((q) => addSession(q, session));
-    setPhase({ kind: 'done', qs, answers, setup, missedOnly });
+  // Finish: score, record every question that was reached (a skip counts as missed), keep the session
+  const finish = (p: Extract<Phase, { kind: 'run' }>) => {
+    const reached = p.qs.slice(0, Math.max(p.seen, p.picks.filter((x) => x != null).length));
+    const picks = p.picks.slice(0, reached.length);
+    const right = reached.filter((q, k) => picks[k] === q.answer).length;
+    onQuiz((s) => {
+      let n = s;
+      reached.forEach((q, k) => (n = record(n, q, picks[k] === q.answer)));
+      const session: Session = { t: Date.now(), type: p.label === 'Missed' ? 'missed' : (TYPE_ORDER.find((t) => typeLabel(t) === p.label) ?? 'mixed'), scope: p.scope, n: p.qs.length, total: reached.length, right };
+      return addSession(n, session);
+    });
+    const again = p.label === 'Missed' ? () => startMissed(p.qs.map((q) => `${q.id}|${q.pair}`), p.scope) : () => startSetup(setup);
+    setPhase({ kind: 'done', qs: reached, picks, label: p.label, scope: p.scope, again });
   };
 
-  const pick = (opt: string) => {
-    if (phase.kind !== 'run') return;
-    const q = phase.qs[phase.i]!;
-    if (phase.answers.length > phase.i) return;
-    onQuiz((s) => record(s, q, opt === q.answer));
-    setPhase({ ...phase, answers: [...phase.answers, { q, picked: opt }] });
-    window.requestAnimationFrame(() => nextRef.current?.focus());
+  const run = phase.kind === 'run' ? phase : null;
+  const go = (i: number) => run && setPhase({ ...run, i, seen: Math.max(run.seen, i + 1) });
+  const pick = (o: string) => {
+    if (!run) return;
+    const picks = [...run.picks];
+    picks[run.i] = picks[run.i] === o ? null : o;
+    setPhase({ ...run, picks });
   };
   const next = () => {
-    if (phase.kind !== 'run') return;
-    if (phase.i + 1 >= phase.qs.length) finish(phase.qs, phase.answers, phase.missedOnly);
-    else setPhase({ ...phase, i: phase.i + 1 });
+    if (!run) return;
+    if (run.i + 1 >= run.qs.length) finish(run);
+    else go(run.i + 1);
   };
 
-  // Keys: 1-4 answer, Enter next
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
-      if (!active || phase.kind !== 'run' || t?.closest('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
-      const q = phase.qs[phase.i]!;
-      const answered = phase.answers.length > phase.i;
-      if (!answered && /^[1-4]$/.test(e.key)) {
-        const o = q.options[Number(e.key) - 1];
+      if (!active || !run || t?.closest('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (/^[1-4]$/.test(e.key)) {
+        const o = run.qs[run.i]!.options[Number(e.key) - 1];
         if (o) pick(o);
-      } else if (answered && e.key === 'Enter' && t?.tagName !== 'BUTTON') next();
+      } else if ((e.key === 'Enter' && t?.tagName !== 'BUTTON') || e.key === 'ArrowRight') next();
+      else if (e.key === 'ArrowLeft' && run.i > 0) go(run.i - 1);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  if (phase.kind === 'run') {
-    const q = phase.qs[phase.i]!;
-    const ans = phase.answers[phase.i];
-    const b = BY_ID.get(q.id)!;
-    const [ask, askFor] = splitPair(q.pair);
-    const right = phase.answers.filter((a) => a.picked === a.q.answer).length;
-    return (
-      <section className={`me-quiz${mobile ? ' m' : ''}`} aria-label="Quiz">
-        <div className="qz-bar">
-          <span className="qz-count">
-            <b>{phase.i + 1}</b>/{phase.qs.length}
-          </span>
-          <div className="qz-track" aria-hidden>
-            {phase.qs.map((x, k) => {
-              const a = phase.answers[k];
-              return <i key={k} className={a ? (a.picked === a.q.answer ? 'ok' : 'no') : k === phase.i ? 'cur' : ''} />;
-            })}
-          </div>
-          <span className="qz-right">{right}</span>
-          <button type="button" className="c-ic" aria-label="Restart" title="Restart" onClick={() => start(setup, phase.missedOnly, phase.missedOnly ? phase.qs.map((x) => `${x.id}|${x.pair}`) : undefined)}>
-            <Icon name="undo" size={14} />
-          </button>
-          <button type="button" className="c-ic" aria-label="End" title="End" onClick={() => (phase.answers.length ? finish(phase.qs, phase.answers, phase.missedOnly) : setPhase({ kind: 'setup' }))}>
-            <Icon name="close" size={13} />
-          </button>
-        </div>
-        <div className="qz-card">
-          <div className="qz-k">
-            <span>{FIELD_LABEL[ask]}</span>
-            <Icon name="right" size={10} />
-            <span>{FIELD_LABEL[askFor]}</span>
-          </div>
-          <div className="qz-p" style={{ borderColor: ERAS[b.era].color }}>
-            {q.prompt}
-          </div>
-          <ol className="qz-opts">
-            {q.options.map((o, i) => {
-              const cls = ans ? (o === q.answer ? ' ok' : o === ans.picked ? ' no' : ' dim') : '';
-              return (
-                <li key={o}>
-                  <button type="button" className={`qz-o${cls}`} disabled={!!ans && o !== q.answer && o !== ans.picked} onClick={() => pick(o)}>
-                    <span className="qz-i">{i + 1}</span>
-                    <span>{o}</span>
-                    {ans && o === q.answer && <Icon name="check" size={14} />}
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-          {ans && (
-            <div className="qz-after">
-              <button type="button" className="qz-b" onClick={() => onOpen(b.id)}>
-                <i className="sw" style={{ background: ERAS[b.era].color }} />
-                <span>{b.name}</span>
-                <Icon name="map" size={14} />
-              </button>
-              <button type="button" className="btn dark" ref={nextRef} onClick={next}>
-                {phase.i + 1 >= phase.qs.length ? 'Result' : 'Next'}
-                <Icon name="right" size={13} />
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-    );
-  }
-
-  if (phase.kind === 'done') {
-    const right = phase.answers.filter((a) => a.picked === a.q.answer).length;
-    const missed = phase.answers.filter((a) => a.picked !== a.q.answer);
-    return (
-      <section className={`me-quiz${mobile ? ' m' : ''}`} aria-label="Quiz result">
-        <div className="qz-res">
-          <div className="qz-score">
-            <b>{right}</b>
-            <span>/{phase.answers.length}</span>
-          </div>
-          <div className="qz-pct">{pct(right, phase.answers.length)}</div>
-          <div className="qz-meta">
-            {phase.missedOnly ? 'Missed' : typeLabel(phase.setup.type)} · {scope.label}
-            {phase.answers.length < phase.qs.length && ` · ${phase.answers.length}/${phase.qs.length}`}
-          </div>
-        </div>
-        {missed.length > 0 && (
-          <ol className="qz-miss">
-            {missed.map(({ q, picked }) => {
-              const b = BY_ID.get(q.id)!;
-              return (
-                <li key={`${q.id}|${q.pair}`}>
-                  <button type="button" onClick={() => onOpen(q.id)}>
-                    <i className="sw" style={{ background: ERAS[b.era].color }} />
-                    <span className="pr">{q.prompt}</span>
-                    <span className="an">{q.answer}</span>
-                    <s>{picked}</s>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-        )}
-        <div className="qz-acts">
-          <button type="button" className="btn dark" onClick={() => start(phase.setup, phase.missedOnly, phase.missedOnly ? phase.qs.map((x) => `${x.id}|${x.pair}`) : undefined)}>
-            <Icon name="undo" size={14} />
-            Again
-          </button>
-          {missed.length > 0 && (
-            <button type="button" className="btn" onClick={() => start(phase.setup, true, missed.map((a) => `${a.q.id}|${a.q.pair}`))}>
-              Missed only
-              <span className="n">{missed.length}</span>
-            </button>
-          )}
-          <button type="button" className="btn" onClick={() => setPhase({ kind: 'setup' })}>
-            New quiz
-          </button>
-        </div>
-      </section>
-    );
-  }
-
-  // ---------- set-up ----------
-  return (
-    <section className={`me-quiz${mobile ? ' m' : ''}`} aria-label="Quiz set-up">
-      <div className="qz-row">
-        <h3>Type</h3>
-        <div className="qz-set">
-          <div className="qz-grid" role="grid" aria-label="Shown and asked">
-            <span className="qz-corner">
-              ? <Icon name="right" size={10} />
-            </span>
-            {FIELDS.map((f) => (
-              <span key={f} className="qz-h">
-                {FIELD_LABEL[f]}
-              </span>
-            ))}
-            {FIELDS.map((a) => (
-              <div key={a} className="qz-r" role="row">
-                <span className="qz-h row">{FIELD_LABEL[a]}</span>
-                {FIELDS.map((c) => {
-                  if (a === c) return <span key={c} className="qz-x" />;
-                  const p = `${a}>${c}` as Pair;
-                  const sc = quiz.score[p];
-                  return (
-                    <button type="button" key={c} className={`qz-c${setup.type === p ? ' on' : ''}`} aria-pressed={setup.type === p} aria-label={`${FIELD_LABEL[a]} to ${FIELD_LABEL[c]}`} onClick={() => setSetup({ type: p })}>
-                      {sc ? pct(sc.right, sc.total) : ''}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-          <button type="button" className={`chip qz-mix${setup.type === 'mixed' ? ' on' : ''}`} aria-pressed={setup.type === 'mixed'} onClick={() => setSetup({ type: 'mixed' })}>
-            Mixed
-          </button>
-        </div>
+  // ---------- missed list (right column) ----------
+  const missedCard = (
+    <section className="card qv-side" aria-label="Missed">
+      <div className="hd">
+        <h2>Missed</h2>
+        <span className="rt">{missedAll.length}</span>
       </div>
-      <div className="qz-row">
-        <h3>Scope</h3>
-        <div className="chips qz-scope">
-          {scopes.filter((s) => !/^(country|year):/.test(s.id) || s.id === scope.id).map((s) => (
-            <button type="button" key={s.id} className={`chip${scope.id === s.id ? ' on' : ''}${s.items.length === 0 ? ' off' : ''}`} aria-pressed={scope.id === s.id} onClick={() => setSetup({ scope: s.id })}>
-              {s.color && <i className="sw" style={{ background: s.color }} />}
-              {s.id === 'starred' ? <Icon name={scope.id === s.id ? 'starOn' : 'star'} size={13} /> : null}
-              {s.id === 'starred' ? null : s.label}
-              <span className="n">{s.items.length}</span>
-            </button>
-          ))}
-        </div>
+      <div className="bd">
+        <ol className="wk">
+          {missedAll.slice(0, mobile ? 3 : 8).map((w) => {
+            const [id, p] = w.split('|') as [string, Pair];
+            const b = BY_ID.get(id);
+            if (!b) return null;
+            return (
+              <li key={w}>
+                <span className="wn">{b.name}</span>
+                <span className="wf">{FIELD_LABEL[splitPair(p)[1]]}</span>
+                <span className="wc">{b.city}</span>
+              </li>
+            );
+          })}
+        </ol>
       </div>
-      <div className="qz-row">
-        <h3>Questions</h3>
-        <div className="chips">
-          {COUNTS.map((n) => (
-            <button type="button" key={n} className={`chip qz-n${setup.count === n ? ' on' : ''}${n > cap ? ' off' : ''}`} aria-pressed={setup.count === n} onClick={() => setSetup({ count: n })}>
-              {n}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="qz-go">
-        <button type="button" className="btn dark qz-start" disabled={!cap} onClick={() => start(setup)}>
-          Start
-          <span className="n">{Math.min(setup.count, cap)}</span>
-        </button>
-        <button type="button" className="btn" disabled={!missedHere.length} onClick={() => start(setup, true)}>
-          Missed
-          <span className="n">{missedHere.length}</span>
+      <div className="act">
+        <button type="button" className={`btn wide${mobile ? '' : ' dark'}`} disabled={!missedAll.length} onClick={() => startMissed(missedAll)}>
+          Quiz these {Math.min(30, missedAll.length) || ''}
+          <Icon name="right" size={12} />
         </button>
       </div>
     </section>
   );
-}
 
+  // ---------- run ----------
+  if (run) {
+    const q = run.qs[run.i]!;
+    const b = BY_ID.get(q.id)!;
+    const done = run.picks.filter((x) => x != null).length;
+    const last = run.i + 1 >= run.qs.length;
+    const state = (k: number) => (run.picks[k] != null ? 'ans' : k < run.seen && k !== run.i ? 'skip' : '');
+    return (
+      <div className={`qv${mobile ? ' m' : ''}`}>
+        <section className="card qv-main" aria-label="Question">
+          <div className="hd">
+            <h2>{mobile ? `${run.i + 1} / ${run.qs.length}` : `Question ${run.i + 1} of ${run.qs.length}`}</h2>
+            <div className="qv-prog" aria-hidden="true">
+              {run.qs.map((_, k) => (
+                <i key={k} className={k === run.i ? 'cur' : state(k)} />
+              ))}
+            </div>
+          </div>
+          <div className="bd">
+            <div className="qv-k">{typeLabel(q.pair)}</div>
+            <div className="qv-p" style={{ borderColor: ERAS[b.era].color }}>
+              {q.prompt}
+            </div>
+            <ol className="qv-ops">
+              {q.options.map((o, k) => (
+                <li key={o}>
+                  <button type="button" className={`qv-o${run.picks[run.i] === o ? ' pick' : ''}`} aria-pressed={run.picks[run.i] === o} onClick={() => pick(o)}>
+                    <span className="i">{k + 1}</span>
+                    <span>{o}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="act">
+            {mobile ? (
+              <button type="button" className="btn sq" aria-label="Back" disabled={run.i === 0} onClick={() => go(run.i - 1)}>
+                <Icon name="left" size={12} />
+              </button>
+            ) : (
+              <span className="sel">
+                <em>Answers are shown at the end</em>
+              </span>
+            )}
+            {mobile && <span className="sel" />}
+            {!mobile && (
+              <button type="button" className="btn" disabled={run.i === 0} onClick={() => go(run.i - 1)}>
+                <Icon name="left" size={12} />
+                Back
+              </button>
+            )}
+            {mobile && (
+              <button type="button" className="btn" onClick={() => finish(run)}>
+                Finish
+              </button>
+            )}
+            <button type="button" className="btn dark" onClick={next}>
+              {last ? 'Finish' : 'Next'}
+              <Icon name="right" size={12} />
+            </button>
+          </div>
+        </section>
+        {!mobile && (
+          <section className="card qv-side" aria-label="This quiz">
+            <div className="hd">
+              <h2>This quiz</h2>
+              <span className="rt">
+                {done} of {run.qs.length} done
+              </span>
+            </div>
+            <div className="bd">
+              <ol className="qv-list">
+                {run.qs.map((x, k) => {
+                  const st = state(k);
+                  const reached = k < run.seen || run.picks[k] != null;
+                  return (
+                    <li key={`${x.id}|${x.pair}`} className={k === run.i ? 'cur' : ''}>
+                      <button type="button" disabled={!reached} onClick={() => go(k)}>
+                        <span className={`m ${st}`}>{k === run.i ? k + 1 : st === 'ans' ? '●' : st === 'skip' ? '–' : k + 1}</span>
+                        <span className="nm">{reached ? x.prompt : '—'}</span>
+                        <span className="a">{st === 'ans' ? 'Answered' : st === 'skip' ? 'Skipped' : ''}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+            <div className="act">
+              <button type="button" className="btn wide" aria-label="Restart" onClick={() => startSetup(setup)}>
+                <Icon name="undo" size={13} />
+                Restart
+              </button>
+              <button type="button" className="btn wide" aria-label="End" onClick={() => finish(run)}>
+                Finish
+              </button>
+            </div>
+          </section>
+        )}
+      </div>
+    );
+  }
+
+  // ---------- result ----------
+  if (phase.kind === 'done') {
+    const right = phase.qs.filter((q, k) => phase.picks[k] === q.answer).length;
+    const skipped = phase.picks.filter((x) => x == null).length;
+    const wrong = phase.qs.filter((q, k) => phase.picks[k] !== q.answer);
+    return (
+      <div className={`qv${mobile ? ' m' : ''}`}>
+        <section className="card qv-main" aria-label="Result">
+          <div className="hd">
+            <h2>Result</h2>
+            <span className="rt">
+              {phase.label} · {phase.scope}
+            </span>
+          </div>
+          <div className="bd">
+            <div className="qv-res">
+              <b>
+                {right} / {phase.qs.length}
+              </b>
+              <span>
+                {pct(right, phase.qs.length)}
+                {skipped ? ` · ${skipped} skipped` : ''}
+              </span>
+            </div>
+            <ol className="qv-rl">
+              {phase.qs.map((q, k) => {
+                const p = phase.picks[k];
+                const ok = p === q.answer;
+                return (
+                  <li key={`${q.id}|${q.pair}`}>
+                    <button type="button" onClick={() => onOpen(q.id)}>
+                      <span className={`m ${ok ? 'ok' : p == null ? 'sk' : 'bad'}`}>{ok ? '✓' : p == null ? '–' : '✕'}</span>
+                      <span className="nm">
+                        <b>{q.prompt}</b>
+                        <span>{typeLabel(q.pair)}</span>
+                      </span>
+                      <span className="an">
+                        {!ok && p != null && <s>{p}</s>}
+                        {ok ? q.answer : <em>{q.answer}</em>}
+                        {p == null && <small>skipped</small>}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+          <div className="act">
+            {!mobile && (
+              <span className="sel">
+                <em>{wrong.length ? `${wrong.length} to practise again` : 'All right'}</em>
+              </span>
+            )}
+            <button type="button" className="btn" onClick={() => setPhase({ kind: 'setup' })}>
+              New quiz
+            </button>
+            {wrong.length > 0 && (
+              <button type="button" className="btn" onClick={() => startMissed(wrong.map((q) => `${q.id}|${q.pair}`), phase.scope)}>
+                Missed only <span className="n">{wrong.length}</span>
+              </button>
+            )}
+            <button type="button" className="btn dark" onClick={phase.again}>
+              Again
+              <Icon name="right" size={12} />
+            </button>
+          </div>
+        </section>
+        {!mobile && missedCard}
+      </div>
+    );
+  }
+
+  // ---------- set-up ----------
+  const typeOpts: Opt[] = TYPE_ORDER.map((t, k) => ({ id: t, label: typeLabel(t), rule: k === 3 || k === 6 || t === 'mixed' }));
+  const scopeOpts: Opt[] = scopes
+    .filter((s) => !/^(country|year):/.test(s.id) || s.id === scope.id)
+    .map((s) => ({ id: s.id, label: s.label, n: s.items.length, color: s.color, star: s.id === 'starred', rule: s.id.startsWith('era:') && s.id === `era:${ERA_ORDER[0]}` }));
+  const countOpts: Opt[] = COUNTS.map((n) => ({ id: String(n), label: String(n) }));
+  const n = Math.min(setup.count, cap);
+  return (
+    <div className={`qv${mobile ? ' m' : ''}`}>
+      <section className="card qv-main qv-setup" aria-label="New quiz">
+        <div className="hd">
+          <h2>New quiz</h2>
+        </div>
+        <div className="bd">
+          <div className="qv-fields">
+            <Dropdown label="Question" value={setup.type} options={typeOpts} onPick={(id) => setSetup({ type: id as PairChoice })} />
+            <Dropdown label="Buildings" value={scope.id} options={scopeOpts} onPick={(id) => setSetup({ scope: id })} />
+            <Dropdown label="Questions" value={String(setup.count)} options={countOpts} onPick={(id) => setSetup({ count: Number(id) })} />
+          </div>
+        </div>
+        <div className="act">
+          {!mobile && (
+            <span className="sel">
+              <span>{typeLabel(setup.type)}</span>
+              <em>
+                · {scope.label} · {n} questions
+              </em>
+            </span>
+          )}
+          <button type="button" className={`btn dark qz-start${mobile ? ' wide' : ''}`} disabled={!cap} onClick={() => startSetup(setup)}>
+            Start{mobile ? ` · ${n}` : ''}
+            <Icon name="right" size={12} />
+          </button>
+        </div>
+      </section>
+      {missedCard}
+    </div>
+  );
+}
