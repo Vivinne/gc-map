@@ -18,8 +18,21 @@ function area(r: Ring): number {
  * TopoJSON decodes polygons clockwise (the d3 convention). MapLibre's tiler reads ring roles from the
  * winding (RFC 7946: outer counter-clockwise, holes clockwise), so rings are rewound before use.
  */
+/**
+ * Rings that cross the antimeridian (Russia, the Aleutians of the United States, Fiji) jump from +180 to
+ * -180 inside one ring, which the tiler draws as bands and boxes across the whole world. Such a ring is
+ * made continuous by moving its western-hemisphere points 360 degrees east (that part then lies off the
+ * single world copy the map shows).
+ */
+function unwrap(r: Ring): Ring {
+  let crosses = false;
+  for (let i = 1; i < r.length; i++) if (Math.abs((r[i]![0] ?? 0) - (r[i - 1]![0] ?? 0)) > 180) crosses = true;
+  if (!crosses) return r;
+  return r.map(([x = 0, y = 0]) => [x < 0 ? x + 360 : x, y]);
+}
+
 function rewindPolygon(rings: Ring[]): Ring[] {
-  return rings.map((r, i) => {
+  return rings.map(unwrap).map((r, i) => {
     const ccw = area(r) > 0;
     return (i === 0) === ccw ? r : [...r].reverse();
   });

@@ -2,7 +2,7 @@
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
-import { DEFAULT_STATE, formatHash, parseHash, type Mode } from '../lib/hash';
+import { DEFAULT_STATE, type Mode } from '../lib/hash';
 import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear, type Building } from '../lib/model';
 import { load, save } from '../lib/storage';
 import type { EraId } from '../lib/types';
@@ -17,9 +17,6 @@ import TimelineList from './TimelineList';
 import TimelineView from './TimelineView';
 
 const MOBILE_QUERY = '(max-width: 900px)';
-// The view state lives in the address (#m=...&b=...) so a view can be bookmarked or shared.
-// Hosts that only pass a plain #name (claude.ai artifacts) build with GC_HASH=off.
-const HASH_STATE = process.env.GC_HASH !== 'off';
 const TOTAL = BUILDINGS.length;
 
 interface Toast {
@@ -41,7 +38,9 @@ function useMedia(q: string): boolean {
 }
 
 export default function App() {
-  const initial = useMemo(() => (typeof window === 'undefined' || !HASH_STATE ? DEFAULT_STATE : parseHash(window.location.hash)), []);
+  // A reload is a reset: the page always opens on the full map with nothing selected and no filters.
+  // Personal data (seen, stars, review progress) stays.
+  const initial = DEFAULT_STATE;
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [selId, setSelId] = useState(BY_ID.has(initial.b) ? initial.b : '');
   const [city, setCity] = useState(initial.city);
@@ -93,11 +92,15 @@ export default function App() {
     save('starred', [...starred]);
   }, [starred]);
   useEffect(() => {
-    if (!HASH_STATE) return;
-    const h = formatHash({ mode, b: selId, city, filters });
-    const url = `${window.location.pathname}${window.location.search}${h}`;
-    if (url !== `${window.location.pathname}${window.location.search}${window.location.hash}`) window.history.replaceState(null, '', url);
-  }, [mode, selId, city, filters]);
+    // Clear any old view address (#m=...&b=...) so a reload never restores it
+    if (window.location.hash) window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    // A page restored from the back/forward cache is a reload too
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted) window.location.reload();
+    };
+    window.addEventListener('pageshow', onShow);
+    return () => window.removeEventListener('pageshow', onShow);
+  }, []);
 
   const showToast = useCallback((text: string, undo?: Filters) => setToast({ id: Date.now(), text, undo }), []);
   useEffect(() => {

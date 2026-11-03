@@ -529,11 +529,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const parts = [...tip.cities.entries()].sort((a, b) => b[1] - a[1]);
       tipEl = (
         <div className="map-tip" style={{ left: Math.min(x + r + 10, W - 250), top: y + r + 4 }}>
-          {parts.map(([k, v]) => (
+          {parts.slice(0, 3).map(([k, v]) => (
             <span key={k}>
               <b>{k}</b> {v}
             </span>
           ))}
+          {parts.length > 3 && <span>+{parts.slice(3).reduce((n, [, v]) => n + v, 0)}</span>}
         </div>
       );
     }

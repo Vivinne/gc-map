@@ -207,17 +207,21 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   check('got it counts', /1\/204/.test(await page.locator('.r-prog').innerText()));
 
   await page.keyboard.press('m');
-  const hash = await page.evaluate(() => location.hash);
-  check('address keeps the filters', /e=1/.test(hash) && /s=modern/.test(hash), hash);
+  await page.reload();
+  await page.waitForSelector('.overlay', { timeout: 15000 });
+  await page.waitForTimeout(1200);
+  check('reload resets the view', (await page.locator('.side').count()) === 0 && (await page.locator('.eb-blk.on').count()) === 0 && (await page.locator('.fbtn .badge').count()) === 0 && (await page.locator('.modes .on').textContent()).includes('Map'));
+  check('reload keeps personal progress', !/^0\//.test((await page.locator('.seen').innerText()).trim()));
+  check('reload leaves no view address', (await page.evaluate(() => location.hash)) === '');
   check('no script errors (desktop)', errors.length === 0, errors.join(' | '));
   await page.close();
 }
 
-// ---------- address restores a selection ----------
+// ---------- an old view address does not restore anything ----------
 {
   const { page, errors } = await open({ width: 1440, height: 900 }, '#b=pantheon-rome');
-  await page.waitForTimeout(1200);
-  check('address opens a building', /PANTHEON$/.test((await page.locator('.side.card h1').innerText()).trim()));
+  await page.waitForTimeout(800);
+  check('old address is ignored', (await page.locator('.side').count()) === 0 && (await page.evaluate(() => location.hash)) === '');
   check('no script errors (address)', errors.length === 0, errors.join(' | '));
   await page.close();
 }
