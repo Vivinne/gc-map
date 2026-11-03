@@ -49,6 +49,8 @@ interface Props {
   onReady?(): void;
   /** Full map button: the parent clears selection and filters, then the map shows Europe */
   onHome?(): void;
+  /** The user zoomed out to the panorama (scale bar at 500 km or more): the parent clears the view */
+  onPanorama?(): void;
 }
 
 function styleSpec(): StyleSpecification {
@@ -85,7 +87,10 @@ function styleSpec(): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady, onHome } = props;
+  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady, onHome, onPanorama } = props;
+  const panoRef = useRef(onPanorama);
+  const btnZoom = useRef(false);
+  panoRef.current = onPanorama;
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [layer, setLayer] = useState<HTMLElement | null>(null);
@@ -142,6 +147,30 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       });
     });
     map.on('resize', bump);
+    // A zoom out by the user (wheel, pinch, drag or the zoom buttons) to a 500 km scale bar means
+    // "show me everything"; the camera moves the site makes itself (Country, fitting a city) do not count
+    // Map events do not say who moved the camera, so input on the map canvas itself (wheel, drag, pinch)
+    // and on the marks drawn over it is noted; the panels and map buttons sit outside it and do not count
+    let lastInput = 0;
+    const noteInput = () => {
+      lastInput = Date.now();
+    };
+    const surface = map.getCanvasContainer();
+    for (const t of ['wheel', 'pointerdown', 'touchstart'] as const) surface.addEventListener(t, noteInput, { passive: true, capture: true });
+    let startZoom = 0;
+    let byUser = false;
+    map.on('movestart', () => {
+      startZoom = map.getZoom();
+      byUser = Date.now() - lastInput < 1200 || btnZoom.current;
+      btnZoom.current = false;
+    });
+    map.on('moveend', () => {
+      const user = byUser || Date.now() - lastInput < 1200;
+      byUser = false;
+      if (!user || map.getZoom() >= startZoom - 0.01) return;
+      const mpp = (40075016.686 * Math.cos((map.getCenter().lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom());
+      if (mpp * 110 >= 500000) panoRef.current?.();
+    });
     map.on('load', () => {
       bump();
       onReady?.();
@@ -671,10 +700,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       <div className="ctrls" style={compact ? { right: 12, top: padding.top + 4 } : { right: 16, bottom: 60 }}>
         {!compact && (
           <>
-            <button type="button" aria-label="Zoom in" onClick={() => map?.zoomIn({ duration: motion(250) })}>
+            <button type="button" aria-label="Zoom in" onClick={() => { btnZoom.current = true; map?.zoomIn({ duration: motion(250) }); }}>
               <Icon name="plus" />
             </button>
-            <button type="button" aria-label="Zoom out" onClick={() => map?.zoomOut({ duration: motion(250) })}>
+            <button type="button" aria-label="Zoom out" onClick={() => { btnZoom.current = true; map?.zoomOut({ duration: motion(250) }); }}>
               <Icon name="minus" />
             </button>
           </>

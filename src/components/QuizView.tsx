@@ -54,6 +54,8 @@ export interface QuizRequest {
 }
 
 interface Props {
+  /** False while another tab is shown: the quiz keeps its state but ignores the keyboard */
+  active: boolean;
   mobile: boolean;
   starred: ReadonlySet<string>;
   collections: Collection[];
@@ -78,7 +80,7 @@ interface Answer {
 type Phase = { kind: 'setup' } | { kind: 'run'; qs: Question[]; i: number; answers: Answer[]; missedOnly: boolean } | { kind: 'done'; qs: Question[]; answers: Answer[]; setup: Setup; missedOnly: boolean };
 
 /** Quiz: set-up (type, scope, number of questions), the run (restart / end) and the result */
-export default function QuizView({ mobile, starred, collections, quiz, request, onQuiz, onOpen }: Props) {
+export default function QuizView({ active, mobile, starred, collections, quiz, request, onQuiz, onOpen }: Props) {
   const [setup, setSetupRaw] = useState<Setup>(() => {
     const s = load<Partial<Setup>>('quiz-setup', {});
     const type = s.type === 'mixed' || (PAIRS as string[]).includes(s.type ?? '') ? (s.type as PairChoice) : 'name>city';
@@ -149,7 +151,7 @@ export default function QuizView({ mobile, starred, collections, quiz, request, 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
-      if (phase.kind !== 'run' || t?.closest('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!active || phase.kind !== 'run' || t?.closest('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
       const q = phase.qs[phase.i]!;
       const answered = phase.answers.length > phase.i;
       if (!answered && /^[1-4]$/.test(e.key)) {

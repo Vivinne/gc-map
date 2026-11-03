@@ -326,6 +326,7 @@ for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
       const b = m.getBounds();
       return { w: b.getWest(), e: b.getEast(), s: b.getSouth(), n: b.getNorth(), z: m.getZoom() };
     });
+    if ((await page.locator('.side.card').count()) !== 1) bad.push(`${n}: card closed by Country`);
     const place = PLACES.find((p) => p.name.toLowerCase().includes(n.toLowerCase()));
     const [w, so, e, no] = place.nationBox;
     const cx = (w + e) / 2;
@@ -344,6 +345,64 @@ for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   }
   check(`Country frames each country (${vp.width} px)`, bad.length === 0, bad.join(' | '));
   check(`no script errors (country ${vp.width})`, errors.length === 0, errors.join(' | '));
+  await page.close();
+}
+
+// ---------- previous / next come back; a quiz survives a tab change; zooming out to 500 km clears the view ----------
+{
+  const { page, errors } = await open({ width: 1440, height: 900 });
+  const title = async () => (await page.locator('.side.card h1').innerText()).replace(/^\d+\s*/, '').trim();
+  for (const n of ['cologne cathedral', 'pantheon', 'sagrada', 'fallingwater']) {
+    await page.keyboard.press('/');
+    await page.keyboard.type(n);
+    await page.waitForTimeout(150);
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(900);
+    const t0 = await title();
+    await page.locator('.c-tools [aria-label="Next"]').click();
+    await page.waitForTimeout(700);
+    const t1 = await title();
+    await page.locator('.c-tools [aria-label="Previous"]').click();
+    await page.waitForTimeout(700);
+    const t2 = await title();
+    check(`next then previous comes back (${n})`, t0 === t2 && t0 !== t1, `${t0} > ${t1} > ${t2}`);
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
+  }
+
+  await page.keyboard.press('q');
+  await page.locator('.qz-n', { hasText: /^5$/ }).click();
+  await page.locator('.qz-start').click();
+  await page.keyboard.press('1');
+  await page.locator('.qz-after .btn').click();
+  const before = await page.locator('.qz-p').innerText();
+  await page.locator('.modes button', { hasText: 'Map' }).click();
+  await page.waitForTimeout(300);
+  await page.keyboard.press('1');
+  await page.locator('.modes button', { hasText: 'Me' }).click();
+  await page.waitForTimeout(200);
+  await page.locator('.modes button', { hasText: 'Quiz' }).click();
+  await page.waitForTimeout(200);
+  check('a quiz in progress is still there after other tabs', /2\/5/.test(await page.locator('.qz-count').innerText()) && (await page.locator('.qz-p').innerText()) === before && (await page.locator('.qz-o.ok').count()) === 0);
+  await page.locator('[aria-label="End"]').click();
+
+  await page.locator('.modes button', { hasText: 'Map' }).click();
+  await page.keyboard.press('/');
+  await page.keyboard.type('colosseum');
+  await page.waitForTimeout(150);
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(1000);
+  await page.keyboard.press('1');
+  check('a building is open before zooming out', (await page.locator('.side.card').count()) === 1);
+  await page.mouse.move(500, 450);
+  for (let k = 0; k < 40 && !/[5-9]00 km|\d{4} km/.test(await page.locator('.scale').innerText()); k++) {
+    await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(150);
+  }
+  await page.waitForTimeout(900);
+  const km = await page.locator('.scale').innerText();
+  check('zooming out to the 500 km scale clears the view', (await page.locator('.side').count()) === 0 && (await page.locator('.fbtn .badge').count()) === 0, km + ' side ' + (await page.locator('.side').count()) + ' badge ' + (await page.locator('.fbtn .badge').count()));
+  check('no script errors (steps, quiz, panorama)', errors.length === 0, errors.join(' | '));
   await page.close();
 }
 

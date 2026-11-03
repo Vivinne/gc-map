@@ -56,6 +56,11 @@ export default function App() {
     }
   });
   const [quizReq, setQuizReq] = useState<QuizRequest | null>(null);
+  // Mounted from the first visit of the Quiz tab on
+  const [quizUsed, setQuizUsed] = useState(false);
+  useEffect(() => {
+    if (mode === 'quiz') setQuizUsed(true);
+  }, [mode]);
   const [quiz, setQuiz] = useState<QuizStore>(() => cleanQuiz(load<unknown>('quiz', EMPTY_QUIZ), new Set(BY_ID.keys())));
   const [palette, setPalette] = useState<string | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
@@ -84,14 +89,16 @@ export default function App() {
   const selected = selId ? (BY_ID.get(selId) ?? null) : null;
 
 
-  // Order used by Previous / Next: the city's list (style groups, then year); a one-building city steps
-  // through the same country by year
+  // Order used by Previous / Next: the city's list (map numbers); a one-building city steps through the
+  // same nation by year. The list is fixed when a building is opened, so Next then Previous comes back
+  // even when Next lands in another city.
+  const [stepList, setStepList] = useState<Building[] | null>(null);
   const nav = useMemo(() => {
     if (!selected) return null;
-    let list = cityOrder(selected.city);
-    if (list.length < 2) list = BUILDINGS.filter((b) => b.country === selected.country).sort(byYear);
+    let list = stepList && stepList.some((b) => b.id === selected.id) ? stepList : cityOrder(selected.city);
+    if (list.length < 2) list = BUILDINGS.filter((b) => b.nation === selected.nation).sort(byYear);
     return { list, index: list.findIndex((b) => b.id === selected.id) };
-  }, [selected]);
+  }, [selected, stepList]);
   const panelOpen = mode === 'map' && (!!selected || !!city);
 
   // ---------- persistence ----------
@@ -149,11 +156,12 @@ export default function App() {
 
   // ---------- actions ----------
   const select = useCallback(
-    (id: string, opts: { fly?: boolean } = {}) => {
+    (id: string, opts: { fly?: boolean; keepOrder?: boolean } = {}) => {
       const b = BY_ID.get(id);
       if (!b) return;
       setSelId(id);
       setCity(b.city);
+      if (!opts.keepOrder) setStepList(null);
       setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
       setSheet(false);
       if (opts.fly !== false) window.requestAnimationFrame(() => mapRef.current?.showBuilding(b));
@@ -172,6 +180,17 @@ export default function App() {
     [],
   );
 
+  // The panorama is the map at its plainest: nothing selected, no filters, no panels (Full map, or a
+  // zoom out to the 500 km scale)
+  const clearView = useCallback(() => {
+    setSelId('');
+    setCity('');
+    setFiltersRaw(EMPTY);
+    setFiltersOpen(false);
+    setSheet(false);
+    setHoverId('');
+    setHoverCity('');
+  }, []);
   const closeDetail = useCallback(() => setSelId(''), []);
   const closeCity = useCallback(() => {
     setSelId('');
@@ -181,7 +200,8 @@ export default function App() {
     (d: number) => {
       if (!nav || nav.list.length < 2) return;
       const i = (nav.index + d + nav.list.length) % nav.list.length;
-      select(nav.list[i]!.id);
+      setStepList(nav.list);
+      select(nav.list[i]!.id, { keepOrder: true });
     },
     [nav, select],
   );
@@ -418,16 +438,10 @@ export default function App() {
             onCity={focusCity}
             onReady={() => setMapReady(true)}
             onHome={() => {
-              // The full map is the map at its plainest: nothing selected, no filters, no panels
-              setSelId('');
-              setCity('');
-              setFiltersRaw(EMPTY);
-              setFiltersOpen(false);
-              setSheet(false);
-              setHoverId('');
-              setHoverCity('');
+              clearView();
               window.requestAnimationFrame(() => mapRef.current?.home());
             }}
+            onPanorama={clearView}
           />
           {mode === 'map' && selected && (
             <BuildingCard
@@ -468,9 +482,11 @@ export default function App() {
             />
           )}
         </div>
-        {mode === 'quiz' && (
-          <div className="pane on quizv">
+        {/* The quiz stays mounted while another tab is open, so a quiz in progress is still there on return */}
+        {quizUsed && (
+          <div className={`pane quizv${mode === 'quiz' ? ' on' : ''}`} hidden={mode !== 'quiz'}>
             <QuizView
+              active={mode === 'quiz'}
               mobile={mobile}
               starred={starred}
               collections={collections}
