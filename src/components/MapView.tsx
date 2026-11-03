@@ -55,6 +55,12 @@ interface Props {
   onPanorama?(): void;
 }
 
+/** A building alone in its city, with the nearest landmarks when they are close enough to show together */
+function alone(b: Building): Building[] {
+  const near = nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2).filter((x) => x.d <= 150000).map((x) => x.b);
+  return [b, ...near];
+}
+
 const LOCATORS = new Map<string, { pr: (p: [number, number]) => [number, number] | null; land: string }>();
 /** Small projection of Europe (or the world) and its land outline, made once per size */
 function locator(world: boolean, w: number, h: number) {
@@ -255,6 +261,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       showCity,
       home: () => homeView(),
       focus: (b) => {
+        const m = mapRef.current;
+        if (!m) return;
+        // Picked from far out (a dot at country scale): zoom in to its city so the place makes sense
+        if (m.getZoom() < DETAIL_ZOOM) {
+          const city = CITY_BUILDINGS.get(b.city) ?? [b];
+          if (city.length > 1) fitTo(city, 15);
+          else fitTo(alone(b), 14);
+          return;
+        }
         const p = padRef.current;
         // offset, not padding: easeTo keeps a padding for later camera moves
         const bottom = compactRef.current ? p.bottom : p.bottom + 44;
@@ -268,8 +283,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           return;
         }
         // A one-building city: the building and its two nearest landmarks (listed in the card)
-        const near = nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2).map((x) => x.b);
-        fitTo([b, ...near], 14);
+        fitTo(alone(b), 14);
       },
     }),
     [fitTo, showCity, motion],
@@ -656,7 +670,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   // Locator, always shown: where the view (and the open building) sits on the map of Europe, or of the
   // world when the view is outside Europe
   let inset: React.ReactNode = null;
-  if (map) {
+  // Only while zoomed in past country scale: at the full map or a whole country it adds nothing
+  if (map && zoom >= 7) {
     const ctr = map.getCenter();
     const world = !(ctr.lng > -25 && ctr.lng < 45 && ctr.lat > 30 && ctr.lat < 72);
     const lw = compact ? 112 : 176;
