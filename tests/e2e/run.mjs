@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 // Browser checks of the single-file build (site/index.html) in Chromium with software WebGL.
 // Street tiles are not needed: the offline basemap draws the map. Screenshots go to .e2e/.
 // Usage: npm run site && npm run e2e
@@ -8,6 +9,7 @@ const url = new URL('../../site/index.html', import.meta.url).href;
 const shots = new URL('../../.e2e/', import.meta.url);
 mkdirSync(shots, { recursive: true });
 const results = [];
+const PLACES = JSON.parse(readFileSync(new URL('../../src/data/places.json', import.meta.url), 'utf8')).places;
 const check = (name, ok, info = '') => {
   results.push({ name, ok });
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${info ? `  (${info})` : ''}`);
@@ -302,6 +304,46 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   check('reload keeps collections and results', (await page.locator('.cl li', { hasText: 'Florence trip' }).count()) === 1 && (await page.locator('.me-recent tbody tr').count()) >= 2);
   await page.keyboard.press('m');
   check('no script errors (desktop)', errors.length === 0, errors.join(' | '));
+  await page.close();
+}
+
+// ---------- Country frames the building's whole country, for every country, desktop and phone ----------
+for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  const { page, errors } = await open(vp);
+  const reps = ['Secession Building', 'Tassel House', 'Müller House', 'Paimio Sanatorium', 'Mont-Saint-Michel Abbey', 'Cologne Cathedral', 'Parthenon', 'Valle dei Templi', 'Cloaca Maxima', 'Nakagin Capsule Tower', 'Petronas Twin Towers', 'Schröder House', 'Hermitage Museum', 'Seville Cathedral', 'Hagia Sophia', 'Louvre Abu Dhabi', 'Salisbury Cathedral', 'Fallingwater', 'Sagrada', 'Il Redentore', 'Villa Savoye', 'Robie House'];
+  const bad = [];
+  for (const n of reps) {
+    if (vp.width < 900) await page.locator('.m-search').click();
+    else await page.keyboard.press('/');
+    await page.keyboard.type(n);
+    await page.waitForTimeout(150);
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(1000);
+    await page.locator('.ctrls button[aria-label="Country"]').click();
+    await page.waitForTimeout(1100);
+    const r = await page.evaluate(() => {
+      const m = window.__gcAtlasMap;
+      const b = m.getBounds();
+      return { w: b.getWest(), e: b.getEast(), s: b.getSouth(), n: b.getNorth(), z: m.getZoom() };
+    });
+    const place = PLACES.find((p) => p.name.toLowerCase().includes(n.toLowerCase()));
+    const [w, so, e, no] = place.nationBox;
+    const cx = (w + e) / 2;
+    const cy = (so + no) / 2;
+    const cxv = cx > 180 ? cx - 360 : cx;
+    const inside = cxv >= r.w && cxv <= r.e && cy >= r.s && cy <= r.n;
+    const ptIn = place.points[0].lng >= r.w && place.points[0].lng <= r.e && place.points[0].lat >= r.s && place.points[0].lat <= r.n;
+    // the whole country is in view (a little tolerance), and it fills the view along at least one side
+    const tol = 0.6;
+    const contained = w >= r.w - tol && e <= r.e + tol && so >= r.s - tol && no <= r.n + tol;
+    const fills = (e - w) / (r.e - r.w) >= 0.3 || (no - so) / (r.n - r.s) >= 0.4 || r.z >= 8.9;
+    if (!inside || !ptIn || !contained || !fills) bad.push(`${n}: view ${r.w.toFixed(1)},${r.s.toFixed(1)} ${r.e.toFixed(1)},${r.n.toFixed(1)} z${r.z.toFixed(1)} vs ${place.nation} ${place.nationBox}`);
+    if (vp.width < 900) await page.locator('.side.card [aria-label="Close"]').click();
+    else await page.keyboard.press('Escape'), await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+  }
+  check(`Country frames each country (${vp.width} px)`, bad.length === 0, bad.join(' | '));
+  check(`no script errors (country ${vp.width})`, errors.length === 0, errors.join(' | '));
   await page.close();
 }
 

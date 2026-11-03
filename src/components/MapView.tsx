@@ -157,6 +157,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       map.setLayerZoomRange('land', 0, 6);
     });
     mapRef.current = map;
+    // Read by the browser checks (tests/e2e) to compare the view with a country's outline
+    (window as unknown as { __gcAtlasMap?: unknown }).__gcAtlasMap = map;
     setLayer(map.getCanvasContainer());
     const ro = new ResizeObserver(() => map.resize());
     ro.observe(box.current);
@@ -221,18 +223,31 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
   const map = mapRef.current;
   const zoom = map ? map.getZoom() : 4;
-  // Country of the open building or city (region for the "Others" group); without one, of the view centre
-  const countryOf = useMemo(() => {
+  // Country of the open building or city (else of the building nearest the view centre): its whole land,
+  // from the Natural Earth outline (data: nationBox), not just the box of the buildings filed under it
+  const countryBox = useMemo(() => {
     let ref: Building | undefined = selected ?? (insetCity ? CITY_BUILDINGS.get(insetCity)?.[0] : undefined);
     if (!ref && map) {
       const c = map.getCenter();
       ref = nearest({ ...BUILDINGS[0]!, id: '', lng: c.lng, lat: c.lat }, BUILDINGS, 1)[0]?.b;
     }
-    if (!ref) return null;
-    const key = regionOf(ref);
-    return BUILDINGS.filter((b) => regionOf(b) === key);
+    return ref?.nationBox ?? null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, insetCity, map, frame]);
+  const fitCountry = useCallback(
+    (box: [number, number, number, number]) => {
+      const p = padRef.current;
+      const extra = compactRef.current ? 16 : 40;
+      mapRef.current?.fitBounds(
+        [
+          [box[0], box[1]],
+          [box[2], box[3]],
+        ],
+        { padding: { top: p.top + extra, right: p.right + extra, bottom: p.bottom + extra, left: p.left + extra }, maxZoom: 9, duration: motion(650) },
+      );
+    },
+    [motion],
+  );
   // A city in focus (open building) switches to numbered pins earlier, so its whole extent can show as pins
   const detail = zoom >= DETAIL_ZOOM || (!!insetCity && zoom >= 10);
   const zBucket = Math.floor(zoom * 2) / 2;
@@ -664,7 +679,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             </button>
           </>
         )}
-        <button type="button" aria-label="Country" title="Country" disabled={!countryOf} onClick={() => countryOf && fitTo(countryOf, 9)}>
+        <button type="button" aria-label="Country" title="Country" disabled={!countryBox} onClick={() => countryBox && fitCountry(countryBox)}>
           <Icon name="flag" />
         </button>
         <button type="button" aria-label="Full map" title="Full map" onClick={() => (onHome ? onHome() : homeView())}>

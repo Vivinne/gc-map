@@ -37,6 +37,8 @@ export interface Place {
   summary: string;
   /** Nation the first coordinate lies in (Natural Earth names, e.g. "Spain"); used to frame a country on the map */
   nation: string;
+  /** [west, south, east, north] of that nation's main landmass plus the building's own island; null without a coordinate */
+  nationBox: [number, number, number, number] | null;
   /** Country tag (data/countries.txt); empty when the handout gives no location */
   country: string;
   /** Past-exam years in which this building was a topic (data/exams.txt) */

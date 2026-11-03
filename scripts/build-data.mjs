@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
-import { geoArea, geoContains, geoDistance } from 'd3-geo';
+import { geoArea, geoBounds, geoContains, geoDistance } from 'd3-geo';
 import { feature } from 'topojson-client';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -306,23 +306,42 @@ function main() {
     // A ring wound the wrong way covers the rest of the globe (area above a hemisphere): leave those out of the test
     const nations = feature(topo, topo.objects.countries).features;
     const sane = nations.filter((n) => geoArea(n) < 2 * Math.PI);
+    const polygonsOf = (n) => (n.geometry?.type === 'Polygon' ? [n.geometry.coordinates] : n.geometry?.type === 'MultiPolygon' ? n.geometry.coordinates : []);
+    const asFeature = (coords) => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: coords } });
+    // [west, south, east, north] of one polygon; east > 180 when it crosses the antimeridian
+    const boxOf = (coords) => {
+      const [[w, s2], [e, n]] = geoBounds(asFeature(coords));
+      return [w, s2, e < w ? e + 360 : e, n];
+    };
+    const union = (a, b) => [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
+    const round = (b) => b.map((x) => Math.round(x * 100) / 100);
     for (const p of places) {
       const pt = p.points[0];
-      if (!pt) { p.nation = ''; continue; }
+      if (!pt) { p.nation = ''; p.nationBox = null; continue; }
       const at = [pt.lng, pt.lat];
       let f = sane.find((n) => geoContains(n, at));
       if (!f) {
         // On an island or coast missing from the outline: the country with the closest outline point
         let best = Infinity;
         for (const n of nations) {
-          const polys = n.geometry?.type === 'Polygon' ? [n.geometry.coordinates] : n.geometry?.coordinates ?? [];
-          for (const poly of polys) for (const ring of poly) for (const c of ring) {
+          for (const poly of polygonsOf(n)) for (const ring of poly) for (const c of ring) {
             const d = geoDistance(at, c);
             if (d < best) { best = d; f = n; }
           }
         }
       }
       p.nation = f?.properties?.name ?? '';
+      // Box for the map's Country button: the nation's main landmass, plus the island the building is on
+      // (Sicily, Sardinia), leaving out far territories (Alaska, Hawaii, French Guiana)
+      const polys = f ? polygonsOf(f).filter((c) => geoArea(asFeature(c)) < 2 * Math.PI) : [];
+      if (!polys.length) { p.nationBox = null; continue; }
+      const main = polys.reduce((a, c) => (geoArea(asFeature(c)) > geoArea(asFeature(a)) ? c : a));
+      let box = boxOf(main);
+      const own = polys.find((c) => geoContains(asFeature(c), at));
+      if (own && own !== main) box = union(box, boxOf(own));
+      // A country wider than 60 degrees (Russia) would show at world scale: keep 60 degrees around the building
+      if (box[2] - box[0] > 60) box = [Math.max(box[0], pt.lng - 30), box[1], Math.min(box[2], Math.max(box[0], pt.lng - 30) + 60), box[3]];
+      p.nationBox = round(box);
     }
   }
   const unlocated = [];

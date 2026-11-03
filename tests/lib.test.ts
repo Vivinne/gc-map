@@ -209,3 +209,14 @@ test('every building knows its nation; Country frames one nation, never a whole 
   assert.ok(spain.length >= 10 && spain.every((b) => regionOf(b) === 'Spain'));
   assert.ok(!BUILDINGS.some((b) => regionOf(b) === 'Elsewhere in Europe'));
 });
+
+test('every building has a country box that contains it', () => {
+  for (const b of BUILDINGS) {
+    const box = b.nationBox;
+    assert.ok(box, b.id);
+    const lng = b.lng < box[0] ? b.lng + 360 : b.lng;
+    const pad = 0.6; // island points just off the outline (Venice)
+    assert.ok(lng >= box[0] - pad && lng <= box[2] + pad && b.lat >= box[1] - pad && b.lat <= box[3] + pad, `${b.id} ${b.lng},${b.lat} ${box}`);
+    assert.ok(box[2] - box[0] < 160, b.id);
+  }
+});
