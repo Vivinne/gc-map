@@ -15,6 +15,7 @@ import IndexPanel, { type CitySort } from './IndexPanel';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import ReviewView from './ReviewView';
 import SearchPalette from './SearchPalette';
+import TimelineList from './TimelineList';
 import TimelineView from './TimelineView';
 
 const MOBILE_QUERY = '(max-width: 900px)';
@@ -416,16 +417,27 @@ export default function App() {
         </div>
         {mode === 'timeline' && (
           <div className="pane on">
-            <TimelineView
-              list={results}
-              range={filters.range}
-              selectedId={selId}
-              mobile={mobile}
-              onOpen={(id) => {
-                setMode('map');
-                select(id);
-              }}
-            />
+            {mobile ? (
+              <TimelineList
+                list={results}
+                selectedId={selId}
+                onOpen={(id) => {
+                  setMode('map');
+                  select(id);
+                }}
+              />
+            ) : (
+              <TimelineView
+                list={results}
+                range={filters.range}
+                selectedId={selId}
+                mobile={false}
+                onOpen={(id) => {
+                  setMode('map');
+                  select(id);
+                }}
+              />
+            )}
           </div>
         )}
         {mode === 'review' && (

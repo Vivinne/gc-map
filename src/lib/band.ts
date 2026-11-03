@@ -19,27 +19,28 @@ export const GAP = 2;
 const MIN_SHARE = 0.035;
 
 /**
- * Year span of every style, from all buildings (fixed, so the band does not jump while filtering).
- * Styles overlap in time, so each span starts no earlier than the previous one ends: the band then reads
- * as one continuous, never-reversing year scale (a building older than its block's start sits at the start).
+ * Year span of every block (fixed, so the band does not jump while filtering). Styles overlap in time and
+ * a few entries carry late dates (a museum's opening year, a later facade), so a block is not its own
+ * min-max: neighbouring blocks meet halfway between their median years. The band then reads as one
+ * continuous, never-reversing year scale; a building dated outside its block's span sits at the block's edge.
+ * "Others" (non-buildings) keeps its own span and is not part of the scale.
  */
 const SPANS: Record<EraId, [number, number]> = (() => {
+  const years = (e: EraId) => BUILDINGS.filter((b) => b.era === e && b.y0 != null).map((b) => b.y0 as number).sort((a, b) => a - b);
+  const median = (ys: number[]) => (ys.length ? ys[Math.floor(ys.length / 2)]! : 0);
+  const scale = ERA_ORDER.filter((e) => e !== 'others' && years(e).length);
   const out = {} as Record<EraId, [number, number]>;
-  let floor = Number.NEGATIVE_INFINITY;
+  let start = Math.min(...years(scale[0]!));
+  scale.forEach((e, i) => {
+    const next = scale[i + 1];
+    const end = next ? Math.max(start + 1, Math.round((median(years(e)) + median(years(next))) / 2)) : Math.max(...years(e));
+    out[e] = [start, end];
+    start = end;
+  });
   for (const e of ERA_ORDER) {
-    const ys = BUILDINGS.filter((b) => b.era === e && b.y0 != null).map((b) => b.y0 as number);
-    if (!ys.length) {
-      out[e] = [0, 0];
-      continue;
-    }
-    if (e === 'others') {
-      out[e] = [Math.min(...ys), Math.max(...ys)];
-      continue;
-    }
-    const min = Math.max(Math.min(...ys), floor);
-    const max = Math.max(Math.max(...ys), min);
-    out[e] = [min, max];
-    floor = max;
+    if (out[e]) continue;
+    const ys = years(e);
+    out[e] = ys.length ? [ys[0]!, ys[ys.length - 1]!] : [0, 0];
   }
   return out;
 })();

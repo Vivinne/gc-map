@@ -177,6 +177,13 @@ const shot = (page, name) => page.screenshot({ path: new URL(`${name}.png`, shot
   await page.locator('.tabbar button', { hasText: 'Timeline' }).click();
   await page.waitForTimeout(400);
   await shot(page, 'm4-timeline');
+  const sideways = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  check('phone timeline needs no sideways scroll', sideways <= 0 && (await page.locator('.tlv-row').count()) > 50, `${sideways}px`);
+  await page.locator('.tlv-filter .chip', { hasText: 'France' }).click();
+  check('phone timeline country filter', (await page.locator('.tlv-row').count()) === 30);
+  await page.locator('.tlv-row', { hasText: 'Villa Savoye' }).click();
+  await page.waitForTimeout(900);
+  check('phone timeline opens the building', (await page.locator('.detail.sheet h1').textContent()) === 'VILLA SAVOYE');
   await page.locator('.tabbar button', { hasText: 'Map' }).click();
   await page.locator('.m-search').click();
   await page.keyboard.type('bramante');
