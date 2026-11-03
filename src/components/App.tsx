@@ -204,13 +204,28 @@ export default function App() {
     },
     [starred],
   );
+  // Inside a claude.ai artifact the browser download is blocked; the host's downloads capability saves instead
+  const hostSave = useRef<{ save(r: { filename: string; data: string }): Promise<unknown> } | null>(null);
+  useEffect(() => {
+    const host = (window as unknown as { claude?: { use?(n: string): Promise<unknown> } }).claude;
+    host?.use?.('downloads').then((d) => {
+      hostSave.current = (d as typeof hostSave.current) ?? null;
+    }, () => undefined);
+  }, []);
   const exportFile = useCallback(() => {
     const text = Col.toFile({ seen: [...seen], starred: [...starred], collections, quiz });
+    const filename = `gc-atlas-${new Date().toISOString().slice(0, 10)}.json`;
+    if (hostSave.current) {
+      hostSave.current.save({ filename, data: text }).catch((e: { code?: string }) => {
+        if (e?.code !== 'declined') setToast({ id: Date.now(), text: 'Export failed' });
+      });
+      return;
+    }
     try {
       const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
       const a = document.createElement('a');
       a.href = url;
-      a.download = `gc-atlas-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
