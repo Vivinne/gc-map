@@ -578,7 +578,8 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile .side.citypanel.sheet { height: 44%; }
 .is-mobile .side.sheet.full { max-height: 100%; height: 100%; }
 @keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
-.is-mobile .c-tools { padding-top: 12px; height: 52px; }
+.is-mobile .c-tools { padding-top: 6px; height: 42px; }
+.is-mobile .side.sheet .grab { height: 8px; }
 .is-mobile .c-top h1 { font-size: 19px; }
 .is-mobile .side.sheet:not(.full) .c-body { max-height: 24vh; }
 /* phone held sideways (short and wide): the card is a panel at the right of the map, its text scrolls */
