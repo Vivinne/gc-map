@@ -425,7 +425,8 @@ export default function App() {
               // A pin picked on the map is the building to read about: keep it and its surroundings in view
               select(id, { fly: false });
               const b = BY_ID.get(id);
-              if (b) window.requestAnimationFrame(() => window.requestAnimationFrame(() => mapRef.current?.focus(b)));
+              // after the panel has opened and the map padding follows it (a timer: animation frames can stall on phones)
+              if (b) window.setTimeout(() => mapRef.current?.focus(b), 80);
             }}
             onCity={focusCity}
             onReady={() => setMapReady(true)}
