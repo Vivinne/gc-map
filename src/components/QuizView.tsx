@@ -290,7 +290,8 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
           </div>
           <div className="bd">
             <div className="qv-k">{typeLabel(q.pair)}</div>
-            <div className="qv-p" style={{ borderColor: ERAS[b.era].color }}>
+            {/* no style colour here: it would give the style away */}
+            <div className="qv-p">
               {q.prompt}
             </div>
             <ol className="qv-ops">
