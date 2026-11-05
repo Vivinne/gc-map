@@ -49,6 +49,8 @@ interface Props {
   reducedMotion: boolean;
   /** Phone layout: side widgets give way to the building sheet */
   compact?: boolean;
+  /** Phone held sideways: the card is a column at the left of the map */
+  sideways?: boolean;
   onSelect(id: string): void;
   onCity(city: string): void;
   onReady?(): void;
@@ -65,9 +67,11 @@ const LOC = { d: { w: 280, h: 200 }, m: { w: 132, h: 96 } };
 /**
  * Where the locator sits, in map pixels. It never moves when a panel opens or closes: desktop, the lower
  * right corner beside the zoom buttons; phone, the upper left corner under the row of filter chips (the
- * lower part of a phone map is covered by the sheet while a building is open).
+ * lower part of a phone map is covered by the sheet while a building is open); a phone held sideways, the
+ * upper right corner beside the map buttons (the card covers the left part of the map there).
  */
-function locBox(W: number, H: number, compact: boolean): Box {
+function locBox(W: number, H: number, compact: boolean, sideways = false): Box {
+  if (compact && sideways) return { x1: W - 56 - LOC.m.w, y1: 8, x2: W - 56, y2: 8 + LOC.m.h };
   if (compact) return { x1: 12, y1: 52, x2: 12 + LOC.m.w, y2: 52 + LOC.m.h };
   return { x1: W - 56 - LOC.d.w, y1: H - 16 - LOC.d.h, x2: W - 56, y2: H - 16 };
 }
@@ -185,7 +189,7 @@ function styleSpec(): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
+  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
   const panoRef = useRef(onPanorama);
   const btnZoom = useRef(false);
   panoRef.current = onPanorama;
@@ -202,6 +206,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   padRef.current = padding;
   const compactRef = useRef(!!compact);
   compactRef.current = !!compact;
+  const sidewaysRef = useRef(!!sideways);
+  sidewaysRef.current = !!sideways;
   const motion = useCallback((ms: number) => (reducedMotion ? 0 : ms), [reducedMotion]);
 
   useEffect(() => {
@@ -328,11 +334,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const W = map.getContainer().clientWidth;
         const H = map.getContainer().clientHeight;
         const c = compactRef.current;
-        const lb = locBox(W, H, c);
+        const sw = c && sidewaysRef.current;
+        const lb = locBox(W, H, c, sw);
         const g = 12 + extra / 2;
-        // desktop: above the locator or left of it; phone: below it or right of it
+        // desktop: above the locator or left of it; phone: below it or right of it; sideways phone: below it or left of it
         const a = c ? { ...pad, top: Math.max(pad.top, lb.y2 + g) } : { ...pad, bottom: Math.max(pad.bottom, H - lb.y1 + g) };
-        const o = c ? { ...pad, left: Math.max(pad.left, lb.x2 + g) } : { ...pad, right: Math.max(pad.right, W - lb.x1 + g) };
+        const o = sw ? { ...pad, right: Math.max(pad.right, W - lb.x1 + g) } : c ? { ...pad, left: Math.max(pad.left, lb.x2 + g) } : { ...pad, right: Math.max(pad.right, W - lb.x1 + g) };
         const za = map.cameraForBounds(b, { padding: a, maxZoom })?.zoom ?? -1;
         const zb = map.cameraForBounds(b, { padding: o, maxZoom })?.zoom ?? -1;
         use = za >= zb ? a : o;
@@ -459,7 +466,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const L = compact ? LOC.m : LOC.d;
   const mapW = map ? map.getContainer().clientWidth : 0;
   const mapH = map ? map.getContainer().clientHeight : 0;
-  const lb = locBox(mapW, mapH, !!compact);
+  const lb = locBox(mapW, mapH, !!compact, !!sideways);
   let overlay: React.ReactNode = null;
   if (map && layer) {
     const W = map.getContainer().clientWidth;
@@ -469,6 +476,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // scale bar and filter chips: one row along the bottom (phone: scale lower left, chips along the top)
     blocked.push(compact ? { x1: 0, y1: H - 52, x2: 140, y2: H } : { x1: 0, y1: H - 48, x2: W - 56, y2: H });
     if (compact && padding.top > 8) blocked.push({ x1: 0, y1: 0, x2: W, y2: 46 });
+    // phone: the map credit line along the bottom right (desktop: inside the bottom row above)
+    if (compact) blocked.push({ x1: Math.max(0, W - 12 - 345), y1: H - 18, x2: W - 12, y2: H });
     // zoom and country buttons (desktop: lower right; phone: upper right)
     blocked.push(compact ? { x1: W - 52, y1: 0, x2: W, y2: 84 } : { x1: W - 56, y1: H - 160, x2: W, y2: H });
     const proj = (lng: number, lat: number) => {
@@ -714,10 +723,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const t = Math.min(tx, ty);
         edge.push({ b, x: cx + dx * t, y: cy + dy * t, a: Math.atan2(dy, dx) });
       }
-      // the locator covers a corner (desktop lower right, phone upper left): markers there move just past it
+      // the locator covers a corner (desktop lower right, phone upper left, sideways phone upper right): markers there move just past it
       if (showLoc) {
         for (const e of edge) {
-          if (compact) {
+          if (compact && sideways) {
+            // upper right corner
+            if (e.x <= lb.x1 - 14 || e.y >= lb.y2 + 14) continue;
+            if (Math.abs(e.y - r0.y1) < 1) e.x = lb.x1 - 14;
+            else e.y = lb.y2 + 14;
+          } else if (compact) {
             if (e.x >= lb.x2 + 14 || e.y >= lb.y2 + 14) continue;
             if (Math.abs(e.y - r0.y1) < 1) e.x = lb.x2 + 14;
             else e.y = lb.y2 + 14;
@@ -890,7 +904,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           {foot}
         </div>
       )}
-      <div className="ctrls" style={compact ? { right: padding.right > 56 ? padding.right + 4 : 12, top: 8 } : { right: 16, bottom: 16 }}>
+      <div className="ctrls" style={compact ? { right: 12, top: 8 } : { right: 16, bottom: 16 }}>
         {!compact && (
           <>
             <button type="button" aria-label="Zoom in" onClick={() => { btnZoom.current = true; map?.zoomIn({ duration: motion(250) }); }}>

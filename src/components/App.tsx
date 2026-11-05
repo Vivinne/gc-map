@@ -176,7 +176,7 @@ export default function App() {
   const activeChips = filterChips(filters);
   const padding: Padding = mobile
     ? wide
-      ? { top: 8 + (activeChips.length ? 40 : 0), right: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 56, bottom: 36, left: 0 }
+      ? { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: 36, left: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 0 }
       : { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: (panelOpen ? Math.round(mainHeight * 0.44) : 0) + 36, left: 0 }
     : { top: 0, right: 56, bottom: 48, left: filtersOpen || panelOpen ? 372 : 0 };
 
@@ -519,6 +519,7 @@ export default function App() {
             padding={padding}
             reducedMotion={reducedMotion}
             compact={mobile}
+            sideways={mobile && wide}
             onSelect={(id) => {
               // A pin picked on the map is the building to read about: keep it and its surroundings in view
               select(id, { fly: false });
