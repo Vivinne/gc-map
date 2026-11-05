@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Collection } from '../lib/collections';
 import { EMPTY, type Filters } from '../lib/filter';
-import { formatDistance, nearest } from '../lib/geo';
+import { nearest } from '../lib/geo';
 import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, nationName, type Building } from '../lib/model';
 import Facts from './Facts';
 import { Icon } from './Icons';
@@ -211,7 +211,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
             </div>
           )}
           {!many && near.length > 0 && (
-            // A city with no other building: the two nearest landmarks and how far they are
+            // A city with no other building: the two nearest landmarks and their cities
             <div className={`others-box near${nearOpen ? ' open' : ''}`}>
               <button type="button" className="others-h" aria-expanded={nearOpen} onClick={() => setNearOpen(!nearOpen)}>
                 <span>Nearest</span>
@@ -220,7 +220,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
               </button>
               {nearOpen && (
                 <ol className="others" aria-label="Nearest buildings" onPointerLeave={() => onHover('')}>
-                  {near.map(({ b: x, d }) => (
+                  {near.map(({ b: x }) => (
                     <li key={x.id}>
                       <button type="button" className="o-row" onClick={() => onSelect(x.id)} onPointerEnter={() => onHover(x.id)} onFocus={() => onHover(x.id)}>
                         <span className="sq" style={{ background: ERAS[x.era].color }} />
@@ -228,7 +228,6 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
                           {x.name}
                           <em>{x.city}</em>
                         </span>
-                        <span className="km">{formatDistance(d)}</span>
                       </button>
                     </li>
                   ))}
