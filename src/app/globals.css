@@ -632,7 +632,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .m-sheet { position: fixed; inset: 0; z-index: 12; background: #fff; display: flex; flex-direction: column; animation: sheet-in 160ms ease-out; }
 .m-sheet-h { display: flex; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top)) 16px 10px 20px; border-bottom: 1px solid var(--rule); font-size: 15px; }
 .m-sheet .index { border: 0; flex: 1; min-height: 0; }
-.is-mobile .toast { bottom: 76px; }
+.is-mobile .toast { bottom: 104px; }
 .is-mobile .hit .cnt-n { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -656,3 +656,4 @@ button:not(:disabled):active, [role='button']:active, .o-row:active { filter: br
 .qv-list button:hover:not(:disabled) { background: var(--soft); }
 .m-fbtn:active, .m-search:active { filter: brightness(0.9); }
 label.btn:active { filter: brightness(0.86); }
+.toast span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
