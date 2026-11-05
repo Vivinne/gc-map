@@ -6,7 +6,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRe
 import { createPortal } from 'react-dom';
 import { basemap } from '../lib/basemap';
 import { MIN_DONUT, boundsOf, clusterAt, donutRadius, nearest, regionOf, type Cluster } from '../lib/geo';
-import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, type Building } from '../lib/model';
+import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, nationName, type Building } from '../lib/model';
 import { geoMercator, geoPath } from 'd3-geo';
 import { Icon } from './Icons';
 
@@ -56,7 +56,14 @@ interface Props {
   onHome?(): void;
   /** The user zoomed out to the panorama (scale bar at 500 km or more): the parent clears the view */
   onPanorama?(): void;
+  /** Active filter chips: after the scale bar (desktop) or along the top of the map (phone) */
+  foot?: React.ReactNode;
 }
+
+/** Locator size (desktop / phone); it sits in the lower right corner, beside the zoom buttons on desktop */
+const LOC = { d: { w: 280, h: 200, right: 56, bottom: 16 }, m: { w: 132, h: 96, right: 12, bottom: 12 } };
+/** The locator shows from this zoom on (past country scale) */
+const LOC_ZOOM = 7;
 
 /** A building alone in its city, with the nearest landmarks when they are close enough to show together */
 function alone(b: Building): Building[] {
@@ -67,7 +74,7 @@ function alone(b: Building): Building[] {
   return out;
 }
 
-const LOCATORS = new Map<string, { pr: (p: [number, number]) => [number, number] | null; land: string }>();
+const LOCATORS = new Map<string, { pr: (p: [number, number]) => [number, number] | null; land: string; raw: Parameters<typeof geoPath>[0]; key: string }>();
 /** Small projection of Europe (or the world) and its land outline, made once per size */
 function locator(world: boolean, w: number, h: number) {
   const key = `${world}-${w}`;
@@ -76,10 +83,63 @@ function locator(world: boolean, w: number, h: number) {
     const extent = world ? [[-165, -50], [178, 72]] : [[-11, 35], [42, 63]];
     const pr = geoMercator().fitExtent([[2, 2], [w - 2, h - 2]], { type: 'MultiPoint', coordinates: extent });
     const land = geoPath(pr).digits(1)(basemap().land as never) ?? '';
-    l = { pr: (p) => pr(p) as [number, number] | null, land };
+    l = { pr: (p) => pr(p) as [number, number] | null, land, raw: pr, key };
     LOCATORS.set(key, l);
   }
   return l;
+}
+
+type Ring = number[][];
+/** Plain point-in-ring test on longitude / latitude (either winding) */
+function inRing(r: Ring, x: number, y: number): boolean {
+  let inside = false;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+    const [xi = 0, yi = 0] = r[i]!;
+    const [xj = 0, yj = 0] = r[j]!;
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+const NATION_PATHS = new Map<string, string>();
+/** Outline of the country a building stands in, drawn on the locator (filled darker) */
+function nationPath(b: Building, key: string, pr: Parameters<typeof geoPath>[0]): string {
+  const k = `${key}|${b.id}`;
+  const hit = NATION_PATHS.get(k);
+  if (hit != null) return hit;
+  let out = '';
+  for (const f of basemap().land.features) {
+    const g = f.geometry as { type: string; coordinates: Ring[][] | Ring[] };
+    const polys = (g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : []) as Ring[][];
+    if (polys.some((poly) => poly[0] && (inRing(poly[0], b.lng, b.lat) || inRing(poly[0], b.lng + 360, b.lat)))) {
+      // d3 draws spherical polygons wound clockwise; the basemap rings follow RFC 7946 (counter-clockwise)
+      const flip = (poly: Ring[]) => poly.map((r) => [...r].reverse());
+      const geom = g.type === 'Polygon' ? { type: 'Polygon', coordinates: flip(g.coordinates as Ring[]) } : { type: 'MultiPolygon', coordinates: (g.coordinates as Ring[][]).map(flip) };
+      out = geoPath(pr).digits(1)({ type: 'Feature', properties: {}, geometry: geom } as never) ?? '';
+      break;
+    }
+  }
+  NATION_PATHS.set(k, out);
+  return out;
+}
+
+const NATION_ICONS = new Map<string, string>();
+/** The outline of a building's country (the part of it the building stands on) drawn into an 18 px icon */
+function nationIcon(b: Building): string {
+  const hit = NATION_ICONS.get(b.id);
+  if (hit != null) return hit;
+  let out = '';
+  for (const f of basemap().land.features) {
+    const g = f.geometry as { type: string; coordinates: Ring[][] | Ring[] };
+    const polys = (g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : []) as Ring[][];
+    const poly = polys.find((pl) => pl[0] && (inRing(pl[0], b.lng, b.lat) || inRing(pl[0], b.lng + 360, b.lat)));
+    if (!poly) continue;
+    const geom = { type: 'Polygon', coordinates: [[...poly[0]!].reverse()] };
+    const pr = geoMercator().fitExtent([[1.5, 1.5], [16.5, 16.5]], geom as never);
+    out = geoPath(pr).digits(1)(geom as never) ?? '';
+    break;
+  }
+  NATION_ICONS.set(b.id, out);
+  return out;
 }
 
 function styleSpec(): StyleSpecification {
@@ -116,7 +176,7 @@ function styleSpec(): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady, onHome, onPanorama } = props;
+  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
   const panoRef = useRef(onPanorama);
   const btnZoom = useRef(false);
   panoRef.current = onPanorama;
@@ -249,12 +309,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const b = boundsOf(list);
       if (!map || !b) return;
       const p = padRef.current;
-      const extra = compactRef.current ? 24 : 56;
-      map.fitBounds(b, {
-        padding: { top: p.top + extra, right: p.right + extra, bottom: p.bottom + extra, left: p.left + extra },
-        maxZoom,
-        duration: motion(650),
-      });
+      const extra = compactRef.current ? 24 : 40;
+      const pad = { top: p.top + extra, right: p.right + extra, bottom: p.bottom + extra, left: p.left + extra };
+      // Past country scale the locator shows in the lower right corner: keep the buildings clear of it,
+      // either above it or left of it, whichever leaves them larger
+      let use = pad;
+      const first = map.cameraForBounds(b, { padding: pad, maxZoom });
+      if (first && (first.zoom ?? 0) >= LOC_ZOOM) {
+        const L = compactRef.current ? LOC.m : LOC.d;
+        const above = { ...pad, bottom: Math.max(pad.bottom, p.bottom - (compactRef.current ? 36 : 48) + L.bottom + L.h + 12 + extra / 2) };
+        const beside = { ...pad, right: Math.max(pad.right, p.right - (compactRef.current ? 56 : 56) + L.right + L.w + 12 + extra / 2) };
+        const za = map.cameraForBounds(b, { padding: above, maxZoom })?.zoom ?? -1;
+        const zb = map.cameraForBounds(b, { padding: beside, maxZoom })?.zoom ?? -1;
+        use = za >= zb ? above : beside;
+      }
+      map.fitBounds(b, { padding: use, maxZoom, duration: motion(650) });
     },
     [motion],
   );
@@ -316,7 +385,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const c = map.getCenter();
       ref = nearest({ ...BUILDINGS[0]!, id: '', lng: c.lng, lat: c.lat }, BUILDINGS, 1)[0]?.b;
     }
-    return ref?.nationBox ?? null;
+    return ref?.nationBox ? { box: ref.nationBox, ref } : null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, insetCity, map, frame]);
   const fitCountry = useCallback(
@@ -370,10 +439,20 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
   const hot = hoverId || pinHover;
 
+  // Where the fixed parts sit over the map (container pixels): names are never placed under them
+  const sheetH = (compact ? padding.bottom - 36 : 0);
+  const showLoc = !!map && zoom >= LOC_ZOOM;
+  const L = compact ? LOC.m : LOC.d;
   let overlay: React.ReactNode = null;
   if (map && layer) {
     const W = map.getContainer().clientWidth;
     const H = map.getContainer().clientHeight;
+    const blocked: Box[] = [];
+    if (showLoc) blocked.push({ x1: W - L.right - L.w - 6, y1: H - sheetH - L.bottom - L.h - 6, x2: W - L.right + 6, y2: H - sheetH - L.bottom + 6 });
+    // scale bar (phone: lower left; desktop: lower left of the free area, with the filter chips after it)
+    blocked.push(compact ? { x1: 0, y1: H - sheetH - 52, x2: 140, y2: H - sheetH } : { x1: padding.left, y1: H - 48, x2: W - 56, y2: H });
+    // zoom and country buttons (desktop: lower right; phone: upper right)
+    blocked.push(compact ? { x1: W - 52, y1: 0, x2: W, y2: padding.top + 80 } : { x1: W - 56, y1: H - 160, x2: W, y2: H });
     const proj = (lng: number, lat: number) => {
       const p = map.project([lng, lat]);
       return [p.x, p.y] as const;
@@ -434,7 +513,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         if (c.items.length >= 5 || isHot) cityLabels.push({ key: c.key, x, y, r, text: clusterName(c), hot: isHot });
       }
       // City names: right of the circle first, then left, below, above; never over another circle or name
-      const occupied: Box[] = [];
+      const occupied: Box[] = [...blocked];
       for (const c of clusters) {
         if (c.items.length < MIN_DONUT) continue;
         const [x, y] = proj(c.lng, c.lat);
@@ -514,17 +593,33 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         focus = [...n.entries()].sort((a, c) => c[1] - a[1])[0]?.[0] ?? '';
       }
       const isFocus = (p: Pin) => p.b.city === focus;
-      const placed: Box[] = pins.map((p) => (isFocus(p) ? { x1: p.x - 11, x2: p.x + 11, y1: p.y - 11, y2: p.y + 11 } : { x1: p.x - 6, x2: p.x + 6, y1: p.y - 6, y2: p.y + 6 }));
+      const placed: Box[] = [...blocked, ...pins.map((p) => (isFocus(p) ? { x1: p.x - 11, x2: p.x + 11, y1: p.y - 11, y2: p.y + 11 } : { x1: p.x - 6, x2: p.x + 6, y1: p.y - 6, y2: p.y + 6 }))];
       // Names: the open and the pointed building in a black tag; every other building of the city in small
       // grey type wherever it fits, so the surroundings read without competing with the open building.
       // Names never run under the side panel or the band.
-      const area = { x1: 2, y1: 2, x2: W - (compact ? 2 : padRef.current.right), y2: H - (compact ? padRef.current.bottom : 60) };
+      const area = { x1: padding.left + 2, y1: compact ? padding.top - 4 : 2, x2: W - 2, y2: H - (compact ? sheetH : 2) };
       const rank = (p: Pin) => (selected && p.b.id === selected.id ? 0 : p.b.id === hot ? 1 : 2);
       for (const p of [...pins].sort((a, c) => rank(a) - rank(c))) {
         const strong = (!!selected && p.b.id === selected.id) || p.b.id === hot;
         if (!strong && !isFocus(p)) continue;
-        const pos = placeLabel(p.x, p.y, p.b.name, strong ? 'strong' : 'soft', placed, area, 15);
+        // the open building always gets its name, even where the city is crowded
+        const pos = placeLabel(p.x, p.y, p.b.name, strong ? 'strong' : 'soft', placed, area, 15) ?? (rank(p) === 0 ? forceLabel(p.x, p.y, p.b.name, area, placed) : null);
         if (pos) labels.push(<PlaceLabel key={`t-${p.b.id}`} {...pos} text={p.b.name} strong={strong} />);
+      }
+      // Buildings of another city shown as plain dots: that city's name once beside them (e.g. Vatican next to Rome)
+      const others = new Map<string, Pin[]>();
+      for (const p of pins) {
+        if (isFocus(p) || (selected && p.b.id === selected.id)) continue;
+        const arr = others.get(p.b.city);
+        if (arr) arr.push(p);
+        else others.set(p.b.city, [p]);
+      }
+      for (const [name, ps] of others) {
+        const cx = ps.reduce((n, p) => n + p.x, 0) / ps.length;
+        const cy = ps.reduce((n, p) => n + p.y, 0) / ps.length;
+        const r = Math.max(...ps.map((p) => Math.hypot(p.x - cx, p.y - cy))) + 8;
+        const pos = placeLabel(cx, cy, name, 'city', placed, area, r);
+        if (pos) labels.push(<CityLabel key={`oc-${name}`} x={pos.x} y={pos.y} text={name} />);
       }
       // A pin moved off its spot (shared spot or crowding) keeps a thin line to the true position
       for (const p of pins) {
@@ -586,7 +681,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     if (edgeCity && detail) {
       const pad = padRef.current;
       // inner frame: clear of the panels, the band, the scale and the zoom buttons
-      const r0 = { x1: pad.left + 22, y1: pad.top + 22, x2: W - pad.right - 22 - (compact ? 0 : 52), y2: H - pad.bottom - 22 - (compact ? 0 : 44) };
+      const r0 = { x1: pad.left + 22, y1: pad.top + 22, x2: W - pad.right - 22, y2: H - pad.bottom - 22 };
       const cx = (r0.x1 + r0.x2) / 2;
       const cy = (r0.y1 + r0.y2) / 2;
       const edge: { b: Building; x: number; y: number; a: number }[] = [];
@@ -601,14 +696,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const t = Math.min(tx, ty);
         edge.push({ b, x: cx + dx * t, y: cy + dy * t, a: Math.atan2(dy, dx) });
       }
-      // the locator (top left) covers that corner: markers there move just past it
-      {
-        const ix2 = (compact ? 12 + 168 : 16 + 280) + 14;
-        const iy2 = pad.top + (compact ? 4 + 120 : 16 + 200) + 14;
+      // the locator (lower right) covers that corner: markers there move just past it
+      if (showLoc) {
+        const ix1 = W - L.right - L.w - 14;
+        const iy1 = H - sheetH - L.bottom - L.h - 14;
         for (const e of edge) {
-          if (e.x >= ix2 || e.y >= iy2) continue;
-          if (Math.abs(e.y - r0.y1) < 1) e.x = ix2;
-          else e.y = iy2;
+          if (e.x <= ix1 || e.y <= iy1) continue;
+          if (Math.abs(e.y - r0.y2) < 1) e.x = ix1;
+          else e.y = iy1;
         }
       }
       // keep markers on one edge apart
@@ -705,33 +800,35 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   // world when the view is outside Europe
   let inset: React.ReactNode = null;
   // Only while zoomed in past country scale: at the full map or a whole country it adds nothing
-  if (map && zoom >= 7) {
+  if (map && showLoc) {
     const ctr = map.getCenter();
     const world = !(ctr.lng > -25 && ctr.lng < 45 && ctr.lat > 30 && ctr.lat < 72);
-    const lw = compact ? 168 : 280;
-    const lh = compact ? 120 : 200;
+    const lw = L.w;
+    const lh = L.h;
     const loc = locator(world, lw, lh);
     const bb = map.getBounds();
     const a = loc.pr([Math.max(-179, bb.getWest()), Math.min(84, bb.getNorth())]);
     const c = loc.pr([Math.min(179, bb.getEast()), Math.max(-84, bb.getSouth())]);
-    const here = selected ? loc.pr([selected.lng, selected.lat]) : null;
+    const placeRef = selected ?? (insetCity ? CITY_BUILDINGS.get(insetCity)?.[0] : undefined);
+    const here = placeRef ? loc.pr([placeRef.lng, placeRef.lat]) : null;
     const rw = a && c ? c[0] - a[0] : 0;
     const rh = a && c ? c[1] - a[1] : 0;
     const cc = loc.pr([ctr.lng, ctr.lat]);
     inset = (
-      <div className={`locator${compact ? ' m' : ''}`} style={{ left: compact ? 12 : 16, top: padding.top + (compact ? 4 : 16) }} aria-hidden="true">
+      <div className={`locator${compact ? ' m' : ''}`} style={{ right: L.right, bottom: sheetH + L.bottom }} aria-hidden="true">
         <svg width={lw} height={lh}>
           <rect width={lw} height={lh} className="lc-sea" />
           <path d={loc.land} className="lc-land" />
+          {placeRef && <path d={nationPath(placeRef, loc.key, loc.raw)} className="lc-nat" />}
           {a && c && rw >= 8 && rh >= 8 ? (
             <rect x={a[0]} y={a[1]} width={rw} height={rh} className="lc-view" />
           ) : (
             cc && <circle cx={cc[0]} cy={cc[1]} r={6} className="lc-view" />
           )}
           {here && <circle cx={here[0]} cy={here[1]} r={4} className="lc-here" />}
-          {(here ?? cc) && (selected?.city || insetCity) && (
-            <text x={Math.min(lw - 6, Math.max(6, (here ?? cc)![0] + 8))} y={Math.max(14, (here ?? cc)![1] - 8)} className="lc-name" textAnchor={(here ?? cc)![0] > lw * 0.7 ? 'end' : 'start'}>
-              {selected?.city || insetCity}
+          {(here ?? cc) && placeRef && (
+            <text x={Math.min(lw - 6, Math.max(6, (here ?? cc)![0] + 8))} y={Math.max(14, (here ?? cc)![1] - 8)} className="lc-name" textAnchor={(here ?? cc)![0] > lw * 0.6 ? 'end' : 'start'}>
+              {placeRef.city}, {placeRef.nation.replace('United States of America', 'United States')}
             </text>
           )}
         </svg>
@@ -749,13 +846,28 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       )}
       {overlay}
       {inset}
-      {scale && !(compact && selected) && (
-        <div className="scale" style={compact ? { left: 16, bottom: padding.bottom + 22 } : { left: 16, bottom: 60 }}>
-          {scale.label}
-          <i style={{ width: scale.px }} />
+      {compact ? (
+        <>
+          {scale && !selected && (
+            <div className="scale" style={{ left: 16, bottom: sheetH > 0 ? sheetH + 12 : 24 }}>
+              {scale.label}
+              <i style={{ width: scale.px }} />
+            </div>
+          )}
+          {foot && <div className="foot m">{foot}</div>}
+        </>
+      ) : (
+        <div className="foot" style={{ left: padding.left + 16, right: showLoc ? LOC.d.right + LOC.d.w + 16 : 72 }}>
+          {scale && (
+            <div className="scale">
+              {scale.label}
+              <i style={{ width: scale.px }} />
+            </div>
+          )}
+          {foot}
         </div>
       )}
-      <div className="ctrls" style={compact ? { right: padding.right > 56 ? padding.right + 4 : 12, top: padding.top + 4 } : { right: 16, bottom: 60 }}>
+      <div className="ctrls" style={compact ? { right: padding.right > 56 ? padding.right + 4 : 12, top: padding.top + 4 } : { right: 16, bottom: 16 }}>
         {!compact && (
           <>
             <button type="button" aria-label="Zoom in" onClick={() => { btnZoom.current = true; map?.zoomIn({ duration: motion(250) }); }}>
@@ -766,14 +878,20 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             </button>
           </>
         )}
-        <button type="button" aria-label="Country" title="Country" disabled={!countryBox} onClick={() => countryBox && fitCountry(countryBox)}>
-          <Icon name="flag" />
+        <button type="button" aria-label="Country" title={countryBox ? `Whole country: ${nationName(countryBox.ref)}` : 'Country'} disabled={!countryBox} onClick={() => countryBox && fitCountry(countryBox.box)}>
+          {countryBox && nationIcon(countryBox.ref) ? (
+            <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true" className="nat-ic">
+              <path d={nationIcon(countryBox.ref)} />
+            </svg>
+          ) : (
+            <Icon name="flag" />
+          )}
         </button>
         <button type="button" aria-label="Full map" title="Full map" onClick={() => (onHome ? onHome() : homeView())}>
           <Icon name="fit" />
         </button>
       </div>
-      <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: compact ? 12 : 16, bottom: compact ? 42 : 2 }}>
+      <div className={`credit${compact && sheetH > 0 ? ' hide' : ''}`} style={{ right: compact ? 12 : 64, bottom: 2 }}>
         Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors
       </div>
     </div>
@@ -862,6 +980,14 @@ function placeLabel(x: number, y: number, text: string, kind: LabelKind, placed:
     return { x: x1, y: y + dy, w: tw };
   }
   return null;
+}
+
+/** Name of the open building where no free spot is left: right of the pin, kept inside the area */
+function forceLabel(x: number, y: number, text: string, area: Box, placed: Box[]) {
+  const tw = textWidth(text, 'strong');
+  const x1 = Math.max(area.x1 + 3, x + 15 + tw + 3 > area.x2 ? x - 15 - tw : x + 15);
+  placed.push({ x1: x1 - 6, x2: x1 + tw + 6, y1: y - 11, y2: y + 10 });
+  return { x: x1, y: y + 4, w: tw };
 }
 
 function PlaceLabel({ x, y, w, text, strong }: { x: number; y: number; w: number; text: string; strong: boolean }) {

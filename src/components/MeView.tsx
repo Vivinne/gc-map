@@ -68,7 +68,7 @@ export default function MeView(p: MeProps) {
         <Tile n={all.mastered} of={BUILDINGS.length} label="Mastered" />
         <div className="k">
           <b>{week.total ? pct(week.right, week.total) : '–'}</b>
-          <span>Correct, last 7 days{week.total ? ` · ${week.total}` : ''}</span>
+          <span>Correct, last 7 days{week.total ? ` · ${week.total} answers` : ''}</span>
           <div className="k-tr">
             <i style={{ width: week.total ? `${(week.right / week.total) * 100}%` : 0 }} />
           </div>
@@ -189,7 +189,7 @@ function Mastery({ by, starred, collections, onQuiz, onMap }: MeProps & { by: Re
 
   const rows: Row[] = useMemo(() => {
     if (dim === 'style')
-      return ERA_ORDER.map((e) => ({ key: e, label: ERAS[e].label, color: ERAS[e].color, items: BUILDINGS.filter((b) => b.era === e), quiz: { scope: `era:${e}` }, map: { ...EMPTY, styles: [e] } }));
+      return ERA_ORDER.map((e) => ({ key: e, label: ERAS[e].label, color: ERAS[e].color, items: BUILDINGS.filter((b) => b.eras.includes(e)), quiz: { scope: `era:${e}` }, map: { ...EMPTY, styles: [e] } }));
     if (dim === 'exam')
       return [
         { key: 'exam', label: 'All years', items: BUILDINGS.filter((b) => b.exams.length), quiz: { scope: 'exam' }, map: { ...EMPTY, exam: true } },
@@ -302,13 +302,15 @@ function Mastery({ by, starred, collections, onQuiz, onMap }: MeProps & { by: Re
 }
 
 function PractiseNext({ quiz, onQuiz }: MeProps) {
-  const list = useMemo(() => practiseNext(quiz.log, 6), [quiz.log]);
+  const list = useMemo(() => practiseNext(quiz.log, 60), [quiz.log]);
   return (
     <section className="card me-next" aria-label="Practise next">
       <div className="hd">
         <h2>Practise next</h2>
+        <span className="rt">{list.length}</span>
       </div>
       <div className="bd">
+        {!list.length && <p className="none">Nothing to practise yet</p>}
         <ol className="wk">
           {list.map(({ b, pair }) => (
             <li key={b.id}>
@@ -332,7 +334,7 @@ function PractiseNext({ quiz, onQuiz }: MeProps) {
             })
           }
         >
-          Quiz these {list.length || ''}
+          Quiz these {Math.min(30, list.length) || ''}
           <Icon name="right" size={12} />
         </button>
       </div>

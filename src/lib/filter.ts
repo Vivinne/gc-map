@@ -1,4 +1,4 @@
-import { BUILDINGS, COUNTRIES, ERA_ORDER, EXAM_YEARS, norm, type Building } from './model';
+import { BUILDINGS, COUNTRIES, ERA_ORDER, EXAM_YEARS, nationName, norm, type Building } from './model';
 import type { EraId } from './types';
 
 export interface Filters {
@@ -38,7 +38,8 @@ export function matchesQuery(b: Building, q: string): boolean {
  */
 export function matches(b: Building, f: Filters, starred: ReadonlySet<string>, skip?: FilterKey): boolean {
   if (skip !== 'styles' && f.styles.length && !f.styles.some((s) => b.eras.includes(s))) return false;
-  if (skip !== 'countries' && f.countries.length && !f.countries.includes(b.country)) return false;
+  // a country is a filter group (Italy ... Others) or, from a building's country tag, one nation
+  if (skip !== 'countries' && f.countries.length && !f.countries.includes(b.country) && !f.countries.includes(nationName(b))) return false;
   if (skip !== 'exam' && f.exam) {
     if (!b.exams.length) return false;
     if (f.examYears.length && !f.examYears.some((y) => b.exams.includes(y))) return false;

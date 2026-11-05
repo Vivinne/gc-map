@@ -34,7 +34,7 @@ export function quizScopes(starred: ReadonlySet<string>, collections: Collection
     { id: 'exam', label: 'TEST-ARCHED', items: BUILDINGS.filter((x) => x.exams.length) },
     { id: 'starred', label: 'Starred', items: BUILDINGS.filter((b) => starred.has(b.id)) },
     ...collections.map((c) => ({ id: `col:${c.id}`, label: c.name, items: c.ids.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b) })),
-    ...ERA_ORDER.map((e) => ({ id: `era:${e}`, label: ERAS[e].label, items: BUILDINGS.filter((x) => x.era === e), color: ERAS[e].color })),
+    ...ERA_ORDER.map((e) => ({ id: `era:${e}`, label: ERAS[e].label, items: BUILDINGS.filter((x) => x.eras.includes(e)), color: ERAS[e].color })),
     ...COUNTRIES.map((c) => ({ id: `country:${c}`, label: c, items: BUILDINGS.filter((x) => x.country === c) })),
     ...EXAM_YEARS.map((y) => ({ id: `year:${y}`, label: `TEST-ARCHED ${y}`, items: BUILDINGS.filter((x) => x.exams.includes(y)) })),
   ];
@@ -251,8 +251,9 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
         <span className="rt">{missedAll.length}</span>
       </div>
       <div className="bd">
+        {!missedAll.length && <p className="none">No missed questions yet</p>}
         <ol className="wk">
-          {missedAll.slice(0, mobile ? 3 : 8).map((w) => {
+          {missedAll.slice(0, mobile ? 3 : 60).map((w) => {
             const [id, p] = w.split('|') as [string, Pair];
             const b = BY_ID.get(id);
             if (!b) return null;

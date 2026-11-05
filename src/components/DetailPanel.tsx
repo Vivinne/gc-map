@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { Collection } from '../lib/collections';
-import { nearest } from '../lib/geo';
-import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, type Building } from '../lib/model';
+import { EMPTY, type Filters } from '../lib/filter';
+import { formatDistance, nearest } from '../lib/geo';
+import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, nationName, type Building } from '../lib/model';
 import Facts from './Facts';
 import { Icon } from './Icons';
 
@@ -12,33 +13,18 @@ export function cityOrder(city: string): Building[] {
   return CITY_BUILDINGS.get(city) ?? [];
 }
 
-/** Compass bearing from a to b in degrees (0 = north, clockwise), on a local flat approximation */
-export function bearing(a: Building, b: Building): number {
-  const dx = (b.lng - a.lng) * Math.cos(((a.lat + b.lat) / 2) * (Math.PI / 180));
-  const dy = b.lat - a.lat;
-  return ((Math.atan2(dx, dy) * 180) / Math.PI + 360) % 360;
-}
-
-function Arrow({ deg }: { deg: number }) {
-  return (
-    <svg width={18} height={18} viewBox="0 0 18 18" className="dir" aria-hidden="true" style={{ transform: `rotate(${deg}deg)` }}>
-      <path d="M9 15.5V3M4 7.5 9 2.5l5 5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 interface SheetProps {
   mobile: boolean;
   onClose(): void;
   children: React.ReactNode;
   className: string;
   label: string;
-  /** Card only: a swipe down on the top of the sheet folds it (like the fold button), a swipe up unfolds */
+  /** Card only: a swipe down on the top of the sheet folds it to its title, a swipe up unfolds */
   folded?: boolean;
   onFold?(folded: boolean): void;
 }
 
-/** Desktop: a card at the right of the map. Phone: a bottom sheet that expands by tap or drag on its top edge */
+/** Desktop: a panel in the left column of the map. Phone: a bottom sheet that expands by tap or drag on its top edge */
 function Sheet({ mobile, onClose, children, className, label, folded, onFold }: SheetProps) {
   const [full, setFull] = useState(false);
   const drag = useRef<{ y: number; dy: number; id: number } | null>(null);
@@ -46,7 +32,7 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold }: 
   // The drag starts on the top of the sheet (handle, controls strip, title), never on a button
   const onDown = (e: React.PointerEvent) => {
     const t = e.target as Element;
-    if (!t.closest('.grab, .c-tools, .c-top, .cp-top') || t.closest('button:not(.grab)')) return;
+    if (!t.closest('.grab, .c-top, .cp-top') || t.closest('button:not(.grab)')) return;
     drag.current = { y: e.clientY, dy: 0, id: e.pointerId };
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
@@ -110,22 +96,46 @@ interface CardProps {
   onBack(): void;
   onSelect(id: string): void;
   onHover(id: string): void;
+  /** A tag of the building was clicked: the map shows that category (period, country, exam year, collection) */
+  onTag(f: Filters): void;
+}
+
+/** Tags of a building: its period, country, TEST-ARCHED years and the user's collections holding it. Each one filters the map. */
+function Tags({ b, starred, collections, onTag }: { b: Building; starred: boolean; collections: Collection[]; onTag(f: Filters): void }) {
+  const tags: { key: string; label: string; dot?: string; star?: boolean; f: Filters }[] = [
+    { key: 'era', label: ERAS[b.era].label, dot: ERAS[b.era].color, f: { ...EMPTY, styles: [b.era] } },
+    ...(b.nation ? [{ key: 'nation', label: nationName(b), f: { ...EMPTY, countries: [nationName(b)] } }] : []),
+    ...b.exams.map((y) => ({ key: `y${y}`, label: `TEST-ARCHED ${y}`, f: { ...EMPTY, exam: true, examYears: [y] } })),
+    ...(starred ? [{ key: 'star', label: 'Starred', star: true, f: { ...EMPTY, starred: true } }] : []),
+    ...collections.filter((c) => c.ids.includes(b.id)).map((c) => ({ key: `c${c.id}`, label: c.name, f: { ...EMPTY, col: { id: c.id, name: c.name, ids: c.ids } } })),
+  ];
+  return (
+    <div className="c-tags">
+      {tags.map((t) => (
+        <button type="button" key={t.key} className="c-tag" title={`Show every building: ${t.label}`} onClick={() => onTag(t.f)}>
+          {t.dot && <i style={{ background: t.dot }} />}
+          {t.star && <Icon name="starOn" size={12} />}
+          <span>{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 /**
- * Building card. The controls sit in their own strip above the card, so they never change the layout of
- * the content: number and name, three English data lines, the summary, supplementary notes last.
- * The card folds to its title; the other buildings of the city (number, name, direction) are a folded
- * section at the end, so they never outweigh the building itself.
+ * Building card. The controls sit in the coloured title bar (back to the city, previous / next, collect,
+ * close); below it, one scrolling column: three English data lines, the summary, the tags, then the other
+ * buildings of the city (or the two nearest landmarks) as a folded section, so they never outweigh the building.
+ * Phone: a swipe down on the title folds the card to its title, a swipe up unfolds it.
  */
-export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, collections, onToggleCol, onCreateCol, onBack, onSelect, onHover }: CardProps) {
+export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, collections, onToggleCol, onCreateCol, onBack, onSelect, onHover, onTag }: CardProps) {
   const city = CITY_BUILDINGS.get(b.city) ?? [];
   const many = city.length > 1;
   const [folded, setFolded] = useState(false);
   const [othersOpen, setOthersOpen] = useState(false);
   const [nearOpen, setNearOpen] = useState(false);
   const [menu, setMenu] = useState(false);
-  const near = many ? [] : nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2).map((x) => x.b);
+  const near = many ? [] : nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2);
   const kept = starred || collections.some((c) => c.ids.includes(b.id));
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -133,50 +143,52 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
   }, [b.id]);
   return (
     <Sheet mobile={mobile} onClose={onClose} className={`card${folded ? ' folded' : ''}`} label={b.name} folded={folded} onFold={setFolded}>
-      <div className="c-tools">
-        {many && (
-          <button type="button" className="c-back" onClick={onBack} title={`All of ${b.city}`}>
-            <Icon name="left" size={12} />
-            {b.city}
+      <div
+        className="c-top"
+        style={{ background: ERAS[b.era].color }}
+        onClick={folded ? (e) => !(e.target as Element).closest('button') && setFolded(false) : undefined}
+      >
+        <div className="c-bar">
+          {many && (
+            <button type="button" className="c-back" onClick={onBack} title={`All of ${b.city}`}>
+              <Icon name="left" size={12} />
+              {b.city}
+            </button>
+          )}
+          <span className="c-sp" />
+          {canStep && (
+            <>
+              <button type="button" className="c-ic" aria-label="Previous" title="Previous" onClick={onPrev}>
+                <Icon name="left" size={13} />
+              </button>
+              <button type="button" className="c-ic" aria-label="Next" title="Next" onClick={onNext}>
+                <Icon name="right" size={13} />
+              </button>
+            </>
+          )}
+          <button type="button" className={`c-ic${kept ? ' on' : ''}`} aria-expanded={menu} aria-haspopup="menu" aria-label="Collect" title="Collect" onClick={() => setMenu(!menu)}>
+            <Icon name={kept ? 'starOn' : 'star'} size={14} />
           </button>
-        )}
-        <span className="c-sp" />
-        {canStep && (
-          <>
-            <button type="button" className="c-ic" aria-label="Previous" title="Previous" onClick={onPrev}>
-              <Icon name="left" size={13} />
-            </button>
-            <button type="button" className="c-ic" aria-label="Next" title="Next" onClick={onNext}>
-              <Icon name="right" size={13} />
-            </button>
-          </>
-        )}
-        <button type="button" className={`c-ic${kept ? ' on' : ''}`} aria-expanded={menu} aria-haspopup="menu" aria-label="Collect" title="Collect" onClick={() => setMenu(!menu)}>
-          <Icon name={kept ? 'starOn' : 'star'} size={14} />
-        </button>
-        <button type="button" className="c-ic" aria-label={folded ? 'Unfold' : 'Fold'} aria-expanded={!folded} title={folded ? 'Unfold' : 'Fold'} onClick={() => setFolded(!folded)}>
-          <Icon name={folded ? 'expand' : 'collapse'} size={12} />
-        </button>
-        <button type="button" className="c-ic" aria-label="Close" title="Close" onClick={onClose}>
-          <Icon name="close" size={12} />
-        </button>
-      </div>
-      {menu && <CollectMenu b={b} starred={starred} collections={collections} onStar={onStar} onToggle={onToggleCol} onCreate={onCreateCol} onClose={() => setMenu(false)} />}
-      <div className="c-top" style={{ background: ERAS[b.era].color }} onClick={folded ? () => setFolded(false) : undefined}>
+          <button type="button" className="c-ic" aria-label="Close" title="Close (Esc)" onClick={onClose}>
+            <Icon name="close" size={12} />
+          </button>
+        </div>
         <h1>
           {many && <span className="c-no">{CITY_NO.get(b.id)}</span>}
           <span>{b.name.toUpperCase()}</span>
         </h1>
       </div>
+      {menu && <CollectMenu b={b} starred={starred} collections={collections} onStar={onStar} onToggle={onToggleCol} onCreate={onCreateCol} onClose={() => setMenu(false)} />}
       {!folded && (
-        <>
-          <div className="c-body" ref={body}>
-            <Facts b={b} />
+        <div className="c-scroll" ref={body}>
+          <div className="c-body">
+            <Facts b={b} exam={false} />
+            <Tags b={b} starred={starred} collections={collections} onTag={onTag} />
           </div>
           {many && (
             <div className={`others-box${othersOpen ? ' open' : ''}`}>
               <button type="button" className="others-h" aria-expanded={othersOpen} onClick={() => setOthersOpen(!othersOpen)}>
-                <span>{b.city}</span>
+                <span>Also in {b.city}</span>
                 <span className="n">{city.length - 1}</span>
                 <Icon name="down" size={12} />
               </button>
@@ -191,7 +203,6 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
                             {CITY_NO.get(x.id)}
                           </span>
                           <span className="nm">{x.name}</span>
-                          <Arrow deg={bearing(b, x)} />
                         </button>
                       </li>
                     ))}
@@ -200,7 +211,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
             </div>
           )}
           {!many && near.length > 0 && (
-            // A city with no other building: the two nearest landmarks and the way to them
+            // A city with no other building: the two nearest landmarks and how far they are
             <div className={`others-box near${nearOpen ? ' open' : ''}`}>
               <button type="button" className="others-h" aria-expanded={nearOpen} onClick={() => setNearOpen(!nearOpen)}>
                 <span>Nearest</span>
@@ -208,8 +219,8 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
                 <Icon name="down" size={12} />
               </button>
               {nearOpen && (
-              <ol className="others" aria-label="Nearest buildings" onPointerLeave={() => onHover('')}>
-                  {near.map((x) => (
+                <ol className="others" aria-label="Nearest buildings" onPointerLeave={() => onHover('')}>
+                  {near.map(({ b: x, d }) => (
                     <li key={x.id}>
                       <button type="button" className="o-row" onClick={() => onSelect(x.id)} onPointerEnter={() => onHover(x.id)} onFocus={() => onHover(x.id)}>
                         <span className="sq" style={{ background: ERAS[x.era].color }} />
@@ -217,7 +228,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
                           {x.name}
                           <em>{x.city}</em>
                         </span>
-                        <Arrow deg={bearing(b, x)} />
+                        <span className="km">{formatDistance(d)}</span>
                       </button>
                     </li>
                   ))}
@@ -225,7 +236,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
               )}
             </div>
           )}
-        </>
+        </div>
       )}
     </Sheet>
   );
@@ -254,7 +265,7 @@ export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole
         <button type="button" className="c-ic dark" aria-label={`Show all of ${city}`} title="Whole city" onClick={onWhole}>
           <Icon name="fit" size={13} />
         </button>
-        <button type="button" className="c-ic dark" aria-label="Close" title="Close" onClick={onClose}>
+        <button type="button" className="c-ic dark" aria-label="Close" title="Close (Esc)" onClick={onClose}>
           <Icon name="close" size={12} />
         </button>
       </div>

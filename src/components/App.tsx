@@ -3,13 +3,12 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, type Mode } from '../lib/hash';
-import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear, type Building } from '../lib/model';
+import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear } from '../lib/model';
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import type { EraId } from '../lib/types';
 import { BuildingCard, CityPanel, cityOrder } from './DetailPanel';
-import EraBand from './EraBand';
 import { Icon } from './Icons';
 import IndexPanel from './IndexPanel';
 import MeView from './MeView';
@@ -27,6 +26,20 @@ interface Toast {
   id: number;
   text: string;
   undo?: Filters;
+}
+
+/** One chip per active filter value, with the filters that remain when it is removed */
+function filterChips(f: Filters): { key: string; label: string; dot?: string; without: Filters }[] {
+  const out: { key: string; label: string; dot?: string; without: Filters }[] = [];
+  for (const s of f.styles) out.push({ key: `s-${s}`, label: ERAS[s].label, dot: ERAS[s].color, without: { ...f, styles: f.styles.filter((x) => x !== s) } });
+  for (const c of f.countries) out.push({ key: `c-${c}`, label: c, without: { ...f, countries: f.countries.filter((x) => x !== c) } });
+  if (f.exam) out.push({ key: 'exam', label: f.examYears.length ? `TEST-ARCHED ${f.examYears.join(', ')}` : 'TEST-ARCHED', without: { ...f, exam: false, examYears: [] } });
+  if (f.starred) out.push({ key: 'star', label: 'Starred', without: { ...f, starred: false } });
+  if (f.col) out.push({ key: 'col', label: f.col.name, without: { ...f, col: null } });
+  if (f.who) out.push({ key: 'who', label: f.who, without: { ...f, who: '' } });
+  if (f.q) out.push({ key: 'q', label: `"${f.q}"`, without: { ...f, q: '' } });
+  if (f.range) out.push({ key: 'range', label: `${f.range[0]} to ${f.range[1]}`, without: { ...f, range: null } });
+  return out;
 }
 
 function useMedia(q: string): boolean {
@@ -90,7 +103,6 @@ export default function App() {
   const dFilters = useDeferredValue(filters);
   const results = useMemo(() => apply(dFilters, starred).sort(byYear), [dFilters, starred]);
   const counts = useMemo(() => tagCounts(filters, starred), [filters, starred]);
-  const bandBase = useMemo(() => apply({ ...dFilters, styles: [] }, starred), [dFilters, starred]);
   const selected = selId ? (BY_ID.get(selId) ?? null) : null;
 
 
@@ -152,11 +164,15 @@ export default function App() {
   );
 
   // ---------- map padding (panels that cover the map) ----------
+  // Desktop: the filters and the city list / card share one left column (the filters open over it); the
+  // zoom buttons sit at the right, the scale and the active filters at the bottom.
+  // Phone: the active filters run along the top of the map, the sheet covers its lower part.
+  const activeChips = filterChips(filters);
   const padding: Padding = mobile
     ? wide
-      ? { top: 8, right: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 56, bottom: 44, left: 0 }
-      : { top: 8, right: 56, bottom: panelOpen ? Math.round(mainHeight * 0.44) : 44, left: 0 }
-    : { top: 0, right: panelOpen ? 372 : 0, bottom: 60, left: filtersOpen ? 352 : 0 };
+      ? { top: 8 + (activeChips.length ? 40 : 0), right: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 56, bottom: 36, left: 0 }
+      : { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: (panelOpen ? Math.round(mainHeight * 0.44) : 0) + 36, left: 0 }
+    : { top: 0, right: 56, bottom: 48, left: filtersOpen || panelOpen ? 372 : 0 };
 
   // ---------- actions ----------
   // The camera before a card or city list opened: closing them goes back to it
@@ -348,8 +364,8 @@ export default function App() {
       if (e.key === 'Escape') {
         if (sheet) setSheet(false);
         else if (filtersOpen) setFiltersOpen(false);
-        else if (selId) closeDetail();
-        else if (city) closeCity();
+        // Esc does what the close button does
+        else if (selId || city) closeCity();
         return;
       }
       if (mode === 'me' || mode === 'quiz') {
@@ -396,12 +412,30 @@ export default function App() {
     />
   );
 
-  const activeFilters = [filters.styles.length, filters.countries.length, filters.exam, filters.starred, filters.range, filters.q, filters.who, filters.col].filter(Boolean).length;
-  // Phone: the band floats over the bottom of the map and steps aside while a sheet is open
-  const band = mode === 'map' && !(mobile && panelOpen) && (
-    <footer className={`band dock${mobile ? ' m' : ''}`} style={!mobile ? { left: 16, right: 16 } : undefined}>
-      <EraBand base={bandBase} styles={filters.styles} onToggleStyle={toggleStyle} />
-    </footer>
+  const activeFilters = activeChips.length;
+  // Active filters, each with its own remove button (and one to clear them all)
+  const removeChip = (next: Filters) => {
+    // with a card or city open the filter changes under it; otherwise the map frames what is left
+    if (selId || city) setFiltersRaw(next);
+    else pickCategory(next);
+  };
+  const chips = mode === 'map' && activeChips.length > 0 && (
+    <div className={`fchips${mobile ? ' m' : ''}`} role="group" aria-label="Active filters">
+      {activeChips.map((c) => (
+        <span className="fchip" key={c.key}>
+          {c.dot && <i style={{ background: c.dot }} />}
+          <span className="t">{c.label}</span>
+          <button type="button" aria-label={`Remove ${c.label}`} title="Remove" onClick={() => removeChip(c.without)}>
+            <Icon name="close" size={10} />
+          </button>
+        </span>
+      ))}
+      {activeChips.length > 1 && (
+        <button type="button" className="fchip clear" onClick={() => removeChip(EMPTY)}>
+          Clear all
+        </button>
+      )}
+    </div>
   );
 
   return (
@@ -457,7 +491,7 @@ export default function App() {
         {!mobile && filtersOpen && mode === 'map' && (
           <div className="drawer">
             <div className="drawer-h">
-              <b>{results.length}</b>
+              <b>{results.length} buildings</b>
               <button type="button" className="icon-btn" aria-label="Close filters" onClick={() => setFiltersOpen(false)}>
                 <Icon name="close" size={13} />
               </button>
@@ -465,7 +499,6 @@ export default function App() {
             {index}
           </div>
         )}
-        {band}
         <div className={`pane map-pane${mode === 'map' ? ' on' : ''}`} aria-hidden={mode !== 'map'}>
           <MapView
             ref={mapRef}
@@ -491,6 +524,7 @@ export default function App() {
               window.requestAnimationFrame(() => mapRef.current?.home());
             }}
             onPanorama={clearView}
+            foot={chips}
           />
           {mode === 'map' && selected && (
             <BuildingCard
@@ -517,6 +551,7 @@ export default function App() {
               }}
               onSelect={(id) => select(id)}
               onHover={setHoverId}
+              onTag={pickCategory}
             />
           )}
           {mode === 'map' && !selected && city && CITY_BUILDINGS.has(city) && (
@@ -587,7 +622,7 @@ export default function App() {
       {mobile && sheet && (
         <div className="m-sheet" role="dialog" aria-label="Filters and list">
           <div className="m-sheet-h">
-            <b>{results.length}</b>
+            <b>{results.length} buildings</b>
             <button type="button" className="icon-btn" aria-label="Close" onClick={() => setSheet(false)}>
               <Icon name="close" size={14} />
             </button>

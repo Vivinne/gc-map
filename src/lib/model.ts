@@ -133,13 +133,19 @@ export function styleName(b: Place): string {
   return en;
 }
 
-/** The three data lines of a building card: built span and place, person, style (English only) */
+/** The three data lines of a building card: built span and city, person, style (English only).
+ * The city is written the same way for every building (no country code); the country is a tag of its own. */
 export function dataLines(b: Building): string[] {
   const built = b.built && b.built !== '\u2014' ? ascii(b.built) : '';
-  return [[built, b.locLabel].filter(Boolean).join(', '), ascii(whoOf(b)), styleName(b)].filter(Boolean);
+  return [[built, b.city].filter(Boolean).join(', '), ascii(whoOf(b)), styleName(b)].filter(Boolean);
+}
+
+/** Country name as shown to readers (Natural Earth name, shortened where it is long) */
+export function nationName(b: Place): string {
+  return b.nation.replace('United States of America', 'United States');
 }
 
 /** Supplementary line: years the building was a topic in TEST-ARCHED */
 export function examNote(b: Place): string {
-  return b.exams.length ? `\u3010TEST-ARCHED ${b.exams.join(' / ')}\u3011` : '';
+  return b.exams.length ? `TEST-ARCHED ${b.exams.join(' / ')}` : '';
 }
