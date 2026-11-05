@@ -420,10 +420,10 @@ export default function App() {
 
   const activeFilters = activeChips.length;
   // Active filters, each with its own remove button (and one to clear them all)
-  // A removed filter always shows: a note with the number of buildings now shown (and Undo), and, unless a
-  // card or city is open, the map frames what is now shown (no filter left: the full map)
-  const removeChip = (next: Filters, what: string) => {
-    setFilters(next, (n) => `${what} · ${n} buildings`);
+  // A removed filter shows on the map itself: unless a card or city is open, the map moves to frame what
+  // is now shown (no filter left: the full map)
+  const removeChip = (next: Filters) => {
+    setFiltersRaw(next);
     if (selId || city) return;
     const list = apply(next, starred);
     afterPanel(() => (isEmpty(next) ? mapRef.current?.home() : mapRef.current?.fitAll(list)));
@@ -434,13 +434,13 @@ export default function App() {
         <span className="fchip" key={c.key}>
           {c.dot && <i style={{ background: c.dot }} />}
           <span className="t">{c.label}</span>
-          <button type="button" aria-label={`Remove ${c.label}`} title="Remove" onClick={() => removeChip(c.without, `${c.label} removed`)}>
+          <button type="button" aria-label={`Remove ${c.label}`} title="Remove" onClick={() => removeChip(c.without)}>
             <Icon name="close" size={10} />
           </button>
         </span>
       ))}
       {activeChips.length > 1 && (
-        <button type="button" className="fchip clear" onClick={() => removeChip(EMPTY, 'Filters cleared')}>
+        <button type="button" className="fchip clear" onClick={() => removeChip(EMPTY)}>
           Clear all
         </button>
       )}
