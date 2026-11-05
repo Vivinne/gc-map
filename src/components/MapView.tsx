@@ -60,8 +60,17 @@ interface Props {
   foot?: React.ReactNode;
 }
 
-/** Locator size (desktop / phone); it sits in the lower right corner, beside the zoom buttons on desktop */
-const LOC = { d: { w: 280, h: 200, right: 56, bottom: 16 }, m: { w: 132, h: 96, right: 12, bottom: 12 } };
+/** Locator size (desktop / phone) */
+const LOC = { d: { w: 280, h: 200 }, m: { w: 132, h: 96 } };
+/**
+ * Where the locator sits, in map pixels. It never moves when a panel opens or closes: desktop, the lower
+ * right corner beside the zoom buttons; phone, the upper left corner under the row of filter chips (the
+ * lower part of a phone map is covered by the sheet while a building is open).
+ */
+function locBox(W: number, H: number, compact: boolean): Box {
+  if (compact) return { x1: 12, y1: 52, x2: 12 + LOC.m.w, y2: 52 + LOC.m.h };
+  return { x1: W - 56 - LOC.d.w, y1: H - 16 - LOC.d.h, x2: W - 56, y2: H - 16 };
+}
 /** The locator shows from this zoom on (past country scale) */
 const LOC_ZOOM = 7;
 
@@ -316,12 +325,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       let use = pad;
       const first = map.cameraForBounds(b, { padding: pad, maxZoom });
       if (first && (first.zoom ?? 0) >= LOC_ZOOM) {
-        const L = compactRef.current ? LOC.m : LOC.d;
-        const above = { ...pad, bottom: Math.max(pad.bottom, p.bottom - (compactRef.current ? 36 : 48) + L.bottom + L.h + 12 + extra / 2) };
-        const beside = { ...pad, right: Math.max(pad.right, p.right - (compactRef.current ? 56 : 56) + L.right + L.w + 12 + extra / 2) };
-        const za = map.cameraForBounds(b, { padding: above, maxZoom })?.zoom ?? -1;
-        const zb = map.cameraForBounds(b, { padding: beside, maxZoom })?.zoom ?? -1;
-        use = za >= zb ? above : beside;
+        const W = map.getContainer().clientWidth;
+        const H = map.getContainer().clientHeight;
+        const c = compactRef.current;
+        const lb = locBox(W, H, c);
+        const g = 12 + extra / 2;
+        // desktop: above the locator or left of it; phone: below it or right of it
+        const a = c ? { ...pad, top: Math.max(pad.top, lb.y2 + g) } : { ...pad, bottom: Math.max(pad.bottom, H - lb.y1 + g) };
+        const o = c ? { ...pad, left: Math.max(pad.left, lb.x2 + g) } : { ...pad, right: Math.max(pad.right, W - lb.x1 + g) };
+        const za = map.cameraForBounds(b, { padding: a, maxZoom })?.zoom ?? -1;
+        const zb = map.cameraForBounds(b, { padding: o, maxZoom })?.zoom ?? -1;
+        use = za >= zb ? a : o;
       }
       map.fitBounds(b, { padding: use, maxZoom, duration: motion(650) });
     },
@@ -443,16 +457,20 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const sheetH = (compact ? padding.bottom - 36 : 0);
   const showLoc = !!map && zoom >= LOC_ZOOM;
   const L = compact ? LOC.m : LOC.d;
+  const mapW = map ? map.getContainer().clientWidth : 0;
+  const mapH = map ? map.getContainer().clientHeight : 0;
+  const lb = locBox(mapW, mapH, !!compact);
   let overlay: React.ReactNode = null;
   if (map && layer) {
     const W = map.getContainer().clientWidth;
     const H = map.getContainer().clientHeight;
     const blocked: Box[] = [];
-    if (showLoc) blocked.push({ x1: W - L.right - L.w - 6, y1: H - sheetH - L.bottom - L.h - 6, x2: W - L.right + 6, y2: H - sheetH - L.bottom + 6 });
-    // scale bar (phone: lower left; desktop: lower left of the free area, with the filter chips after it)
-    blocked.push(compact ? { x1: 0, y1: H - sheetH - 52, x2: 140, y2: H - sheetH } : { x1: padding.left, y1: H - 48, x2: W - 56, y2: H });
+    if (showLoc) blocked.push({ x1: lb.x1 - 6, y1: lb.y1 - 6, x2: lb.x2 + 6, y2: lb.y2 + 6 });
+    // scale bar and filter chips: one row along the bottom (phone: scale lower left, chips along the top)
+    blocked.push(compact ? { x1: 0, y1: H - 52, x2: 140, y2: H } : { x1: 0, y1: H - 48, x2: W - 56, y2: H });
+    if (compact && padding.top > 8) blocked.push({ x1: 0, y1: 0, x2: W, y2: 46 });
     // zoom and country buttons (desktop: lower right; phone: upper right)
-    blocked.push(compact ? { x1: W - 52, y1: 0, x2: W, y2: padding.top + 80 } : { x1: W - 56, y1: H - 160, x2: W, y2: H });
+    blocked.push(compact ? { x1: W - 52, y1: 0, x2: W, y2: 84 } : { x1: W - 56, y1: H - 160, x2: W, y2: H });
     const proj = (lng: number, lat: number) => {
       const p = map.project([lng, lat]);
       return [p.x, p.y] as const;
@@ -696,14 +714,18 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const t = Math.min(tx, ty);
         edge.push({ b, x: cx + dx * t, y: cy + dy * t, a: Math.atan2(dy, dx) });
       }
-      // the locator (lower right) covers that corner: markers there move just past it
+      // the locator covers a corner (desktop lower right, phone upper left): markers there move just past it
       if (showLoc) {
-        const ix1 = W - L.right - L.w - 14;
-        const iy1 = H - sheetH - L.bottom - L.h - 14;
         for (const e of edge) {
-          if (e.x <= ix1 || e.y <= iy1) continue;
-          if (Math.abs(e.y - r0.y2) < 1) e.x = ix1;
-          else e.y = iy1;
+          if (compact) {
+            if (e.x >= lb.x2 + 14 || e.y >= lb.y2 + 14) continue;
+            if (Math.abs(e.y - r0.y1) < 1) e.x = lb.x2 + 14;
+            else e.y = lb.y2 + 14;
+          } else {
+            if (e.x <= lb.x1 - 14 || e.y <= lb.y1 - 14) continue;
+            if (Math.abs(e.y - r0.y2) < 1) e.x = lb.x1 - 14;
+            else e.y = lb.y1 - 14;
+          }
         }
       }
       // keep markers on one edge apart
@@ -815,7 +837,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     const rh = a && c ? c[1] - a[1] : 0;
     const cc = loc.pr([ctr.lng, ctr.lat]);
     inset = (
-      <div className={`locator${compact ? ' m' : ''}`} style={{ right: L.right, bottom: sheetH + L.bottom }} aria-hidden="true">
+      <div className={`locator${compact ? ' m' : ''}`} style={{ left: lb.x1, top: lb.y1 }} aria-hidden="true">
         <svg width={lw} height={lh}>
           <rect width={lw} height={lh} className="lc-sea" />
           <path d={loc.land} className="lc-land" />
@@ -848,8 +870,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       {inset}
       {compact ? (
         <>
-          {scale && !selected && (
-            <div className="scale" style={{ left: 16, bottom: sheetH > 0 ? sheetH + 12 : 24 }}>
+          {scale && (
+            // fixed in the lower left corner: an open sheet covers it, it never moves
+            <div className="scale" style={{ left: 16, bottom: 24 }}>
               {scale.label}
               <i style={{ width: scale.px }} />
             </div>
@@ -857,7 +880,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           {foot && <div className="foot m">{foot}</div>}
         </>
       ) : (
-        <div className="foot" style={{ left: padding.left + 16, right: showLoc ? LOC.d.right + LOC.d.w + 16 : 72 }}>
+        <div className="foot" style={{ left: 16, right: 56 + LOC.d.w + 16 }}>
           {scale && (
             <div className="scale">
               {scale.label}
@@ -867,7 +890,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           {foot}
         </div>
       )}
-      <div className="ctrls" style={compact ? { right: padding.right > 56 ? padding.right + 4 : 12, top: padding.top + 4 } : { right: 16, bottom: 16 }}>
+      <div className="ctrls" style={compact ? { right: padding.right > 56 ? padding.right + 4 : 12, top: 8 } : { right: 16, bottom: 16 }}>
         {!compact && (
           <>
             <button type="button" aria-label="Zoom in" onClick={() => { btnZoom.current = true; map?.zoomIn({ duration: motion(250) }); }}>
@@ -891,7 +914,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           <Icon name="fit" />
         </button>
       </div>
-      <div className={`credit${compact && sheetH > 0 ? ' hide' : ''}`} style={{ right: compact ? 12 : 64, bottom: 2 }}>
+      <div className="credit" style={{ right: compact ? 12 : 64, bottom: 2 }}>
         Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors
       </div>
     </div>

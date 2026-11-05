@@ -137,6 +137,9 @@ export default function App() {
     save('quiz', quiz);
   }, [quiz]);
   useEffect(() => {
+    // iOS Safari shows :active (the press feedback of every button) only when the page listens to touches
+    const noop = () => undefined;
+    document.addEventListener('touchstart', noop, { passive: true });
     // Clear any old view address (#m=...&b=...) so a reload never restores it
     if (window.location.hash) window.history.replaceState(null, '', window.location.pathname + window.location.search);
     // A page restored from the back/forward cache is a reload too
@@ -144,7 +147,10 @@ export default function App() {
       if (e.persisted) window.location.reload();
     };
     window.addEventListener('pageshow', onShow);
-    return () => window.removeEventListener('pageshow', onShow);
+    return () => {
+      window.removeEventListener('pageshow', onShow);
+      document.removeEventListener('touchstart', noop);
+    };
   }, []);
 
   const showToast = useCallback((text: string, undo?: Filters) => setToast({ id: Date.now(), text, undo }), []);
