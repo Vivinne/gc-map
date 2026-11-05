@@ -159,26 +159,38 @@ export default function App() {
     : { top: 0, right: panelOpen ? 372 : 0, bottom: 60, left: filtersOpen ? 352 : 0 };
 
   // ---------- actions ----------
+  // The camera before a card or city list opened: closing them goes back to it
+  const before = useRef<ReturnType<MapHandle['view']>>(null);
+  const openRef = useRef(false);
+  openRef.current = !!selId || !!city;
+  const remember = () => {
+    if (!openRef.current) before.current = mapRef.current?.view() ?? null;
+  };
+  // Camera moves wait for the panel to open, so the map is fitted to the area the panel leaves free
+  // (a timer, not animation frames: those can stall on phones)
+  const afterPanel = (f: () => void) => window.setTimeout(f, 80);
   const select = useCallback(
     (id: string, opts: { fly?: boolean } = {}) => {
       const b = BY_ID.get(id);
       if (!b) return;
+      remember();
       setSelId(id);
       setCity(b.city);
       setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
       setSheet(false);
-      if (opts.fly !== false) window.requestAnimationFrame(() => mapRef.current?.showBuilding(b));
+      if (opts.fly !== false) afterPanel(() => mapRef.current?.showBuilding(b));
     },
     [],
   );
 
   const focusCity = useCallback(
     (c: string) => {
+      remember();
       setCity(c);
       setSelId('');
       setSheet(false);
       setFiltersOpen(false);
-      mapRef.current?.showCity(c);
+      afterPanel(() => mapRef.current?.showCity(c));
     },
     [],
   );
@@ -186,6 +198,7 @@ export default function App() {
   // The panorama is the map at its plainest: nothing selected, no filters, no panels (Full map, or a
   // zoom out to the 500 km scale)
   const clearView = useCallback(() => {
+    before.current = null;
     setSelId('');
     setCity('');
     setFiltersRaw(EMPTY);
@@ -198,6 +211,10 @@ export default function App() {
   const closeCity = useCallback(() => {
     setSelId('');
     setCity('');
+    // back to the view from before the panel opened
+    const v = before.current;
+    before.current = null;
+    if (v) afterPanel(() => mapRef.current?.restore(v));
   }, []);
   const step = useCallback(
     (d: number) => {
@@ -286,6 +303,7 @@ export default function App() {
   const fitNext = useRef(false);
   const pickCategory = useCallback((next: Filters | ((f: Filters) => Filters)) => {
     fitNext.current = true;
+    before.current = null;
     setSelId('');
     setCity('');
     setFiltersRaw(next);
@@ -298,6 +316,7 @@ export default function App() {
   }, [results]);
   const toggleStyle = useCallback((id: EraId) => {
     fitNext.current = true;
+    before.current = null;
     setSelId('');
     setCity('');
     setFiltersRaw((f) => ({ ...f, styles: f.styles.includes(id) ? f.styles.filter((x) => x !== id) : [...f.styles, id] }));

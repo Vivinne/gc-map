@@ -30,6 +30,9 @@ export interface MapHandle {
   /** Fit every building of a city */
   showCity(city: string): void;
   home(): void;
+  /** The camera now, to come back to it later */
+  view(): { center: [number, number]; zoom: number } | null;
+  restore(v: { center: [number, number]; zoom: number }): void;
   /** A building picked on the map: bring it to the middle of the visible area, keeping the zoom */
   focus(b: Building): void;
 }
@@ -268,6 +271,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       fitTo,
       showCity,
       home: () => homeView(),
+      view: () => {
+        const m = mapRef.current;
+        if (!m) return null;
+        const c = m.getCenter();
+        return { center: [c.lng, c.lat], zoom: m.getZoom() };
+      },
+      restore: (v) => mapRef.current?.easeTo({ center: v.center, zoom: v.zoom, duration: motion(500) }),
       focus: (b) => {
         const p = padRef.current;
         // offset, not padding: easeTo keeps a padding for later camera moves
@@ -367,6 +377,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     };
     const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
     const marks: React.ReactNode[] = [];
+    const leaders: React.ReactNode[] = [];
     // Phones: a finger-sized invisible target over every dot and pin (drawn last, so it is on top)
     const hits: React.ReactNode[] = [];
     const hit = (key: string, x: number, y: number, id: string) => {
@@ -406,8 +417,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             onClick={(e) => {
               if (!isClick(e)) return;
               setTip(null);
-              // One click opens the city (the largest one of a merged circle) with its list
-              onCity(c.name);
+              // One click opens the city of the circle's building nearest to the click (a merged circle holds
+              // several cities)
+              const r = map.getContainer().getBoundingClientRect();
+              const at = map.unproject([e.clientX - r.left, e.clientY - r.top]);
+              const near = c.items.reduce((a, b) => (Math.hypot(b.lng - at.lng, b.lat - at.lat) < Math.hypot(a.lng - at.lng, a.lat - at.lat) ? b : a));
+              onCity(near.city);
             }}
           >
             {isHot && <circle r={r + 6} className="donut-hot" />}
@@ -447,14 +462,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     } else {
       // Numbered pins (number = place in its city, 1 = oldest). Entries at one spot fan out in a small ring;
       // pins closer than one pin width are pushed apart so every number stays readable.
-      type Pin = { b: Building; x: number; y: number };
+      type Pin = { b: Building; x: number; y: number; x0: number; y0: number };
       const pins: Pin[] = [];
       const spots = new Map<string, Pin[]>();
       for (const b of buildings) {
         const [x, y] = proj(b.lng, b.lat);
         if (!inView(x, y, 60)) continue;
         const k = `${b.lng.toFixed(4)},${b.lat.toFixed(4)}`;
-        const pin = { b, x, y };
+        const pin = { b, x, y, x0: x, y0: y };
         pins.push(pin);
         const arr = spots.get(k);
         if (arr) arr.push(pin);
@@ -511,6 +526,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         if (!strong && !isFocus(p)) continue;
         const pos = placeLabel(p.x, p.y, p.b.name, strong ? 'strong' : 'soft', placed, area, 15);
         if (pos) labels.push(<PlaceLabel key={`t-${p.b.id}`} {...pos} text={p.b.name} strong={strong} />);
+      }
+      // A pin moved off its spot (shared spot or crowding) keeps a thin line to the true position
+      for (const p of pins) {
+        if (Math.hypot(p.x - p.x0, p.y - p.y0) < 4) continue;
+        leaders.push(
+          <g key={`l-${p.b.id}`} className="leader">
+            <line x1={p.x0} y1={p.y0} x2={p.x} y2={p.y} />
+            <circle cx={p.x0} cy={p.y0} r={2} />
+          </g>,
+        );
       }
       for (const p of pins) {
         const isSel = !!selected && p.b.id === selected.id;
@@ -656,6 +681,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     overlay = createPortal(
       <>
         <svg className="overlay" width={W} height={H}>
+          {leaders}
           {marks}
           {hits}
           {labels}
