@@ -162,6 +162,8 @@ export default function App() {
   // The camera before a card or city list opened: closing them goes back to it
   const before = useRef<ReturnType<MapHandle['view']>>(null);
   const openRef = useRef(false);
+  const cityRef = useRef('');
+  cityRef.current = city;
   openRef.current = !!selId || !!city;
   const remember = () => {
     if (!openRef.current) before.current = mapRef.current?.view() ?? null;
@@ -207,7 +209,12 @@ export default function App() {
     setHoverId('');
     setHoverCity('');
   }, []);
-  const closeDetail = useCallback(() => setSelId(''), []);
+  // Card back to its city list: the map moves to the whole city
+  const closeDetail = useCallback(() => {
+    setSelId('');
+    const c = cityRef.current;
+    if (c) afterPanel(() => mapRef.current?.showCity(c));
+  }, []);
   const closeCity = useCallback(() => {
     setSelId('');
     setCity('');

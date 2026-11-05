@@ -61,7 +61,10 @@ interface Props {
 /** A building alone in its city, with the nearest landmarks when they are close enough to show together */
 function alone(b: Building): Building[] {
   const near = nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2).filter((x) => x.d <= 150000).map((x) => x.b);
-  return [b, ...near];
+  // mirrored around the building, so the fit keeps the building itself in the middle
+  const out: Building[] = [b, ...near];
+  for (const n of near) out.push({ ...n, id: `${n.id}~m`, lng: 2 * b.lng - n.lng, lat: 2 * b.lat - n.lat });
+  return out;
 }
 
 const LOCATORS = new Map<string, { pr: (p: [number, number]) => [number, number] | null; land: string }>();
@@ -417,12 +420,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             onClick={(e) => {
               if (!isClick(e)) return;
               setTip(null);
-              // One click opens the city of the circle's building nearest to the click (a merged circle holds
-              // several cities)
-              const r = map.getContainer().getBoundingClientRect();
-              const at = map.unproject([e.clientX - r.left, e.clientY - r.top]);
-              const near = c.items.reduce((a, b) => (Math.hypot(b.lng - at.lng, b.lat - at.lat) < Math.hypot(a.lng - at.lng, a.lat - at.lat) ? b : a));
-              onCity(near.city);
+              // One click opens the city the circle is named after (the largest one of a merged circle)
+              onCity(c.name);
             }}
           >
             {isHot && <circle r={r + 6} className="donut-hot" />}
@@ -604,8 +603,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       }
       // the locator (top left) covers that corner: markers there move just past it
       {
-        const ix2 = (compact ? 12 + 112 : 16 + 176) + 14;
-        const iy2 = pad.top + (compact ? 4 + 80 : 16 + 124) + 14;
+        const ix2 = (compact ? 12 + 168 : 16 + 280) + 14;
+        const iy2 = pad.top + (compact ? 4 + 120 : 16 + 200) + 14;
         for (const e of edge) {
           if (e.x >= ix2 || e.y >= iy2) continue;
           if (Math.abs(e.y - r0.y1) < 1) e.x = ix2;
@@ -709,8 +708,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   if (map && zoom >= 7) {
     const ctr = map.getCenter();
     const world = !(ctr.lng > -25 && ctr.lng < 45 && ctr.lat > 30 && ctr.lat < 72);
-    const lw = compact ? 112 : 176;
-    const lh = compact ? 80 : 124;
+    const lw = compact ? 168 : 280;
+    const lh = compact ? 120 : 200;
     const loc = locator(world, lw, lh);
     const bb = map.getBounds();
     const a = loc.pr([Math.max(-179, bb.getWest()), Math.min(84, bb.getNorth())]);
@@ -729,7 +728,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           ) : (
             cc && <circle cx={cc[0]} cy={cc[1]} r={6} className="lc-view" />
           )}
-          {here && <circle cx={here[0]} cy={here[1]} r={3.5} className="lc-here" />}
+          {here && <circle cx={here[0]} cy={here[1]} r={4} className="lc-here" />}
+          {(here ?? cc) && (selected?.city || insetCity) && (
+            <text x={Math.min(lw - 6, Math.max(6, (here ?? cc)![0] + 8))} y={Math.max(14, (here ?? cc)![1] - 8)} className="lc-name" textAnchor={(here ?? cc)![0] > lw * 0.7 ? 'end' : 'start'}>
+              {selected?.city || insetCity}
+            </text>
+          )}
         </svg>
       </div>
     );
@@ -745,30 +749,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       )}
       {overlay}
       {inset}
-      {outside.total > 0 && !(compact && selected) && (
-        <div className="away" style={compact ? { left: 16, bottom: padding.bottom + 44 } : { left: 16, bottom: 60 + 30 }}>
-          {awayOpen &&
-            outside.groups.map(([k, v]) => (
-              <button
-                type="button"
-                key={k}
-                className="chip away-chip"
-                onClick={() => {
-                  setAwayOpen(false);
-                  fitTo(v, 12);
-                }}
-              >
-                {k}
-                <span className="n">{v.length}</span>
-                <Icon name="right" size={12} />
-              </button>
-            ))}
-          <button type="button" className={`chip away-chip${awayOpen ? ' on' : ''}`} aria-expanded={awayOpen} aria-label={`+${outside.total} outside this view`} title="Outside this view" onClick={() => setAwayOpen((o) => !o)}>
-            <span className="n">+{outside.total}</span>
-            <Icon name={awayOpen ? 'close' : 'right'} size={12} />
-          </button>
-        </div>
-      )}
       {scale && !(compact && selected) && (
         <div className="scale" style={compact ? { left: 16, bottom: padding.bottom + 22 } : { left: 16, bottom: 60 }}>
           {scale.label}
@@ -790,7 +770,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           <Icon name="flag" />
         </button>
         <button type="button" aria-label="Full map" title="Full map" onClick={() => (onHome ? onHome() : homeView())}>
-          <Icon name="globe" />
+          <Icon name="fit" />
         </button>
       </div>
       <div className={`credit${compact && selected ? ' hide' : ''}`} style={{ right: compact ? 12 : 16, bottom: compact ? 42 : 2 }}>

@@ -46,15 +46,17 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .band { grid-column: 1 / -1; grid-row: 3; z-index: 4; background: #fff; }
 /* desktop: the band floats over the bottom of the map; 16 px from every edge like every floating part */
 .band.dock { position: absolute; z-index: 7; bottom: 16px; height: 32px; background: transparent; }
-.eb { display: flex; gap: 2px; height: 32px; overflow-x: auto; scrollbar-width: none; }
+.eb { display: flex; align-items: center; height: 32px; padding: 0 4px; background: #fff; box-shadow: 0 0 0 1px var(--rule); overflow-x: auto; scrollbar-width: none; }
 .eb::-webkit-scrollbar { display: none; }
-.eb-tag { flex: 1 0 auto; display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; background: #fff; box-shadow: 0 0 0 1px var(--rule); font-size: 12.5px; font-weight: 650; white-space: nowrap; }
-.eb-tag i { width: 10px; height: 10px; flex: none; }
-.eb-tag .n { margin-left: auto; padding-left: 4px; color: var(--mute); font-weight: 500; font-variant-numeric: tabular-nums; }
-.eb-tag:hover:not(:disabled) { background: var(--soft); }
-.eb-tag.on { background: #000; color: #fff; }
+.eb-tag { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; gap: 6px; height: 24px; padding: 0 8px; font-size: 12px; font-weight: 600; color: #33393f; white-space: nowrap; }
+.eb-tag + .eb-tag { border-left: 1px solid #eef1f4; }
+.eb-tag i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.eb-tag .n { color: #8a929c; font-weight: 500; font-variant-numeric: tabular-nums; }
+.eb-tag:not(.on):hover:not(:disabled) { color: #000; background: var(--soft); }
+.eb-tag.on { background: #000; color: #fff; border-left-color: transparent; }
+.eb-tag.on + .eb-tag { border-left-color: transparent; }
 .eb-tag.on .n { color: #c5cad0; }
-.eb-tag:disabled { opacity: 0.4; cursor: default; }
+.eb-tag:disabled { opacity: 0.35; cursor: default; }
 
 /* ---------- top bar: 48 px, controls 32 px high, 8 px apart ---------- */
 .brand { flex: none; background: #000; color: #fff; display: flex; align-items: center; padding: 0 16px; font-stretch: 125%; font-weight: 850; font-size: 16px; letter-spacing: -0.01em; }
@@ -222,7 +224,6 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .citypanel .grab i { background: #c9cfd6; }
 
 /* period band: counts only */
-.eb { position: relative; width: 100%; height: 28px; }
 
 /* numbered pins and city inset */
 .overlay .pin circle:nth-of-type(1) { stroke: #fff; stroke-width: 1.6; }
@@ -487,6 +488,8 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .lc-land { fill: #c9cfd6; stroke: #fff; stroke-width: 0.5; }
 .lc-view { fill: rgba(0, 0, 0, 0.08); stroke: #000; stroke-width: 2; }
 .lc-here { fill: #000; stroke: #fff; stroke-width: 1.5; }
+.lc-name { font-size: 12px; font-weight: 750; fill: #000; paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+.locator.m .lc-name { font-size: 11px; }
 
 /* ---------- quiz: same grid and cards as Me; exam on the left, its list on the right ---------- */
 .qv { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; padding: 24px 16px; max-width: 960px; margin: 0 auto; align-items: stretch; }
