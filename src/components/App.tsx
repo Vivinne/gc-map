@@ -153,21 +153,12 @@ export default function App() {
     };
   }, []);
 
-  const showToast = useCallback((text: string, undo?: Filters) => setToast({ id: Date.now(), text, undo }), []);
   useEffect(() => {
     if (!toast) return;
     const t = window.setTimeout(() => setToast(null), 5000);
     return () => window.clearTimeout(t);
   }, [toast]);
 
-  const setFilters = useCallback(
-    (next: Filters, note?: (count: number) => string) => {
-      const prev = filters;
-      setFiltersRaw(next);
-      if (note) showToast(note(apply(next, starred).length), prev);
-    },
-    [filters, starred, showToast],
-  );
 
   // ---------- map padding (panels that cover the map) ----------
   // Desktop: the filters and the city list / card share one left column (the filters open over it); the
@@ -350,10 +341,14 @@ export default function App() {
     setCity('');
     setFiltersRaw((f) => ({ ...f, styles: f.styles.includes(id) ? f.styles.filter((x) => x !== id) : [...f.styles, id] }));
   }, []);
+  // Clear in the filters: the map answers by going back to the full map
   const clearAll = useCallback(() => {
-    setFilters(EMPTY, () => `${TOTAL} buildings`);
+    setFiltersRaw(EMPTY);
     setCity('');
-  }, [setFilters]);
+    setSelId('');
+    before.current = null;
+    afterPanel(() => mapRef.current?.home());
+  }, []);
 
 
   // ---------- keyboard ----------
@@ -673,7 +668,7 @@ export default function App() {
             setCity('');
             setMode('map');
             const next = { ...filters, who, q: '' };
-            setFilters(next, (n) => `${who}: ${n}`);
+            setFiltersRaw(next);
             window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13));
           }}
           onCity={(c) => {
@@ -684,7 +679,7 @@ export default function App() {
           onKeep={(q) => {
             setPalette(null);
             const next = { ...filters, q };
-            setFilters(next, (n) => `${q}: ${n}`);
+            setFiltersRaw(next);
             if (mode === 'map') window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13));
           }}
         />
