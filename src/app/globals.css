@@ -23,7 +23,7 @@
 html, body { height: 100%; background: var(--paper); overflow: hidden; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
 button:disabled { cursor: default; opacity: 0.4; }
-ul { list-style: none; }
+ul, ol { list-style: none; }
 :focus-visible { outline: 3px solid #000; outline-offset: 2px; }
 kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute); border: 1px solid #cdd3da; background: #fff; padding: 0 5px 1px; min-width: 20px; text-align: center; display: inline-block; line-height: 1.45; }
 .boot { padding: 24px; font-weight: 700; }
@@ -330,7 +330,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qz-pct { font-size: 24px; font-weight: 800; }
 .qz-meta { flex-basis: 100%; color: var(--mute); font-weight: 600; font-size: 13px; }
 .qz-miss { list-style: none; display: flex; flex-direction: column; max-height: 360px; overflow-y: auto; }
-.qz-miss button { width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; grid-template-areas: "sw pr pr" ". an wr"; gap: 2px 10px; align-items: center; padding: 8px; border-bottom: 1px solid var(--rule); font-size: 13px; }
+.qz-miss button { width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr) fit-content(50%); grid-template-areas: "sw pr pr" ". an wr"; gap: 2px 10px; align-items: center; padding: 8px; border-bottom: 1px solid var(--rule); font-size: 13px; }
 .qz-miss button:hover { background: var(--soft); }
 .qz-miss .sw { grid-area: sw; }
 .qz-miss .pr { grid-area: pr; font-weight: 700; font-size: 14px; }
@@ -381,7 +381,9 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .me .hd h2, .qv .hd h2, .me-foot h2 { font-size: 14px; font-weight: 800; }
 .me .hd .rt, .qv .hd .rt { margin-left: auto; font-size: 12.5px; color: var(--mute); font-weight: 650; text-decoration: underline; text-underline-offset: 2px; }
 .me .bd, .qv .bd { padding: 8px 16px; flex: 1; min-height: 0; }
-.me .act, .qv .act { height: 56px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-top: 1px solid #eef1f4; }
+.me .act, .qv .act { min-height: 56px; flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; padding: 10px 16px; border-top: 1px solid #eef1f4; }
+/* buttons keep their one-line label; when a row is too narrow the last ones move to a second line */
+.me .act .btn, .qv .act .btn { white-space: nowrap; }
 .me .act .sel, .qv .act .sel { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; font-weight: 700; }
 .me .act .sel span, .qv .act .sel span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .me .act .sel em, .qv .act .sel em { font-style: normal; color: var(--mute); font-weight: 600; }
@@ -527,7 +529,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qv-res b { font-size: 32px; font-weight: 850; font-variant-numeric: tabular-nums; }
 .qv-res span { color: var(--mute); font-weight: 650; }
 .qv-rl { list-style: none; max-height: 420px; overflow-y: auto; }
-.qv-rl button { width: 100%; display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 44px; padding: 4px 0; border-bottom: 1px solid #eef1f4; font-size: 13px; }
+.qv-rl button { width: 100%; display: grid; grid-template-columns: 20px minmax(0, 1fr) fit-content(50%); gap: 8px; align-items: center; min-height: 44px; padding: 4px 0; border-bottom: 1px solid #eef1f4; font-size: 13px; }
 .qv-rl button:hover { background: var(--soft); }
 .qv-rl .m { font-weight: 800; }
 .qv-rl .m.ok { color: var(--ok); }
@@ -536,7 +538,9 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qv-rl .nm { min-width: 0; }
 .qv-rl .nm b { display: block; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .qv-rl .nm span { color: var(--mute); font-size: 12px; }
-.qv-rl .an { text-align: right; font-size: 12.5px; display: flex; flex-direction: column; align-items: flex-end; }
+.qv-rl .an { min-width: 0; text-align: right; font-size: 12.5px; display: flex; flex-direction: column; align-items: flex-end; }
+/* a long answer (several architects) wraps inside its column instead of running off the screen */
+.qv-rl .an > *, .qz-miss button > * { max-width: 100%; overflow-wrap: anywhere; }
 .qv-rl .an s { color: #b3261e; }
 .qv-rl .an em { font-style: normal; color: var(--ok); font-weight: 700; }
 .qv-rl .an small { color: #a5adb6; font-size: 11.5px; }
