@@ -3,7 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, type Mode } from '../lib/hash';
-import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear, citiesOf } from '../lib/model';
+import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, byYear, citiesOf, nationName } from '../lib/model';
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
@@ -121,6 +121,10 @@ export default function App() {
   }, [selected, results, dFilters]);
   // What the filters show, in the order of Previous / Next: the list panel and the card's "Also in" list
   const resultList = useMemo(() => citiesOf(results).flatMap((c) => c.items), [results]);
+  // Pin numbers: inside a city when nothing is filtered; with filters on, 1 to N down that list, so no
+  // number repeats on the map or in the lists
+  const filteredNow = !isEmpty(dFilters);
+  const nums = useMemo<ReadonlyMap<string, number>>(() => (filteredNow ? new Map(resultList.map((b, i) => [b.id, i + 1])) : CITY_NO), [filteredNow, resultList]);
   const panelOpen = mode === 'map' && (!!selected || !!city || (resultsOpen && !isEmpty(filters)));
 
   // ---------- persistence ----------
@@ -185,6 +189,20 @@ export default function App() {
   const openRef = useRef(false);
   const cityRef = useRef('');
   cityRef.current = city;
+  const selRef = useRef('');
+  selRef.current = selId;
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+  const resultsRef = useRef(results);
+  resultsRef.current = results;
+  // The view of a filter: one country is framed whole (the same view as the Country button), anything
+  // else by all the buildings it shows
+  const frameFilter = (f: Filters, list: typeof results) => {
+    const only = f.countries.length === 1 && isEmpty({ ...f, countries: [] }) ? f.countries[0]! : '';
+    const box = only ? BUILDINGS.find((b) => nationName(b) === only && b.nationBox)?.nationBox : null;
+    if (box) mapRef.current?.fitBox(box);
+    else if (list.length) mapRef.current?.fitAll(list);
+  };
   openRef.current = !!selId || !!city;
   const remember = () => {
     if (!openRef.current) before.current = mapRef.current?.view() ?? null;
@@ -237,6 +255,15 @@ export default function App() {
     if (c) afterPanel(() => mapRef.current?.showCity(c));
   }, []);
   const closeCity = useCallback(() => {
+    // A card closed while filters are on: back to what was being looked at, the filter (its list if it was
+    // open, and its view: the whole country for a country, else all it shows)
+    if (selRef.current && !isEmpty(filtersRef.current)) {
+      setSelId('');
+      setCity('');
+      before.current = null;
+      afterPanel(() => frameFilter(filtersRef.current, resultsRef.current));
+      return;
+    }
     setSelId('');
     setCity('');
     setResultsOpen(false);
@@ -342,7 +369,7 @@ export default function App() {
   useEffect(() => {
     if (!fitNext.current) return;
     fitNext.current = false;
-    if (mode === 'map' && results.length && !isEmpty(dFilters)) mapRef.current?.fitAll(results);
+    if (mode === 'map' && results.length && !isEmpty(dFilters)) frameFilter(dFilters, results);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
   const toggleStyle = useCallback((id: EraId) => {
@@ -528,17 +555,24 @@ export default function App() {
             compact={mobile}
             sideways={mobile && wide}
             onSelect={(id) => {
-              // The open building's pin clicked again: the user wants to read about it in full
-              // (desktop: the map zooms in close on it; phone: the sheet opens to full height)
+              // The open building's pin clicked again: the user wants a closer look at it
+              // (the map shows it at the 50 km scale; desktop: the card also goes back to its top)
               if (id === selId) {
-                setDetail((n) => n + 1);
+                if (!mobile) setDetail((n) => n + 1);
                 const b = BY_ID.get(id);
-                if (b && !mobile) mapRef.current?.closeUp(b);
+                if (b) mapRef.current?.closeUp(b);
                 return;
               }
               // A pin picked on the map is the building to read about: keep it and its surroundings in view
               select(id, { fly: false });
               const b = BY_ID.get(id);
+              // picked on the full map (zoomed out past country scale): the map frames its whole country,
+              // the same view as the Country button and the country tag
+              if (b?.nationBox && (mapRef.current?.zoom() ?? 9) < 4.5) {
+                const box = b.nationBox;
+                window.setTimeout(() => mapRef.current?.fitBox(box), 80);
+                return;
+              }
               // after the panel has opened and the map padding follows it (a timer: animation frames can stall on phones)
               if (b) window.setTimeout(() => mapRef.current?.focus(b), 80);
             }}
@@ -550,6 +584,8 @@ export default function App() {
               afterPanel(() => mapRef.current?.home());
             }}
             onPanorama={clearView}
+            nums={nums}
+            numberAll={filteredNow}
             onCountry={(box) => {
               // The whole country: open lists and panels close, the map frames the country
               before.current = null;
@@ -595,10 +631,12 @@ export default function App() {
               onTag={(f) => pickCategory(f, true)}
               group={nav?.filtered ? { label: activeChips.map((c) => c.label).join(' \u00b7 '), list: nav.list } : null}
               detail={detail}
+              nums={nums}
             />
           )}
           {mode === 'map' && !selected && resultsOpen && !isEmpty(filters) && (
             <ResultsPanel
+              nums={nums}
               label={activeChips.map((c) => c.label).join(' \u00b7 ')}
               list={resultList}
               mobile={mobile}
@@ -612,6 +650,8 @@ export default function App() {
           {mode === 'map' && !selected && !(resultsOpen && !isEmpty(filters)) && city && CITY_BUILDINGS.has(city) && (
             <CityPanel
               city={city}
+              nums={filteredNow && resultList.some((b) => b.city === city) ? nums : CITY_NO}
+              list={filteredNow && resultList.some((b) => b.city === city) ? resultList.filter((b) => b.city === city) : undefined}
               mobile={mobile}
               selectedId={selId}
               onSelect={(id) => select(id)}

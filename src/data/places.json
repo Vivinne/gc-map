@@ -3237,9 +3237,9 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "baroque",
+   "era": "renaissance",
    "eras": [
-    "baroque"
+    "renaissance"
    ],
    "points": [
     {
@@ -3260,7 +3260,7 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "Mannerism"
   },
   {
    "id": "baldacchino-st-peter-s-vatican",

@@ -35,9 +35,10 @@ export interface MapHandle {
   restore(v: { center: [number, number]; zoom: number }): void;
   /** A building picked on the map: bring it to the middle of the visible area, keeping the zoom */
   focus(b: Building): void;
-  /** Frame a country box [west, south, east, north] */
+  /** Frame a country box [west, south, east, north]: always the same view, whatever panel is open */
   fitBox(box: [number, number, number, number]): void;
-  /** The open building's pin clicked again: zoom in close on it, in the middle of the visible area */
+  zoom(): number;
+  /** The open building's pin clicked again: the map shows it at the 50 km scale, in the middle of the visible area */
   closeUp(b: Building): void;
 }
 
@@ -62,6 +63,10 @@ interface Props {
   onHome?(): void;
   /** The user zoomed out to the panorama (scale bar at 500 km or more): the parent clears the view */
   onPanorama?(): void;
+  /** Pin numbers in use (by building id): inside a city when nothing is filtered, else 1 to N over what the filters show */
+  nums?: ReadonlyMap<string, number>;
+  /** Filters on: every pin in view carries its filter number (none repeats), not just the focused city's */
+  numberAll?: boolean;
   /** Country button: the parent closes its panels, then asks the map to frame the box (fitBox) */
   onCountry?(box: [number, number, number, number]): void;
   /** Active filter chips: after the scale bar (desktop) or along the top of the map (phone) */
@@ -195,7 +200,8 @@ function styleSpec(): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
+  const { nums: numsProp, numberAll, onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
+  const nums = numsProp ?? CITY_NO;
   const panoRef = useRef(onPanorama);
   const btnZoom = useRef(false);
   panoRef.current = onPanorama;
@@ -371,11 +377,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       showCity,
       home: () => homeView(),
       fitBox: (box) => fitCountry(box),
+      zoom: () => mapRef.current?.getZoom() ?? 0,
       closeUp: (b) => {
         const m = mapRef.current;
         if (!m) return;
         const p = padRef.current;
-        m.easeTo({ center: [b.lng, b.lat], zoom: Math.min(17.5, Math.max(m.getZoom() + 1.5, 16.5)), offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2], duration: motion(600) });
+        // the zoom at which the scale bar reads 50 km (50 km over about 100 px at the building's latitude)
+        const z = Math.log2((40075016.686 * Math.cos((b.lat * Math.PI) / 180)) / (512 * 500));
+        m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2], duration: motion(600) });
       },
       view: () => {
         const m = mapRef.current;
@@ -424,7 +433,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   }, [selected, insetCity, map, frame]);
   const fitCountry = useCallback(
     (box: [number, number, number, number]) => {
-      const p = padRef.current;
+      // One view per country, whether it comes from the Country button (panels closed), a country tag
+      // (its list open) or a building picked on the full map (its card open): the area left free is always
+      // the one a panel leaves (desktop: right of the left column; phone: above an open sheet)
+      const m = mapRef.current;
+      const H = m ? m.getContainer().clientHeight : 600;
+      const cur = padRef.current;
+      const p = compactRef.current ? (sidewaysRef.current ? cur : { top: cur.top, right: 56, bottom: Math.round(H * 0.44) + 36, left: 0 }) : { top: 0, right: 56, bottom: 48, left: 372 };
       const extra = compactRef.current ? 16 : 40;
       mapRef.current?.fitBounds(
         [
@@ -632,7 +647,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         for (const p of pins) n.set(p.b.city, (n.get(p.b.city) ?? 0) + 1);
         focus = [...n.entries()].sort((a, c) => c[1] - a[1])[0]?.[0] ?? '';
       }
-      const isFocus = (p: Pin) => p.b.city === focus;
+      const isFocus = (p: Pin) => !!numberAll || p.b.city === focus;
       const placed: Box[] = [...blocked, ...pins.map((p) => (isFocus(p) ? { x1: p.x - 11, x2: p.x + 11, y1: p.y - 11, y2: p.y + 11 } : { x1: p.x - 6, x2: p.x + 6, y1: p.y - 6, y2: p.y + 6 }))];
       // Names: the open and the pointed building in a black tag; every other building of the city in small
       // grey type wherever it fits, so the surroundings read without competing with the open building.
@@ -708,7 +723,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             {isSel && <circle r={21} fill={ERAS[p.b.era].color} opacity={0.22} />}
             <circle r={r} fill={ERAS[p.b.era].color} />
             <text y={4} textAnchor="middle">
-              {CITY_NO.get(p.b.id) ?? ''}
+              {nums.get(p.b.id) ?? ''}
             </text>
             <title>{p.b.name}</title>
           </g>,
@@ -784,7 +799,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             <path d="M0,-19 L6,-10 L-6,-10 Z" transform={`rotate(${deg})`} fill={ERAS[e.b.era].color} />
             <circle r={10} fill={ERAS[e.b.era].color} />
             <text y={4} textAnchor="middle">
-              {CITY_NO.get(e.b.id) ?? ''}
+              {nums.get(e.b.id) ?? ''}
             </text>
             <title>{e.b.name}</title>
           </g>,

@@ -69,3 +69,5 @@ Neue Nationalgalerie | Modernism
 Van Gogh Museum | Modernism
 # 2026-11-07 the user: Filippo Brunelleschi is Renaissance (his Pazzi Chapel entry is quizzed under Renaissance, not the Gothic heading of Santa Croce)
 Santa Croce - Pazzi Chapel | Renaissance | renaissance
+# 2026-11-08 the user: Giacomo Vignola is Mannerism
+Church of Gesù | Mannerism | renaissance

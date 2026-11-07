@@ -107,10 +107,12 @@ interface CardProps {
   group: { label: string; list: Building[] } | null;
   /** Changes when the open building's pin is clicked again: show the whole card from its top */
   detail: number;
+  /** Map numbers in use: inside a city (no filter) or 1 to N over what the filters show */
+  nums: ReadonlyMap<string, number>;
 }
 
 /** Buildings of a filter, city by city: a small city heading, then each building with its map number */
-function GroupedList({ list, selectedId, label, onSelect, onHover }: { list: Building[]; selectedId: string; label: string; onSelect(id: string): void; onHover(id: string): void }) {
+function GroupedList({ list, selectedId, label, nums, onSelect, onHover }: { list: Building[]; selectedId: string; label: string; nums: ReadonlyMap<string, number>; onSelect(id: string): void; onHover(id: string): void }) {
   const rows: React.ReactNode[] = [];
   let last = '';
   for (const x of list) {
@@ -126,7 +128,7 @@ function GroupedList({ list, selectedId, label, onSelect, onHover }: { list: Bui
       <li key={x.id}>
         <button type="button" className={`o-row${x.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(x.id)} onPointerEnter={() => onHover(x.id)} onFocus={() => onHover(x.id)}>
           <span className="no" style={{ background: ERAS[x.era].color }}>
-            {CITY_NO.get(x.id)}
+            {nums.get(x.id)}
           </span>
           <span className="nm">{x.name}</span>
         </button>
@@ -142,6 +144,8 @@ function GroupedList({ list, selectedId, label, onSelect, onHover }: { list: Bui
 
 interface ResultsProps {
   label: string;
+  /** Numbers of the filtered buildings: 1 to N down the whole list (the map pins show the same) */
+  nums: ReadonlyMap<string, number>;
   list: Building[];
   mobile: boolean;
   selectedId: string;
@@ -152,7 +156,7 @@ interface ResultsProps {
 }
 
 /** List of what the filters show (like the city list): the card's back button returns here */
-export function ResultsPanel({ label, list, mobile, selectedId, onSelect, onClose, onWhole, onHover }: ResultsProps) {
+export function ResultsPanel({ label, nums, list, mobile, selectedId, onSelect, onClose, onWhole, onHover }: ResultsProps) {
   return (
     <Sheet mobile={mobile} onClose={onClose} className="citypanel" label={label}>
       <div className="cp-top">
@@ -168,7 +172,7 @@ export function ResultsPanel({ label, list, mobile, selectedId, onSelect, onClos
         </button>
       </div>
       <div className="cp-list">
-        <GroupedList list={list} selectedId={selectedId} label={label} onSelect={onSelect} onHover={onHover} />
+        <GroupedList list={list} selectedId={selectedId} label={label} nums={nums} onSelect={onSelect} onHover={onHover} />
       </div>
     </Sheet>
   );
@@ -202,7 +206,7 @@ function Tags({ b, starred, collections, onTag }: { b: Building; starred: boolea
  * buildings of the city (or the two nearest landmarks) as a folded section, so they never outweigh the building.
  * Phone: a swipe down on the title folds the card to its title, a swipe up unfolds it.
  */
-export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, collections, onToggleCol, onCreateCol, onBack, onSelect, onHover, onTag, group, detail }: CardProps) {
+export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, collections, onToggleCol, onCreateCol, onBack, onSelect, onHover, onTag, group, detail, nums }: CardProps) {
   const city = CITY_BUILDINGS.get(b.city) ?? [];
   const many = city.length > 1;
   const [folded, setFolded] = useState(false);
@@ -256,7 +260,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
           </button>
         </div>
         <h1>
-          {many && <span className="c-no">{CITY_NO.get(b.id)}</span>}
+          {(many || group) && nums.get(b.id) != null && <span className="c-no">{nums.get(b.id)}</span>}
           <span>{b.name.toUpperCase()}</span>
         </h1>
       </div>
@@ -274,7 +278,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
                 <span className="n">{group.list.length - 1}</span>
                 <Icon name="down" size={12} />
               </button>
-              {othersOpen && <GroupedList list={group.list} selectedId={b.id} label={group.label} onSelect={onSelect} onHover={onHover} />}
+              {othersOpen && <GroupedList list={group.list} selectedId={b.id} label={group.label} nums={nums} onSelect={onSelect} onHover={onHover} />}
             </div>
           )}
           {!group && many && (
@@ -341,11 +345,15 @@ interface CityProps {
   onClose(): void;
   onWhole(): void;
   onHover(id: string): void;
+  /** With filters on: only the city's buildings they show, with the filter numbers */
+  list?: Building[];
+  nums: ReadonlyMap<string, number>;
 }
 
-/** City panel: every building of the city with its map number (1 = oldest) */
-export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole, onHover }: CityProps) {
-  const total = CITY_BUILDINGS.get(city)?.length ?? 0;
+/** City panel: every building of the city with its map number (1 = oldest); with filters on, what they show there */
+export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole, onHover, list, nums }: CityProps) {
+  const items = list ?? CITY_BUILDINGS.get(city) ?? [];
+  const total = items.length;
   return (
     <Sheet mobile={mobile} onClose={onClose} className="citypanel" label={city}>
       <div className="cp-top">
@@ -361,11 +369,11 @@ export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole
         </button>
       </div>
       <ol className="others cp-list" onPointerLeave={() => onHover('')}>
-        {(CITY_BUILDINGS.get(city) ?? []).map((b) => (
+        {items.map((b) => (
           <li key={b.id}>
             <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
               <span className="no" style={{ background: ERAS[b.era].color }}>
-                {CITY_NO.get(b.id)}
+                {nums.get(b.id)}
               </span>
               <span className="nm">{b.name}</span>
             </button>
