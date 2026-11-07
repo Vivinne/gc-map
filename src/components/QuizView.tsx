@@ -156,8 +156,11 @@ function Dropdown({ label, value, options, onPick }: { label: string; value: str
   );
 }
 
-/** A menu of tick boxes: the box shows what is ticked (or the menu's name in grey); the list opens under it */
-function Ticks({ title, items, picked, onTick }: { title: string; items: QuizScope[]; picked: string[]; onTick(id: string): void }) {
+/**
+ * Range: one box ("All 204", or what is ticked and how many buildings that makes); its menu lists every
+ * category as a tick box, in groups (period, country, TEST-ARCHED, the user's own). Any mix is quizzed together.
+ */
+function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string; items: QuizScope[] }[]; picked: string[]; total: number; onTick(id: string): void }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -172,30 +175,36 @@ function Ticks({ title, items, picked, onTick }: { title: string; items: QuizSco
     };
   }, [open]);
   const short = (x: QuizScope) => (x.id.startsWith('year:') ? x.label.replace('TEST-ARCHED ', '') : x.id === 'exam' ? 'Any year' : x.label);
-  const on = items.filter((x) => picked.includes(x.id));
+  const on = groups.flatMap((g) => g.items.filter((x) => picked.includes(x.id)).map((x) => (x.id.startsWith('year:') || x.id === 'exam' ? `TEST-ARCHED ${short(x)}` : x.label)));
   return (
-    <div className="qv-dd qz2-tk" ref={box}>
-      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="true" aria-expanded={open} aria-label={`${title}: ${on.length ? on.map(short).join(', ') : 'any'}`} onClick={() => setOpen(!open)}>
-        {on.length ? <span className="v">{on.map(short).join(', ')}</span> : <span className="v ph">{title}</span>}
+    <div className="qv-dd qz2-range" ref={box}>
+      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="true" aria-expanded={open} aria-label={`Range: ${on.length ? on.join(', ') : 'all'}, ${total}`} onClick={() => setOpen(!open)}>
+        <span className="v">{on.length ? on.join(', ') : 'All'}</span>
+        <span className="n">{total}</span>
         <Icon name="down" size={13} />
       </button>
       {open && (
-        <ul className="qv-menu" aria-label={title}>
-          {items.map((x) => {
-            const t = picked.includes(x.id);
-            return (
-              <li key={x.id}>
-                <button type="button" role="menuitemcheckbox" aria-checked={t} className={`qz2-it${t ? ' on' : ''}`} disabled={!x.items.length && !t} onClick={() => onTick(x.id)}>
-                  <span className="bx">{t && <Icon name="check" size={10} />}</span>
-                  {x.color && <i className="sw" style={{ background: x.color }} />}
-                  {x.id === 'starred' && <Icon name="starOn" size={13} />}
-                  <span className="v">{short(x)}</span>
-                  <span className="n">{x.items.length}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="qv-menu qz2-menu" aria-label="Range">
+          {groups.map((g) => (
+            <div key={g.title} className={`qz2-g${g.title === 'TEST-ARCHED' ? ' yrs' : ''}`}>
+              <h5>{g.title}</h5>
+              <div className="qz2-its">
+                {g.items.map((x) => {
+                  const t = picked.includes(x.id);
+                  return (
+                    <button type="button" key={x.id} role="menuitemcheckbox" aria-checked={t} className={`qz2-it${t ? ' on' : ''}`} disabled={!x.items.length && !t} onClick={() => onTick(x.id)}>
+                      <span className="bx">{t && <Icon name="check" size={10} />}</span>
+                      {x.color && <i className="sw" style={{ background: x.color }} />}
+                      {x.id === 'starred' && <Icon name="starOn" size={13} />}
+                      <span className="v">{short(x)}</span>
+                      <span className="n">{x.items.length}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
@@ -524,7 +533,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     const keep = ask && ask !== v ? ask : v === 'name' ? 'city' : 'name';
     setSetup({ type: `${v}>${keep}` as PairChoice });
   };
-  // Categories in four menus of tick boxes; any mix of them, in one menu or across menus, is quizzed together
+  // The range: every category as a tick box in one menu, in groups; any mix of them is quizzed together
   const groups: { title: string; items: QuizScope[] }[] = [
     { title: 'Period', items: scopes.filter((x) => x.id.startsWith('era:')) },
     { title: 'Country', items: scopes.filter((x) => x.id.startsWith('country:')) },
@@ -551,13 +560,9 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             </div>
           </div>
           <div className="qz2-row">
-            <span className="qz2-l">From</span>
-            <div className="qz2-line qz2-cats">
-              {groups
-                .filter((g) => g.items.length)
-                .map((g) => (
-                  <Ticks key={g.title} title={g.title} items={g.items} picked={setup.scopes} onTick={tick} />
-                ))}
+            <span className="qz2-l">Range</span>
+            <div className="qz2-line">
+              <RangeMenu groups={groups.filter((g) => g.items.length)} picked={setup.scopes} total={scope.items.length} onTick={tick} />
             </div>
           </div>
           <div className="qz2-row">
@@ -586,14 +591,12 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
           <div className="qz2-row">
             <span className="qz2-l">Answers</span>
             <div className="qz2-line">
-              <div className="qz2-seg" role="radiogroup" aria-label="Answers">
-                <button type="button" role="radio" aria-checked={setup.reveal} className={setup.reveal ? 'on' : ''} onClick={() => setSetup({ reveal: true })}>
-                  Each question
-                </button>
-                <button type="button" role="radio" aria-checked={!setup.reveal} className={!setup.reveal ? 'on' : ''} onClick={() => setSetup({ reveal: false })}>
-                  At the end
-                </button>
-              </div>
+              <button type="button" role="switch" aria-checked={setup.reveal} className="qz2-sw" onClick={() => setSetup({ reveal: !setup.reveal })}>
+                <span className={`sw2${setup.reveal ? ' on' : ''}`}>
+                  <i />
+                </span>
+                Show the right answer after each question
+              </button>
             </div>
           </div>
         </div>
