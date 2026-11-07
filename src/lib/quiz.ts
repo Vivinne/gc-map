@@ -64,7 +64,17 @@ export interface Question {
 /** Buildings that can be asked with this pair (both fields known) */
 export function askable(pool: Building[], pair: Pair): Building[] {
   const [a, b] = splitPair(pair);
-  return pool.filter((x) => valueOf(x, a) && valueOf(x, b));
+  return pool.filter((x) => valueOf(x, a) && valueOf(x, b) && !offStyle(x, pair));
+}
+
+/**
+ * A building in another style than the one its architect is quizzed under (e.g. Vignola: Mannerism, his
+ * Church of the Gesu: Baroque) is not asked in the Architect / Style questions: either answer would mislead.
+ */
+export function offStyle(b: Building, pair: Pair): boolean {
+  const [a, c] = splitPair(pair);
+  const as = (a === 'architect' && c === 'style') || (a === 'style' && c === 'architect');
+  return as && !!b.whoStyle && valueOf(b, 'style') !== b.whoStyle;
 }
 
 /**
@@ -75,7 +85,7 @@ export function question(b: Building, pair: Pair, all: Building[], seed: number)
   const [ask, ans] = splitPair(pair);
   const prompt = valueOf(b, ask);
   const answer = valueOf(b, ans);
-  if (!prompt || !answer) return null;
+  if (!prompt || !answer || offStyle(b, pair)) return null;
   const right = new Set(all.filter((x) => valueOf(x, ask) === prompt).map((x) => valueOf(x, ans)));
   right.add(answer);
   const near: string[] = [];

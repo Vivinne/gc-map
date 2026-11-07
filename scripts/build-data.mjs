@@ -357,6 +357,10 @@ function main() {
     }
   }
   for (const p of places) p.styleShown ??= '';
+  // The style an architect is quizzed under (data/architect-style.txt, stated by the user)
+  const WHO_STYLE = new Map(dataLines('data/architect-style.txt').map((l) => l.split('|').map((x) => x.trim())));
+  for (const k of WHO_STYLE.keys()) if (!places.some((p) => p.who === k)) errors.push(`architect-style.txt: no architect "${k}"`);
+  for (const p of places) p.whoStyle = WHO_STYLE.get(p.who) ?? '';
   const unlocated = [];
   for (const p of places) {
     const m = misses.filter((x) => x.name === p.name && !p.points.some((pt) => pt.sub === x.sub));

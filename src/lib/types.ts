@@ -46,6 +46,8 @@ export interface Place {
   style: string;
   /** One style for a building filed under a combined heading (data/style-split.txt); empty = the heading */
   styleShown: string;
+  /** Style the architect is quizzed under (user's list); empty when not stated */
+  whoStyle: string;
   styleId: string;
   era: EraId;
   /** Every style tag the building counts under: its own era plus any extras (data/extra-styles.txt) */

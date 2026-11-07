@@ -1,0 +1,5 @@
+# architect | the style the architect is quizzed under (stated by the user)
+# A building of theirs in another style keeps its own style on the map and in its card, but is not asked in
+# the Architect / Style questions, where the answer would contradict the architect's style.
+# 2026-11-08 the user: Giacomo Vignola is Mannerism; the Church of Gesu stays Baroque.
+Giacomo Vignola | Mannerism

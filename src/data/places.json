@@ -141,7 +141,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "parthenon-athens",
@@ -180,7 +181,8 @@
     26.63,
     41.75
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "erechtheion-athens",
@@ -219,7 +221,8 @@
     26.63,
     41.75
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "cloaca-maxima-rome",
@@ -258,7 +261,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "aqua-appia-rome",
@@ -297,7 +301,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "domus-aurea-rome",
@@ -340,7 +345,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "colosseum-rome",
@@ -379,7 +385,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "pantheon-rome",
@@ -418,7 +425,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "basilica-of-maxentius-and-constantine-rome",
@@ -457,7 +465,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "arch-of-constantine-rome",
@@ -496,7 +505,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "roman-forum-and-imperial-fora-rome",
@@ -535,7 +545,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "colonne-di-san-lorenzo-milan",
@@ -574,7 +585,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "mediolanum-imperial-palace-district-circo-thermae-herculeae-milan",
@@ -613,7 +625,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "hagia-sophia-istanbul",
@@ -654,7 +667,8 @@
     44.81,
     42.1
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "basilica-di-san-marco-venice",
@@ -693,7 +707,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "basilica-di-sant-ambrogio-milan",
@@ -732,7 +747,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "mont-saint-michel-abbey-mont-saint-michel",
@@ -771,7 +787,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "parma-baptistery-parma",
@@ -810,7 +827,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "pisa-cathedral-and-leaning-tower-pisa",
@@ -861,7 +879,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "san-miniato-al-monte-florence",
@@ -900,7 +919,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "basilica-of-saint-denis-saint-denis",
@@ -939,7 +959,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "notre-dame-de-mantes-la-jolie-mantes",
@@ -978,7 +999,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "notre-dame-de-paris-paris",
@@ -1017,7 +1039,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "chartres-cathedral-chartres",
@@ -1056,7 +1079,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "bourges-cathedral-bourges",
@@ -1095,7 +1119,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "reims-cathedral-reims",
@@ -1134,7 +1159,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "amiens-cathedral-amiens",
@@ -1173,7 +1199,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "salisbury-cathedral-salisbury",
@@ -1212,7 +1239,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "strasbourg-cathedral-strasbourg",
@@ -1251,7 +1279,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "castel-del-monte-puglia",
@@ -1290,7 +1319,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "sainte-chapelle-paris",
@@ -1329,7 +1359,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "cologne-cathedral-cologne",
@@ -1368,7 +1399,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "cathedrale-sainte-croix-d-orleans-orleans",
@@ -1407,7 +1439,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "duomo-di-milano-milan",
@@ -1446,7 +1479,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "seville-cathedral-seville",
@@ -1485,7 +1519,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "santa-maria-del-fiore-main-body-florence",
@@ -1524,7 +1559,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "siena-cathedral-siena",
@@ -1565,7 +1601,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "basilica-di-san-francesco-d-assisi-assisi",
@@ -1606,7 +1643,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "bargello-museum-florence",
@@ -1647,7 +1685,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "santa-croce-florence",
@@ -1690,7 +1729,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "santa-croce-pazzi-chapel-florence",
@@ -1729,7 +1769,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "scrovegni-chapel-padua",
@@ -1770,7 +1811,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "ospedale-degli-innocenti-foundling-hospital-florence",
@@ -1809,7 +1851,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "santa-maria-del-fiore-dome-florence",
@@ -1848,7 +1891,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "pazzi-chapel-santa-croce-florence",
@@ -1887,7 +1931,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-medici-riccardi-florence",
@@ -1926,7 +1971,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "tempio-malatestiano-rimini",
@@ -1967,7 +2013,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "ca-granda-milan",
@@ -2006,7 +2053,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-rucellai-florence",
@@ -2045,7 +2093,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "santa-maria-novella-facade-florence",
@@ -2086,7 +2135,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "sant-andrea-mantua",
@@ -2125,7 +2175,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "camera-degli-sposi-mantua",
@@ -2164,7 +2215,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "santa-maria-presso-san-satiro-milan",
@@ -2203,7 +2255,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-gondi-florence",
@@ -2242,7 +2295,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "santa-maria-delle-grazie-tribuna-milan",
@@ -2283,7 +2337,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "tempietto-rome",
@@ -2322,7 +2377,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "cortile-del-belvedere-vatican",
@@ -2361,7 +2417,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "st-peters-first-design-vatican",
@@ -2400,7 +2457,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "san-maurizio-al-monastero-maggiore-milan",
@@ -2439,7 +2497,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "fontainebleau-fontainebleau",
@@ -2478,7 +2537,8 @@
     8.2,
     51.09
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-te-mantua",
@@ -2517,7 +2577,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "laurentian-library-florence",
@@ -2556,7 +2617,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "piazza-del-campidoglio-rome",
@@ -2595,7 +2657,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "st-peters-dome-vatican",
@@ -2634,7 +2697,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "basilica-palladiana-vicenza",
@@ -2673,7 +2737,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "palladio-s-villas-veneto",
@@ -2744,7 +2809,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-marino-milan",
@@ -2783,7 +2849,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "villa-farnese-caprarola",
@@ -2822,7 +2889,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": "Mannerism"
   },
   {
    "id": "uffizi-florence",
@@ -2861,7 +2929,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "vasari-corridor-florence",
@@ -2900,7 +2969,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "villa-capra-la-rotonda-vicenza",
@@ -2941,7 +3011,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "il-redentore-venice",
@@ -2980,7 +3051,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "sforza-castle-milan",
@@ -3019,7 +3091,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "basilica-di-san-lorenzo-florence",
@@ -3058,7 +3131,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "pienza-cathedral-pienza",
@@ -3097,7 +3171,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "church-of-san-bernardino-urbino",
@@ -3138,7 +3213,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Renaissance"
+   "styleShown": "Renaissance",
+   "whoStyle": ""
   },
   {
    "id": "quirinal-palace-rome",
@@ -3180,7 +3256,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "Mannerism",
+   "whoStyle": ""
   },
   {
    "id": "louvre-museum-paris",
@@ -3221,7 +3298,8 @@
     8.2,
     51.09
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "gesu-church-of-the-gesu-rome",
@@ -3237,9 +3315,9 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "renaissance",
+   "era": "baroque",
    "eras": [
-    "renaissance"
+    "baroque"
    ],
    "points": [
     {
@@ -3260,7 +3338,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Mannerism"
+   "styleShown": "",
+   "whoStyle": "Mannerism"
   },
   {
    "id": "baldacchino-st-peter-s-vatican",
@@ -3299,7 +3378,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "santa-maria-della-salute-venice",
@@ -3338,7 +3418,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "san-carlo-alle-quattro-fontane-rome",
@@ -3377,7 +3458,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "sant-ivo-alla-sapienza-rome",
@@ -3418,7 +3500,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "fontana-dei-quattro-fiumi-rome",
@@ -3457,7 +3540,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "piazza-san-pietro-vatican",
@@ -3496,7 +3580,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "santa-maria-della-pace-rome",
@@ -3535,7 +3620,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "sant-andrea-al-quirinale-rome",
@@ -3574,7 +3660,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palace-of-versailles-versailles",
@@ -3615,7 +3702,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "scala-regia-vatican",
@@ -3654,7 +3742,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "cappella-della-sindone-turin",
@@ -3695,7 +3784,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "san-bernardino-alle-ossa-milan",
@@ -3734,7 +3824,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzina-di-caccia-di-stupinigi-turin",
@@ -3773,7 +3864,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "trevi-fountain-rome",
@@ -3812,7 +3904,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "royal-palace-of-caserta-caserta",
@@ -3853,7 +3946,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "teatro-alla-scala-milan",
@@ -3892,7 +3986,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-reale-milan-milan",
@@ -3931,7 +4026,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-belgioioso-milan",
@@ -3970,7 +4066,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "st-peters-facade-nave-vatican",
@@ -4009,7 +4106,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "santa-susanna-rome",
@@ -4048,7 +4146,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "ecstasy-of-saint-teresa-rome",
@@ -4087,7 +4186,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "sant-ignazio-di-loyola-rome",
@@ -4126,7 +4226,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-montecitorio-rome",
@@ -4167,7 +4268,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-madama-rome",
@@ -4208,7 +4310,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "hermitage-museum-saint-petersburg",
@@ -4249,7 +4352,8 @@
     87.33,
     77.74
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "capodimonte-museum-naples",
@@ -4291,7 +4395,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "basilique-du-sacre-c-ur-paris",
@@ -4330,7 +4435,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "mole-antonelliana-turin",
@@ -4369,7 +4475,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "arco-della-pace-milan",
@@ -4408,7 +4515,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "pantheon-paris",
@@ -4447,7 +4555,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "arc-de-triomphe-arc-du-carrousel-paris",
@@ -4486,7 +4595,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "altes-museum-berlin",
@@ -4525,7 +4635,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "alte-pinakothek-munich",
@@ -4564,7 +4675,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "konigsplatz-munich",
@@ -4603,7 +4715,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-del-viminale-rome",
@@ -4644,7 +4757,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-della-farnesina-rome",
@@ -4685,7 +4799,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "prado-museum-madrid",
@@ -4726,7 +4841,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "bibliotheque-sainte-genevieve-paris",
@@ -4765,7 +4881,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "crystal-palace-london",
@@ -4806,7 +4923,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "eiffel-tower-paris",
@@ -4847,7 +4965,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "red-house-kent",
@@ -4886,7 +5005,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "secession-building-vienna",
@@ -4927,7 +5047,8 @@
     17.15,
     49.01
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "casa-galimberti-milan",
@@ -4966,7 +5087,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-castiglioni-milan",
@@ -5005,7 +5127,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "sagrada-familia-barcelona",
@@ -5046,7 +5169,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "casa-vicens-barcelona",
@@ -5087,7 +5211,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palau-guell-barcelona",
@@ -5128,7 +5253,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "casa-batllo-barcelona",
@@ -5169,7 +5295,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "casa-mila-barcelona",
@@ -5210,7 +5337,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "park-guell-barcelona",
@@ -5251,7 +5379,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "colonia-guell-barcelona",
@@ -5292,7 +5421,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "tassel-house-brussels",
@@ -5333,7 +5463,8 @@
     6.37,
     51.5
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "glasgow-school-of-art-glasgow",
@@ -5374,7 +5505,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palais-stoclet-brussels",
@@ -5415,7 +5547,8 @@
     6.37,
     51.5
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "schroder-house-utrecht",
@@ -5456,7 +5589,8 @@
     7.2,
     53.46
    ],
-   "styleShown": "De Stijl"
+   "styleShown": "De Stijl",
+   "whoStyle": ""
   },
   {
    "id": "pavillon-de-l-esprit-nouveau-paris",
@@ -5495,7 +5629,8 @@
     8.2,
     51.09
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "bauhaus-dessau-building-dessau",
@@ -5536,7 +5671,8 @@
     15.02,
     54.91
    ],
-   "styleShown": "Bauhaus"
+   "styleShown": "Bauhaus",
+   "whoStyle": ""
   },
   {
    "id": "weissenhof-estate-stuttgart",
@@ -5575,7 +5711,8 @@
     15.02,
     54.91
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "villa-savoye-poissy",
@@ -5617,7 +5754,8 @@
     8.2,
     51.09
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "barcelona-pavilion-barcelona",
@@ -5658,7 +5796,8 @@
     3.32,
     43.79
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "fallingwater-pennsylvania",
@@ -5699,7 +5838,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "unite-d-habitation",
@@ -5738,7 +5878,8 @@
     8.2,
     51.09
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "notre-dame-du-haut-ronchamp-ronchamp",
@@ -5777,7 +5918,8 @@
     8.2,
     51.09
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "aeg-turbine-factory-berlin",
@@ -5818,7 +5960,8 @@
     15.02,
     54.91
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "chrysler-building-new-york",
@@ -5859,7 +6002,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Art Deco"
+   "styleShown": "Art Deco",
+   "whoStyle": ""
   },
   {
    "id": "empire-state-building-new-york",
@@ -5898,7 +6042,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Art Deco"
+   "styleShown": "Art Deco",
+   "whoStyle": ""
   },
   {
    "id": "seagram-building-new-york",
@@ -5937,7 +6082,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "neue-nationalgalerie-berlin",
@@ -5976,7 +6122,8 @@
     15.02,
     54.91
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "guggenheim-museum-new-york-new-york",
@@ -6017,7 +6164,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "muller-house-prague",
@@ -6056,7 +6204,8 @@
     18.84,
     51.04
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "paimio-sanatorium-paimio",
@@ -6097,7 +6246,8 @@
     31.57,
     70.07
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "mit-baker-house-cambridge",
@@ -6136,7 +6286,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "robie-house-chicago",
@@ -6177,7 +6328,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "glass-house-new-canaan",
@@ -6218,7 +6370,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "weissenhof-double-house-stuttgart",
@@ -6259,7 +6412,8 @@
     15.02,
     54.91
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "sainte-marie-de-la-tourette-eveux",
@@ -6300,7 +6454,8 @@
     8.2,
     51.09
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "van-gogh-museum-amsterdam",
@@ -6341,7 +6496,8 @@
     7.2,
     53.46
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "dutch-pavilion-venice",
@@ -6382,7 +6538,8 @@
     18.52,
     47.08
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "villa-mairea-noormarkku",
@@ -6423,7 +6580,8 @@
     31.57,
     70.07
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "viipuri-library-vyborg",
@@ -6464,7 +6622,8 @@
     87.33,
     77.74
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "kaufmann-desert-house-palm-springs",
@@ -6505,7 +6664,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "millard-house-pasadena",
@@ -6546,7 +6706,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "fagus-factory-alfeld",
@@ -6587,7 +6748,8 @@
     15.02,
     54.91
    ],
-   "styleShown": "Modernism"
+   "styleShown": "Modernism",
+   "whoStyle": ""
   },
   {
    "id": "sommerfeld-house-berlin",
@@ -6628,7 +6790,8 @@
     15.02,
     54.91
    ],
-   "styleShown": "Bauhaus"
+   "styleShown": "Bauhaus",
+   "whoStyle": ""
   },
   {
    "id": "casa-del-fascio-como",
@@ -6669,7 +6832,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "qt8-milan",
@@ -6708,7 +6872,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "asilo-sant-elia-como",
@@ -6747,7 +6912,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "pirelli-tower-milan",
@@ -6786,7 +6952,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "torre-velasca-milan",
@@ -6825,7 +6992,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "nakagin-capsule-tower-tokyo",
@@ -6864,7 +7032,8 @@
     142.07,
     41.55
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "centre-pompidou-paris",
@@ -6903,7 +7072,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "tomba-brion",
@@ -6942,7 +7112,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "guggenheim-museum-bilbao-bilbao",
@@ -6985,7 +7156,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "maxxi-rome",
@@ -7026,7 +7198,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "gallaratese-quarter-milan",
@@ -7065,7 +7238,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "generali-tower-citylife-milan",
@@ -7106,7 +7280,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "palazzo-dell-arte-triennale-milan",
@@ -7145,7 +7320,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "polimi-campus-nord-milan",
@@ -7184,7 +7360,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "museo-castelvecchio-verona",
@@ -7223,7 +7400,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "louvre-pyramid-paris",
@@ -7262,7 +7440,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "grande-arche-paris",
@@ -7301,7 +7480,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "bibliotheque-nationale-de-france-paris",
@@ -7340,7 +7520,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "musee-d-orsay-paris",
@@ -7381,7 +7562,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "louvre-abu-dhabi-abu-dhabi",
@@ -7420,7 +7602,8 @@
     56.38,
     26.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "philharmonie-de-paris-paris",
@@ -7459,7 +7642,8 @@
     8.2,
     51.09
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "lloyd-s-building-london",
@@ -7498,7 +7682,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "the-gherkin-london",
@@ -7537,7 +7722,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "london-city-hall-london",
@@ -7576,7 +7762,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "grand-court-london",
@@ -7615,7 +7802,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "reichstag-glass-dome-berlin",
@@ -7654,7 +7842,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "jewish-museum-berlin-berlin",
@@ -7695,7 +7884,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "dancing-house-prague",
@@ -7736,7 +7926,8 @@
     18.84,
     51.04
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "vitra-fire-station",
@@ -7775,7 +7966,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "phaeno-science-center",
@@ -7814,7 +8006,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "wexner-center",
@@ -7853,7 +8046,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "salk-institute",
@@ -7892,7 +8086,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "vanna-venturi-house",
@@ -7931,7 +8126,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "space-needle-seattle",
@@ -7972,7 +8168,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "petronas-twin-towers-kuala-lumpur",
@@ -8013,7 +8210,8 @@
     119.28,
     7.03
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "allianz-arena-munich",
@@ -8054,7 +8252,8 @@
     15.02,
     54.91
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "marques-de-riscal-hotel-elciego",
@@ -8095,7 +8294,8 @@
     3.32,
     43.79
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "tate-modern-london",
@@ -8136,7 +8336,8 @@
     1.77,
     58.68
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "metropolitan-museum-of-art-new-york",
@@ -8177,7 +8378,8 @@
     -66.98,
     49.37
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "nevsky-prospect-saint-petersburg",
@@ -8218,7 +8420,8 @@
     87.33,
     77.74
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   },
   {
    "id": "north-doors-florence-baptistery-florence",
@@ -8259,7 +8462,8 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "",
+   "whoStyle": ""
   }
  ]
 }
