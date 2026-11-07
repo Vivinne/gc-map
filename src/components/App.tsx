@@ -449,9 +449,10 @@ export default function App() {
       {!mobile ? (
         <header className="top">
           <div className="brand">GC Atlas</div>
-          <button type="button" className={`fbtn${filtersOpen ? ' open' : ''}${activeFilters ? ' on' : ''}`} aria-expanded={filtersOpen} aria-label="Filters" onClick={() => setFiltersOpen((o) => !o)} title="Filters (F)">
+          {/* the filters belong to the map: on Quiz and Me the button stays plain, it lights up again back on the map */}
+          <button type="button" className={`fbtn${mode === 'map' && filtersOpen ? ' open' : ''}${mode === 'map' && activeFilters ? ' on' : ''}`} aria-expanded={mode === 'map' && filtersOpen} aria-label="Filters" onClick={() => setFiltersOpen((o) => !o)} title="Filters (F)">
             <Icon name="filter" size={16} />
-            {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
+            {mode === 'map' && activeFilters > 0 && <span className="badge">{activeFilters}</span>}
           </button>
           <button type="button" className="search" onClick={() => setPalette('')} title="Search (/)">
             <Icon name="search" size={16} />
