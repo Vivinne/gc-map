@@ -715,3 +715,35 @@ label.btn:active { filter: brightness(0.86); }
 .qv-setup .act .sel { flex: 1; min-width: 0; }
 .qv-setup .act .sel em { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .qv:not(.m) .qv-setup .qz-start { flex: none; width: 168px; }
+/* quiz set-up: four short rows (question, from, questions, answers), a wide Start */
+.qz2 .bd { display: flex; flex-direction: column; gap: 18px; padding: 16px; }
+.qz2-row { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 12px; align-items: center; }
+.qz2-l { font-size: 12.5px; font-weight: 650; color: var(--mute); }
+.qz2-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.qz2-line > svg { color: #8a929c; flex: none; }
+.qz2 .qv-dd { gap: 0; }
+.qz2 .qv-dd .qv-l { display: none; }
+.qz2 .qv-box { height: 36px; min-width: 132px; }
+.qz2 .qv-menu { top: 42px; }
+.qz2-tk .qv-box { min-width: 0; max-width: 220px; }
+.qz2-tk .qv-box .ph { color: #8a929c; }
+.qz2-tk .qv-menu { width: 230px; right: auto; }
+.qz2-it .bx { width: 15px; height: 15px; flex: none; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px #8a929c; background: #fff; }
+.qz2-it.on .bx { background: #000; color: #fff; box-shadow: none; }
+.qz2-it .sw { width: 8px; height: 8px; border-radius: 50%; }
+.qz2-it.on { background: none !important; box-shadow: none !important; }
+.qz2 .qv-num { height: 36px; }
+.qz2 .qv-num button { width: 36px; }
+.qz2-seg { display: inline-flex; height: 36px; box-shadow: inset 0 0 0 1px #cdd3da; }
+.qz2-seg button { padding: 0 12px; font-weight: 650; font-size: 13px; color: var(--mute); }
+.qz2-seg button:hover:not(.on) { background: var(--soft); color: #000; }
+.qz2-seg button.on { background: #000; color: #fff; }
+.qz2-go { padding: 0 16px 16px; display: flex; }
+.qz2-go .btn { flex: 1; height: 44px; font-size: 15px; }
+.qv.m .qz2-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.qv.m .qz2-line .qv-dd { flex: 1; min-width: 0; }
+.qv.m .qz2 .qv-box { min-width: 0; }
+.qv.m .qz2-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.qv.m .qz2-tk .qv-box { max-width: none; }
+.qv.m .qz2-cats .qz2-tk:nth-child(even) .qv-menu { left: auto; right: 0; }
+.qz2-it .bx svg { color: #fff; }
