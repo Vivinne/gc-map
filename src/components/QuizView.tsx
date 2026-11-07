@@ -7,7 +7,6 @@ import { FIELDS, FIELD_LABEL, PAIRS, addSession, buildQuiz, capacity, record, sp
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
 
-export const COUNTS = [5, 10, 20, 30];
 
 export function pct(right: number, total: number): string {
   return total ? `${Math.round((right / total) * 100)}%` : '';
@@ -67,9 +66,15 @@ interface Props {
 
 interface Setup {
   type: PairChoice;
-  scope: string;
+  /** Categories ticked (scope ids); the quiz takes every building of any of them; none = all buildings */
+  scopes: string[];
   count: number;
+  /** Show right / wrong as soon as an answer is picked (else all at the end) */
+  reveal: boolean;
 }
+
+/** Fewest questions a quiz asks (when the categories hold that many) */
+const MIN_Q = 5;
 
 /** A pick per question; null = skipped or not answered yet */
 type Picks = (string | null)[];
@@ -154,9 +159,11 @@ function Dropdown({ label, value, options, onPick }: { label: string; value: str
 /** Quiz: set-up with three drop-downs, the run (answers shown only at the end; Next always works), the result */
 export default function QuizView({ active, mobile, starred, collections, quiz, request, onQuiz, onOpen }: Props) {
   const [setup, setSetupRaw] = useState<Setup>(() => {
-    const s = load<Partial<Setup>>('quiz-setup', {});
+    const s = load<Partial<Setup> & { scope?: string }>('quiz-setup', {});
     const type = s.type === 'mixed' || (PAIRS as string[]).includes(s.type ?? '') ? (s.type as PairChoice) : 'name>city';
-    return { type, scope: typeof s.scope === 'string' ? s.scope : 'all', count: COUNTS.includes(s.count ?? 0) ? s.count! : 10 };
+    // older saves kept one scope
+    const scopes = Array.isArray(s.scopes) ? s.scopes.filter((x): x is string => typeof x === 'string') : typeof s.scope === 'string' && s.scope !== 'all' ? [s.scope] : [];
+    return { type, scopes, count: Number.isFinite(s.count) && s.count! >= 1 ? Math.round(s.count!) : 10, reveal: s.reveal === true };
   });
   const setSetup = (p: Partial<Setup>) =>
     setSetupRaw((s) => {
@@ -167,7 +174,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   const [phase, setPhase] = useState<Phase>({ kind: 'setup' });
   const [extra, setExtra] = useState<QuizScope | null>(null);
   const scopes = useMemo(() => quizScopes(starred, collections, extra), [starred, collections, extra]);
-  const scope = scopes.find((s) => s.id === setup.scope) ?? scopes.find((s) => s.id === 'all')!;
+  // The ticked categories together (any of them); none ticked = every building
+  const picked = scopes.filter((x) => setup.scopes.includes(x.id) && x.id !== 'all');
+  const scope: QuizScope = picked.length
+    ? { id: picked.map((x) => x.id).join('+'), label: picked.map((x) => x.label).join(', '), items: [...new Map(picked.flatMap((x) => x.items).map((b) => [b.id, b])).values()] }
+    : scopes.find((x) => x.id === 'all')!;
   const cap = capacity(scope.items, setup.type);
   const missedAll = useMemo(() => [...quiz.wrong].reverse(), [quiz.wrong]);
 
@@ -176,9 +187,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     setPhase({ kind: 'run', qs, i: 0, picks: qs.map(() => null), seen: 1, label, scope: scopeLabel });
   };
   const startSetup = (s: Setup) => {
-    const pool = (scopes.find((x) => x.id === s.scope) ?? scope).items;
-    const sc = scopes.find((x) => x.id === s.scope) ?? scope;
-    begin(buildQuiz(pool, s.type, s.count, BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(s.type), sc.label);
+    begin(buildQuiz(scope.items, s.type, Math.max(Math.min(MIN_Q, cap), Math.min(s.count, cap)), BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(s.type), scope.label);
   };
   const startMissed = (entries: string[], scopeLabel = 'Missed') => {
     begin(buildQuiz([], 'mixed', Math.min(30, entries.length), BUILDINGS, Math.floor(Math.random() * 1e9), entries), 'Missed', scopeLabel);
@@ -190,9 +199,10 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     if (!request || handled.current === request.nonce) return;
     handled.current = request.nonce;
     setExtra(request.extra ?? null);
-    const next = { ...setup, scope: request.scope, ...(request.type ? { type: request.type } : {}) };
+    const one = request.scope === 'all' ? [] : [request.scope];
+    const next = { ...setup, scopes: one, ...(request.type ? { type: request.type } : {}) };
     if (request.extra) setSetupRaw(next);
-    else setSetup({ scope: request.scope, ...(request.type ? { type: request.type } : {}) });
+    else setSetup({ scopes: one, ...(request.type ? { type: request.type } : {}) });
     if (request.missed) return startMissed(request.missed, request.extra?.label ?? 'Missed');
     const pool = request.extra && request.extra.id === request.scope ? request.extra.items : (quizScopes(starred, collections).find((x) => x.id === request.scope) ?? { items: BUILDINGS }).items;
     const label = request.extra?.label ?? quizScopes(starred, collections).find((x) => x.id === request.scope)?.label ?? 'All';
@@ -219,6 +229,8 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   const go = (i: number) => run && setPhase({ ...run, i, seen: Math.max(run.seen, i + 1) });
   const pick = (o: string) => {
     if (!run) return;
+    // answers shown at once: the first pick stands
+    if (setup.reveal && run.picks[run.i] != null) return;
     const picks = [...run.picks];
     picks[run.i] = picks[run.i] === o ? null : o;
     setPhase({ ...run, picks });
@@ -301,14 +313,20 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               {q.prompt}
             </div>
             <ol className="qv-ops">
-              {q.options.map((o, k) => (
-                <li key={o}>
-                  <button type="button" className={`qv-o${run.picks[run.i] === o ? ' pick' : ''}`} aria-pressed={run.picks[run.i] === o} onClick={() => pick(o)}>
-                    <span className="i">{k + 1}</span>
-                    <span>{o}</span>
-                  </button>
-                </li>
-              ))}
+              {q.options.map((o, k) => {
+                const mine = run.picks[run.i] === o;
+                // answers shown at once: after a pick, the right answer turns green and a wrong pick red
+                const shown = setup.reveal && run.picks[run.i] != null;
+                const cls = shown ? (o === q.answer ? ' ok' : mine ? ' no' : ' dim') : mine ? ' pick' : '';
+                return (
+                  <li key={o}>
+                    <button type="button" className={`qv-o${cls}`} aria-pressed={mine} onClick={() => pick(o)}>
+                      <span className="i">{shown && o === q.answer ? <Icon name="check" size={11} /> : shown && mine ? <Icon name="close" size={10} /> : k + 1}</span>
+                      <span>{o}</span>
+                    </button>
+                  </li>
+                );
+              })}
             </ol>
           </div>
           <div className="act">
@@ -318,7 +336,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               </button>
             ) : (
               <span className="sel">
-                <em>Answers are shown at the end</em>
+                <em>{setup.reveal ? '' : 'Answers are shown at the end'}</em>
               </span>
             )}
             {mobile && <span className="sel" />}
@@ -461,11 +479,17 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     const keep = ask && ask !== v ? ask : v === 'name' ? 'city' : 'name';
     setSetup({ type: `${v}>${keep}` as PairChoice });
   };
-  const scopeOpts: Opt[] = scopes
-    .filter((s) => !/^(country|year):/.test(s.id) || s.id === scope.id)
-    .map((s) => ({ id: s.id, label: s.label, n: s.items.length, color: s.color, star: s.id === 'starred', rule: s.id.startsWith('era:') && s.id === `era:${ERA_ORDER[0]}` }));
-  const countOpts: Opt[] = COUNTS.map((n) => ({ id: String(n), label: String(n) }));
-  const n = Math.min(setup.count, cap);
+  // Categories as tick boxes in groups; any mix of them is quizzed together
+  const groups: { title: string; items: QuizScope[] }[] = [
+    { title: 'Periods', items: scopes.filter((x) => x.id.startsWith('era:')) },
+    { title: 'Countries', items: scopes.filter((x) => x.id.startsWith('country:')) },
+    { title: 'TEST-ARCHED', items: scopes.filter((x) => x.id === 'exam' || x.id.startsWith('year:')) },
+    { title: 'Mine', items: scopes.filter((x) => x.id === 'starred' || x.id.startsWith('col:') || (extra && x.id === extra.id)) },
+  ];
+  const tick = (id: string) => setSetup({ scopes: setup.scopes.includes(id) ? setup.scopes.filter((x) => x !== id) : [...setup.scopes, id] });
+  const lo = Math.min(MIN_Q, cap);
+  const n = Math.max(lo, Math.min(setup.count, cap));
+  const setCount = (v: number) => setSetup({ count: Math.max(lo, Math.min(cap, Math.round(v) || lo)) });
   return (
     <div className={`qv${mobile ? ' m' : ''}`}>
       <section className="card qv-main qv-setup" aria-label="New quiz">
@@ -474,18 +498,78 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
         </div>
         <div className="bd">
           <div className="qv-fields">
-            <Dropdown label="You see" value={see!} options={seeOpts} onPick={pickSee} />
-            <Dropdown label="You answer" value={ask ?? ''} options={askOpts} onPick={(id) => id && setSetup({ type: `${see}>${id}` as PairChoice })} />
-            <Dropdown label="Buildings" value={scope.id} options={scopeOpts} onPick={(id) => setSetup({ scope: id })} />
-            <Dropdown label="Questions" value={String(setup.count)} options={countOpts} onPick={(id) => setSetup({ count: Number(id) })} />
+            <Dropdown label="Question in" value={see!} options={seeOpts} onPick={pickSee} />
+            <Dropdown label="Answer in" value={ask ?? ''} options={askOpts} onPick={(id) => id && setSetup({ type: `${see}>${id}` as PairChoice })} />
+            <div className="qv-dd">
+              <span className="qv-l">Questions</span>
+              <div className="qv-num">
+                <button type="button" aria-label="Fewer questions" disabled={n <= lo} onClick={() => setCount(n - 1)}>
+                  <Icon name="minus" size={12} />
+                </button>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={lo}
+                  max={cap}
+                  value={n}
+                  aria-label={`Questions, ${lo} to ${cap}`}
+                  onChange={(e) => setSetup({ count: Number(e.target.value) || lo })}
+                  onBlur={(e) => setCount(Number(e.target.value))}
+                />
+                <button type="button" aria-label="More questions" disabled={n >= cap} onClick={() => setCount(n + 1)}>
+                  <Icon name="plus" size={12} />
+                </button>
+              </div>
+              <span className="qv-range">
+                {lo}–{cap}
+              </span>
+            </div>
           </div>
+          <div className="qv-cats">
+            <div className="qv-cats-h">
+              <span className="qv-l">Categories</span>
+              <span className="qv-cnt">{picked.length ? `${scope.items.length} buildings` : `All ${scope.items.length} buildings`}</span>
+              {picked.length > 0 && (
+                <button type="button" className="qv-clear" onClick={() => setSetup({ scopes: [] })}>
+                  Clear
+                </button>
+              )}
+            </div>
+            {groups
+              .filter((g) => g.items.length)
+              .map((g) => (
+                <div className="qv-grp" key={g.title}>
+                  <span className="qv-gt">{g.title}</span>
+                  <div className="qv-boxes">
+                    {g.items.map((x) => {
+                      const on = setup.scopes.includes(x.id);
+                      return (
+                        <label key={x.id} className={`qv-cb${on ? ' on' : ''}${x.items.length ? '' : ' off'}`}>
+                          <input type="checkbox" checked={on} disabled={!x.items.length && !on} onChange={() => tick(x.id)} />
+                          <span className="bx">{on && <Icon name="check" size={10} />}</span>
+                          {x.color && <i className="sw" style={{ background: x.color }} />}
+                          {x.id === 'starred' && <Icon name="starOn" size={12} />}
+                          <span className="t">{x.id.startsWith('year:') ? x.label.replace('TEST-ARCHED ', '') : x.id === 'exam' ? 'Any year' : x.label}</span>
+                          <span className="n">{x.items.length}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+          </div>
+          <label className={`qv-cb qv-reveal${setup.reveal ? ' on' : ''}`}>
+            <input type="checkbox" checked={setup.reveal} onChange={() => setSetup({ reveal: !setup.reveal })} />
+            <span className="bx">{setup.reveal && <Icon name="check" size={10} />}</span>
+            <span className="t">Show the answer after each question</span>
+          </label>
         </div>
         <div className="act">
           {!mobile && (
             <span className="sel">
               <span>{typeLabel(setup.type)}</span>
               <em>
-                · {scope.label} · {n} questions
+                · {picked.length ? scope.label : 'All'} · {n} questions
               </em>
             </span>
           )}

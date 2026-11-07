@@ -1706,9 +1706,8 @@
    "exams": [],
    "style": "哥德式建築（Gothic）",
    "styleId": "6.5",
-   "era": "medieval",
+   "era": "renaissance",
    "eras": [
-    "medieval",
     "renaissance"
    ],
    "points": [
@@ -1730,7 +1729,7 @@
     18.52,
     47.08
    ],
-   "styleShown": ""
+   "styleShown": "Renaissance"
   },
   {
    "id": "scrovegni-chapel-padua",

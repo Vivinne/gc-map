@@ -35,6 +35,10 @@ export interface MapHandle {
   restore(v: { center: [number, number]; zoom: number }): void;
   /** A building picked on the map: bring it to the middle of the visible area, keeping the zoom */
   focus(b: Building): void;
+  /** Frame a country box [west, south, east, north] */
+  fitBox(box: [number, number, number, number]): void;
+  /** The open building's pin clicked again: zoom in close on it, in the middle of the visible area */
+  closeUp(b: Building): void;
 }
 
 interface Props {
@@ -58,6 +62,8 @@ interface Props {
   onHome?(): void;
   /** The user zoomed out to the panorama (scale bar at 500 km or more): the parent clears the view */
   onPanorama?(): void;
+  /** Country button: the parent closes its panels, then asks the map to frame the box (fitBox) */
+  onCountry?(box: [number, number, number, number]): void;
   /** Active filter chips: after the scale bar (desktop) or along the top of the map (phone) */
   foot?: React.ReactNode;
 }
@@ -189,7 +195,7 @@ function styleSpec(): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
+  const { onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
   const panoRef = useRef(onPanorama);
   const btnZoom = useRef(false);
   panoRef.current = onPanorama;
@@ -364,6 +370,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       fitTo,
       showCity,
       home: () => homeView(),
+      fitBox: (box) => fitCountry(box),
+      closeUp: (b) => {
+        const m = mapRef.current;
+        if (!m) return;
+        const p = padRef.current;
+        m.easeTo({ center: [b.lng, b.lat], zoom: Math.min(17.5, Math.max(m.getZoom() + 1.5, 16.5)), offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2], duration: motion(600) });
+      },
       view: () => {
         const m = mapRef.current;
         if (!m) return null;
@@ -915,7 +928,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             </button>
           </>
         )}
-        <button type="button" aria-label="Country" title={countryBox ? `Whole country: ${nationName(countryBox.ref)}` : 'Country'} disabled={!countryBox} onClick={() => countryBox && fitCountry(countryBox.box)}>
+        <button type="button" aria-label="Country" title={countryBox ? `Whole country: ${nationName(countryBox.ref)}` : 'Country'} disabled={!countryBox} onClick={() => countryBox && (onCountry ? onCountry(countryBox.box) : fitCountry(countryBox.box))}>
           {countryBox && nationIcon(countryBox.ref) ? (
             <svg width={18} height={18} viewBox="0 0 18 18" aria-hidden="true" className="nat-ic">
               <path d={nationIcon(countryBox.ref)} />

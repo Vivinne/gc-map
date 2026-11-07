@@ -8,7 +8,7 @@ import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import type { EraId } from '../lib/types';
-import { BuildingCard, CityPanel, cityOrder } from './DetailPanel';
+import { BuildingCard, CityPanel, ResultsPanel, cityOrder } from './DetailPanel';
 import { Icon } from './Icons';
 import IndexPanel from './IndexPanel';
 import MeView from './MeView';
@@ -84,6 +84,10 @@ export default function App() {
   const [sheet, setSheet] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [hoverId, setHoverId] = useState('');
+  // The list of what the filters show (like a city list): opened by a building tag and by the card's back button
+  const [resultsOpen, setResultsOpen] = useState(false);
+  // Bumped when the open building's pin is clicked again: the card shows itself whole, from its top
+  const [detail, setDetail] = useState(0);
   const mobile = useMedia(MOBILE_QUERY);
   // A phone held sideways: the card sits at the right of the map instead of over its bottom
   const wide = useMedia(LANDSCAPE_QUERY);
@@ -113,9 +117,11 @@ export default function App() {
     if (!selected) return null;
     const filtered = !isEmpty(dFilters) && results.some((b) => b.id === selected.id);
     const list = filtered ? citiesOf(results).flatMap((c) => c.items) : cityOrder(selected.city);
-    return { list, index: list.findIndex((b) => b.id === selected.id) };
+    return { list, filtered, index: list.findIndex((b) => b.id === selected.id) };
   }, [selected, results, dFilters]);
-  const panelOpen = mode === 'map' && (!!selected || !!city);
+  // What the filters show, in the order of Previous / Next: the list panel and the card's "Also in" list
+  const resultList = useMemo(() => citiesOf(results).flatMap((c) => c.items), [results]);
+  const panelOpen = mode === 'map' && (!!selected || !!city || (resultsOpen && !isEmpty(filters)));
 
   // ---------- persistence ----------
   useEffect(() => {
@@ -233,6 +239,7 @@ export default function App() {
   const closeCity = useCallback(() => {
     setSelId('');
     setCity('');
+    setResultsOpen(false);
     // back to the view from before the panel opened
     const v = before.current;
     before.current = null;
@@ -260,7 +267,7 @@ export default function App() {
       setSelId('');
       setCity('');
       setMode('map');
-      window.requestAnimationFrame(() => window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13)));
+      afterPanel(() => mapRef.current?.fitTo(apply(next, starred), 13));
     },
     [starred],
   );
@@ -323,11 +330,13 @@ export default function App() {
   // A category tag (style block, filter chip) was chosen: once the list follows, the map frames what it
   // now shows, so the user sees where that category is; an open card or city closes
   const fitNext = useRef(false);
-  const pickCategory = useCallback((next: Filters | ((f: Filters) => Filters)) => {
+  // (a building's tag also opens the list of what the filter shows, like a city list)
+  const pickCategory = useCallback((next: Filters | ((f: Filters) => Filters), list = false) => {
     fitNext.current = true;
     before.current = null;
     setSelId('');
     setCity('');
+    setResultsOpen(list);
     setFiltersRaw(next);
   }, []);
   useEffect(() => {
@@ -519,6 +528,14 @@ export default function App() {
             compact={mobile}
             sideways={mobile && wide}
             onSelect={(id) => {
+              // The open building's pin clicked again: the user wants to read about it in full
+              // (desktop: the map zooms in close on it; phone: the sheet opens to full height)
+              if (id === selId) {
+                setDetail((n) => n + 1);
+                const b = BY_ID.get(id);
+                if (b && !mobile) mapRef.current?.closeUp(b);
+                return;
+              }
               // A pin picked on the map is the building to read about: keep it and its surroundings in view
               select(id, { fly: false });
               const b = BY_ID.get(id);
@@ -529,9 +546,20 @@ export default function App() {
             onReady={() => setMapReady(true)}
             onHome={() => {
               clearView();
-              window.requestAnimationFrame(() => mapRef.current?.home());
+              // after the panels have closed, so the map is framed in the whole free area
+              afterPanel(() => mapRef.current?.home());
             }}
             onPanorama={clearView}
+            onCountry={(box) => {
+              // The whole country: open lists and panels close, the map frames the country
+              before.current = null;
+              setSelId('');
+              setCity('');
+              setResultsOpen(false);
+              setFiltersOpen(false);
+              setSheet(false);
+              afterPanel(() => mapRef.current?.fitBox(box));
+            }}
             foot={chips}
           />
           {mode === 'map' && selected && (
@@ -555,14 +583,33 @@ export default function App() {
               }
               onBack={() => {
                 setSelId('');
-                mapRef.current?.showCity(selected.city);
+                if (nav?.filtered) {
+                  // back to the list of what the filters show; the map frames all of it
+                  setCity('');
+                  setResultsOpen(true);
+                  afterPanel(() => mapRef.current?.fitAll(results));
+                } else afterPanel(() => mapRef.current?.showCity(selected.city));
               }}
               onSelect={(id) => select(id)}
               onHover={setHoverId}
-              onTag={pickCategory}
+              onTag={(f) => pickCategory(f, true)}
+              group={nav?.filtered ? { label: activeChips.map((c) => c.label).join(' \u00b7 '), list: nav.list } : null}
+              detail={detail}
             />
           )}
-          {mode === 'map' && !selected && city && CITY_BUILDINGS.has(city) && (
+          {mode === 'map' && !selected && resultsOpen && !isEmpty(filters) && (
+            <ResultsPanel
+              label={activeChips.map((c) => c.label).join(' \u00b7 ')}
+              list={resultList}
+              mobile={mobile}
+              selectedId=""
+              onSelect={(id) => select(id)}
+              onClose={closeCity}
+              onWhole={() => mapRef.current?.fitAll(results)}
+              onHover={setHoverId}
+            />
+          )}
+          {mode === 'map' && !selected && !(resultsOpen && !isEmpty(filters)) && city && CITY_BUILDINGS.has(city) && (
             <CityPanel
               city={city}
               mobile={mobile}
@@ -672,7 +719,7 @@ export default function App() {
             setMode('map');
             const next = { ...filters, who, q: '' };
             setFiltersRaw(next);
-            window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13));
+            afterPanel(() => mapRef.current?.fitTo(apply(next, starred), 13));
           }}
           onCity={(c) => {
             setPalette(null);
@@ -683,7 +730,7 @@ export default function App() {
             setPalette(null);
             const next = { ...filters, q };
             setFiltersRaw(next);
-            if (mode === 'map') window.requestAnimationFrame(() => mapRef.current?.fitTo(apply(next, starred), 13));
+            if (mode === 'map') afterPanel(() => mapRef.current?.fitTo(apply(next, starred), 13));
           }}
         />
       )}
