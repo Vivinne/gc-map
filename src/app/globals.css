@@ -765,3 +765,19 @@ label.btn:active { filter: brightness(0.86); }
 .qv.m .qz2-its { grid-template-columns: 1fr; }
 .qv.m .qz2-g.yrs .qz2-its { grid-template-columns: repeat(3, 1fr); }
 .qv.m .qz2-g.yrs .qz2-it:first-child { grid-column: 1 / -1; }
+/* search: why a building matched when its name does not; no results */
+.hit .why { flex: none; font-size: 11px; font-weight: 650; color: var(--mute); background: var(--soft); padding: 1px 6px; }
+.hit.on .why { background: #2b2f34; color: #c5cad0; }
+.pal-empty { display: flex; flex-direction: column; gap: 4px; }
+.pal-empty b { color: #000; font-size: 14px; }
+/* progress page (desktop): mastery, practise next and collections in one row, no tall empty areas; history below */
+.me:not(.m) .me-mastery { grid-column: span 6; }
+.me:not(.m) .me-next { grid-column: span 3; }
+.me:not(.m) .me-cols { grid-column: span 3; }
+.me:not(.m) .me-recent { grid-column: span 8; }
+.me:not(.m) .me-day { grid-column: span 4; }
+.me:not(.m) .ms { height: 288px; }
+.me:not(.m) .me-mastery .ms li { grid-template-columns: 128px minmax(0, 1fr) 56px; }
+.me:not(.m) .me-next .bd, .me:not(.m) .me-cols .bd { flex: 1 1 0; height: 0; min-height: 0; overflow-y: auto; }
+.me:not(.m) .me-next .wk { height: auto; overflow: visible; }
+.me:not(.m) .me-mastery .seg button { padding: 0 8px; }

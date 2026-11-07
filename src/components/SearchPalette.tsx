@@ -119,6 +119,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
       <button type="button" key={b.id} {...common}>
         <i className="sq" style={{ background: ERAS[b.era].color }} />
         <span className="nm">{b.name}</span>
+        {h.why && <span className="why">{h.why}</span>}
         <span className="loc">{b.city}</span>
         <span className="yr">{ascii(shortYear(b.built))}</span>
       </button>
@@ -148,12 +149,21 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
         </div>
         <div className="pal-body">
           <div className="pal-res" id="pal-results" role="listbox" ref={listRef}>
-            {q.trim() && res.flat.length === 0 && <p className="pal-empty">0</p>}
-            {res.architects.map(item)}
-            {res.cities.map(item)}
-            {res.architects.length + res.cities.length > 0 && res.buildings.length > 0 && <hr />}
+            {q.trim() && res.flat.length === 0 && (
+              <div className="pal-empty">
+                <b>No results for "{q.trim()}"</b>
+                <span>Try the name of a city or an architect.</span>
+              </div>
+            )}
+            {res.buildings.length > 0 && <h5>Buildings</h5>}
             {res.buildings.map(item)}
-            {res.matched.length > res.buildings.length && <p className="pal-more">+{res.matched.length - res.buildings.length}</p>}
+            {res.architects.length > 0 && <h5>Architects</h5>}
+            {res.architects.map(item)}
+            {res.cities.length > 0 && <h5>Cities</h5>}
+            {res.cities.map(item)}
+            {res.others.length > 0 && <h5>Also mentioning "{q.trim()}"</h5>}
+            {res.others.map(item)}
+            {res.matched.length > res.buildings.length + res.others.length && <p className="pal-more">{res.matched.length - res.buildings.length - res.others.length} more</p>}
           </div>
           {!mobile && (
             <div className="pal-prev">

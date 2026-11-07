@@ -2,8 +2,8 @@
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
-import { DEFAULT_STATE, type Mode } from '../lib/hash';
-import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, byYear, citiesOf, nationName } from '../lib/model';
+import { DEFAULT_STATE, formatHash, parseHash, type Mode, type UrlState } from '../lib/hash';
+import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, byYear, citiesOf, nationName } from '../lib/model';
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
@@ -26,6 +26,23 @@ interface Toast {
   id: number;
   text: string;
   undo?: Filters;
+}
+
+/** process.env.GC_HASH is "off" in the claude.ai artifact build, where the page address cannot be shared */
+const HASH_ON = process.env.GC_HASH !== 'off';
+
+/** The state named by the page address (unknown buildings, cities and countries are dropped) */
+function readAddress(): UrlState {
+  if (!HASH_ON || typeof window === 'undefined') return DEFAULT_STATE;
+  const s = parseHash(window.location.hash);
+  const nations = new Set([...COUNTRIES, ...BUILDINGS.map(nationName)]);
+  const b = BY_ID.get(s.b);
+  return {
+    ...s,
+    b: b ? b.id : '',
+    city: b ? b.city : CITY_BUILDINGS.has(s.city) ? s.city : '',
+    filters: { ...s.filters, countries: s.filters.countries.filter((c) => nations.has(c)) },
+  };
 }
 
 /** One chip per active filter value, with the filters that remain when it is removed */
@@ -57,12 +74,12 @@ function useMedia(q: string): boolean {
 export default function App() {
   // A reload is a reset: the page always opens on the full map with nothing selected and no filters.
   // Personal data (seen, stars, collections, quiz results) stays.
-  const initial = DEFAULT_STATE;
+  const initial = useMemo(() => readAddress(), []);
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [selId, setSelId] = useState(BY_ID.has(initial.b) ? initial.b : '');
   const [city, setCity] = useState(initial.city);
   const [filters, setFiltersRaw] = useState<Filters>(initial.filters);
-  const [seen, setSeen] = useState<Set<string>>(() => new Set(load<string[]>('seen', [])));
+  const [seen, setSeen] = useState<Set<string>>(() => new Set([...load<string[]>('seen', []), ...(BY_ID.has(initial.b) ? [initial.b] : [])]));
   const [starred, setStarred] = useState<Set<string>>(() => new Set(load<string[]>('starred', [])));
   const [collections, setCollections] = useState<Col.Collection[]>(() => {
     try {
@@ -85,7 +102,7 @@ export default function App() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [hoverId, setHoverId] = useState('');
   // The list of what the filters show (like a city list): opened by a building tag and by the card's back button
-  const [resultsOpen, setResultsOpen] = useState(false);
+  const [resultsOpen, setResultsOpen] = useState(initial.list && !isEmpty(initial.filters));
   // Bumped when the open building's pin is clicked again: the card shows itself whole, from its top
   const [detail, setDetail] = useState(0);
   const mobile = useMedia(MOBILE_QUERY);
@@ -127,6 +144,27 @@ export default function App() {
   const nums = useMemo<ReadonlyMap<string, number>>(() => (filteredNow ? new Map(resultList.map((b, i) => [b.id, i + 1])) : CITY_NO), [filteredNow, resultList]);
   const panelOpen = mode === 'map' && (!!selected || !!city || (resultsOpen && !isEmpty(filters)));
 
+  // ---------- address: what is on screen (tab, building, city, filters, filter list) lives in the URL,
+  // so it can be shared or reloaded ----------
+  useEffect(() => {
+    if (!HASH_ON) return;
+    const h = formatHash({ mode, b: selId, city, filters: { ...filters, col: null }, list: resultsOpen && !isEmpty(filters) });
+    if (h !== window.location.hash) window.history.replaceState(null, '', window.location.pathname + window.location.search + h);
+  }, [mode, selId, city, filters, resultsOpen]);
+  // A page opened from an address: once the map is ready it shows what the address names
+  const restored = useRef(false);
+  useEffect(() => {
+    if (!mapReady || restored.current) return;
+    restored.current = true;
+    const b = selId ? BY_ID.get(selId) : null;
+    afterPanel(() => {
+      if (b) mapRef.current?.showBuilding(b);
+      else if (city) mapRef.current?.showCity(city);
+      else if (!isEmpty(filters)) frameFilter(filters, results);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady]);
+
   // ---------- persistence ----------
   useEffect(() => {
     save('seen', [...seen]);
@@ -152,8 +190,6 @@ export default function App() {
     // iOS Safari shows :active (the press feedback of every button) only when the page listens to touches
     const noop = () => undefined;
     document.addEventListener('touchstart', noop, { passive: true });
-    // Clear any old view address (#m=...&b=...) so a reload never restores it
-    if (window.location.hash) window.history.replaceState(null, '', window.location.pathname + window.location.search);
     // A page restored from the back/forward cache is a reload too
     const onShow = (e: PageTransitionEvent) => {
       if (e.persisted) window.location.reload();
@@ -430,7 +466,7 @@ export default function App() {
   const modes: [Mode, string, 'map' | 'cards' | 'me', string][] = [
     ['map', 'Map', 'map', 'M'],
     ['quiz', 'Quiz', 'cards', 'Q'],
-    ['me', 'Me', 'me', 'U'],
+    ['me', 'Progress', 'me', 'U'],
   ];
 
   const index = (
@@ -504,7 +540,7 @@ export default function App() {
           </nav>
           <div className="seen" title="Buildings opened">
             <span>
-              {seen.size}/{TOTAL}
+              Viewed {seen.size}/{TOTAL}
             </span>
             <div className="bar">
               <i style={{ width: `${(seen.size / TOTAL) * 100}%` }} />
@@ -518,7 +554,7 @@ export default function App() {
               <Icon name="search" size={17} />
               <span>{filters.q || 'Search'}</span>
               <span className="m-seen">
-                {seen.size}/{TOTAL}
+                Viewed {seen.size}/{TOTAL}
               </span>
             </button>
             <button type="button" className={`m-fbtn${activeFilters ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label="All filters and list">

@@ -63,7 +63,7 @@ export default function MeView(p: MeProps) {
 
   const tiles = (
     <>
-      <Tile n={seen.size} of={BUILDINGS.length} label="Seen" />
+      <Tile n={seen.size} of={BUILDINGS.length} label="Viewed" />
         <Tile n={tested} of={BUILDINGS.length} label="Tested" />
         <Tile n={all.mastered} of={BUILDINGS.length} label="Mastered" />
         <div className="k">
@@ -78,7 +78,7 @@ export default function MeView(p: MeProps) {
   const device = (
         <div className="me-foot">
           <h2>Another device</h2>
-          <span className="note">Seen, stars, collections and quiz results</span>
+          <span className="note">Viewed buildings, stars, collections and quiz results</span>
           <button type="button" className="btn" onClick={p.onExport}>
             <Icon name="download" size={14} />
             Save progress to file
@@ -104,7 +104,7 @@ export default function MeView(p: MeProps) {
   if (p.mobile) {
     return (
       <div className="me m">
-        <nav className="me-parts" role="tablist" aria-label="Me">
+        <nav className="me-parts" role="tablist" aria-label="Progress">
           {PARTS.map(([k, label]) => (
             <button type="button" role="tab" key={k} aria-selected={part === k} className={part === k ? 'on' : ''} onClick={() => setPart(k)}>
               {label}
@@ -140,11 +140,12 @@ export default function MeView(p: MeProps) {
     <div className="me">
       <div className="me-g">
         {tiles}
+        {/* the things to act on first: mastery, what to practise, collections side by side; history below */}
         <Mastery {...p} by={by} />
         <PractiseNext {...p} />
-        <PerDay log={quiz.log} />
-        <Recent quiz={quiz} />
         <Collections {...p} />
+        <Recent quiz={quiz} />
+        <PerDay log={quiz.log} />
         {device}
       </div>
     </div>
