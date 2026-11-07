@@ -82,7 +82,7 @@ type Picks = (string | null)[];
 type Phase =
   | { kind: 'setup' }
   | { kind: 'run'; qs: Question[]; i: number; picks: Picks; seen: number; label: string; scope: string }
-  | { kind: 'done'; qs: Question[]; picks: Picks; label: string; scope: string; again: () => void };
+  | { kind: 'done'; qs: Question[]; picks: Picks; label: string; scope: string; again: () => void; planned: number };
 
 /** Question types in the order users ask for them: from the building first, then back to it, then the rest */
 const TYPE_ORDER: PairChoice[] = ['name>city', 'name>architect', 'name>style', 'city>name', 'architect>name', 'style>name', 'city>style', 'city>architect', 'style>city', 'style>architect', 'architect>city', 'architect>style', 'mixed'];
@@ -163,6 +163,21 @@ function Dropdown({ label, value, options, onPick }: { label: string; value: str
 function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string; items: QuizScope[] }[]; picked: string[]; total: number; onTick(id: string): void }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
+  // The menu fits the room left on screen: under the box down to the tab bar (phone) or the window edge,
+  // or above the box when there is more room there; it scrolls only when even that is too short
+  const [place, setPlace] = useState<{ up: boolean; max: number }>({ up: false, max: 420 });
+  const toggle = () => {
+    if (!open && box.current) {
+      const r = box.current.getBoundingClientRect();
+      const bar = document.querySelector('.tabbar')?.getBoundingClientRect().top ?? window.innerHeight;
+      const top = document.querySelector('.top, .m-top')?.getBoundingClientRect().bottom ?? 0;
+      const below = Math.min(bar, window.innerHeight) - r.bottom - 12;
+      const above = r.top - top - 12;
+      const up = below < 300 && above > below;
+      setPlace({ up, max: Math.max(160, Math.min(600, up ? above : below)) });
+    }
+    setOpen(!open);
+  };
   useEffect(() => {
     if (!open) return;
     const down = (e: PointerEvent) => box.current && !box.current.contains(e.target as Node) && setOpen(false);
@@ -178,13 +193,13 @@ function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string;
   const on = groups.flatMap((g) => g.items.filter((x) => picked.includes(x.id)).map((x) => (x.id.startsWith('year:') || x.id === 'exam' ? `TEST-ARCHED ${short(x)}` : x.label)));
   return (
     <div className="qv-dd qz2-range" ref={box}>
-      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="true" aria-expanded={open} aria-label={`Range: ${on.length ? on.join(', ') : 'all'}, ${total}`} onClick={() => setOpen(!open)}>
+      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="true" aria-expanded={open} aria-label={`Range: ${on.length ? on.join(', ') : 'all'}, ${total}`} onClick={toggle}>
         <span className="v">{on.length ? on.join(', ') : 'All'}</span>
         <span className="n">{total}</span>
         <Icon name="down" size={13} />
       </button>
       {open && (
-        <div className="qv-menu qz2-menu" aria-label="Range">
+        <div className={`qv-menu qz2-menu${place.up ? ' up' : ''}`} aria-label="Range" style={{ maxHeight: place.max }}>
           {groups.map((g) => (
             <div key={g.title} className={`qz2-g${g.title === 'TEST-ARCHED' ? ' yrs' : ''}`}>
               <h5>{g.title}</h5>
@@ -225,7 +240,15 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
       save('quiz-setup', n);
       return n;
     });
-  const [phase, setPhase] = useState<Phase>({ kind: 'setup' });
+  // A quiz in progress is kept in the browser, so a reload or a closed tab comes back to the same question
+  const [phase, setPhase] = useState<Phase>(() => {
+    const r = load<Extract<Phase, { kind: 'run' }> | null>('quiz-run', null);
+    const ok = r && r.kind === 'run' && Array.isArray(r.qs) && r.qs.length && r.qs.every((q) => BY_ID.has(q.id)) && Array.isArray(r.picks) && r.picks.length === r.qs.length;
+    return ok ? { ...r, i: Math.min(Math.max(0, r.i | 0), r.qs.length - 1) } : { kind: 'setup' };
+  });
+  useEffect(() => {
+    save('quiz-run', phase.kind === 'run' ? phase : null);
+  }, [phase]);
   const [extra, setExtra] = useState<QuizScope | null>(null);
   const scopes = useMemo(() => quizScopes(starred, collections, extra), [starred, collections, extra]);
   // The ticked categories together (any of them); none ticked = every building
@@ -276,7 +299,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
       return addSession(n, session);
     });
     const again = p.label === 'Missed' ? () => startMissed(p.qs.map((q) => `${q.id}|${q.pair}`), p.scope) : () => startSetup(setup);
-    setPhase({ kind: 'done', qs: reached, picks, label: p.label, scope: p.scope, again });
+    setPhase({ kind: 'done', qs: reached, picks, label: p.label, scope: p.scope, again, planned: p.qs.length });
   };
 
   const run = phase.kind === 'run' ? phase : null;
@@ -311,13 +334,13 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
 
   // ---------- missed list (right column) ----------
   const missedCard = (
-    <section className="card qv-side" aria-label="Missed">
+    <section className="card qv-side" aria-label="To retry">
       <div className="hd">
-        <h2>Missed</h2>
+        <h2>To retry</h2>
         <span className="rt">{missedAll.length}</span>
       </div>
       <div className="bd">
-        {!missedAll.length && <p className="none">No missed questions yet</p>}
+        {!missedAll.length && <p className="none">Nothing to retry yet</p>}
         <ol className="wk">
           {missedAll.slice(0, mobile ? 3 : 60).map((w) => {
             const [id, p] = w.split('|') as [string, Pair];
@@ -332,10 +355,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             );
           })}
         </ol>
+        <p className="qv-note">Answered wrong or skipped. A right answer takes it off the list.</p>
       </div>
       <div className="act">
         <button type="button" className={`btn wide${mobile ? '' : ' dark'}`} disabled={!missedAll.length} onClick={() => startMissed(missedAll)}>
-          Quiz these {Math.min(30, missedAll.length) || ''}
+          Retry {Math.min(30, missedAll.length) || ''}
           <Icon name="right" size={12} />
         </button>
       </div>
@@ -366,7 +390,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             <div className="qv-p">
               {q.prompt}
             </div>
-            <ol className="qv-ops">
+            <ol className="qv-ops" role="radiogroup" aria-label="Answers">
               {q.options.map((o, k) => {
                 const mine = run.picks[run.i] === o;
                 // answers shown at once: after a pick, the right answer turns green and a wrong pick red
@@ -374,7 +398,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
                 const cls = shown ? (o === q.answer ? ' ok' : mine ? ' no' : ' dim') : mine ? ' pick' : '';
                 return (
                   <li key={o}>
-                    <button type="button" className={`qv-o${cls}`} aria-pressed={mine} onClick={() => pick(o)}>
+                    <button type="button" role="radio" className={`qv-o${cls}`} aria-checked={mine} onClick={() => pick(o)}>
                       <span className="i">{shown && o === q.answer ? <Icon name="check" size={11} /> : shown && mine ? <Icon name="close" size={10} /> : k + 1}</span>
                       <span>{o}</span>
                     </button>
@@ -402,11 +426,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             )}
             {mobile && (
               <button type="button" className="btn" onClick={() => finish(run)}>
-                Finish
+                Score now
               </button>
             )}
             <button type="button" className="btn dark" onClick={next}>
-              {last ? 'Finish' : 'Next'}
+              {last ? 'Score' : 'Next'}
               <Icon name="right" size={12} />
             </button>
           </div>
@@ -437,12 +461,12 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               </ol>
             </div>
             <div className="act">
-              <button type="button" className="btn wide" aria-label="Restart" onClick={() => startSetup(setup)}>
+              <button type="button" className="btn wide" onClick={() => setPhase({ kind: 'setup' })}>
                 <Icon name="undo" size={13} />
-                Restart
+                Set up again
               </button>
-              <button type="button" className="btn wide" aria-label="End" onClick={() => finish(run)}>
-                Finish
+              <button type="button" className="btn wide" onClick={() => finish(run)}>
+                Score now
               </button>
             </div>
           </section>
@@ -456,6 +480,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     const right = phase.qs.filter((q, k) => phase.picks[k] === q.answer).length;
     const skipped = phase.picks.filter((x) => x == null).length;
     const wrong = phase.qs.filter((q, k) => phase.picks[k] !== q.answer);
+    const planned = phase.planned;
+    const notReached = planned - phase.qs.length;
+    const covered = new Set(phase.qs.map((q) => q.id)).size;
+    // The score is always out of the questions planned: questions never reached count as not answered
+    const verdict = notReached > 0 ? `Scored after ${phase.qs.length} of ${planned} questions` : wrong.length ? `${wrong.length} to retry` : 'All right';
     return (
       <div className={`qv${mobile ? ' m' : ''}`}>
         <section className="card qv-main" aria-label="Result">
@@ -468,13 +497,15 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
           <div className="bd">
             <div className="qv-res">
               <b>
-                {right} / {phase.qs.length}
+                {right} / {planned}
               </b>
-              <span>
-                {pct(right, phase.qs.length)}
-                {skipped ? ` · ${skipped} skipped` : ''}
-              </span>
+              <span>{pct(right, planned)}</span>
             </div>
+            <p className="qv-sum">
+              {verdict}
+              {skipped ? ` · ${skipped} skipped` : ''}
+              {notReached > 0 ? ` · ${notReached} not reached` : ''} · {covered} {covered === 1 ? 'building' : 'buildings'}
+            </p>
             <ol className="qv-rl">
               {phase.qs.map((q, k) => {
                 const p = phase.picks[k];
@@ -499,21 +530,16 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             </ol>
           </div>
           <div className="act">
-            {!mobile && (
-              <span className="sel">
-                <em>{wrong.length ? `${wrong.length} to practise again` : 'All right'}</em>
-              </span>
-            )}
             <button type="button" className="btn" onClick={() => setPhase({ kind: 'setup' })}>
-              New quiz
+              Change settings
             </button>
             {wrong.length > 0 && (
               <button type="button" className="btn" onClick={() => startMissed(wrong.map((q) => `${q.id}|${q.pair}`), phase.scope)}>
-                Missed only <span className="n">{wrong.length}</span>
+                Retry wrong <span className="n">{wrong.length}</span>
               </button>
             )}
             <button type="button" className="btn dark" onClick={phase.again}>
-              Again
+              New questions, same settings
               <Icon name="right" size={12} />
             </button>
           </div>
@@ -557,6 +583,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               <Dropdown label="Question in" value={see!} options={seeOpts} onPick={pickSee} />
               <Icon name="right" size={12} />
               <Dropdown label="Answer in" value={ask ?? ''} options={askOpts} onPick={(id) => id && setSetup({ type: `${see}>${id}` as PairChoice })} />
+              <span className="qz2-hint">{see === 'any' ? 'Each question asks a different pair of fields.' : `You see a ${FIELD_LABEL[see as Field].toLowerCase()} and pick its ${FIELD_LABEL[ask as Field].toLowerCase()} from 4 choices.`}</span>
             </div>
           </div>
           <div className="qz2-row">
@@ -597,6 +624,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
                 </span>
                 Show the right answer after each question
               </button>
+              <span className="qz2-hint">{setup.reveal ? 'Your first pick counts and cannot be changed.' : 'Answers can be changed until you score.'}</span>
             </div>
           </div>
         </div>

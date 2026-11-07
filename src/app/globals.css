@@ -751,7 +751,7 @@ label.btn:active { filter: brightness(0.86); }
 .qz2-range { flex: 1; max-width: 420px; }
 .qz2-range .qv-box { width: 100%; }
 .qz2-range .qv-box .n { margin-left: auto; }
-.qz2-menu { width: 420px; max-height: min(600px, calc(100vh - 220px)); padding: 6px 4px; }
+.qz2-menu { width: 420px; padding: 6px 4px; }
 .qz2-g h5 { font-size: 11.5px; font-weight: 700; color: #8a929c; padding: 8px 10px 2px; }
 .qz2-g:first-child h5 { padding-top: 2px; }
 .qz2-its { display: grid; grid-template-columns: 1fr 1fr; column-gap: 8px; }
@@ -761,7 +761,7 @@ label.btn:active { filter: brightness(0.86); }
 .qz2-menu .qz2-it .n { margin-left: 2px; }
 .qz2-sw { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; min-height: 36px; text-align: left; }
 .qv.m .qz2-range { max-width: none; }
-.qv.m .qz2-menu { width: auto; right: 0; max-height: 50vh; }
+.qv.m .qz2-menu { width: auto; right: 0; }
 .qv.m .qz2-its { grid-template-columns: 1fr; }
 .qv.m .qz2-g.yrs .qz2-its { grid-template-columns: repeat(3, 1fr); }
 .qv.m .qz2-g.yrs .qz2-it:first-child { grid-column: 1 / -1; }
@@ -781,3 +781,17 @@ label.btn:active { filter: brightness(0.86); }
 .me:not(.m) .me-next .bd, .me:not(.m) .me-cols .bd { flex: 1 1 0; height: 0; min-height: 0; overflow-y: auto; }
 .me:not(.m) .me-next .wk { height: auto; overflow: visible; }
 .me:not(.m) .me-mastery .seg button { padding: 0 8px; }
+/* quiz: one grey line that says how a setting works; result summary; note under the retry list */
+.qz2-hint { flex-basis: 100%; font-size: 12px; color: #8a929c; font-style: italic; }
+.qz2-menu { overscroll-behavior: contain; }
+.qz2-menu.up { top: auto; bottom: 42px; }
+.qv-sum { font-size: 13px; color: var(--mute); font-weight: 600; padding: 4px 0 8px; border-bottom: 1px solid #eef1f4; }
+.qv-res { border-bottom: 0; padding-bottom: 0; }
+.qv-note { font-size: 12px; color: #8a929c; font-style: italic; padding: 8px 0 4px; }
+.me-note { font-size: 12px; color: #8a929c; font-style: italic; padding: 8px 0 2px; }
+.rs-table .stop { display: block; font-size: 11px; color: #8a929c; font-style: italic; font-weight: 500; }
+.rs-n { font-size: 10px; fill: var(--mute); font-weight: 650; font-variant-numeric: tabular-nums; }
+.me.m .seg button { height: 40px; }
+.qz2-row { align-items: start; }
+.qz2-l { padding-top: 10px; }
+.qv.m .qz2-l { padding-top: 0; }

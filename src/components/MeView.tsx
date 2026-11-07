@@ -66,11 +66,12 @@ export default function MeView(p: MeProps) {
       <Tile n={seen.size} of={BUILDINGS.length} label="Viewed" />
         <Tile n={tested} of={BUILDINGS.length} label="Tested" />
         <Tile n={all.mastered} of={BUILDINGS.length} label="Mastered" />
+        {/* a share is shown only from 10 answers on; fewer answers are shown as a plain count */}
         <div className="k">
-          <b>{week.total ? pct(week.right, week.total) : '–'}</b>
-          <span>Correct, last 7 days{week.total ? ` · ${week.total} answers` : ''}</span>
+          <b>{week.total >= 10 ? pct(week.right, week.total) : week.total ? `${week.right}/${week.total}` : '–'}</b>
+          <span>{week.total >= 10 ? `Right, last 7 days · ${week.total} answers` : week.total ? 'Right answers, last 7 days' : 'Answers, last 7 days'}</span>
           <div className="k-tr">
-            <i style={{ width: week.total ? `${(week.right / week.total) * 100}%` : 0 }} />
+            <i style={{ width: week.total >= 10 ? `${(week.right / week.total) * 100}%` : 0 }} />
           </div>
         </div>
     </>
@@ -278,6 +279,11 @@ function Mastery({ by, starred, collections, onQuiz, onMap }: MeProps & { by: Re
             );
           })}
         </ul>
+        <p className="me-note">
+          {isType
+            ? 'Share of right answers for each kind of question.'
+            : `Counted per building, any kind of question. Mastered: the last 2 answers right; learning: the last answer right; weak: the last answer wrong.${dim === 'style' || dim === 'exam' ? ' A building can count in more than one group.' : ''}`}
+        </p>
       </div>
       <div className="act">
         {cur && (
@@ -303,39 +309,50 @@ function Mastery({ by, starred, collections, onQuiz, onMap }: MeProps & { by: Re
 }
 
 function PractiseNext({ quiz, onQuiz }: MeProps) {
-  const list = useMemo(() => practiseNext(quiz.log, 60), [quiz.log]);
+  const weak = useMemo(() => practiseNext(quiz.log, 60), [quiz.log]);
+  // Nothing answered wrong: the next step is buildings never asked yet
+  const fresh = useMemo(() => {
+    if (weak.length) return [];
+    const asked = new Set(quiz.log.map((e) => e.id));
+    return BUILDINGS.filter((b) => !asked.has(b.id)).slice(0, 10);
+  }, [weak.length, quiz.log]);
+  const n = weak.length || fresh.length;
   return (
     <section className="card me-next" aria-label="Practise next">
       <div className="hd">
         <h2>Practise next</h2>
-        <span className="rt">{list.length}</span>
+        <span className="rt">{n}</span>
       </div>
       <div className="bd">
-        {!list.length && <p className="none">Nothing to practise yet</p>}
         <ol className="wk">
-          {list.map(({ b, pair }) => (
+          {weak.map(({ b, pair }) => (
             <li key={b.id}>
               <span className="wn">{b.name}</span>
               <span className="wf">{FIELD_LABEL[splitPair(pair)[1]]}</span>
               <span className="wc">{b.city}</span>
             </li>
           ))}
+          {fresh.map((b) => (
+            <li key={b.id}>
+              <span className="wn">{b.name}</span>
+              <span className="wc">{b.city}</span>
+            </li>
+          ))}
         </ol>
+        <p className="me-note">{weak.length ? 'Your last answer about these was wrong, most often missed first.' : fresh.length ? 'Nothing answered wrong: these have not been asked yet.' : 'Every building answered right last time.'}</p>
       </div>
       <div className="act">
         <button
           type="button"
           className="btn dark wide"
-          disabled={!list.length}
+          disabled={!n}
           onClick={() =>
-            onQuiz({
-              scope: 'next',
-              extra: { id: 'next', label: 'Practise next', items: list.map((x) => x.b) },
-              missed: list.map((x) => `${x.b.id}|${x.pair}`),
-            })
+            weak.length
+              ? onQuiz({ scope: 'next', extra: { id: 'next', label: 'Practise next', items: weak.map((x) => x.b) }, missed: weak.map((x) => `${x.b.id}|${x.pair}`) })
+              : onQuiz({ scope: 'next', type: 'mixed', extra: { id: 'next', label: 'Not tested yet', items: fresh } })
           }
         >
-          Quiz these {Math.min(30, list.length) || ''}
+          Quiz these {Math.min(30, n) || ''}
           <Icon name="right" size={12} />
         </button>
       </div>
@@ -345,7 +362,7 @@ function PractiseNext({ quiz, onQuiz }: MeProps) {
 
 const CW = 300;
 const CH = 190;
-const P = { l: 36, r: 10, t: 10, b: 22 };
+const P = { l: 36, r: 10, t: 16, b: 22 };
 
 function PerDay({ log }: { log: QuizStore['log'] }) {
   const days = useMemo(() => perDay(log, 14), [log]);
@@ -376,6 +393,12 @@ function PerDay({ log }: { log: QuizStore['log'] }) {
             {days.length > 1 && <polyline points={days.map((d, i) => `${x(i)},${y(d.right / d.total)}`).join(' ')} className="rs-line" />}
             {days.map((d, i) => (
               <circle key={d.day} cx={x(i)} cy={y(d.right / d.total)} r={hover === i || i === days.length - 1 ? 4.5 : 3} className="rs-dot" />
+            ))}
+            {/* how many answers each point stands for, as visible as the point itself */}
+            {days.map((d, i) => (
+              <text key={`n-${d.day}`} x={x(i)} y={y(d.right / d.total) - 9} className="rs-n" textAnchor="middle">
+                {d.total}
+              </text>
             ))}
             {days.map((d, i) => (
               <rect key={d.day} x={x(i) - Math.max(12, iw / Math.max(1, days.length - 1)) / 2} y={P.t} width={Math.max(12, iw / Math.max(1, days.length - 1))} height={ih} fill="transparent" onPointerEnter={() => setHover(i)} />
@@ -425,7 +448,8 @@ function Recent({ quiz }: { quiz: QuizStore }) {
                 <td>{typeLabel(s.type)}</td>
                 <td>{s.scope}</td>
                 <td className="num">
-                  {s.right}/{s.total}
+                  {s.right}/{s.n}
+                  {s.total < s.n && <small className="stop">scored after {s.total}</small>}
                 </td>
               </tr>
             ))}
