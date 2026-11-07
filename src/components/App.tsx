@@ -3,7 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, type Mode } from '../lib/hash';
-import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear } from '../lib/model';
+import { BUILDINGS, BY_ID, CITY_BUILDINGS, ERAS, ERA_ORDER, byYear, citiesOf } from '../lib/model';
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
@@ -106,13 +106,15 @@ export default function App() {
   const selected = selId ? (BY_ID.get(selId) ?? null) : null;
 
 
-  // Previous / Next step through the buildings of the same city (map numbers), and only show when the
-  // city has other buildings; a one-building city lists its nearest landmarks in the card instead
+  // Previous / Next: with no filter, the buildings of the same city (map numbers). With filters on (and the
+  // open building among what they show), every building they show: city by city as in the filter list
+  // (largest city first), inside a city by map number, so the steps stay with one city before moving on.
   const nav = useMemo(() => {
     if (!selected) return null;
-    const list = cityOrder(selected.city);
+    const filtered = !isEmpty(dFilters) && results.some((b) => b.id === selected.id);
+    const list = filtered ? citiesOf(results).flatMap((c) => c.items) : cityOrder(selected.city);
     return { list, index: list.findIndex((b) => b.id === selected.id) };
-  }, [selected]);
+  }, [selected, results, dFilters]);
   const panelOpen = mode === 'map' && (!!selected || !!city);
 
   // ---------- persistence ----------
