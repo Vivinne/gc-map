@@ -170,6 +170,16 @@ export default function App() {
     return () => ro.disconnect();
   }, []);
   const [mapReady, setMapReady] = useState(false);
+  // Phone: the tab bar lies over the bottom of the map (the map keeps its size when the bar hides)
+  const tabRef = useRef<HTMLElement>(null);
+  const [tabH, setTabH] = useState(0);
+  useEffect(() => {
+    const el = tabRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setTabH(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [mobile]);
 
   // Derived lists (deferred so chips respond at once and the map follows)
   const dFilters = useDeferredValue(filters);
@@ -264,10 +274,13 @@ export default function App() {
   // zoom buttons sit at the right, the scale and the active filters at the bottom.
   // Phone: the active filters run along the top of the map, the sheet covers its lower part.
   const activeChips = filterChips(filters);
+  // Phone: while a card or a list is open the tab bar steps aside; it comes back when they close
+  const tabsOff = mobile && panelOpen;
+  const tabInset = mobile && mode === 'map' && !tabsOff ? tabH : 0;
   const padding: Padding = mobile
     ? wide
-      ? { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: 36, left: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 0 }
-      : { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: (panelOpen ? Math.round(mainHeight * 0.44) : 0) + 36, left: 0 }
+      ? { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: 36 + tabInset, left: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 0 }
+      : { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: (panelOpen ? Math.round(mainHeight * 0.44) : tabInset) + 36, left: 0 }
     : { top: 0, right: 56, bottom: 48, left: filtersOpen || panelOpen ? 372 : 0 };
 
   // ---------- actions ----------
@@ -590,7 +603,7 @@ export default function App() {
   );
 
   return (
-    <div className={`app mode-${mode}${mobile ? ' is-mobile' : ''}`}>
+    <div className={`app mode-${mode}${mobile ? ' is-mobile' : ''}${tabsOff ? ' tabs-off' : ''}`}>
       {!mobile ? (
         <header className="top">
           {/* the name is the way home: the clean full map, as when the site opens */}
@@ -659,6 +672,7 @@ export default function App() {
           <MapView
             ref={mapRef}
             theme={theme}
+            tabInset={tabInset}
             buildings={results}
             selected={selected}
             hoverCity={hoverCity}
@@ -832,7 +846,7 @@ export default function App() {
 
 
       {mobile && (
-        <nav className="tabbar" aria-label="Views">
+        <nav className="tabbar" aria-label="Views" ref={tabRef} inert={tabsOff || undefined}>
           {modes.map(([m, label, icon]) => (
             <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)}>
               <Icon name={icon} size={20} />

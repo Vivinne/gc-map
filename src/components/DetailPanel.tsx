@@ -216,7 +216,9 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
   const near = many ? [] : nearest(b, BUILDINGS.filter((x) => x.city !== b.city), 2);
   const kept = starred || collections.some((c) => c.ids.includes(b.id));
   const body = useRef<HTMLDivElement>(null);
+  // Another building picked: a folded card opens again, from its top
   useEffect(() => {
+    setFolded(false);
     body.current?.scrollTo({ top: 0 });
   }, [b.id]);
   // The open building's pin clicked again: the whole card, unfolded, from its top

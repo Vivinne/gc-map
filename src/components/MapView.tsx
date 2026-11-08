@@ -64,6 +64,8 @@ interface Props {
   onReady?(): void;
   /** colour palette: the map's sea, land, streets and buildings follow it */
   theme: ThemeId;
+  /** phone: height of the tab bar lying over the bottom of the map (0 while it is hidden) */
+  tabInset?: number;
   /** Full map button: the parent clears selection and filters, then the map shows Europe */
   onHome?(): void;
   /** The user zoomed out to the panorama (scale bar at 500 km or more): the parent clears the view */
@@ -86,13 +88,17 @@ const LOC = { d: { w: 280, h: 200 }, m: { w: 132, h: 96 } };
  * lower part of a phone map is covered by the sheet while a building is open); a phone held sideways, the
  * upper right corner beside the map buttons (the card covers the left part of the map there).
  */
-function locBox(W: number, H: number, compact: boolean, sideways = false): Box {
+function locBox(W: number, H: number, compact: boolean, sideways = false, chips = false): Box {
   if (compact && sideways) return { x1: W - 56 - LOC.m.w, y1: 8, x2: W - 56, y2: 8 + LOC.m.h };
-  if (compact) return { x1: 12, y1: 52, x2: 12 + LOC.m.w, y2: 52 + LOC.m.h };
+  // under the row of filter chips when there is one, else at the top edge like the map buttons
+  const top = chips ? 52 : 8;
+  if (compact) return { x1: 12, y1: top, x2: 12 + LOC.m.w, y2: top + LOC.m.h };
   return { x1: W - 56 - LOC.d.w, y1: H - 16 - LOC.d.h, x2: W - 56, y2: H - 16 };
 }
 /** The locator shows from this zoom on (past country scale) */
 const LOC_ZOOM = 7;
+/** Phone: the locator also shows from the 50 km scale on (metres per pixel, with a little slack) */
+const LOC_MPP = 520;
 
 /** A building alone in its city, with the nearest landmarks when they are close enough to show together */
 function alone(b: Building): Building[] {
@@ -206,7 +212,7 @@ function styleSpec(c: Theme['map']): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { nums: numsProp, numberAll, onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot, theme } = props;
+  const { nums: numsProp, numberAll, onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot, theme, tabInset = 0 } = props;
   const nums = numsProp ?? CITY_NO;
   const panoRef = useRef(onPanorama);
   const btnZoom = useRef(false);
@@ -528,11 +534,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   }, [padding.left, padding.bottom, selected?.id, insetCity]);
   // Where the fixed parts sit over the map (container pixels): names are never placed under them
   const sheetH = (compact ? padding.bottom - 36 : 0);
-  const showLoc = !!map && zoom >= LOC_ZOOM;
+  // phone: also at the 50 km scale (a second tap on the open building's pin), so the close-up keeps its place on the map
+  const mppNow = map ? (40075016.686 * Math.cos((map.getCenter().lat * Math.PI) / 180)) / (512 * 2 ** zoom) : Infinity;
+  const showLoc = !!map && (zoom >= LOC_ZOOM || (!!compact && mppNow <= LOC_MPP));
   const L = compact ? LOC.m : LOC.d;
   const mapW = map ? map.getContainer().clientWidth : 0;
   const mapH = map ? map.getContainer().clientHeight : 0;
-  const lb = locBox(mapW, mapH, !!compact, !!sideways);
+  const lb = locBox(mapW, mapH, !!compact, !!sideways, padding.top > 8);
   let overlay: React.ReactNode = null;
   if (map && layer) {
     const W = map.getContainer().clientWidth;
@@ -541,7 +549,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // The panels over the map (city list, card, filters), at their real size: a short list leaves the map
     // below it in view, so pins there keep their names and need no edge marker
     const cbox = map.getContainer().getBoundingClientRect();
-    const covers: Box[] = [...(map.getContainer().closest('.app')?.querySelectorAll('section.side, .drawer, .m-top') ?? [])]
+    const covers: Box[] = [...(map.getContainer().closest('.app')?.querySelectorAll('section.side, .drawer, .m-top, .tabbar') ?? [])]
       // a panel sliding away (inside .leave) no longer hides anything
       .filter((el) => !el.closest('.leave'))
       .map((el) => el.getBoundingClientRect())
@@ -552,10 +560,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     blocked.push(...covers);
     if (showLoc) blocked.push({ x1: lb.x1 - 6, y1: lb.y1 - 6, x2: lb.x2 + 6, y2: lb.y2 + 6 });
     // scale bar and filter chips: one row along the bottom (phone: scale lower left, chips along the top)
-    blocked.push(compact ? { x1: 0, y1: H - 52, x2: 140, y2: H } : { x1: 0, y1: H - 48, x2: W - 56, y2: H });
+    blocked.push(compact ? { x1: 0, y1: H - tabInset - 52, x2: 140, y2: H } : { x1: 0, y1: H - 48, x2: W - 56, y2: H });
     if (compact && padding.top > 8) blocked.push({ x1: 0, y1: 0, x2: W, y2: 46 });
     // phone: the map credit line along the bottom right (desktop: inside the bottom row above)
-    if (compact) blocked.push({ x1: Math.max(0, W - 12 - 345), y1: H - 18, x2: W - 12, y2: H });
+    if (compact) blocked.push({ x1: Math.max(0, W - 12 - 345), y1: H - tabInset - 18, x2: W - 12, y2: H });
     // zoom and country buttons (desktop: lower right; phone: upper right)
     blocked.push(compact ? { x1: W - 52, y1: 0, x2: W, y2: 84 } : { x1: W - 56, y1: H - 160, x2: W, y2: H });
     // The world repeats sideways: every point is drawn on the copy nearest the middle of the free part of
@@ -976,7 +984,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         <>
           {scale && (
             // fixed in the lower left corner: an open sheet covers it, it never moves
-            <div className="scale" style={{ left: 16, bottom: 24 }}>
+            <div className="scale" style={{ left: 16, bottom: 24 + tabInset }}>
               {scale.label}
               <i style={{ width: scale.px }} />
             </div>
@@ -1018,7 +1026,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           <Icon name="fit" />
         </button>
       </div>
-      <div className="credit" style={{ right: compact ? 12 : 64, bottom: 2 }}>
+      <div className="credit" style={{ right: compact ? 12 : 64, bottom: 2 + (compact ? tabInset : 0) }}>
         Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors
       </div>
     </div>
