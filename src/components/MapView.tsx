@@ -57,7 +57,8 @@ interface Props {
   /** Phone held sideways: the card is a column at the left of the map */
   sideways?: boolean;
   onSelect(id: string): void;
-  onCity(city: string): void;
+  /** A city circle clicked: the city, and for a merged circle the buildings of its other cities */
+  onCity(city: string, others?: Building[]): void;
   onReady?(): void;
   /** Full map button: the parent clears selection and filters, then the map shows Europe */
   onHome?(): void;
@@ -555,8 +556,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             onClick={(e) => {
               if (!isClick(e)) return;
               setTip(null);
-              // One click opens the city the circle is named after (the largest one of a merged circle)
-              onCity(c.name);
+              // One click opens the city the circle is named after (the largest one of a merged circle), with
+              // the buildings the circle counts in its other cities
+              onCity(c.name, c.items.filter((b) => b.city !== c.name));
             }}
           >
             {isHot && <circle r={r + 6} className="donut-hot" />}

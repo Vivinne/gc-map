@@ -3,7 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, formatHash, parseHash, type Mode, type UrlState } from '../lib/hash';
-import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, byYear, citiesOf, nationName } from '../lib/model';
+import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, byYear, citiesOf, nationName, type Building } from '../lib/model';
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
@@ -113,6 +113,8 @@ export default function App() {
   }, [mode]);
   const [quiz, setQuiz] = useState<QuizStore>(() => cleanQuiz(load<unknown>('quiz', EMPTY_QUIZ), new Set(BY_ID.keys())));
   const [palette, setPalette] = useState<string | null>(null);
+  // The other cities' buildings of the merged circle ("Rome area") a city list was opened from
+  const [nearby, setNearby] = useState<{ city: string; items: Building[] }>({ city: '', items: [] });
   const [toast, setToast] = useState<Toast | null>(null);
   const [hoverCity, setHoverCity] = useState('');
   const [sheet, setSheet] = useState(false);
@@ -278,8 +280,9 @@ export default function App() {
   );
 
   const focusCity = useCallback(
-    (c: string) => {
+    (c: string, others: Building[] = []) => {
       remember();
+      setNearby({ city: c, items: [...others].sort((a, b) => a.city.localeCompare(b.city) || a.name.localeCompare(b.name)) });
       setCity(c);
       setSelId('');
       setSheet(false);
@@ -715,6 +718,7 @@ export default function App() {
               onClose={closeCity}
               onWhole={() => mapRef.current?.showCity(city)}
               onHover={setHoverId}
+              nearby={nearby.city === city ? nearby.items : undefined}
             />
           )}
         </div>

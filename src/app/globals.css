@@ -927,3 +927,9 @@ label.btn:active { filter: brightness(0.86); }
 button.brand { cursor: pointer; height: var(--top-h); }
 button.brand:hover { background: #2a2a2a; }
 button.brand:active { background: #444; }
+/* a scroll bar showing up (a list opened, a long page) must not move anything: its room is kept from the start */
+.me, .quizv { scrollbar-gutter: stable both-edges; }
+.index-scroll, .c-body, .c-scroll, .citypanel div.cp-list, .citypanel .others { scrollbar-gutter: stable; }
+/* a merged circle ("Rome area"): the buildings of its other cities, under the city's own */
+.o-city.o-near { margin-top: 8px; border-top: 1px solid var(--rule); padding-top: 14px; }
+.others .o-row .no.no-n { transform: scale(0.45); }

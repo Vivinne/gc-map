@@ -348,10 +348,12 @@ interface CityProps {
   /** With filters on: only the city's buildings they show, with the filter numbers */
   list?: Building[];
   nums: ReadonlyMap<string, number>;
+  /** Opened from a merged circle ("Rome area"): its buildings in other cities, listed under Nearest */
+  nearby?: Building[];
 }
 
 /** City panel: every building of the city with its map number (1 = oldest); with filters on, what they show there */
-export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole, onHover, list, nums }: CityProps) {
+export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole, onHover, list, nums, nearby }: CityProps) {
   const items = list ?? CITY_BUILDINGS.get(city) ?? [];
   const total = items.length;
   return (
@@ -379,6 +381,23 @@ export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole
             </button>
           </li>
         ))}
+        {nearby && nearby.length > 0 && (
+          <>
+            <li className="o-city o-near">Nearest</li>
+            {nearby.map((b) => (
+              <li key={b.id}>
+                <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
+                  {/* no number: these pins are numbered in their own city, not in this list */}
+                  <span className="no no-n" style={{ background: ERAS[b.era].color }} />
+                  <span className="nm">
+                    {b.name}
+                    <em>{b.city}</em>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </>
+        )}
       </ol>
     </Sheet>
   );
