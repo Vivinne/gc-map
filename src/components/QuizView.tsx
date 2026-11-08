@@ -6,7 +6,7 @@ import { BUILDINGS, BY_ID, COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, type Building
 import { FIELDS, FIELD_LABEL, PAIRS, addSession, buildQuiz, capacity, record, splitPair, type Field, type Pair, type PairChoice, type Question, type QuizStore, type Session } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
-import Info, { Terms } from './Info';
+import Help from './Help';
 
 
 export function pct(right: number, total: number): string {
@@ -338,9 +338,6 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     <section className="card qv-side" aria-label="Mistakes">
       <div className="hd">
         <h2>Mistakes</h2>
-        <Info title="Mistakes">
-          <p>Questions answered wrong or skipped. One comes off the list once it is answered right.</p>
-        </Info>
         <span className="rt">{missedAll.length}</span>
       </div>
       <div className="bd">
@@ -490,16 +487,6 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
         <section className="card qv-main" aria-label="Result">
           <div className="hd">
             <h2>Result</h2>
-            <Info title="Result">
-              <Terms
-                rows={[
-                  ['Score', 'Right answers out of the questions planned'],
-                  ['Settings', 'Back to the set-up'],
-                  ['Mistakes', 'A quiz of this round\u2019s wrong or skipped questions'],
-                  ['New questions', 'Same settings, new questions'],
-                ]}
-              />
-            </Info>
             <span className="rt">
               {phase.label} · {phase.scope}
             </span>
@@ -586,17 +573,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
       <section className="card qv-main qv-setup qz2" aria-label="New quiz">
         <div className="hd">
           <h2>New quiz</h2>
-          <Info title="How a quiz works">
-            <Terms
-              rows={[
-                ['Question', 'What you see, and what you pick for it from 4 choices'],
-                ['Range', 'All buildings, or tick any groups to mix them'],
-                ['Questions', 'From 5 up to the buildings in the range'],
-                ['Answers', 'On: right or wrong at once, the first pick counts. Off: answers can change until Finish'],
-                ['Finish', 'Scores at once; questions not answered count as wrong'],
-              ]}
-            />
-          </Info>
+          <Help topic="quiz" />
         </div>
         <div className="bd">
           <div className="qz2-row">
