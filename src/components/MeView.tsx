@@ -7,6 +7,7 @@ import { STATUSES, STATUS_LABEL, byBuilding, countStatus, perDay, perPair, pract
 import { BUILDINGS, BY_ID, COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, type Building } from '../lib/model';
 import { FIELD_LABEL, PAIRS, splitPair, type Pair, type QuizStore } from '../lib/quiz';
 import { Icon } from './Icons';
+import Info, { Terms } from './Info';
 import { pct, typeLabel, type QuizRequest } from './QuizView';
 
 export interface MeProps {
@@ -213,6 +214,18 @@ function Mastery({ by, starred, collections, onQuiz, onMap }: MeProps & { by: Re
     <section className="card me-mastery" aria-label="Mastery">
       <div className="hd">
         <h2>Mastery</h2>
+        <Info title="Mastery">
+          <p>Each building counts once, whatever is asked about it.</p>
+          <Terms
+            rows={[
+              ['Mastered', 'Right the last 2 times, on different days'],
+              ['Learning', 'Right the last time'],
+              ['Weak', 'Wrong the last time'],
+              ['Not tested', 'Never asked'],
+            ]}
+          />
+          <p>A building can be in more than one group. Type: right answers for each kind of question.</p>
+        </Info>
         <div className="seg" role="tablist">
           {DIMS.map(([d, label]) => (
             <button type="button" role="tab" key={d} aria-selected={dim === d} className={dim === d ? 'on' : ''} onClick={() => setDim(d)}>
@@ -278,11 +291,6 @@ function Mastery({ by, starred, collections, onQuiz, onMap }: MeProps & { by: Re
             );
           })}
         </ul>
-        <p className="me-note">
-          {isType
-            ? 'Share of right answers for each kind of question.'
-            : `Counted per building, any kind of question. Mastered: the last 2 answers right, on different days; learning: the last answer right; weak: the last answer wrong.${dim === 'style' || dim === 'exam' ? ' A building can count in more than one group.' : ''}`}
-        </p>
       </div>
       <div className="act">
         {cur && (
@@ -320,6 +328,9 @@ function PractiseNext({ quiz, onQuiz }: MeProps) {
     <section className="card me-next" aria-label="Practise next">
       <div className="hd">
         <h2>Practise next</h2>
+        <Info title="Practise next">
+          <p>Buildings answered wrong the last time, most missed first. With none, buildings never asked yet.</p>
+        </Info>
         <span className="rt">{n}</span>
       </div>
       <div className="bd">
@@ -338,7 +349,6 @@ function PractiseNext({ quiz, onQuiz }: MeProps) {
             </li>
           ))}
         </ol>
-        <p className="me-note">{weak.length ? 'Your last answer about these was wrong, most often missed first.' : fresh.length ? 'Nothing answered wrong: these have not been asked yet.' : 'Every building answered right last time.'}</p>
       </div>
       <div className="act">
         <button
@@ -376,6 +386,9 @@ function PerDay({ log }: { log: QuizStore['log'] }) {
     <section className="card me-day" aria-label="Correct per day">
       <div className="hd">
         <h2>Correct per day</h2>
+        <Info title="Correct per day">
+          <p>Share of right answers on each day; the number over a point is how many answers it stands for.</p>
+        </Info>
       </div>
       <div className="bd">
         <div className="rs-chart">
@@ -432,6 +445,9 @@ function Recent({ quiz }: { quiz: QuizStore }) {
     <section className="card me-recent" aria-label="Recent quizzes">
       <div className="hd">
         <h2>Recent quizzes</h2>
+        <Info title="Recent quizzes">
+          <p>Date, kind of question, range and score. A quiz finished early shows how many questions were answered.</p>
+        </Info>
         {list.length > 5 && (
           <button type="button" className="rt" aria-expanded={all} onClick={() => setAll(!all)}>
             {all ? 'Last 5' : `All ${list.length}`}
@@ -448,7 +464,7 @@ function Recent({ quiz }: { quiz: QuizStore }) {
                 <td>{s.scope}</td>
                 <td className="num">
                   {s.right}/{s.n}
-                  {s.total < s.n && <small className="stop">scored after {s.total}</small>}
+                  {s.total < s.n && <small className="stop">{s.total} answered</small>}
                 </td>
               </tr>
             ))}
@@ -472,6 +488,9 @@ function Collections({ starred, collections, onQuiz, onMap, onCreate, onRename, 
     <section className="card me-cols" aria-label="Collections">
       <div className="hd">
         <h2>Collections</h2>
+        <Info title="Collections">
+          <p>Your own lists of buildings. Add a building with the star on its card; show a list on the map or quiz it.</p>
+        </Info>
       </div>
       <div className="bd">
         <ul className="cl" role="listbox" aria-label="Collections">

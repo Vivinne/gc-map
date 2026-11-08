@@ -6,6 +6,7 @@ import { BUILDINGS, BY_ID, COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, type Building
 import { FIELDS, FIELD_LABEL, PAIRS, addSession, buildQuiz, capacity, record, splitPair, type Field, type Pair, type PairChoice, type Question, type QuizStore, type Session } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
+import Info, { Terms } from './Info';
 
 
 export function pct(right: number, total: number): string {
@@ -334,13 +335,16 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
 
   // ---------- missed list (right column) ----------
   const missedCard = (
-    <section className="card qv-side" aria-label="To retry">
+    <section className="card qv-side" aria-label="Mistakes">
       <div className="hd">
-        <h2>To retry</h2>
+        <h2>Mistakes</h2>
+        <Info title="Mistakes">
+          <p>Questions answered wrong or skipped. One comes off the list once it is answered right.</p>
+        </Info>
         <span className="rt">{missedAll.length}</span>
       </div>
       <div className="bd">
-        {!missedAll.length && <p className="none">Nothing to retry yet</p>}
+        {!missedAll.length && <p className="none">None yet</p>}
         <ol className="wk">
           {missedAll.slice(0, mobile ? 3 : 60).map((w) => {
             const [id, p] = w.split('|') as [string, Pair];
@@ -355,11 +359,10 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             );
           })}
         </ol>
-        <p className="qv-note">Answered wrong or skipped. A right answer takes it off the list.</p>
       </div>
       <div className="act">
         <button type="button" className={`btn wide${mobile ? '' : ' dark'}`} disabled={!missedAll.length} onClick={() => startMissed(missedAll)}>
-          Retry {Math.min(30, missedAll.length) || ''}
+          Quiz {Math.min(30, missedAll.length) || ''}
           <Icon name="right" size={12} />
         </button>
       </div>
@@ -414,7 +417,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               </button>
             ) : (
               <span className="sel">
-                <em>{setup.reveal ? '' : 'Answers are shown at the end'}</em>
+                <em />
               </span>
             )}
             {mobile && <span className="sel" />}
@@ -426,11 +429,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             )}
             {mobile && (
               <button type="button" className="btn" onClick={() => finish(run)}>
-                Score now
+                Finish
               </button>
             )}
             <button type="button" className="btn dark" onClick={next}>
-              {last ? 'Score' : 'Next'}
+              {last ? 'Finish' : 'Next'}
               <Icon name="right" size={12} />
             </button>
           </div>
@@ -463,10 +466,10 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             <div className="act">
               <button type="button" className="btn wide" onClick={() => setPhase({ kind: 'setup' })}>
                 <Icon name="undo" size={13} />
-                Set up again
+                Settings
               </button>
               <button type="button" className="btn wide" onClick={() => finish(run)}>
-                Score now
+                Finish
               </button>
             </div>
           </section>
@@ -478,18 +481,25 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   // ---------- result ----------
   if (phase.kind === 'done') {
     const right = phase.qs.filter((q, k) => phase.picks[k] === q.answer).length;
-    const skipped = phase.picks.filter((x) => x == null).length;
     const wrong = phase.qs.filter((q, k) => phase.picks[k] !== q.answer);
     const planned = phase.planned;
     const notReached = planned - phase.qs.length;
-    const covered = new Set(phase.qs.map((q) => q.id)).size;
     // The score is always out of the questions planned: questions never reached count as not answered
-    const verdict = notReached > 0 ? `Scored after ${phase.qs.length} of ${planned} questions` : wrong.length ? `${wrong.length} to retry` : 'All right';
     return (
       <div className={`qv${mobile ? ' m' : ''}`}>
         <section className="card qv-main" aria-label="Result">
           <div className="hd">
             <h2>Result</h2>
+            <Info title="Result">
+              <Terms
+                rows={[
+                  ['Score', 'Right answers out of the questions planned'],
+                  ['Settings', 'Back to the set-up'],
+                  ['Mistakes', 'A quiz of this round\u2019s wrong or skipped questions'],
+                  ['New questions', 'Same settings, new questions'],
+                ]}
+              />
+            </Info>
             <span className="rt">
               {phase.label} · {phase.scope}
             </span>
@@ -501,11 +511,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               </b>
               <span>{pct(right, planned)}</span>
             </div>
-            <p className="qv-sum">
-              {verdict}
-              {skipped ? ` · ${skipped} skipped` : ''}
-              {notReached > 0 ? ` · ${notReached} not reached` : ''} · {covered} {covered === 1 ? 'building' : 'buildings'}
-            </p>
+            {notReached > 0 && (
+              <p className="qv-sum">
+                {phase.qs.length} of {planned} answered
+              </p>
+            )}
             <ol className="qv-rl">
               {phase.qs.map((q, k) => {
                 const p = phase.picks[k];
@@ -531,15 +541,16 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
           </div>
           <div className="act">
             <button type="button" className="btn" onClick={() => setPhase({ kind: 'setup' })}>
-              Change settings
+              <Icon name="undo" size={13} />
+              Settings
             </button>
             {wrong.length > 0 && (
               <button type="button" className="btn" onClick={() => startMissed(wrong.map((q) => `${q.id}|${q.pair}`), phase.scope)}>
-                Retry wrong <span className="n">{wrong.length}</span>
+                Mistakes <span className="n">{wrong.length}</span>
               </button>
             )}
             <button type="button" className="btn dark" onClick={phase.again}>
-              New questions, same settings
+              New questions
               <Icon name="right" size={12} />
             </button>
           </div>
@@ -575,6 +586,17 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
       <section className="card qv-main qv-setup qz2" aria-label="New quiz">
         <div className="hd">
           <h2>New quiz</h2>
+          <Info title="How a quiz works">
+            <Terms
+              rows={[
+                ['Question', 'What you see, and what you pick for it from 4 choices'],
+                ['Range', 'All buildings, or tick any groups to mix them'],
+                ['Questions', 'From 5 up to the buildings in the range'],
+                ['Answers', 'On: right or wrong at once, the first pick counts. Off: answers can change until Finish'],
+                ['Finish', 'Scores at once; questions not answered count as wrong'],
+              ]}
+            />
+          </Info>
         </div>
         <div className="bd">
           <div className="qz2-row">
@@ -583,7 +605,6 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               <Dropdown label="Question in" value={see!} options={seeOpts} onPick={pickSee} />
               <Icon name="right" size={12} />
               <Dropdown label="Answer in" value={ask ?? ''} options={askOpts} onPick={(id) => id && setSetup({ type: `${see}>${id}` as PairChoice })} />
-              <span className="qz2-hint">{see === 'any' ? 'Each question asks a different pair of fields.' : `You see a ${FIELD_LABEL[see as Field].toLowerCase()} and pick its ${FIELD_LABEL[ask as Field].toLowerCase()} from 4 choices.`}</span>
             </div>
           </div>
           <div className="qz2-row">
@@ -622,9 +643,8 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
                 <span className={`sw2${setup.reveal ? ' on' : ''}`}>
                   <i />
                 </span>
-                Show the right answer after each question
+                Show answer after each question
               </button>
-              <span className="qz2-hint">{setup.reveal ? 'Your first pick counts and cannot be changed.' : 'Answers can be changed until you score.'}</span>
             </div>
           </div>
         </div>
