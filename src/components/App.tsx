@@ -532,20 +532,13 @@ export default function App() {
           </button>
           <nav className="modes" aria-label="Views">
             {modes.map(([m, label, icon, key]) => (
-              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} onClick={() => setMode(m)} title={`${label} (${key})`}>
+              <button type="button" key={m} className={`${mode === m ? 'on' : ''}${m === 'me' ? ' ic' : ''}`} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={`${label} (${key})`}>
                 <Icon name={icon} size={17} />
-                {label}
+                {/* Progress shows as its icon alone */}
+                {m !== 'me' && label}
               </button>
             ))}
           </nav>
-          <div className="seen" title="Buildings opened">
-            <span>
-              Viewed {seen.size}/{TOTAL}
-            </span>
-            <div className="bar">
-              <i style={{ width: `${(seen.size / TOTAL) * 100}%` }} />
-            </div>
-          </div>
         </header>
       ) : (
         mode === 'map' && (
@@ -553,9 +546,6 @@ export default function App() {
             <button type="button" className="m-search" onClick={() => setPalette('')}>
               <Icon name="search" size={17} />
               <span>{filters.q || 'Search'}</span>
-              <span className="m-seen">
-                Viewed {seen.size}/{TOTAL}
-              </span>
             </button>
             <button type="button" className={`m-fbtn${activeFilters ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label="All filters and list">
               <Icon name="filter" size={17} />
@@ -742,9 +732,9 @@ export default function App() {
       {mobile && (
         <nav className="tabbar" aria-label="Views">
           {modes.map(([m, label, icon]) => (
-            <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} onClick={() => setMode(m)}>
+            <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)}>
               <Icon name={icon} size={20} />
-              {label}
+              {m !== 'me' && label}
             </button>
           ))}
         </nav>

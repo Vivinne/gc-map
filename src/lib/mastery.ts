@@ -8,6 +8,13 @@ import { splitPair, type LogEntry, type Pair } from './quiz';
 export type Status = 'mastered' | 'learning' | 'weak' | 'untested';
 export const STATUSES: Status[] = ['mastered', 'learning', 'weak', 'untested'];
 export const STATUS_LABEL: Record<Status, string> = { mastered: 'Mastered', learning: 'Learning', weak: 'Weak', untested: 'Not tested' };
+/** How each state is reached (shown on pointing at the legend) */
+export const STATUS_RULE: Record<Status, string> = {
+  mastered: 'The last two answers right, given on different days',
+  learning: 'The last answer right',
+  weak: 'The last answer wrong',
+  untested: 'Never asked',
+};
 
 /** Answers per building, newest first */
 export function byBuilding(log: LogEntry[]): Map<string, LogEntry[]> {
@@ -21,11 +28,21 @@ export function byBuilding(log: LogEntry[]): Map<string, LogEntry[]> {
   return m;
 }
 
-/** Mastered = the last two answers right; weak = the last answer wrong; learning = otherwise answered */
+/**
+ * Mastered = the last two answers right and given on different days (two right answers in one sitting may
+ * be short-term memory); weak = the last answer wrong; learning = otherwise answered
+ */
 export function statusOf(answers: LogEntry[] | undefined): Status {
   if (!answers?.length) return 'untested';
   if (!answers[0]!.ok) return 'weak';
-  return answers.length >= 2 && answers[1]!.ok ? 'mastered' : 'learning';
+  // the latest right answer and, before it, a right answer from an earlier day with no wrong answer between
+  const today = dayKey(answers[0]!.t);
+  for (let i = 1; i < answers.length; i++) {
+    const a = answers[i]!;
+    if (!a.ok) return 'learning';
+    if (dayKey(a.t) !== today) return 'mastered';
+  }
+  return 'learning';
 }
 
 export type Counts = Record<Status, number>;

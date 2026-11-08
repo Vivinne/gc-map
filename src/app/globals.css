@@ -795,3 +795,7 @@ label.btn:active { filter: brightness(0.86); }
 .qz2-row { align-items: start; }
 .qz2-l { padding-top: 10px; }
 .qv.m .qz2-l { padding-top: 0; }
+.modes button.ic { padding: 0 18px; }
+.tabbar button { justify-content: center; }
+.me:not(.m) .k { grid-column: span 4; }
+.me.m .k:nth-child(3) { grid-column: 1 / -1; }

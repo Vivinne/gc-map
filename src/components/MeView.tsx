@@ -54,7 +54,7 @@ function fmtDate(t: number): string {
 
 /** Personal centre: progress tiles, mastery by group, what to practise next, trend, recent quizzes, collections */
 export default function MeView(p: MeProps) {
-  const { quiz, starred, collections, seen } = p;
+  const { quiz, starred, collections } = p;
   const by = useMemo(() => byBuilding(quiz.log), [quiz.log]);
   const all = useMemo(() => countStatus(BUILDINGS, by), [by]);
   const week = recent(quiz.log, Date.now(), 7 * DAY);
@@ -63,7 +63,6 @@ export default function MeView(p: MeProps) {
 
   const tiles = (
     <>
-      <Tile n={seen.size} of={BUILDINGS.length} label="Viewed" />
         <Tile n={tested} of={BUILDINGS.length} label="Tested" />
         <Tile n={all.mastered} of={BUILDINGS.length} label="Mastered" />
         {/* a share is shown only from 10 answers on; fewer answers are shown as a plain count */}
@@ -79,7 +78,7 @@ export default function MeView(p: MeProps) {
   const device = (
         <div className="me-foot">
           <h2>Another device</h2>
-          <span className="note">Viewed buildings, stars, collections and quiz results</span>
+          <span className="note">Stars, collections and quiz results</span>
           <button type="button" className="btn" onClick={p.onExport}>
             <Icon name="download" size={14} />
             Save progress to file
@@ -282,7 +281,7 @@ function Mastery({ by, starred, collections, onQuiz, onMap }: MeProps & { by: Re
         <p className="me-note">
           {isType
             ? 'Share of right answers for each kind of question.'
-            : `Counted per building, any kind of question. Mastered: the last 2 answers right; learning: the last answer right; weak: the last answer wrong.${dim === 'style' || dim === 'exam' ? ' A building can count in more than one group.' : ''}`}
+            : `Counted per building, any kind of question. Mastered: the last 2 answers right, on different days; learning: the last answer right; weak: the last answer wrong.${dim === 'style' || dim === 'exam' ? ' A building can count in more than one group.' : ''}`}
         </p>
       </div>
       <div className="act">
