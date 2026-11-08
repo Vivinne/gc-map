@@ -941,3 +941,11 @@ button.brand:active { background: #444; }
 .me .ov-tiles .ov-k.on:not(:disabled) { box-shadow: 0 3px 0 #000; }
 .me .ov-tiles .ov-k:disabled { box-shadow: none; }
 .me .ov-acc .ov-sub { margin-top: 2px; font-size: 12px; color: #8a929c; font-weight: 600; font-style: normal; }
+/* Question in / Answer in: tick boxes, any number of fields on each side */
+.qz2-fd { position: relative; flex: 1; min-width: 0; }
+.qz2-fd .qv-box .v { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qz2-fd .qz2-menu { right: auto; width: max(100%, 200px); }
+.qz2-fd .qz2-its { display: flex; flex-direction: column; }
+.qz2-note { flex-basis: 100%; margin-top: 6px; font-size: 12px; color: #8a929c; font-style: italic; }
+.qv.m .qz2-fd .qz2-menu { width: 100%; right: 0; left: 0; }
+.qv.m .qz2-fd .qz2-menu { min-width: 0; }

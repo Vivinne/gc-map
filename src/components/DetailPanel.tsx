@@ -178,12 +178,12 @@ export function ResultsPanel({ label, nums, list, mobile, selectedId, onSelect, 
   );
 }
 
-/** Tags of a building: its period, country, TEST-ARCHED years and the user's collections holding it. Each one filters the map. */
+/** Tags of a building: its period, country, TEST-ARCHED (one tag, whatever the year) and the user's collections holding it. Each one filters the map. */
 function Tags({ b, starred, collections, onTag }: { b: Building; starred: boolean; collections: Collection[]; onTag(f: Filters): void }) {
   const tags: { key: string; label: string; dot?: string; star?: boolean; f: Filters }[] = [
     { key: 'era', label: ERAS[b.era].label, dot: ERAS[b.era].color, f: { ...EMPTY, styles: [b.era] } },
     ...(b.nation ? [{ key: 'nation', label: nationName(b), f: { ...EMPTY, countries: [nationName(b)] } }] : []),
-    ...b.exams.map((y) => ({ key: `y${y}`, label: `TEST-ARCHED ${y}`, f: { ...EMPTY, exam: true, examYears: [y] } })),
+    ...(b.exams.length ? [{ key: 'exam', label: 'TEST-ARCHED', f: { ...EMPTY, exam: true } }] : []),
     ...(starred ? [{ key: 'star', label: 'Starred', star: true, f: { ...EMPTY, starred: true } }] : []),
     ...collections.filter((c) => c.ids.includes(b.id)).map((c) => ({ key: `c${c.id}`, label: c.name, f: { ...EMPTY, col: { id: c.id, name: c.name, ids: c.ids } } })),
   ];

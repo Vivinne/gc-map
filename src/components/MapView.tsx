@@ -490,6 +490,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
   const hot = hoverId || pinHover;
 
+  // Panels are measured while the map draws: once a panel has opened, closed or changed, draw again with its real size
+  const [, redraw] = useState(0);
+  useEffect(() => {
+    const t = window.setTimeout(() => redraw((n) => n + 1), 120);
+    return () => window.clearTimeout(t);
+  }, [padding.left, padding.bottom, selected?.id, insetCity]);
   // Where the fixed parts sit over the map (container pixels): names are never placed under them
   const sheetH = (compact ? padding.bottom - 36 : 0);
   const showLoc = !!map && zoom >= LOC_ZOOM;
@@ -502,6 +508,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     const W = map.getContainer().clientWidth;
     const H = map.getContainer().clientHeight;
     const blocked: Box[] = [];
+    // The panels over the map (city list, card, filters), at their real size: a short list leaves the map
+    // below it in view, so pins there keep their names and need no edge marker
+    const cbox = map.getContainer().getBoundingClientRect();
+    const covers: Box[] = [...(map.getContainer().closest('.app')?.querySelectorAll('section.side, .drawer') ?? [])]
+      .map((el) => el.getBoundingClientRect())
+      .filter((r) => r.width > 0 && r.height > 0)
+      .map((r) => ({ x1: r.left - cbox.left - 8, y1: r.top - cbox.top - 8, x2: r.right - cbox.left + 8, y2: r.bottom - cbox.top + 8 }));
+    // a panel that is opening is not on the page yet while the map draws: its whole column counts until it is
+    if (!covers.length && !compact && padding.left > 0) covers.push({ x1: 0, y1: 0, x2: padding.left, y2: H });
+    blocked.push(...covers);
     if (showLoc) blocked.push({ x1: lb.x1 - 6, y1: lb.y1 - 6, x2: lb.x2 + 6, y2: lb.y2 + 6 });
     // scale bar and filter chips: one row along the bottom (phone: scale lower left, chips along the top)
     blocked.push(compact ? { x1: 0, y1: H - 52, x2: 140, y2: H } : { x1: 0, y1: H - 48, x2: W - 56, y2: H });
@@ -655,7 +671,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       // Names: the open and the pointed building in a black tag; every other building of the city in small
       // grey type wherever it fits, so the surroundings read without competing with the open building.
       // Names never run under the side panel or the band.
-      const area = { x1: padding.left + 2, y1: compact ? padding.top - 4 : 2, x2: W - 2, y2: H - (compact ? sheetH : 2) };
+      const area = { x1: 2, y1: compact ? padding.top - 4 : 2, x2: W - 2, y2: H - (compact ? sheetH : 2) };
       const rank = (p: Pin) => (selected && p.b.id === selected.id ? 0 : p.b.id === hot ? 1 : 2);
       for (const p of [...pins].sort((a, c) => rank(a) - rank(c))) {
         const strong = (!!selected && p.b.id === selected.id) || p.b.id === hot;
@@ -743,10 +759,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const cx = (r0.x1 + r0.x2) / 2;
       const cy = (r0.y1 + r0.y2) / 2;
       const edge: { b: Building; x: number; y: number; a: number }[] = [];
+      // What really hides a building: the edges of the map and the panels themselves (at their real size)
+      const outer = compact
+        ? { x1: 12, y1: pad.top + 12, x2: W - pad.right - 12, y2: H - 36 - 12 }
+        : { x1: 12, y1: pad.top + 12, x2: W - pad.right - 12, y2: H - pad.bottom - 12 };
+      const seen = (x: number, y: number) =>
+        x >= outer.x1 && x <= outer.x2 && y >= outer.y1 && y <= outer.y2 && !covers.some((c) => x >= c.x1 && x <= c.x2 && y >= c.y1 && y <= c.y2);
       for (const b of buildings) {
         if (b.city !== edgeCity) continue;
         const [x, y] = proj(b.lng, b.lat);
-        if (x >= r0.x1 - 12 && x <= r0.x2 + 12 && y >= r0.y1 - 12 && y <= r0.y2 + 12) continue;
+        if (seen(x, y)) continue;
         const dx = x - cx;
         const dy = y - cy;
         const tx = dx > 0 ? (r0.x2 - cx) / dx : dx < 0 ? (r0.x1 - cx) / dx : Infinity;

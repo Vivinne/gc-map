@@ -2,7 +2,7 @@
 
 import type { Collection } from '../lib/collections';
 import { isEmpty, type Filters } from '../lib/filter';
-import { COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, ascii, citiesOf, shortYear, type Building } from '../lib/model';
+import { COUNTRIES, ERAS, ERA_ORDER, ascii, citiesOf, shortYear, type Building } from '../lib/model';
 import type { EraId } from '../lib/types';
 import { Icon } from './Icons';
 
@@ -72,16 +72,6 @@ export default function IndexPanel({ filters: f, counts, results, collections, s
               );
             })}
           </div>
-          {f.exam && (
-            <div className="chips years">
-              {EXAM_YEARS.map((y) => (
-                <button type="button" key={y} aria-pressed={f.examYears.includes(y)} className={chipCls(f.examYears.includes(y), counts.examYears[y] ?? 0)} onClick={() => toggle('examYears', y)}>
-                  {y}
-                  <span className="n">{counts.examYears[y]}</span>
-                </button>
-              ))}
-            </div>
-          )}
           {(f.q || f.who || active) && (
             <div className="pills">
               {f.who && <Pill text={f.who} onRemove={() => onFilters({ ...f, who: '' })} />}

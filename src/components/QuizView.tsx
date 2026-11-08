@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { type Collection } from '../lib/collections';
-import { BY_ID, COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, type Building } from '../lib/model';
+import { BY_ID, COUNTRIES, ERAS, ERA_ORDER, type Building } from '../lib/model';
 import { QUIZ_BUILDINGS as BUILDINGS } from '../lib/quiz';
-import { FIELDS, FIELD_LABEL, PAIRS, addSession, buildQuiz, capacity, record, splitPair, type Field, type Pair, type PairChoice, type Question, type QuizStore, type Session } from '../lib/quiz';
+import { FIELDS, FIELD_LABEL, PAIRS, addSession, buildQuiz, capacity, pairsFrom, record, splitPair, type Field, type Pair, type PairChoice, type Question, type QuizStore, type Session } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
 import Help from './Help';
@@ -37,7 +37,6 @@ export function quizScopes(starred: ReadonlySet<string>, collections: Collection
     ...collections.map((c) => ({ id: `col:${c.id}`, label: c.name, items: c.ids.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b) })),
     ...ERA_ORDER.map((e) => ({ id: `era:${e}`, label: ERAS[e].label, items: BUILDINGS.filter((x) => x.eras.includes(e)), color: ERAS[e].color })),
     ...COUNTRIES.map((c) => ({ id: `country:${c}`, label: c, items: BUILDINGS.filter((x) => x.country === c) })),
-    ...EXAM_YEARS.map((y) => ({ id: `year:${y}`, label: `TEST-ARCHED ${y}`, items: BUILDINGS.filter((x) => x.exams.includes(y)) })),
   ];
   if (extra) out.unshift(extra);
   return out;
@@ -69,7 +68,9 @@ interface Props {
 }
 
 interface Setup {
-  type: PairChoice;
+  /** Fields shown in the question, and fields asked for: every valid pair of them is quizzed together */
+  shown: Field[];
+  asked: Field[];
   /** Categories ticked (scope ids); the quiz takes every building of any of them; none = all buildings */
   scopes: string[];
   count: number;
@@ -78,7 +79,7 @@ interface Setup {
 }
 
 /** Fewest questions a quiz asks (when the categories hold that many) */
-const MIN_Q = 5;
+const MIN_Q = 1;
 
 /** A pick per question; null = skipped or not answered yet */
 type Picks = (string | null)[];
@@ -90,75 +91,6 @@ type Phase =
 
 /** Question types in the order users ask for them: from the building first, then back to it, then the rest */
 const TYPE_ORDER: PairChoice[] = ['name>city', 'name>architect', 'name>style', 'city>name', 'architect>name', 'style>name', 'city>architect', 'style>architect', 'architect>city', 'architect>style', 'mixed'];
-
-interface Opt {
-  id: string;
-  label: string;
-  n?: number;
-  color?: string;
-  star?: boolean;
-  /** A rule above this option */
-  rule?: boolean;
-}
-
-/** Drop-down: a box with the value; the menu opens under it and closes on a pick, outside click or Esc */
-function Dropdown({ label, value, options, onPick }: { label: string; value: string; options: Opt[]; onPick(id: string): void }) {
-  const [open, setOpen] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-  const cur = options.find((o) => o.id === value) ?? options[0]!;
-  useEffect(() => {
-    if (!open) return;
-    const down = (e: PointerEvent) => box.current && !box.current.contains(e.target as Node) && setOpen(false);
-    const key = (e: KeyboardEvent) => e.key === 'Escape' && (e.stopPropagation(), setOpen(false));
-    window.addEventListener('pointerdown', down);
-    window.addEventListener('keydown', key, true);
-    return () => {
-      window.removeEventListener('pointerdown', down);
-      window.removeEventListener('keydown', key, true);
-    };
-  }, [open]);
-  return (
-    <div className="qv-dd" ref={box}>
-      <span className="qv-l">{label}</span>
-      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="listbox" aria-expanded={open} aria-label={`${label}: ${cur.label}${cur.n != null ? ` ${cur.n}` : ''}`} onClick={() => setOpen(!open)}>
-        {cur.color && <i className="sw" style={{ background: cur.color }} />}
-        {cur.star && <Icon name="starOn" size={13} />}
-        <span className="v">{cur.label}</span>
-        {cur.n != null && (
-          <>
-            {' '}
-            <span className="n">{cur.n}</span>
-          </>
-        )}
-        <Icon name="down" size={13} />
-      </button>
-      {open && (
-        <ul className="qv-menu" role="listbox" aria-label={label}>
-          {options.map((o) => (
-            <li key={o.id} className={o.rule ? 'rule' : ''}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={o.id === value}
-                className={o.id === value ? 'on' : ''}
-                disabled={o.n === 0}
-                onClick={() => {
-                  onPick(o.id);
-                  setOpen(false);
-                }}
-              >
-                {o.color && <i className="sw" style={{ background: o.color }} />}
-                {o.star && <Icon name="starOn" size={13} />}
-                <span className="v">{o.label}</span>
-                {o.n != null && <span className="n">{o.n}</span>}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
 
 /**
  * Range: one box ("All 204", or what is ticked and how many buildings that makes); its menu lists every
@@ -195,6 +127,63 @@ function CountBox({ value, lo, hi, onSet }: { value: number; lo: number; hi: num
   );
 }
 
+/** The fields of one question type, for the set-up: "mixed" is every field on both sides */
+function fieldsOf(t: PairChoice): { shown: Field[]; asked: Field[] } {
+  if (t === 'mixed') return { shown: [...FIELDS], asked: [...FIELDS] };
+  const [a, b] = splitPair(t);
+  return { shown: [a], asked: [b] };
+}
+
+/** Name of a set of pairs: one pair by its fields, one shown or asked field with the others listed, else Mixed */
+export function pairsLabel(ps: Pair[]): string {
+  if (ps.length === 1) return typeLabel(ps[0]!);
+  const shown = [...new Set(ps.map((p) => splitPair(p)[0]))];
+  const asked = [...new Set(ps.map((p) => splitPair(p)[1]))];
+  if (ps.length === PAIRS.length || (shown.length > 1 && asked.length > 1)) return 'Mixed';
+  return `${shown.map((f) => FIELD_LABEL[f]).join(', ')} \u2192 ${asked.map((f) => FIELD_LABEL[f]).join(', ')}`;
+}
+
+/** One side of the question: a box with what is ticked, its menu the four fields as tick boxes (one at least) */
+function FieldMenu({ label, picked, onTick }: { label: string; picked: Field[]; onTick(f: Field): void }) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: PointerEvent) => box.current && !box.current.contains(e.target as Node) && setOpen(false);
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && (e.stopPropagation(), setOpen(false));
+    window.addEventListener('pointerdown', down);
+    window.addEventListener('keydown', key, true);
+    return () => {
+      window.removeEventListener('pointerdown', down);
+      window.removeEventListener('keydown', key, true);
+    };
+  }, [open]);
+  const text = picked.length === FIELDS.length ? 'Any' : picked.map((f) => FIELD_LABEL[f]).join(', ');
+  return (
+    <div className="qv-dd qz2-fd" ref={box}>
+      <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="true" aria-expanded={open} aria-label={`${label}: ${text}`} onClick={() => setOpen(!open)}>
+        <span className="v">{text}</span>
+        <Icon name="down" size={13} />
+      </button>
+      {open && (
+        <div className="qv-menu qz2-menu" aria-label={label}>
+          <div className="qz2-its">
+            {FIELDS.map((f) => {
+              const t = picked.includes(f);
+              return (
+                <button type="button" key={f} role="menuitemcheckbox" aria-checked={t} className={`qz2-it${t ? ' on' : ''}`} disabled={t && picked.length === 1} onClick={() => onTick(f)}>
+                  <span className="bx">{t && <Icon name="check" size={10} />}</span>
+                  <span className="v">{FIELD_LABEL[f]}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string; items: QuizScope[] }[]; picked: string[]; total: number; onTick(id: string): void }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -224,8 +213,8 @@ function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string;
       window.removeEventListener('keydown', key, true);
     };
   }, [open]);
-  const short = (x: QuizScope) => (x.id.startsWith('year:') ? x.label.replace('TEST-ARCHED ', '') : x.id === 'exam' ? 'Any year' : x.label);
-  const on = groups.flatMap((g) => g.items.filter((x) => picked.includes(x.id)).map((x) => (x.id.startsWith('year:') || x.id === 'exam' ? `TEST-ARCHED ${short(x)}` : x.label)));
+  const short = (x: QuizScope) => x.label;
+  const on = groups.flatMap((g) => g.items.filter((x) => picked.includes(x.id)).map((x) => x.label));
   return (
     <div className="qv-dd qz2-range" ref={box}>
       <button type="button" className={`qv-box${open ? ' open' : ''}`} aria-haspopup="true" aria-expanded={open} aria-label={`Range: ${on.length ? on.join(', ') : 'all'}, ${total}`} onClick={toggle}>
@@ -264,10 +253,15 @@ function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string;
 export default function QuizView({ active, mobile, starred, collections, quiz, request, onQuiz, onOpen }: Props) {
   const [setup, setSetupRaw] = useState<Setup>(() => {
     const s = load<Partial<Setup> & { scope?: string }>('quiz-setup', {});
-    const type = s.type === 'mixed' || (PAIRS as string[]).includes(s.type ?? '') ? (s.type as PairChoice) : 'name>city';
+    const fields = (x: unknown) => (Array.isArray(x) ? x.filter((f): f is Field => (FIELDS as string[]).includes(f)) : []);
+    // older saves kept one type ("name>city" or "mixed")
+    const old = (s as { type?: string }).type;
+    const [o1, o2] = old && (PAIRS as string[]).includes(old) ? (old.split('>') as [Field, Field]) : old === 'mixed' ? [null, null] : (['name', 'city'] as const);
+    const shown = fields(s.shown).length ? fields(s.shown) : o1 ? [o1] : [...FIELDS];
+    const asked = fields(s.asked).length ? fields(s.asked) : o2 ? [o2] : [...FIELDS];
     // older saves kept one scope
     const scopes = Array.isArray(s.scopes) ? s.scopes.filter((x): x is string => typeof x === 'string') : typeof s.scope === 'string' && s.scope !== 'all' ? [s.scope] : [];
-    return { type, scopes, count: Number.isFinite(s.count) && s.count! >= 1 ? Math.round(s.count!) : 10, reveal: s.reveal === true };
+    return { shown, asked, scopes, count: Number.isFinite(s.count) && s.count! >= 1 ? Math.round(s.count!) : 10, reveal: s.reveal === true };
   });
   const setSetup = (p: Partial<Setup>) =>
     setSetupRaw((s) => {
@@ -287,7 +281,8 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   const scope: QuizScope = picked.length
     ? { id: picked.map((x) => x.id).join('+'), label: picked.map((x) => x.label).join(', '), items: [...new Map(picked.flatMap((x) => x.items).map((b) => [b.id, b])).values()] }
     : scopes.find((x) => x.id === 'all')!;
-  const cap = capacity(scope.items, setup.type);
+  const pairs = pairsFrom(setup.shown, setup.asked);
+  const cap = capacity(scope.items, pairs);
   const missedAll = useMemo(() => [...quiz.wrong].reverse(), [quiz.wrong]);
 
   const begin = (qs: Question[], label: string, scopeLabel: string) => {
@@ -295,7 +290,8 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     setPhase({ kind: 'run', qs, i: 0, picks: qs.map(() => null), seen: 1, label, scope: scopeLabel });
   };
   const startSetup = (s: Setup) => {
-    begin(buildQuiz(scope.items, s.type, Math.max(Math.min(MIN_Q, cap), Math.min(s.count, cap)), BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(s.type), scope.label);
+    const ps = pairsFrom(s.shown, s.asked);
+    begin(buildQuiz(scope.items, ps, Math.max(Math.min(MIN_Q, cap), Math.min(s.count, cap)), BUILDINGS, Math.floor(Math.random() * 1e9)), pairsLabel(ps), scope.label);
   };
   const startMissed = (entries: string[], scopeLabel = 'Missed') => {
     begin(buildQuiz([], 'mixed', Math.min(30, entries.length), BUILDINGS, Math.floor(Math.random() * 1e9), entries), 'Missed', scopeLabel);
@@ -308,13 +304,15 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     handled.current = request.nonce;
     setExtra(request.extra ?? null);
     const one = request.scope === 'all' ? [] : [request.scope];
-    const next = { ...setup, scopes: one, ...(request.type ? { type: request.type } : {}) };
+    const typed = request.type ? fieldsOf(request.type) : {};
+    const next = { ...setup, scopes: one, ...typed };
     if (request.extra) setSetupRaw(next);
-    else setSetup({ scopes: one, ...(request.type ? { type: request.type } : {}) });
+    else setSetup({ scopes: one, ...typed });
     if (request.missed) return startMissed(request.missed, request.extra?.label ?? 'Missed');
     const pool = request.extra && request.extra.id === request.scope ? request.extra.items : (quizScopes(starred, collections).find((x) => x.id === request.scope) ?? { items: BUILDINGS }).items;
     const label = request.extra?.label ?? quizScopes(starred, collections).find((x) => x.id === request.scope)?.label ?? 'All';
-    begin(buildQuiz(pool, next.type, request.count ?? next.count, BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(next.type), label);
+    const ps = pairsFrom(next.shown, next.asked);
+    begin(buildQuiz(pool, ps, request.count ?? next.count, BUILDINGS, Math.floor(Math.random() * 1e9)), pairsLabel(ps), label);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
 
@@ -326,7 +324,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     onQuiz((s) => {
       let n = s;
       reached.forEach((q, k) => (n = record(n, q, picks[k] === q.answer)));
-      const session: Session = { t: Date.now(), type: p.label === 'Missed' ? 'missed' : (TYPE_ORDER.find((t) => typeLabel(t) === p.label) ?? 'mixed'), scope: p.scope, n: p.qs.length, total: reached.length, right };
+      const session: Session = { t: Date.now(), type: p.label === 'Missed' ? 'missed' : (TYPE_ORDER.find((t) => typeLabel(t) === p.label) ?? (p.label === 'Mixed' ? 'mixed' : p.label)), scope: p.scope, n: p.qs.length, total: reached.length, right };
       return addSession(n, session);
     });
     const again = p.label === 'Missed' ? () => startMissed(p.qs.map((q) => `${q.id}|${q.pair}`), p.scope) : () => startSetup(setup);
@@ -578,20 +576,17 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   }
 
   // ---------- set-up ----------
-  // The question type as two short choices: what is shown, and what is asked (the other three fields)
-  const [see, ask] = setup.type === 'mixed' ? ['any', ''] : setup.type.split('>');
-  const seeOpts: Opt[] = [...FIELDS.map((f) => ({ id: f, label: FIELD_LABEL[f] })), { id: 'any', label: 'Any', rule: true }];
-  const askOpts: Opt[] = see === 'any' ? [{ id: '', label: 'Any' }] : FIELDS.filter((f) => (PAIRS as string[]).includes(`${see}>${f}`)).map((f) => ({ id: f, label: FIELD_LABEL[f] }));
-  const pickSee = (v: string) => {
-    if (v === 'any') return setSetup({ type: 'mixed' });
-    const keep = ask && (PAIRS as string[]).includes(`${v}>${ask}`) ? ask : v === 'name' ? 'city' : 'name';
-    setSetup({ type: `${v}>${keep}` as PairChoice });
+  // The question: fields shown and fields asked for, each a set of tick boxes; every valid pair is asked
+  const tickField = (key: 'shown' | 'asked', f: Field) => {
+    const cur = setup[key];
+    if (cur.includes(f) && cur.length === 1) return;
+    setSetup({ [key]: cur.includes(f) ? cur.filter((x) => x !== f) : FIELDS.filter((x) => x === f || cur.includes(x)) } as Partial<Setup>);
   };
   // The range: every category as a tick box in one menu, in groups; any mix of them is quizzed together
   const groups: { title: string; items: QuizScope[] }[] = [
     { title: 'Period', items: scopes.filter((x) => x.id.startsWith('era:')) },
     { title: 'Country', items: scopes.filter((x) => x.id.startsWith('country:')) },
-    { title: 'TEST-ARCHED', items: scopes.filter((x) => x.id === 'exam' || x.id.startsWith('year:')) },
+    { title: 'TEST-ARCHED', items: scopes.filter((x) => x.id === 'exam') },
     { title: 'Mine', items: scopes.filter((x) => x.id === 'starred' || x.id.startsWith('col:') || (extra && x.id === extra.id)) },
   ];
   const tick = (id: string) => setSetup({ scopes: setup.scopes.includes(id) ? setup.scopes.filter((x) => x !== id) : [...setup.scopes, id] });
@@ -609,10 +604,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
           <div className="qz2-row">
             <span className="qz2-l">Question</span>
             <div className="qz2-line">
-              <Dropdown label="Question in" value={see!} options={seeOpts} onPick={pickSee} />
+              <FieldMenu label="Question in" picked={setup.shown} onTick={(f) => tickField('shown', f)} />
               <Icon name="right" size={12} />
-              <Dropdown label="Answer in" value={ask ?? ''} options={askOpts} onPick={(id) => id && setSetup({ type: `${see}>${id}` as PairChoice })} />
+              <FieldMenu label="Answer in" picked={setup.asked} onTick={(f) => tickField('asked', f)} />
             </div>
+            {!pairs.length && <p className="qz2-note">No question pairs these: City and Style are never asked together, nor a field with itself.</p>}
           </div>
           <div className="qz2-row">
             <span className="qz2-l">Range</span>
@@ -647,7 +643,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
           </div>
         </div>
         <div className="qz2-go">
-          <button type="button" className="btn dark" disabled={!cap} onClick={() => startSetup(setup)}>
+          <button type="button" className="btn dark" disabled={!cap || !pairs.length} onClick={() => startSetup(setup)}>
             Start
           </button>
         </div>

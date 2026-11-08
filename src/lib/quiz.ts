@@ -210,7 +210,20 @@ export type PairChoice = Pair | 'mixed';
  * The questions of one quiz, drawn up front: `count` different buildings where the pool allows.
  * `missed` entries ("id|pair") are asked with their own pair.
  */
-export function buildQuiz(pool: Building[], choice: PairChoice, count: number, all: Building[], seed: number, missed?: string[]): Question[] {
+/** The pairs a choice stands for: one pair, every pair ("mixed"), or a list picked by the user */
+export function pairsOf(choice: PairChoice | Pair[]): Pair[] {
+  return Array.isArray(choice) ? choice : choice === 'mixed' ? PAIRS : [choice];
+}
+
+/** Every valid pair from the fields shown in the question and the fields asked for */
+export function pairsFrom(shown: Field[], asked: Field[]): Pair[] {
+  return PAIRS.filter((p) => {
+    const [a, b] = splitPair(p);
+    return shown.includes(a) && asked.includes(b);
+  });
+}
+
+export function buildQuiz(pool: Building[], choice: PairChoice | Pair[], count: number, all: Building[], seed: number, missed?: string[]): Question[] {
   const out: Question[] = [];
   if (missed) {
     for (const [i, w] of shuffle(missed, seed).entries()) {
@@ -225,9 +238,12 @@ export function buildQuiz(pool: Building[], choice: PairChoice, count: number, a
   const used = new Set<string>();
   const order = shuffle(pool, seed);
   let k = 0;
+  // several types: each question starts from the next type in turn, so the types are asked about evenly
+  const base = shuffle(pairsOf(choice), seed + 7);
   for (const b of order) {
     if (out.length >= count) break;
-    const pairs = choice === 'mixed' ? shuffle(PAIRS, seed + k++) : [choice];
+    const r = out.length % base.length;
+    const pairs = [...base.slice(r), ...base.slice(0, r)];
     for (const p of pairs) {
       if (used.has(b.id)) break;
       const q = question(b, p, all, seed + k++);
@@ -241,8 +257,9 @@ export function buildQuiz(pool: Building[], choice: PairChoice, count: number, a
 }
 
 /** How many questions a set-up can give */
-export function capacity(pool: Building[], choice: PairChoice): number {
-  return choice === 'mixed' ? pool.filter((b) => PAIRS.some((p) => askable([b], p).length)).length : askable(pool, choice).length;
+export function capacity(pool: Building[], choice: PairChoice | Pair[]): number {
+  const list = pairsOf(choice);
+  return pool.filter((b) => list.some((p) => askable([b], p).length)).length;
 }
 
 export function cleanQuiz(raw: unknown, ids: ReadonlySet<string>): QuizStore {

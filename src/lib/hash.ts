@@ -27,7 +27,6 @@ export function formatHash(s: UrlState): string {
   if (f.styles.length) p.set('s', f.styles.join(','));
   if (f.countries.length) p.set('k', f.countries.join(','));
   if (f.exam) p.set('e', '1');
-  if (f.examYears.length) p.set('y', f.examYears.join(','));
   if (f.starred) p.set('st', '1');
   if (f.range) p.set('r', `${f.range[0]}~${f.range[1]}`);
   if (f.q) p.set('q', f.q);
@@ -48,7 +47,8 @@ export function parseHash(hash: string): UrlState {
     // a filter group (Italy ... Others) or one nation from a building's country tag; the app drops unknown ones
     countries: list('k'),
     exam: p.get('e') === '1',
-    examYears: list('y').map(Number).filter((y) => y >= 2007 && y <= 2019),
+    // TEST-ARCHED is one group, whatever the year: years in older links are not read
+    examYears: [],
     starred: p.get('st') === '1',
     range: r ? [Number(r[1]), Number(r[2])] : null,
     q: p.get('q') ?? '',
