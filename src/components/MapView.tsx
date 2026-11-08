@@ -12,6 +12,9 @@ import { Icon } from './Icons';
 import { THEMES, type Theme, type ThemeId } from '../lib/theme';
 
 export const DETAIL_ZOOM = 11.5;
+/** Camera moves: one length and one curve, the same as the panels (fast start, soft landing; --ease in globals.css) */
+const MAP_MS = 420;
+const EASE = (t: number) => 1 - (1 - t) ** 4;
 const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]];
 
 export interface Padding {
@@ -294,6 +297,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       startZoom = map.getZoom();
       byUser = Date.now() - lastInput < 1200 || btnZoom.current;
       btnZoom.current = false;
+      // A camera move the site makes (open a city, fit a filter): names step aside and fade back once it stops.
+      // Moves by the user keep their names, so dragging never flickers.
+      if (!byUser) box.current?.classList.add('flying');
     });
     const atPanorama = () => (40075016.686 * Math.cos((map.getCenter().lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom()) * 110 >= 500000;
     // Noted during the move too: a long wheel or pinch gesture can end in a small last step
@@ -302,6 +308,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       if ((byUser || Date.now() - lastInput < 1200) && map.getZoom() < startZoom - 0.01 && atPanorama()) crossed = true;
     });
     map.on('moveend', () => {
+      box.current?.classList.remove('flying');
       const user = byUser || Date.now() - lastInput < 1200;
       byUser = false;
       const hit = crossed || (user && map.getZoom() < startZoom - 0.01 && atPanorama());
@@ -363,7 +370,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const zb = map.cameraForBounds(b, { padding: o, maxZoom })?.zoom ?? -1;
         use = za >= zb ? a : o;
       }
-      map.fitBounds(b, { padding: use, maxZoom, duration: motion(650) });
+      map.fitBounds(b, { padding: use, maxZoom, duration: motion(MAP_MS), easing: EASE });
     },
     [motion],
   );
@@ -409,7 +416,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const p = padRef.current;
         // the zoom at which the scale bar reads 50 km (50 km over about 100 px at the building's latitude)
         const z = Math.log2((40075016.686 * Math.cos((b.lat * Math.PI) / 180)) / (512 * 500));
-        m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2], duration: motion(600) });
+        m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2], duration: motion(MAP_MS), easing: EASE });
       },
       view: () => {
         const m = mapRef.current;
@@ -417,12 +424,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const c = m.getCenter();
         return { center: [c.lng, c.lat], zoom: m.getZoom() };
       },
-      restore: (v) => mapRef.current?.easeTo({ center: v.center, zoom: v.zoom, duration: motion(500) }),
+      restore: (v) => mapRef.current?.easeTo({ center: v.center, zoom: v.zoom, duration: motion(MAP_MS), easing: EASE }),
       focus: (b) => {
         const p = padRef.current;
         // offset, not padding: easeTo keeps a padding for later camera moves
         const bottom = compactRef.current ? p.bottom : p.bottom + 44;
-        mapRef.current?.easeTo({ center: [b.lng, b.lat], offset: [(p.left - p.right) / 2, (p.top - bottom) / 2], duration: motion(450) });
+        mapRef.current?.easeTo({ center: [b.lng, b.lat], offset: [(p.left - p.right) / 2, (p.top - bottom) / 2], duration: motion(MAP_MS), easing: EASE });
       },
       showBuilding: (b) => {
         const city = CITY_BUILDINGS.get(b.city) ?? [b];
@@ -440,7 +447,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
   const homeView = useCallback(() => {
     const p = padRef.current;
-    mapRef.current?.fitBounds(EUROPE, { padding: { top: p.top + 20, right: p.right + 20, bottom: p.bottom + 20, left: p.left + 20 }, duration: motion(650) });
+    mapRef.current?.fitBounds(EUROPE, { padding: { top: p.top + 20, right: p.right + 20, bottom: p.bottom + 20, left: p.left + 20 }, duration: motion(MAP_MS), easing: EASE });
   }, [motion]);
 
   const map = mapRef.current;
@@ -471,7 +478,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           [box[0], box[1]],
           [box[2], box[3]],
         ],
-        { padding: { top: p.top + extra, right: p.right + extra, bottom: p.bottom + extra, left: p.left + extra }, maxZoom: 9, duration: motion(650) },
+        { padding: { top: p.top + extra, right: p.right + extra, bottom: p.bottom + extra, left: p.left + extra }, maxZoom: 9, duration: motion(MAP_MS), easing: EASE },
       );
     },
     [motion],
@@ -535,6 +542,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // below it in view, so pins there keep their names and need no edge marker
     const cbox = map.getContainer().getBoundingClientRect();
     const covers: Box[] = [...(map.getContainer().closest('.app')?.querySelectorAll('section.side, .drawer, .m-top') ?? [])]
+      // a panel sliding away (inside .leave) no longer hides anything
+      .filter((el) => !el.closest('.leave'))
       .map((el) => el.getBoundingClientRect())
       .filter((r) => r.width > 0 && r.height > 0)
       .map((r) => ({ x1: r.left - cbox.left - 8, y1: r.top - cbox.top - 8, x2: r.right - cbox.left + 8, y2: r.bottom - cbox.top + 8 }));
@@ -988,10 +997,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       <div className="ctrls" style={compact ? { right: 12, top: 8 } : { right: 16, bottom: 16 }}>
         {!compact && (
           <>
-            <button type="button" aria-label="Zoom in" onClick={() => { btnZoom.current = true; map?.zoomIn({ duration: motion(250) }); }}>
+            <button type="button" aria-label="Zoom in" onClick={() => { btnZoom.current = true; map?.zoomIn({ duration: motion(220), easing: EASE }); }}>
               <Icon name="plus" />
             </button>
-            <button type="button" aria-label="Zoom out" onClick={() => { btnZoom.current = true; map?.zoomOut({ duration: motion(250) }); }}>
+            <button type="button" aria-label="Zoom out" onClick={() => { btnZoom.current = true; map?.zoomOut({ duration: motion(220), easing: EASE }); }}>
               <Icon name="minus" />
             </button>
           </>

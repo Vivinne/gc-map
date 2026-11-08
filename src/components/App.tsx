@@ -17,6 +17,7 @@ import QuizView, { type QuizRequest } from './QuizView';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import SearchPalette from './SearchPalette';
 import SettingsView from './SettingsView';
+import Leave from './Leave';
 import { applyTheme, savedTheme, type ThemeId } from '../lib/theme';
 
 const MOBILE_QUERY = '(max-width: 900px)';
@@ -24,6 +25,8 @@ const LANDSCAPE_QUERY = '(max-width: 900px) and (orientation: landscape) and (ma
 /** Width of the side card on a sideways phone (kept in step with globals.css) */
 const SIDE_CARD = 0.46;
 const TOTAL = BUILDINGS.length;
+/** Wait before a camera move that follows a panel change (two frames) */
+const PANEL_WAIT = 32;
 
 // The saved palette is set before the first draw, so the page never flashes the other colours
 applyTheme(savedTheme());
@@ -295,9 +298,9 @@ export default function App() {
   const remember = () => {
     if (!openRef.current) before.current = mapRef.current?.view() ?? null;
   };
-  // Camera moves wait for the panel to open, so the map is fitted to the area the panel leaves free
-  // (a timer, not animation frames: those can stall on phones)
-  const afterPanel = (f: () => void) => window.setTimeout(f, 80);
+  // Camera moves wait two frames for the panel to be placed, so the map is fitted to the area the panel
+  // leaves free; short enough that panel and map move together (a timer, not animation frames: those can stall on phones)
+  const afterPanel = (f: () => void) => window.setTimeout(f, PANEL_WAIT);
   const select = useCallback(
     (id: string, opts: { fly?: boolean } = {}) => {
       const b = BY_ID.get(id);
@@ -641,7 +644,7 @@ export default function App() {
 
 
       <main className="main" ref={mainRef}>
-        {!mobile && filtersOpen && mode === 'map' && (
+        <Leave show={!mobile && filtersOpen && mode === 'map'}>
           <div className="drawer">
             <div className="drawer-h">
               <b>{results.length} buildings</b>
@@ -651,7 +654,7 @@ export default function App() {
             </div>
             {index}
           </div>
-        )}
+        </Leave>
         <div className={`pane map-pane${mode === 'map' ? ' on' : ''}`} aria-hidden={mode !== 'map'}>
           <MapView
             ref={mapRef}
@@ -681,11 +684,11 @@ export default function App() {
               // the same view as the Country button and the country tag
               if (b?.nationBox && (mapRef.current?.zoom() ?? 9) < 4.5) {
                 const box = b.nationBox;
-                window.setTimeout(() => mapRef.current?.fitBox(box), 80);
+                window.setTimeout(() => mapRef.current?.fitBox(box), PANEL_WAIT);
                 return;
               }
               // after the panel has opened and the map padding follows it (a timer: animation frames can stall on phones)
-              if (b) window.setTimeout(() => mapRef.current?.focus(b), 80);
+              if (b) window.setTimeout(() => mapRef.current?.focus(b), PANEL_WAIT);
             }}
             onCity={focusCity}
             onReady={() => setMapReady(true)}
@@ -709,6 +712,7 @@ export default function App() {
             }}
             foot={chips}
           />
+          <Leave show={mode === 'map' && (!!selected || (resultsOpen && !isEmpty(filters)) || (!!city && CITY_BUILDINGS.has(city)))}>
           {mode === 'map' && selected && (
             <BuildingCard
               b={selected}
@@ -778,6 +782,7 @@ export default function App() {
               nearby={nearby.city === city ? nearby.items : undefined}
             />
           )}
+          </Leave>
         </div>
         {/* The quiz stays mounted while another tab is open, so a quiz in progress is still there on return */}
         {quizUsed && (

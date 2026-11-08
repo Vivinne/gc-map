@@ -71,6 +71,16 @@
   --gold: #cd9a50;
 }
 :root {
+  /* motion: three lengths and one curve (fast start, soft landing); things that leave speed up instead */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --t-fast: 120ms;
+  --t-mid: 220ms;
+  --t-slow: 420ms;
+  --leave: 160ms;
+  /* corners: controls, then cards and panels; chips and tags are pills */
+  --r-s: 6px;
+  --r-m: 10px;
   --top-h: 48px;
   --index-w: 320px;
   --detail-w: 340px;
@@ -95,7 +105,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .link { text-decoration: underline; text-underline-offset: 2px; font-weight: 650; font-size: 12.5px; }
 
 /* press feedback: every control darkens or inverts at once */
-.chip, .btn, .row, .city, .rel, .hit, .modes button, .ctrls button, .toggle, .r-row, .sp-row { transition: background-color 80ms, color 80ms; }
+.chip, .btn, .row, .city, .rel, .hit, .modes button, .ctrls button, .toggle, .r-row, .sp-row { transition: background-color var(--t-fast), color var(--t-fast); }
 .chip:active, .btn:active, .row:active, .city:active, .rel:active, .r-row:active, .ctrls button:active { transform: translateY(1px); }
 
 /* ---------- grid ---------- */
@@ -122,8 +132,8 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .modes button.on { background: var(--ink); color: #fff; }
 .seen { display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 0 16px; width: 112px; border-left: 1px solid var(--rule); font-size: 12px; font-weight: 650; }
 .bar { height: 4px; background: var(--rule); position: relative; }
-.bar i { position: absolute; inset: 0 auto 0 0; background: var(--ink); transition: width 200ms; }
-.drawer { position: absolute; z-index: 8; top: 16px; left: 16px; bottom: 64px; width: var(--detail-w); background: #fff; display: flex; flex-direction: column; box-shadow: 0 0 0 1px var(--rule); animation: drawer-in 140ms ease-out; }
+.bar i { position: absolute; inset: 0 auto 0 0; background: var(--ink); transition: width var(--t-mid); }
+.drawer { position: absolute; z-index: 8; top: 16px; left: 16px; bottom: 64px; width: var(--detail-w); background: #fff; display: flex; flex-direction: column; box-shadow: 0 0 0 1px var(--rule); animation: drawer-in var(--t-mid) var(--ease); }
 @keyframes drawer-in { from { transform: translateX(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
 .drawer-h { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--rule); flex: none; }
 .drawer-h b { font-size: 16px; }
@@ -149,8 +159,8 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .chip.clear { width: 32px; padding: 0; justify-content: center; }
 .toggle { display: flex; align-items: center; gap: 10px; width: 100%; padding: 5px 0; font-size: 13.5px; font-weight: 600; }
 .toggle .n { margin-left: auto; color: var(--mute); font-weight: 500; font-size: 12.5px; }
-.sw2 { width: 34px; height: 20px; background: var(--g85); position: relative; flex: none; transition: background-color 80ms; }
-.sw2 i { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: #fff; transition: left 120ms; }
+.sw2 { width: 34px; height: 20px; background: var(--g85); position: relative; flex: none; transition: background-color var(--t-fast); }
+.sw2 i { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: #fff; transition: left var(--t-fast); }
 .sw2.on { background: var(--ink); }
 .sw2.on i { left: 17px; }
 .pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
@@ -226,7 +236,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .away-chip .n { margin-right: 4px; }
 
 /* ---------- side panels: building card and city list ---------- */
-.side { position: absolute; z-index: 6; top: 16px; right: 16px; width: var(--detail-w); max-height: calc(100% - 16px - 207px); background: #fff; box-shadow: 0 0 0 1px var(--rule); display: flex; flex-direction: column; animation: slide-in 160ms ease-out; }
+.side { position: absolute; z-index: 6; top: 16px; right: 16px; width: var(--detail-w); max-height: calc(100% - 16px - 207px); background: #fff; box-shadow: 0 0 0 1px var(--rule); display: flex; flex-direction: column; animation: slide-in var(--t-mid) var(--ease); }
 @keyframes slide-in { from { transform: translateX(16px); opacity: 0; } to { transform: none; opacity: 1; } }
 .c-top { color: #fff; padding: 16px; flex: none; position: relative; }
 .card.folded .c-top { cursor: pointer; }
@@ -247,7 +257,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .others-h { display: flex; align-items: center; gap: 8px; width: 100%; height: 40px; padding: 0 16px; font-size: 13px; font-weight: 600; color: var(--mute); }
 .others-h:hover { background: var(--soft); }
 .others-h .n { margin-right: auto; }
-.others-h svg { transition: transform 120ms; }
+.others-h svg { transition: transform var(--t-fast); }
 .others-box.open .others-h svg { transform: rotate(180deg); }
 .others { overflow-y: auto; padding: 0 0 8px; overscroll-behavior: contain; }
 .others-box .others { max-height: 240px; }
@@ -341,7 +351,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qz-k { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--mute); text-transform: uppercase; letter-spacing: 0.04em; }
 .qz-p { font-size: 24px; line-height: 1.25; font-weight: 800; letter-spacing: -0.01em; border-left: 6px solid var(--ink); padding: 4px 0 4px 14px; }
 .qz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; list-style: none; }
-.qz-o { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--soft); font-weight: 600; font-size: 14.5px; line-height: 1.3; transition: background-color 80ms, color 80ms; }
+.qz-o { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--soft); font-weight: 600; font-size: 14.5px; line-height: 1.3; transition: background-color var(--t-fast), color var(--t-fast); }
 .qz-o:hover:not(:disabled) { background: var(--g93); }
 .qz-o:disabled { opacity: 1; }
 .qz-i { flex: none; width: 22px; height: 22px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--mute); border: 1px solid var(--g86); background: #fff; }
@@ -571,7 +581,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qv-k { margin: 12px 0 4px; }
 .qv-p { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.25; padding-left: 10px; border-left: 4px solid var(--ink); margin-bottom: 12px; }
 .qv-ops { list-style: none; display: flex; flex-direction: column; gap: 4px; padding-bottom: 8px; }
-.qv-o { width: 100%; height: 44px; display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: center; padding: 0 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--g92); font-weight: 650; font-size: 14px; transition: box-shadow 80ms; }
+.qv-o { width: 100%; height: 44px; display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: center; padding: 0 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--g92); font-weight: 650; font-size: 14px; transition: box-shadow var(--t-fast); }
 .qv-o:hover { box-shadow: inset 0 0 0 1px var(--ink); }
 .qv-o .i { width: 22px; height: 22px; display: grid; place-items: center; border: 1px solid var(--g86); background: #fff; font-size: 11px; color: var(--mute); }
 .qv-o.pick { box-shadow: inset 0 0 0 2px var(--ink); }
@@ -655,7 +665,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile .c-tag { height: 32px; }
 
 /* ---------- toast ---------- */
-.toast { position: fixed; z-index: 15; left: 50%; transform: translateX(-50%); bottom: 72px; display: flex; align-items: center; gap: 10px; background: var(--ink); color: #fff; padding: 0 6px 0 14px; min-height: 42px; font-size: 13.5px; font-weight: 600; max-width: calc(100vw - 32px); animation: rise 140ms ease-out; }
+.toast { position: fixed; z-index: 15; left: 50%; transform: translateX(-50%); bottom: 72px; display: flex; align-items: center; gap: 10px; background: var(--ink); color: #fff; padding: 0 6px 0 14px; min-height: 42px; font-size: 13.5px; font-weight: 600; max-width: calc(100vw - 32px); animation: rise var(--t-fast) var(--ease); }
 .toast button { background: #fff; color: var(--ink); font-weight: 700; height: 30px; padding: 0 12px; margin-left: 6px; }
 @keyframes rise { from { transform: translate(-50%, 8px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 
@@ -675,7 +685,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile.mode-me .tabbar, .is-mobile.mode-settings .tabbar, .is-mobile.mode-quiz .tabbar { grid-row: 2; }
 .tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0 5px; font-size: 11.5px; font-weight: 650; color: var(--mute); text-align: center; }
 .tabbar button.on { color: var(--ink); box-shadow: inset 0 3px 0 var(--ink); }
-.is-mobile .side.sheet { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 44%; box-shadow: 0 -1px 0 var(--rule); animation: sheet-in 180ms ease-out; transition: max-height 180ms, transform 180ms; }
+.is-mobile .side.sheet { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 44%; box-shadow: 0 -1px 0 var(--rule); animation: sheet-in var(--t-mid) var(--ease); transition: max-height var(--t-mid), transform var(--t-mid); }
 .is-mobile .side.citypanel.sheet { height: 44%; }
 .is-mobile .side.sheet.full { max-height: 100%; height: 100%; }
 @keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -696,7 +706,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile .pal-in { padding-top: env(safe-area-inset-top); height: calc(58px + env(safe-area-inset-top)); }
 .is-mobile .pal-in input { font-size: 18px; }
 .is-mobile .hit .loc { display: none; }
-.m-sheet { position: fixed; inset: 0; z-index: 12; background: #fff; display: flex; flex-direction: column; animation: sheet-in 160ms ease-out; }
+.m-sheet { position: fixed; inset: 0; z-index: 12; background: #fff; display: flex; flex-direction: column; animation: sheet-in var(--t-mid) var(--ease); }
 .m-sheet-h { display: flex; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top)) 16px 10px 20px; border-bottom: 1px solid var(--rule); font-size: 15px; }
 .m-sheet .index { border: 0; flex: 1; min-height: 0; }
 .is-mobile .toast { bottom: 104px; }
@@ -1093,7 +1103,7 @@ button.brand:active { background: var(--brand-press); }
 /* Settings */
 .set .card { flex: none; }
 .th-list { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 16px; }
-.th-opt { display: grid; grid-template-columns: 20px minmax(0, 1fr) 240px; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px; text-align: left; background: #fff; box-shadow: inset 0 0 0 1px var(--rule); border-radius: 6px; cursor: pointer; transition: box-shadow 120ms ease, background-color 120ms ease; }
+.th-opt { display: grid; grid-template-columns: 20px minmax(0, 1fr) 240px; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px; text-align: left; background: #fff; box-shadow: inset 0 0 0 1px var(--rule); border-radius: 6px; cursor: pointer; transition: box-shadow var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
 .th-opt:hover { box-shadow: inset 0 0 0 1px var(--g80); }
 .th-opt.on { background: var(--soft); box-shadow: inset 0 0 0 2px var(--ink); }
 .th-dot { width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--g80); display: grid; place-items: center; color: #fff; }
@@ -1109,3 +1119,65 @@ button.brand:active { background: var(--brand-press); }
 .me.m .th-opt { grid-template-columns: 20px minmax(0, 1fr); }
 .me.m .th-strip { grid-column: 2; }
 .me.m .set-btns .btn { flex: 1; justify-content: center; }
+
+/* ---------- Motion ----------
+   Lengths: --t-fast for hover, press and small menus; --t-mid for panels, lists, pages and tabs;
+   the map's camera moves take --t-slow (MAP_MS in MapView). Things that enter also leave. */
+.leave > * { animation: out-l var(--leave) var(--ease-in) forwards !important; pointer-events: none; }
+.is-mobile .leave > .sheet { animation-name: out-d !important; }
+@keyframes out-l { to { transform: translateX(-14px); opacity: 0; } }
+@keyframes out-d { to { transform: translateY(40px); opacity: 0; } }
+/* pages and the Data tabs fade in instead of swapping at once */
+.pane.on:not(.map-pane), .me-pg { animation: page-in var(--t-mid) var(--ease); }
+@keyframes page-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* menus grow out of the button that opened them */
+.qz2-menu, .c-menu { animation: menu-in var(--t-fast) var(--ease); transform-origin: top center; }
+.qz2-menu.up { transform-origin: bottom center; }
+@keyframes menu-in { from { opacity: 0; transform: scale(0.96) translateY(-4px); } to { opacity: 1; transform: none; } }
+.help-scrim, .scrim { animation: fade-in var(--t-mid) var(--ease); }
+.help, .pal { animation: pop-in var(--t-mid) var(--ease); }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+/* tabs: the underline and the colour move to the new tab */
+.me-parts button, .modes button, .tabbar button { transition: color var(--t-mid) var(--ease), box-shadow var(--t-mid) var(--ease), background-color var(--t-fast); }
+/* names on the map step aside while the site moves the camera, and come back once it stops */
+.city-lbl, .place-lbl.soft { transition: opacity var(--t-mid) var(--ease); }
+.map-canvas.flying .city-lbl, .map-canvas.flying .place-lbl.soft { opacity: 0; transition-duration: 0ms; }
+@media (prefers-reduced-motion: reduce) {
+  .leave { display: none; }
+}
+
+/* ---------- Shape and type ----------
+   Corners: 6px on controls, 10px on cards, panels and menus, pills for chips and tags.
+   Weights: 400 for text, 600 for labels and buttons, 800 for titles and big numbers.
+   Sizes: 12 meta, 13 secondary, 14 body, 16 section titles.
+   One focal point per screen: the main action is the dark button; a selected item gets a frame and a tint. */
+.btn, .search, .fbtn, .icon-btn, .c-ic, .qz2-it, .qv-o, .seg button, .me .seg button, .cf-back, .m-search, .m-fbtn, input { border-radius: var(--r-s); }
+.ctrls { border-radius: var(--r-m); overflow: hidden; }
+.ctrls button { border-radius: 0; }
+.side, .drawer, .card, .me .k, .qv .card { border-radius: var(--r-m); }
+/* menus open from inside panels and cards, so only the boxes with nothing hanging out of them clip their corners */
+.help, .qv-menu, .qz2-menu, .c-menu, .pal, .locator, .cf-list, .cf-page, .ov-list, .qh, .toast, .map-tip { border-radius: var(--r-m); overflow: hidden; }
+/* a coloured head follows the rounded top of its panel */
+.side > :first-child, .drawer > :first-child, .card > :first-child { border-top-left-radius: inherit; border-top-right-radius: inherit; }
+.is-mobile .side.sheet { border-radius: var(--r-m) var(--r-m) 0 0; }
+.chip, .c-tags > *, .fchip, .c-tag, .badge, .o-row .no { border-radius: 999px; }
+.qz2-it .bx { border-radius: 4px; }
+.modes button { border-radius: 0; }
+body, .app { font-weight: 400; }
+.others .o-row .nm, .me .ov-list td, .me .cf-page td, .me .qa-t td, .cl li, .qz2-it .v, .qv-o, .wk li, td { font-weight: 400 !important; }
+.me .ov-t td:first-child, .me .cf-t2 td:first-child, .me .qa-t td:last-child { font-weight: 600 !important; }
+.btn, .modes button, .me-parts button, .tabs b, .qv-box .v, .chip, .fchip, .c-tag, .seg button, .qz2-l, .me .k span, .me .hd .ct, .ct, .note, .cf-sub, .cf-sub button, th { font-weight: 600 !important; }
+.brand, .cp-top h2, .c-bar h2, .c-top h2, .me .k b, .cf-t h2, .hd h2, .qv-p, .qz-p, .th-txt b { font-weight: 800 !important; }
+.me .hd h2, .hd h2 { font-size: 16px !important; }
+th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
+.me .ov-k.on, .me .ov-tiles .ov-k.on:not(:disabled) { background: var(--soft) !important; color: var(--ink) !important; box-shadow: inset 0 0 0 2px var(--ink) !important; }
+.me .ov-k.on span, .me .ov-k.on b small { color: var(--mute) !important; }
+.me .ov-k.on .k-tr { background: var(--rule) !important; }
+.me .ov-k.on .k-tr i { background: var(--ink) !important; }
+.me .ov-tiles .ov-k:not(:disabled) { box-shadow: inset 0 0 0 1px var(--g84) !important; }
+.me .ov-tiles .ov-k:not(:disabled):hover { box-shadow: inset 0 0 0 1px var(--ink) !important; }
+.modes button.on { background: #fff !important; color: var(--ink) !important; box-shadow: inset 0 -3px 0 var(--ink); }
+.me-parts button.on { font-weight: 800 !important; }
+.btn:not(.dark) { background: #fff !important; box-shadow: inset 0 0 0 1px var(--g84); }
+.btn:not(.dark):hover { box-shadow: inset 0 0 0 1px var(--ink); }

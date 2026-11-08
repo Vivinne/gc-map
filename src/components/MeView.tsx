@@ -64,7 +64,7 @@ export default function MeView(p: MeProps) {
         ))}
         <Help topic="progress" />
       </nav>
-      <div className="me-pg">
+      <div className="me-pg" key={part}>
         {part === 'overview' && <Overview {...p} />}
         {part === 'mistakes' && <Mistakes quiz={quiz} onQuiz={p.onQuiz} />}
         {part === 'history' && <History quiz={quiz} />}
