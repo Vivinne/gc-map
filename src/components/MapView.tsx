@@ -234,9 +234,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         // the same framing as Home (the map button and the GC Atlas name), so going home looks like opening the site
         fitBoundsOptions: { padding: { top: padRef.current.top + 20, right: padRef.current.right + 20, bottom: padRef.current.bottom + 20, left: padRef.current.left + 20 } },
         attributionControl: false,
-        renderWorldCopies: false,
+        renderWorldCopies: true,
         maxZoom: 18,
-        minZoom: 1.2,
+        minZoom: 0.8,
         dragRotate: false,
         pitchWithRotate: false,
       });
@@ -427,7 +427,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const countryBox = useMemo(() => {
     let ref: Building | undefined = selected ?? (insetCity ? CITY_BUILDINGS.get(insetCity)?.[0] : undefined);
     if (!ref && map) {
-      const c = map.getCenter();
+      const c = map.getCenter().wrap();
       ref = nearest({ ...BUILDINGS[0]!, id: '', lng: c.lng, lat: c.lat }, BUILDINGS, 1)[0]?.b;
     }
     return ref?.nationBox ? { box: ref.nationBox, ref } : null;
@@ -511,7 +511,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // The panels over the map (city list, card, filters), at their real size: a short list leaves the map
     // below it in view, so pins there keep their names and need no edge marker
     const cbox = map.getContainer().getBoundingClientRect();
-    const covers: Box[] = [...(map.getContainer().closest('.app')?.querySelectorAll('section.side, .drawer') ?? [])]
+    const covers: Box[] = [...(map.getContainer().closest('.app')?.querySelectorAll('section.side, .drawer, .m-top') ?? [])]
       .map((el) => el.getBoundingClientRect())
       .filter((r) => r.width > 0 && r.height > 0)
       .map((r) => ({ x1: r.left - cbox.left - 8, y1: r.top - cbox.top - 8, x2: r.right - cbox.left + 8, y2: r.bottom - cbox.top + 8 }));
@@ -526,8 +526,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     if (compact) blocked.push({ x1: Math.max(0, W - 12 - 345), y1: H - 18, x2: W - 12, y2: H });
     // zoom and country buttons (desktop: lower right; phone: upper right)
     blocked.push(compact ? { x1: W - 52, y1: 0, x2: W, y2: 84 } : { x1: W - 56, y1: H - 160, x2: W, y2: H });
+    // The world repeats sideways: every point is drawn on the copy nearest the middle of the free part of
+    // the map (beside the panels), so what a fit framed is what is drawn
+    const mid = map.unproject([(padding.left + W - padding.right) / 2, H / 2]).lng;
     const proj = (lng: number, lat: number) => {
-      const p = map.project([lng, lat]);
+      const p = map.project([lng + 360 * Math.round((mid - lng) / 360), lat]);
       return [p.x, p.y] as const;
     };
     const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
@@ -890,14 +893,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   let inset: React.ReactNode = null;
   // Only while zoomed in past country scale: at the full map or a whole country it adds nothing
   if (map && showLoc) {
-    const ctr = map.getCenter();
+    const ctr = map.getCenter().wrap();
     const world = !(ctr.lng > -25 && ctr.lng < 45 && ctr.lat > 30 && ctr.lat < 72);
     const lw = L.w;
     const lh = L.h;
     const loc = locator(world, lw, lh);
     const bb = map.getBounds();
-    const a = loc.pr([Math.max(-179, bb.getWest()), Math.min(84, bb.getNorth())]);
-    const c = loc.pr([Math.min(179, bb.getEast()), Math.max(-84, bb.getSouth())]);
+    // on a repeated copy of the world the view's longitudes run past 180: bring them back to the first copy
+    const off = map.getCenter().lng - ctr.lng;
+    const a = loc.pr([Math.max(-179, bb.getWest() - off), Math.min(84, bb.getNorth())]);
+    const c = loc.pr([Math.min(179, bb.getEast() - off), Math.max(-84, bb.getSouth())]);
     const placeRef = selected ?? (insetCity ? CITY_BUILDINGS.get(insetCity)?.[0] : undefined);
     const here = placeRef ? loc.pr([placeRef.lng, placeRef.lat]) : null;
     const rw = a && c ? c[0] - a[0] : 0;

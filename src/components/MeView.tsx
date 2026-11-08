@@ -21,6 +21,9 @@ export interface MeProps {
   onCreate(name: string): void;
   onRename(id: string, name: string): void;
   onDelete(id: string): void;
+  /** Take a building out of Starred, or out of one collection */
+  onUnstar(id: string): void;
+  onRemoveFrom(col: string, id: string): void;
   onExport(): void;
   onImport(text: string): void;
 }
@@ -67,33 +70,7 @@ export default function MeView(p: MeProps) {
         {part === 'overview' && <Overview {...p} />}
         {part === 'mistakes' && <Mistakes quiz={quiz} onQuiz={p.onQuiz} />}
         {part === 'history' && <History quiz={quiz} />}
-        {part === 'collections' && (
-          <>
-            <Collections {...p} />
-            <div className="me-foot">
-              <h2>Another device</h2>
-              <span className="note">Stars, collections and quiz results</span>
-              <button type="button" className="btn" onClick={p.onExport}>
-                <Icon name="download" size={14} />
-                Save progress to file
-              </button>
-              <label className="btn">
-                <Icon name="upload" size={14} />
-                Load file
-                <input
-                  type="file"
-                  accept=".json,application/json"
-                  hidden
-                  onChange={async (e) => {
-                    const f = e.target.files?.[0];
-                    e.target.value = '';
-                    if (f) p.onImport(await f.text());
-                  }}
-                />
-              </label>
-            </div>
-          </>
-        )}
+        {part === 'collections' && <Collections {...p} />}
       </div>
     </div>
   );
@@ -334,92 +311,178 @@ function History({ quiz }: { quiz: QuizStore }) {
   );
 }
 
-function Collections({ starred, collections, onQuiz, onMap, onCreate, onRename, onDelete }: MeProps) {
-  const [sel, setSel] = useState('starred');
+/**
+ * Collections: every collection as a folder (Starred first); a folder opens its own page with the buildings
+ * it holds, what to do with them (map, quiz), and its name (rename, delete). Moving to another device: last.
+ */
+function Collections(p: MeProps) {
+  const { starred, collections, onQuiz, onMap, onCreate, onRename, onDelete, onUnstar, onRemoveFrom } = p;
+  const [open, setOpen] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
   const [name, setName] = useState('');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [arming, setArming] = useState(false);
-  const rows = [{ id: 'starred', name: 'Starred', n: starred.size, c: null as Collection | null }, ...collections.map((c) => ({ id: c.id, name: c.name, n: c.ids.filter((x) => BY_ID.has(x)).length, c }))];
-  const cur = rows.find((r) => r.id === sel) ?? rows[0]!;
-  const filters: Filters = cur.c ? { ...EMPTY, col: { id: cur.c.id, name: cur.c.name, ids: cur.c.ids } } : { ...EMPTY, starred: true };
-  return (
-    <section className="card me-cols" aria-label="Collections">
-      <div className="hd">
-        <h2>Collections</h2>
-      </div>
-      <div className="bd">
-        <ul className="cl" role="listbox" aria-label="Collections">
-          {rows.map((r) => (
-            <li key={r.id} role="option" aria-selected={cur.id === r.id} className={cur.id === r.id ? 'on' : ''} onClick={() => { setSel(r.id); setEditing(false); setArming(false); }}>
-              {cur.id === r.id && editing && r.c ? (
+  const folders = [{ id: 'starred', name: 'Starred', ids: [...starred], c: null as Collection | null }, ...collections.map((c) => ({ id: c.id, name: c.name, ids: c.ids, c }))];
+  const cur = open ? folders.find((f) => f.id === open) : null;
+  const items = (ids: string[]) => ids.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
+
+  if (cur) {
+    const list = items(cur.ids).sort((a, b) => a.name.localeCompare(b.name));
+    const filters: Filters = cur.c ? { ...EMPTY, col: { id: cur.c.id, name: cur.c.name, ids: cur.c.ids } } : { ...EMPTY, starred: true };
+    const back = () => {
+      setOpen(null);
+      setEditing(false);
+      setArming(false);
+    };
+    return (
+      <>
+        <button type="button" className="cf-back" onClick={back}>
+          <Icon name="left" size={12} />
+          Collections
+        </button>
+        <section className="card cf-page" aria-label={cur.name}>
+          <div className="cf-h">
+            <div className="cf-t">
+              {editing && cur.c ? (
                 <form
-                  className="cl-edit"
                   onSubmit={(e) => {
                     e.preventDefault();
-                    onRename(r.id, draft);
+                    if (draft.trim()) onRename(cur.id, draft);
                     setEditing(false);
                   }}
                 >
-                  <input autoFocus value={draft} maxLength={40} aria-label="Collection name" onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setEditing(false)} onBlur={() => { onRename(r.id, draft); setEditing(false); }} />
+                  <input autoFocus value={draft} maxLength={40} aria-label="Collection name" onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setEditing(false)} onBlur={() => { if (draft.trim()) onRename(cur.id, draft); setEditing(false); }} />
                 </form>
               ) : (
-                <span className="cn">
-                  {!r.c && <Icon name="starOn" size={13} />}
-                  <span>{r.name}</span>
-                </span>
+                <h2>
+                  {!cur.c && <Icon name="starOn" size={18} />}
+                  {cur.name}
+                </h2>
               )}
-              <span className="cc">{r.n}</span>
-            </li>
-          ))}
-        </ul>
-        <form
-          className="cl-new"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!name.trim()) return;
-            onCreate(name);
-            setName('');
-          }}
-        >
-          <Icon name="plus" size={13} />
-          <input value={name} maxLength={40} placeholder="New collection" aria-label="New collection" onChange={(e) => setName(e.target.value)} />
-        </form>
-      </div>
-      <div className="act">
-        <span className="sel">
-          <span>{cur.name}</span>
-        </span>
-        {cur.c && (
-          <>
-            <button type="button" className="c-ic" aria-label="Rename" title="Rename" onClick={() => { setDraft(cur.name); setEditing(true); }}>
-              <Icon name="edit" size={13} />
-            </button>
-            <button
-              type="button"
-              className={`c-ic${arming ? ' warn' : ''}`}
-              aria-label={arming ? `Delete ${cur.name}: click again` : `Delete ${cur.name}`}
-              title={arming ? 'Click again' : 'Delete'}
-              onBlur={() => setArming(false)}
-              onClick={() => {
-                if (!arming) return setArming(true);
-                onDelete(cur.id);
-                setSel('starred');
-                setArming(false);
-              }}
-            >
-              <Icon name="trash" size={13} />
-            </button>
-          </>
+              <div className="cf-sub">
+                <span>{list.length} buildings</span>
+                {cur.c && !editing && (
+                  <button type="button" onClick={() => { setDraft(cur.name); setEditing(true); }}>
+                    Rename
+                  </button>
+                )}
+                {cur.c && (
+                  <button
+                    type="button"
+                    className={arming ? 'warn' : ''}
+                    onBlur={() => setArming(false)}
+                    onClick={() => {
+                      if (!arming) return setArming(true);
+                      onDelete(cur.id);
+                      back();
+                    }}
+                  >
+                    {arming ? 'Delete: click again' : 'Delete'}
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="cf-acts">
+              <button type="button" className="btn" disabled={!list.length} onClick={() => onMap(filters)}>
+                <Icon name="map" size={14} />
+                Map
+              </button>
+              <button type="button" className="btn dark" disabled={!list.length} onClick={() => onQuiz({ scope: cur.c ? `col:${cur.id}` : 'starred', type: 'mixed', count: list.length })}>
+                Quiz these {list.length || ''}
+                <Icon name="right" size={12} />
+              </button>
+            </div>
+          </div>
+          {list.length ? (
+            <table className="ov-t cf-t2">
+              <thead>
+                <tr>
+                  <th>Building</th>
+                  <th>City</th>
+                  <th>Architect</th>
+                  <th>Style</th>
+                  <th aria-label="Remove" />
+                </tr>
+              </thead>
+              <tbody>
+                {list.map((b) => {
+                  const who = valueOf(b, 'architect');
+                  return (
+                    <tr key={b.id}>
+                      <td>{b.name}</td>
+                      <td>{valueOf(b, 'city')}</td>
+                      <td className={who ? '' : 'z'}>{who || '\u2014'}</td>
+                      <td>{valueOf(b, 'style')}</td>
+                      <td className="cf-x">
+                        <button type="button" aria-label={`Remove ${b.name} from ${cur.name}`} title="Remove from this collection" onClick={() => (cur.c ? onRemoveFrom(cur.id, b.id) : onUnstar(b.id))}>
+                          <Icon name="close" size={11} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <p className="empty">No buildings yet. Open a building and add it with the star at the top of its card.</p>
+          )}
+        </section>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="cf-grid">
+        {folders.map((f) => (
+          <button type="button" key={f.id} className={`cf${f.c ? '' : ' star'}`} onClick={() => setOpen(f.id)}>
+            <span className="cf-ic" aria-hidden="true" />
+            <b>{f.name}</b>
+            <span>{items(f.ids).length} buildings</span>
+          </button>
+        ))}
+        {adding ? (
+          <form
+            className="cf cf-new on"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (name.trim()) onCreate(name);
+              setName('');
+              setAdding(false);
+            }}
+          >
+            <input autoFocus value={name} maxLength={40} placeholder="Name" aria-label="New collection name" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setAdding(false)} onBlur={() => { if (name.trim()) onCreate(name); setName(''); setAdding(false); }} />
+          </form>
+        ) : (
+          <button type="button" className="cf cf-new" onClick={() => setAdding(true)}>
+            <Icon name="plus" size={13} />
+            New collection
+          </button>
         )}
-        <button type="button" className="btn sq" aria-label={`Show ${cur.name} on the map`} title="Map" disabled={!cur.n} onClick={() => onMap(filters)}>
-          <Icon name="map" size={14} />
-        </button>
-        <button type="button" className="btn dark" disabled={!cur.n} onClick={() => onQuiz({ scope: cur.c ? `col:${cur.id}` : 'starred' })}>
-          Quiz
-          <Icon name="right" size={12} />
-        </button>
       </div>
-    </section>
+      <div className="me-foot">
+        <h2>Another device</h2>
+        <span className="note">Stars, collections and quiz results</span>
+        <button type="button" className="btn" onClick={p.onExport}>
+          <Icon name="download" size={14} />
+          Save progress to file
+        </button>
+        <label className="btn">
+          <Icon name="upload" size={14} />
+          Load file
+          <input
+            type="file"
+            accept=".json,application/json"
+            hidden
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              e.target.value = '';
+              if (f) p.onImport(await f.text());
+            }}
+          />
+        </label>
+      </div>
+    </>
   );
 }

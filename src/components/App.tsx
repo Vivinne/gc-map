@@ -801,6 +801,8 @@ export default function App() {
               onCreate={(name) => setCollections((c) => Col.create(c, name))}
               onRename={(id, name) => setCollections((c) => Col.rename(c, id, name))}
               onDelete={(id) => setCollections((c) => Col.remove(c, id))}
+              onUnstar={(id) => setStarred((s) => { const n = new Set(s); n.delete(id); return n; })}
+              onRemoveFrom={(col, id) => setCollections((c) => Col.toggleIn(c, col, id))}
               onExport={exportFile}
               onImport={importFile}
             />
