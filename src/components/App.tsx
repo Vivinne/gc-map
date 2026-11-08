@@ -265,6 +265,10 @@ export default function App() {
   cityRef.current = city;
   const selRef = useRef('');
   selRef.current = selId;
+  const nearbyRef = useRef(nearby);
+  nearbyRef.current = nearby;
+  // The city list a card was opened from (with its Nearest part): closing the card goes back to that list
+  const origin = useRef<{ city: string; items: Building[] } | null>(null);
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
   const resultsRef = useRef(results);
@@ -289,6 +293,8 @@ export default function App() {
       const b = BY_ID.get(id);
       if (!b) return;
       remember();
+      // a card opened from a city list remembers that list; a card opened from another card keeps its origin
+      if (!selRef.current) origin.current = cityRef.current ? { city: cityRef.current, items: nearbyRef.current.city === cityRef.current ? nearbyRef.current.items : [] } : null;
       setSelId(id);
       setCity(b.city);
       setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
@@ -301,6 +307,7 @@ export default function App() {
   const focusCity = useCallback(
     (c: string, others: Building[] = []) => {
       remember();
+      origin.current = null;
       setNearby({ city: c, items: byNearestCity(c, others) });
       setCity(c);
       setSelId('');
@@ -315,6 +322,7 @@ export default function App() {
   // zoom out to the 500 km scale)
   const clearView = useCallback(() => {
     before.current = null;
+    origin.current = null;
     setSelId('');
     setCity('');
     setFiltersRaw(EMPTY);
@@ -339,6 +347,18 @@ export default function App() {
       afterPanel(() => frameFilter(filtersRef.current, resultsRef.current));
       return;
     }
+    // A card opened from a city list: back to that list (Milan, even after a building in Como from its
+    // Nearest part), and the map back to that city; the view from before the list stays for its own close
+    const o = origin.current;
+    if (selRef.current && o) {
+      origin.current = null;
+      setSelId('');
+      setNearby(o);
+      setCity(o.city);
+      afterPanel(() => mapRef.current?.showCity(o.city));
+      return;
+    }
+    origin.current = null;
     setSelId('');
     setCity('');
     setResultsOpen(false);
@@ -703,6 +723,12 @@ export default function App() {
                   setCity('');
                   setResultsOpen(true);
                   afterPanel(() => mapRef.current?.fitAll(results));
+                } else if (origin.current) {
+                  const o = origin.current;
+                  origin.current = null;
+                  setNearby(o);
+                  setCity(o.city);
+                  afterPanel(() => mapRef.current?.showCity(o.city));
                 } else afterPanel(() => mapRef.current?.showCity(selected.city));
               }}
               onSelect={(id) => select(id)}
