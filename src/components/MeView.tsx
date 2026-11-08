@@ -3,9 +3,9 @@
 import { useMemo, useState } from 'react';
 import { type Collection } from '../lib/collections';
 import { EMPTY, type Filters } from '../lib/filter';
-import { STATUSES, STATUS_LABEL, byBuilding, countStatus, perDay, perPair, practiseNext, recent, type Status } from '../lib/mastery';
-import { BUILDINGS, BY_ID, COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, type Building } from '../lib/model';
-import { FIELD_LABEL, PAIRS, splitPair, type Pair, type QuizStore } from '../lib/quiz';
+import { byBuilding, recent, statusOf } from '../lib/mastery';
+import { BY_ID, type Building } from '../lib/model';
+import { QUIZ_BUILDINGS as BUILDINGS, splitPair, valueOf, type LogEntry, type Pair, type QuizStore, type Session } from '../lib/quiz';
 import { Icon } from './Icons';
 import Help from './Help';
 import { pct, typeLabel, type QuizRequest } from './QuizView';
@@ -25,27 +25,6 @@ export interface MeProps {
   onImport(text: string): void;
 }
 
-type Dim = 'style' | 'exam' | 'country' | 'collections' | 'type';
-const DIMS: [Dim, string][] = [
-  ['style', 'Style'],
-  ['exam', 'TEST-ARCHED'],
-  ['country', 'Country'],
-  ['collections', 'Collections'],
-  ['type', 'Type'],
-];
-
-interface Row {
-  key: string;
-  label: string;
-  color?: string;
-  /** Mastery rows: buildings; type rows: none */
-  items?: Building[];
-  /** Type rows: right / total answers */
-  score?: { right: number; total: number };
-  quiz: Omit<QuizRequest, 'nonce'>;
-  map?: Filters;
-}
-
 const DAY = 86400000;
 
 function fmtDate(t: number): string {
@@ -53,406 +32,291 @@ function fmtDate(t: number): string {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-/** Personal centre: progress tiles, mastery by group, what to practise next, trend, recent quizzes, collections */
-export default function MeView(p: MeProps) {
-  const { quiz, starred, collections } = p;
-  const by = useMemo(() => byBuilding(quiz.log), [quiz.log]);
-  const all = useMemo(() => countStatus(BUILDINGS, by), [by]);
-  const week = recent(quiz.log, Date.now(), 7 * DAY);
-  const tested = BUILDINGS.length - all.untested;
-  const [part, setPart] = useState<Part>('overview');
+type Part = 'overview' | 'mistakes' | 'history' | 'collections';
+const PARTS: [Part, string][] = [
+  ['overview', 'Overview'],
+  ['mistakes', 'Mistakes'],
+  ['history', 'Quiz history'],
+  ['collections', 'Collections'],
+];
 
-  const tiles = (
+/** The three groups a tile opens: every tested building, the mastered ones, the tested but not mastered ones */
+type Group = 'tested' | 'mastered' | 'notyet';
+const GROUP_LABEL: Record<Group, string> = { tested: 'Tested', mastered: 'Mastered', notyet: 'Not mastered yet' };
+
+export default function MeView(p: MeProps) {
+  const { quiz } = p;
+  const [part, setPart] = useState<Part>('overview');
+  return (
+    <div className={p.mobile ? 'me m' : 'me'}>
+      <nav className="me-parts" role="tablist" aria-label="Progress">
+        {PARTS.map(([k, label]) => (
+          <button type="button" role="tab" key={k} aria-selected={part === k} className={part === k ? 'on' : ''} onClick={() => setPart(k)}>
+            {label}
+          </button>
+        ))}
+        <Help topic="progress" />
+      </nav>
+      <div className="me-pg">
+        {part === 'overview' && <Overview {...p} />}
+        {part === 'mistakes' && <Mistakes quiz={quiz} onQuiz={p.onQuiz} />}
+        {part === 'history' && <History quiz={quiz} />}
+        {part === 'collections' && (
+          <>
+            <Collections {...p} />
+            <div className="me-foot">
+              <h2>Another device</h2>
+              <span className="note">Stars, collections and quiz results</span>
+              <button type="button" className="btn" onClick={p.onExport}>
+                <Icon name="download" size={14} />
+                Save progress to file
+              </button>
+              <label className="btn">
+                <Icon name="upload" size={14} />
+                Load file
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  hidden
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    e.target.value = '';
+                    if (f) p.onImport(await f.text());
+                  }}
+                />
+              </label>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Overview({ quiz, onQuiz, onMap }: MeProps) {
+  const [open, setOpen] = useState<Group | null>(null);
+  const groups = useMemo(() => {
+    const by = byBuilding(quiz.log);
+    const g: Record<Group, Building[]> = { tested: [], mastered: [], notyet: [] };
+    for (const b of BUILDINGS) {
+      const st = statusOf(by.get(b.id));
+      if (st === 'untested') continue;
+      g.tested.push(b);
+      (st === 'mastered' ? g.mastered : g.notyet).push(b);
+    }
+    for (const k of Object.keys(g) as Group[]) g[k].sort((a, b) => a.name.localeCompare(b.name));
+    return g;
+  }, [quiz.log]);
+  const week = recent(quiz.log, Date.now(), 7 * DAY);
+  const all = BUILDINGS.length;
+  const list = open ? groups[open] : [];
+  const tile = (k: Group) => {
+    const n = groups[k].length;
+    const on = open === k;
+    return (
+      <button type="button" key={k} className={`k ov-k${on ? ' on' : ''}`} aria-expanded={on} disabled={!n} onClick={() => setOpen(on ? null : k)}>
+        <span className="go">{on ? 'Hide' : 'Show'}</span>
+        <b>
+          {n}
+          <small>/{all}</small>
+        </b>
+        <span>{GROUP_LABEL[k]}</span>
+        <div className="k-tr">
+          <i style={{ width: `${(n / all) * 100}%` }} />
+        </div>
+      </button>
+    );
+  };
+  return (
     <>
-        <Tile n={tested} of={BUILDINGS.length} label="Tested" />
-        <Tile n={all.mastered} of={BUILDINGS.length} label="Mastered" />
+      <div className="ov-tiles">
+        {tile('tested')}
+        {tile('mastered')}
+        {tile('notyet')}
         {/* a share is shown only from 10 answers on; fewer answers are shown as a plain count */}
         <div className="k">
-          <b>{week.total >= 10 ? pct(week.right, week.total) : week.total ? `${week.right}/${week.total}` : '–'}</b>
-          <span>{week.total >= 10 ? `Right, last 7 days · ${week.total} answers` : week.total ? 'Right answers, last 7 days' : 'Answers, last 7 days'}</span>
+          <b>{week.total >= 10 ? pct(week.right, week.total) : week.total ? `${week.right}/${week.total}` : '\u2013'}</b>
+          <span>{week.total >= 10 ? `Right, last 7 days \u00b7 ${week.total} answers` : week.total ? 'Right answers, last 7 days' : 'Answers, last 7 days'}</span>
           <div className="k-tr">
             <i style={{ width: week.total >= 10 ? `${(week.right / week.total) * 100}%` : 0 }} />
           </div>
         </div>
+      </div>
+      {open && (
+        <section className="card ov-list" aria-label={GROUP_LABEL[open]}>
+          <div className="hd">
+            <h2>{GROUP_LABEL[open]}</h2>
+            <span className="ct">{list.length} buildings</span>
+            <button type="button" className="btn" onClick={() => onMap({ ...EMPTY, col: { id: `progress-${open}`, name: GROUP_LABEL[open], ids: list.map((b) => b.id) } })}>
+              <Icon name="map" size={14} />
+              Map
+            </button>
+            <button type="button" className="btn dark" onClick={() => onQuiz({ scope: `progress-${open}`, type: 'mixed', count: list.length, extra: { id: `progress-${open}`, label: GROUP_LABEL[open], items: list } })}>
+              Quiz these {list.length}
+              <Icon name="right" size={12} />
+            </button>
+          </div>
+          <table className="ov-t">
+            <thead>
+              <tr>
+                <th>Building</th>
+                <th>City</th>
+                <th>Architect</th>
+                <th>Style</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((b) => {
+                const who = valueOf(b, 'architect');
+                return (
+                  <tr key={b.id}>
+                    <td>{b.name}</td>
+                    <td>{valueOf(b, 'city')}</td>
+                    <td className={who ? '' : 'z'}>{who || '\u2014'}</td>
+                    <td>{valueOf(b, 'style')}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+      )}
     </>
   );
-  const device = (
-        <div className="me-foot">
-          <h2>Another device</h2>
-          <span className="note">Stars, collections and quiz results</span>
-          <button type="button" className="btn" onClick={p.onExport}>
-            <Icon name="download" size={14} />
-            Save progress to file
-          </button>
-          <label className="btn">
-            <Icon name="upload" size={14} />
-            Load file
-            <input
-              type="file"
-              accept=".json,application/json"
-              hidden
-              onChange={async (e) => {
-                const f = e.target.files?.[0];
-                e.target.value = '';
-                if (f) p.onImport(await f.text());
-              }}
-            />
-          </label>
-        </div>
-  );
+}
 
-  // Phone: one part at a time, each about a screen high
-  if (p.mobile) {
-    return (
-      <div className="me m">
-        <nav className="me-parts" role="tablist" aria-label="Progress">
-          {PARTS.map(([k, label]) => (
-            <button type="button" role="tab" key={k} aria-selected={part === k} className={part === k ? 'on' : ''} onClick={() => setPart(k)}>
-              {label}
-            </button>
-          ))}
-          <Help topic="progress" />
-        </nav>
-        <div className="me-g">
-          {part === 'overview' && (
-            <>
-              {tiles}
-              <PractiseNext {...p} />
-            </>
-          )}
-          {part === 'mastery' && <Mastery {...p} by={by} />}
-          {part === 'history' && (
-            <>
-              <PerDay log={quiz.log} />
-              <Recent quiz={quiz} />
-            </>
-          )}
-          {part === 'collections' && (
-            <>
-              <Collections {...p} />
-              {device}
-            </>
-          )}
-        </div>
+/** A question as the quiz shows it: the prompt and the right answer */
+function qa(id: string, pair: Pair): { q: string; a: string } | null {
+  const b = BY_ID.get(id);
+  if (!b) return null;
+  const [ask, ans] = splitPair(pair);
+  const q = valueOf(b, ask);
+  const a = valueOf(b, ans);
+  return q && a ? { q, a } : null;
+}
+
+function QATable({ rows }: { rows: { key: string; q: string; a: string }[] }) {
+  return (
+    <table className="qa-t">
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Answer</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.key}>
+            <td>{r.q}</td>
+            <td>{r.a}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/** Questions whose last answer was wrong, newest first; a right answer later takes them off */
+function Mistakes({ quiz, onQuiz }: { quiz: QuizStore; onQuiz: MeProps['onQuiz'] }) {
+  const [exam, setExam] = useState(false);
+  const rows = useMemo(
+    () =>
+      [...quiz.wrong]
+        .reverse()
+        .map((w) => {
+          const [id, pair] = w.split('|') as [string, Pair];
+          const b = BY_ID.get(id);
+          const x = qa(id, pair);
+          return b && x && (!exam || b.exams.length) ? { key: w, ...x, b } : null;
+        })
+        .filter((r): r is NonNullable<typeof r> => !!r),
+    [quiz.wrong, exam],
+  );
+  const n = Math.min(30, rows.length);
+  const examN = BUILDINGS.filter((b) => b.exams.length).length;
+  return (
+    <>
+      <div className="seg ms-seg" role="tablist">
+        <button type="button" role="tab" aria-selected={!exam} className={!exam ? 'on' : ''} onClick={() => setExam(false)}>
+          All {BUILDINGS.length}
+        </button>
+        <button type="button" role="tab" aria-selected={exam} className={exam ? 'on' : ''} onClick={() => setExam(true)}>
+          TEST-ARCHED {examN}
+        </button>
       </div>
-    );
+      <section className="card ov-list" aria-label="Mistakes">
+        <div className="hd">
+          <h2>Mistakes</h2>
+          <span className="ct">{rows.length} questions</span>
+          <button type="button" className="btn dark" disabled={!n} onClick={() => onQuiz({ scope: 'mistakes', extra: { id: 'mistakes', label: 'Mistakes', items: rows.map((r) => r.b) }, missed: rows.map((r) => r.key) })}>
+            Quiz these {n || ''}
+            <Icon name="right" size={12} />
+          </button>
+        </div>
+        {rows.length ? <QATable rows={rows} /> : <p className="empty">No mistakes</p>}
+      </section>
+    </>
+  );
+}
+
+/**
+ * The questions of each quiz, from the answer log: a quiz records its answers when it ends, just before
+ * the quiz itself, so a quiz's answers are the last `total` entries up to its time and after the quiz before.
+ */
+function sessionAnswers(history: Session[], log: LogEntry[]): Map<number, LogEntry[]> {
+  const out = new Map<number, LogEntry[]>();
+  let prev = -Infinity;
+  for (const s of history) {
+    const mine = log.filter((e) => e.t > prev && e.t <= s.t);
+    out.set(s.t, mine.slice(-s.total));
+    prev = s.t;
   }
-
-  return (
-    <div className="me">
-      <div className="me-g">
-        {tiles}
-        {/* the things to act on first: mastery, what to practise, collections side by side; history below */}
-        <Mastery {...p} by={by} />
-        <PractiseNext {...p} />
-        <Collections {...p} />
-        <Recent quiz={quiz} />
-        <PerDay log={quiz.log} />
-        {device}
-      </div>
-    </div>
-  );
+  return out;
 }
 
-type Part = 'overview' | 'mastery' | 'history' | 'collections';
-const PARTS: [Part, string][] = [
-  ['overview', 'Overview'],
-  ['mastery', 'Mastery'],
-  ['history', 'History'],
-  ['collections', 'Collections'],
-];
-
-function Tile({ n, of, label }: { n: number; of: number; label: string }) {
-  return (
-    <div className="k">
-      <b>
-        {n}
-        <small>/{of}</small>
-      </b>
-      <span>{label}</span>
-      <div className="k-tr">
-        <i style={{ width: `${(n / of) * 100}%` }} />
-      </div>
-    </div>
-  );
-}
-
-function Seg({ c }: { c: Record<Status, number> }) {
-  return (
-    <span className="mt">
-      {STATUSES.map((s) => (c[s] ? <i key={s} className={`s-${s}`} style={{ flex: c[s] }} /> : null))}
-    </span>
-  );
-}
-
-function Mastery({ by, mobile, starred, collections, onQuiz, onMap }: MeProps & { by: ReturnType<typeof byBuilding> }) {
-  const [dim, setDim] = useState<Dim>('style');
-  const [sel, setSel] = useState<Record<Dim, string>>({ style: '', exam: '', country: '', collections: '', type: '' });
-  const pairScore = useMemo(() => perPair([...by.values()].flat()), [by]);
-
-  const rows: Row[] = useMemo(() => {
-    if (dim === 'style')
-      return ERA_ORDER.map((e) => ({ key: e, label: ERAS[e].label, color: ERAS[e].color, items: BUILDINGS.filter((b) => b.eras.includes(e)), quiz: { scope: `era:${e}` }, map: { ...EMPTY, styles: [e] } }));
-    if (dim === 'exam')
-      return [
-        { key: 'exam', label: 'All years', items: BUILDINGS.filter((b) => b.exams.length), quiz: { scope: 'exam' }, map: { ...EMPTY, exam: true } },
-        ...EXAM_YEARS.map((y) => ({ key: String(y), label: String(y), items: BUILDINGS.filter((b) => b.exams.includes(y)), quiz: { scope: `year:${y}` }, map: { ...EMPTY, exam: true, examYears: [y] } })),
-      ];
-    if (dim === 'country')
-      return COUNTRIES.map((c) => ({ key: c, label: c, items: BUILDINGS.filter((b) => b.country === c), quiz: { scope: `country:${c}` }, map: { ...EMPTY, countries: [c] } }));
-    if (dim === 'collections')
-      return [
-        { key: 'starred', label: 'Starred', items: BUILDINGS.filter((b) => starred.has(b.id)), quiz: { scope: 'starred' }, map: { ...EMPTY, starred: true } },
-        ...collections.map((c) => ({ key: c.id, label: c.name, items: c.ids.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b), quiz: { scope: `col:${c.id}` }, map: { ...EMPTY, col: { id: c.id, name: c.name, ids: c.ids } } })),
-      ];
-    return PAIRS.map((pr) => ({ key: pr, label: typeLabel(pr), score: pairScore.get(pr) ?? { right: 0, total: 0 }, quiz: { scope: 'all', type: pr } }));
-  }, [dim, starred, collections, pairScore]);
-
-  const cur = rows.find((r) => r.key === sel[dim]) ?? rows[0];
-  const isType = dim === 'type';
-
-  return (
-    <section className="card me-mastery" aria-label="Mastery">
-      <div className="hd">
-        <h2>Mastery</h2>
-        {!mobile && <Help topic="progress" className="hd-help" />}
-        <div className="seg" role="tablist">
-          {DIMS.map(([d, label]) => (
-            <button type="button" role="tab" key={d} aria-selected={dim === d} className={dim === d ? 'on' : ''} onClick={() => setDim(d)}>
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="bd">
-        <div className="lg">
-          {isType ? (
-            <>
-              <span><i className="s-mastered" />Right</span>
-              <span><i className="s-weak" />Wrong</span>
-              <span><i className="s-untested" />No answers</span>
-            </>
-          ) : (
-            STATUSES.map((s) => (
-              <span key={s}>
-                <i className={`s-${s}`} />
-                {STATUS_LABEL[s]}
-              </span>
-            ))
-          )}
-        </div>
-        <ul className="ms" role="listbox" aria-label="Groups">
-          {rows.map((r) => {
-            const c = r.items ? countStatus(r.items, by) : null;
-            return (
-              <li key={r.key} role="option" aria-selected={cur?.key === r.key} className={cur?.key === r.key ? 'on' : ''} onClick={() => setSel({ ...sel, [dim]: r.key })}>
-                <span className="ml">
-                  {r.color && <i className="sw" style={{ background: r.color }} />}
-                  <span>{r.label}</span>
-                </span>
-                {c ? (
-                  <Seg c={c} />
-                ) : (
-                  <span className="mt">
-                    {r.score!.total ? (
-                      <>
-                        {r.score!.right > 0 && <i className="s-mastered" style={{ flex: r.score!.right }} />}
-                        {r.score!.total - r.score!.right > 0 && <i className="s-weak" style={{ flex: r.score!.total - r.score!.right }} />}
-                      </>
-                    ) : (
-                      <i className="s-untested" style={{ flex: 1 }} />
-                    )}
-                  </span>
-                )}
-                <span className="mv">
-                  {c ? (
-                    <>
-                      <b>{c.mastered}</b>/{r.items!.length}
-                    </>
-                  ) : r.score!.total ? (
-                    <>
-                      <b>{pct(r.score!.right, r.score!.total)}</b>
-                    </>
-                  ) : (
-                    '–'
-                  )}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-      <div className="act">
-        {cur && (
-          <span className="sel">
-            {cur.color && <i className="sw" style={{ background: cur.color }} />}
-            <span>{cur.label}</span>
-            {cur.items && <em>{cur.items.length}</em>}
-          </span>
-        )}
-        {cur?.map && (
-          <button type="button" className="btn" disabled={!cur.items?.length} onClick={() => onMap(cur.map!)}>
-            <Icon name="map" size={14} />
-            Map
-          </button>
-        )}
-        <button type="button" className="btn dark" disabled={!cur || (cur.items ? !cur.items.length : false)} onClick={() => cur && onQuiz(cur.quiz)}>
-          Quiz
-          <Icon name="right" size={12} />
-        </button>
-      </div>
-    </section>
-  );
-}
-
-function PractiseNext({ quiz, onQuiz }: MeProps) {
-  const weak = useMemo(() => practiseNext(quiz.log, 60), [quiz.log]);
-  // Nothing answered wrong: the next step is buildings never asked yet
-  const fresh = useMemo(() => {
-    if (weak.length) return [];
-    const asked = new Set(quiz.log.map((e) => e.id));
-    return BUILDINGS.filter((b) => !asked.has(b.id)).slice(0, 10);
-  }, [weak.length, quiz.log]);
-  const n = weak.length || fresh.length;
-  return (
-    <section className="card me-next" aria-label="Practise next">
-      <div className="hd">
-        <h2>Practise next</h2>
-        <span className="rt">{n}</span>
-      </div>
-      <div className="bd">
-        <ol className="wk">
-          {weak.map(({ b, pair }) => (
-            <li key={b.id}>
-              <span className="wn">{b.name}</span>
-              <span className="wf">{FIELD_LABEL[splitPair(pair)[1]]}</span>
-              <span className="wc">{b.city}</span>
-            </li>
-          ))}
-          {fresh.map((b) => (
-            <li key={b.id}>
-              <span className="wn">{b.name}</span>
-              <span className="wc">{b.city}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div className="act">
-        <button
-          type="button"
-          className="btn dark wide"
-          disabled={!n}
-          onClick={() =>
-            weak.length
-              ? onQuiz({ scope: 'next', extra: { id: 'next', label: 'Practise next', items: weak.map((x) => x.b) }, missed: weak.map((x) => `${x.b.id}|${x.pair}`) })
-              : onQuiz({ scope: 'next', type: 'mixed', extra: { id: 'next', label: 'Not tested yet', items: fresh } })
-          }
-        >
-          Quiz these {Math.min(30, n) || ''}
-          <Icon name="right" size={12} />
-        </button>
-      </div>
-    </section>
-  );
-}
-
-const CW = 300;
-const CH = 190;
-const P = { l: 36, r: 10, t: 16, b: 22 };
-
-function PerDay({ log }: { log: QuizStore['log'] }) {
-  const days = useMemo(() => perDay(log, 14), [log]);
-  const [hover, setHover] = useState<number | null>(null);
-  const iw = CW - P.l - P.r;
-  const ih = CH - P.t - P.b;
-  const x = (i: number) => P.l + (days.length < 2 ? iw / 2 : (i / (days.length - 1)) * iw);
-  const y = (v: number) => P.t + (1 - v) * ih;
-  const h = hover != null ? days[hover] : undefined;
-  const label = (d: string) => `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}`;
-  return (
-    <section className="card me-day" aria-label="Correct per day">
-      <div className="hd">
-        <h2>Correct per day</h2>
-      </div>
-      <div className="bd">
-        <div className="rs-chart">
-          <svg viewBox={`0 0 ${CW} ${CH}`} width="100%" role="img" aria-label={`Correct per day, ${days.length} days`} onPointerLeave={() => setHover(null)}>
-            {[0, 0.5, 1].map((v) => (
-              <g key={v}>
-                <line x1={P.l} x2={CW - P.r} y1={y(v)} y2={y(v)} className={v === 0 ? 'rs-base' : 'rs-grid'} />
-                <text x={P.l - 6} y={y(v) + 3.5} className="rs-ax" textAnchor="end">
-                  {v * 100}%
-                </text>
-              </g>
-            ))}
-            {hover != null && <line x1={x(hover)} x2={x(hover)} y1={P.t} y2={P.t + ih} className="rs-cross" />}
-            {days.length > 1 && <polyline points={days.map((d, i) => `${x(i)},${y(d.right / d.total)}`).join(' ')} className="rs-line" />}
-            {days.map((d, i) => (
-              <circle key={d.day} cx={x(i)} cy={y(d.right / d.total)} r={hover === i || i === days.length - 1 ? 4.5 : 3} className="rs-dot" />
-            ))}
-            {/* how many answers each point stands for, as visible as the point itself */}
-            {days.map((d, i) => (
-              <text key={`n-${d.day}`} x={x(i)} y={y(d.right / d.total) - 9} className="rs-n" textAnchor="middle">
-                {d.total}
-              </text>
-            ))}
-            {days.map((d, i) => (
-              <rect key={d.day} x={x(i) - Math.max(12, iw / Math.max(1, days.length - 1)) / 2} y={P.t} width={Math.max(12, iw / Math.max(1, days.length - 1))} height={ih} fill="transparent" onPointerEnter={() => setHover(i)} />
-            ))}
-            {days[0] && (
-              <text x={P.l} y={CH - 4} className="rs-ax">
-                {label(days[0].day)}
-              </text>
-            )}
-            {days.length > 1 && (
-              <text x={CW - P.r} y={CH - 4} className="rs-ax" textAnchor="end">
-                {label(days[days.length - 1]!.day)}
-              </text>
-            )}
-          </svg>
-          {h && hover != null && (
-            <div className="rs-tip" style={{ left: `${(x(hover) / CW) * 100}%` }}>
-              <b>{pct(h.right, h.total)}</b> {h.right}/{h.total}
-              <span>{label(h.day)}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Recent({ quiz }: { quiz: QuizStore }) {
+function History({ quiz }: { quiz: QuizStore }) {
   const [all, setAll] = useState(false);
+  const answers = useMemo(() => sessionAnswers(quiz.history, quiz.log), [quiz.history, quiz.log]);
   const list = [...quiz.history].reverse();
+  const shown = list.slice(0, all ? 200 : 10);
+  if (!list.length) return <p className="empty card">No quizzes yet</p>;
   return (
-    <section className="card me-recent" aria-label="Recent quizzes">
-      <div className="hd">
-        <h2>Recent quizzes</h2>
-        {list.length > 5 && (
-          <button type="button" className="rt" aria-expanded={all} onClick={() => setAll(!all)}>
-            {all ? 'Last 5' : `All ${list.length}`}
-          </button>
-        )}
-      </div>
-      <div className="bd">
-        <table className="rs-table">
-          <tbody>
-            {list.slice(0, all ? 200 : 5).map((s) => (
-              <tr key={s.t}>
-                <td>{fmtDate(s.t)}</td>
-                <td>{typeLabel(s.type)}</td>
-                <td>{s.scope}</td>
-                <td className="num">
-                  {s.right}/{s.n}
-                  {s.total < s.n && <small className="stop">{s.total} answered</small>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <>
+      {shown.map((s) => {
+        const got = answers.get(s.t) ?? [];
+        // older entries may have been dropped from the capped log: then the mistakes are not known
+        const known = got.length === s.total;
+        const wrong = got
+          .filter((e) => !e.ok)
+          .map((e, k) => {
+            const x = qa(e.id, e.pair);
+            return x ? { key: `${e.id}|${e.pair}|${k}`, ...x } : null;
+          })
+          .filter((r): r is NonNullable<typeof r> => !!r);
+        return (
+          <section key={s.t} className="card qh">
+            <div className="qh-h">
+              <span className="d">{fmtDate(s.t)}</span>
+              <span className="t">
+                {typeLabel(s.type)}
+                <small>{s.scope}</small>
+              </span>
+              <span className="sc">
+                {s.right}
+                <small>/{s.n}</small>
+              </span>
+            </div>
+            {s.total < s.n && <p className="qh-n">{s.total} of {s.n} answered</p>}
+            {s.right === s.total ? <p className="qh-ok">All right</p> : known && wrong.length ? <QATable rows={wrong} /> : null}
+          </section>
+        );
+      })}
+      {list.length > 10 && (
+        <button type="button" className="btn qh-more" onClick={() => setAll(!all)}>
+          {all ? 'Last 10' : `All ${list.length}`}
+        </button>
+      )}
+    </>
   );
 }
 

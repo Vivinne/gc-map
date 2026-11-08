@@ -230,7 +230,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         container: box.current,
         style: styleSpec(),
         bounds: EUROPE,
-        fitBoundsOptions: { padding: 30 },
+        // the same framing as Home (the map button and the GC Atlas name), so going home looks like opening the site
+        fitBoundsOptions: { padding: { top: padRef.current.top + 20, right: padRef.current.right + 20, bottom: padRef.current.bottom + 20, left: padRef.current.left + 20 } },
         attributionControl: false,
         renderWorldCopies: false,
         maxZoom: 18,

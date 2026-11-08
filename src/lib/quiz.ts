@@ -3,7 +3,7 @@
  * Wrong choices never include a value that is also right for the prompt (two buildings in Rome,
  * two works by the same architect).
  */
-import { ascii, styleName, whoOf, type Building } from './model';
+import { ascii, BUILDINGS as EVERY, styleName, whoOf, type Building } from './model';
 /** Deterministic shuffle (xorshift) so a seed gives the same order */
 export function shuffle<T>(arr: T[], seed: number): T[] {
   const a = [...arr];
@@ -67,6 +67,9 @@ const NO_ARCHITECT = new Set([
 export function inQuiz(b: Building): boolean {
   return !QUIZ_SKIP.has(b.name);
 }
+
+/** The buildings the quiz and the progress counts are about */
+export const QUIZ_BUILDINGS: Building[] = EVERY.filter(inQuiz);
 
 /** A style heading as a list with slashes: "Renaissance and Mannerism" -> "Renaissance / Mannerism",
  *  "Arts and Crafts, Art Nouveau and Secession" -> "Arts and Crafts / Art Nouveau / Secession" (a name

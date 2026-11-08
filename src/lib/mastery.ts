@@ -2,8 +2,8 @@
  * Personal statistics from the answer log: mastery per building, groups for the Me page,
  * correct share per day, buildings to practise next.
  */
-import { BUILDINGS, type Building } from './model';
-import { splitPair, type LogEntry, type Pair } from './quiz';
+import { type Building } from './model';
+import { QUIZ_BUILDINGS as BUILDINGS, splitPair, type LogEntry, type Pair } from './quiz';
 
 export type Status = 'mastered' | 'learning' | 'weak' | 'untested';
 export const STATUSES: Status[] = ['mastered', 'learning', 'weak', 'untested'];

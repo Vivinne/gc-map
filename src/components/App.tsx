@@ -466,7 +466,7 @@ export default function App() {
   const modes: [Mode, string, 'map' | 'cards' | 'me', string][] = [
     ['map', 'Map', 'map', 'M'],
     ['quiz', 'Quiz', 'cards', 'Q'],
-    ['me', 'Progress', 'me', 'U'],
+    ['me', 'Data', 'me', 'U'],
   ];
 
   const index = (
@@ -520,7 +520,21 @@ export default function App() {
     <div className={`app mode-${mode}${mobile ? ' is-mobile' : ''}`}>
       {!mobile ? (
         <header className="top">
-          <div className="brand">GC Atlas</div>
+          {/* the name is the way home: the clean full map, as when the site opens */}
+          <button
+            type="button"
+            className="brand"
+            title="Home"
+            onClick={() => {
+              clearView();
+              setResultsOpen(false);
+              setPalette(null);
+              setMode('map');
+              afterPanel(() => mapRef.current?.home());
+            }}
+          >
+            GC Atlas
+          </button>
           {/* the filters belong to the map: on Quiz and Me the button stays plain, it lights up again back on the map */}
           <button type="button" className={`fbtn${mode === 'map' && filtersOpen ? ' open' : ''}${mode === 'map' && activeFilters ? ' on' : ''}`} aria-expanded={mode === 'map' && filtersOpen} aria-label="Filters" onClick={() => setFiltersOpen((o) => !o)} title="Filters (F)">
             <Icon name="filter" size={16} />
@@ -532,10 +546,10 @@ export default function App() {
           </button>
           <nav className="modes" aria-label="Views">
             {modes.map(([m, label, icon, key]) => (
-              <button type="button" key={m} className={`${mode === m ? 'on' : ''}${m === 'me' ? ' ic' : ''}`} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={`${label} (${key})`}>
+              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={`${label} (${key})`}>
                 <Icon name={icon} size={17} />
                 {/* Progress shows as its icon alone */}
-                {m !== 'me' && label}
+                {label}
               </button>
             ))}
           </nav>
@@ -734,7 +748,7 @@ export default function App() {
           {modes.map(([m, label, icon]) => (
             <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)}>
               <Icon name={icon} size={20} />
-              {m !== 'me' && label}
+              {label}
             </button>
           ))}
         </nav>

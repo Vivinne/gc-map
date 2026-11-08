@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { type Collection } from '../lib/collections';
-import { BUILDINGS, BY_ID, COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, type Building } from '../lib/model';
+import { BY_ID, COUNTRIES, ERAS, ERA_ORDER, EXAM_YEARS, type Building } from '../lib/model';
+import { QUIZ_BUILDINGS as BUILDINGS } from '../lib/quiz';
 import { FIELDS, FIELD_LABEL, PAIRS, addSession, buildQuiz, capacity, record, splitPair, type Field, type Pair, type PairChoice, type Question, type QuizStore, type Session } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
@@ -51,6 +52,8 @@ export interface QuizRequest {
   extra?: QuizScope;
   /** Ask these "id|pair" questions with their own pair */
   missed?: string[];
+  /** Questions to ask (else the set-up's number) */
+  count?: number;
 }
 
 interface Props {
@@ -161,6 +164,37 @@ function Dropdown({ label, value, options, onPick }: { label: string; value: str
  * Range: one box ("All 204", or what is ticked and how many buildings that makes); its menu lists every
  * category as a tick box, in groups (period, country, TEST-ARCHED, the user's own). Any mix is quizzed together.
  */
+/**
+ * The number of questions, typed freely: what is typed stays as typed while the box has focus (so "20" can
+ * be typed through "2"), and is kept within lo..hi when the box is left or Enter is pressed.
+ */
+function CountBox({ value, lo, hi, onSet }: { value: number; lo: number; hi: number; onSet(v: number): void }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = () => {
+    if (draft !== null) onSet(Number(draft));
+    setDraft(null);
+  };
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      value={draft ?? String(value)}
+      aria-label={`Questions, ${lo} to ${hi}`}
+      onFocus={(e) => e.currentTarget.select()}
+      onChange={(e) => setDraft(e.target.value.replace(/\D/g, '').slice(0, 4))}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') e.currentTarget.blur();
+        if (e.key === 'Escape') {
+          setDraft(null);
+          e.currentTarget.blur();
+        }
+      }}
+    />
+  );
+}
+
 function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string; items: QuizScope[] }[]; picked: string[]; total: number; onTick(id: string): void }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -284,7 +318,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     if (request.missed) return startMissed(request.missed, request.extra?.label ?? 'Missed');
     const pool = request.extra && request.extra.id === request.scope ? request.extra.items : (quizScopes(starred, collections).find((x) => x.id === request.scope) ?? { items: BUILDINGS }).items;
     const label = request.extra?.label ?? quizScopes(starred, collections).find((x) => x.id === request.scope)?.label ?? 'All';
-    begin(buildQuiz(pool, next.type, next.count, BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(next.type), label);
+    begin(buildQuiz(pool, next.type, request.count ?? next.count, BUILDINGS, Math.floor(Math.random() * 1e9)), typeLabel(next.type), label);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
 
@@ -597,16 +631,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
                 <button type="button" aria-label="Fewer questions" disabled={n <= lo} onClick={() => setCount(n - 1)}>
                   <Icon name="minus" size={12} />
                 </button>
-                <input
-                  type="number"
-                  inputMode="numeric"
-                  min={lo}
-                  max={cap}
-                  value={n}
-                  aria-label={`Questions, ${lo} to ${cap}`}
-                  onChange={(e) => setSetup({ count: Number(e.target.value) || lo })}
-                  onBlur={(e) => setCount(Number(e.target.value))}
-                />
+                <CountBox value={n} lo={lo} hi={cap} onSet={setCount} />
                 <button type="button" aria-label="More questions" disabled={n >= cap} onClick={() => setCount(n + 1)}>
                   <Icon name="plus" size={12} />
                 </button>

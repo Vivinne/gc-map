@@ -190,66 +190,31 @@ function QuizSteps() {
 function ProgressSteps() {
   return (
     <>
-      <Step
-        title="Mastery"
-        line="Each building counts once, whatever is asked. A building can be in more than one group."
-      >
+      <Step title="Overview" line="Tap Tested, Mastered or Not mastered yet to see those buildings, then quiz them or show them on the map.">
         <div className="hs-r">
           <i className="hs-sq s-mastered" />
           Mastered: right twice, on different days
         </div>
         <div className="hs-r">
           <i className="hs-sq s-learning" />
-          Learning: right last time
-        </div>
-        <div className="hs-r">
-          <i className="hs-sq s-weak" />
-          Weak: wrong last time
-        </div>
-        <div className="hs-r">
-          <i className="hs-sq s-untested" />
-          Not tested
+          Not mastered yet: tested, not mastered
         </div>
       </Step>
-      <Step
-        title="Practise next"
-        line="What you got wrong last time, most missed first. With none: buildings never asked."
-      >
+      <Step title="Mistakes" line="Questions you got wrong last time, with the answer. A right answer later takes them off.">
         <div className="hs-r">
-          Louvre Pyramid<span className="hs-f">City</span>
+          Palazzo Te<b className="hs-s">Mantua</b>
         </div>
         <div className="hs-r">
-          Pantheon<span className="hs-f">Architect</span>
+          Trevi Fountain<b className="hs-s">Nicola Salvi</b>
         </div>
       </Step>
-      <Step
-        title="Correct per day"
-        line="The small number is how many answers the day stands for."
-      >
-        <div className="hs-days">
-          {[
-            ["12", "75%", "ok"],
-            ["4", "50%", "mid"],
-            ["20", "85%", "ok"],
-          ].map(([n, v, c], k) => (
-            <span key={k}>
-              {n}
-              <b className={c}>{v}</b>
-            </span>
-          ))}
-        </div>
-      </Step>
-      <Step
-        title="Recent quizzes"
-        line="A quiz finished early shows how many questions were answered."
-      >
+      <Step title="Quiz history" line="Every quiz with its score and the questions missed in it.">
         <div className="hs-r">
-          Building → City<b className="hs-s">7/10</b>
+          Building → City<b className="hs-s">8/10</b>
         </div>
         <div className="hs-r hs-m">
-          Style → Building<b className="hs-s">2/10</b>
+          Erechtheion<b className="hs-s">Athens</b>
         </div>
-        <div className="hs-r hs-m hs-i">4 answered</div>
       </Step>
     </>
   );
