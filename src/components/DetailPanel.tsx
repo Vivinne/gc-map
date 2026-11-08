@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import type { Collection } from '../lib/collections';
 import { EMPTY, type Filters } from '../lib/filter';
 import { nearest } from '../lib/geo';
@@ -384,17 +384,18 @@ export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole
         {nearby && nearby.length > 0 && (
           <>
             <li className="o-city o-near">Nearest</li>
-            {nearby.map((b) => (
-              <li key={b.id}>
-                <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
-                  {/* no number: these pins are numbered in their own city, not in this list */}
-                  <span className="no no-n" style={{ background: ERAS[b.era].color }} />
-                  <span className="nm">
-                    {b.name}
-                    <em>{b.city}</em>
-                  </span>
-                </button>
-              </li>
+            {nearby.map((b, i) => (
+              <Fragment key={b.id}>
+                {/* city by city, the closest first */}
+                {(i === 0 || nearby[i - 1]!.city !== b.city) && <li className="o-city o-sub">{b.city}</li>}
+                <li>
+                  <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
+                    {/* no number: these pins are numbered in their own city, not in this list */}
+                    <span className="no no-n" style={{ background: ERAS[b.era].color }} />
+                    <span className="nm">{b.name}</span>
+                  </button>
+                </li>
+              </Fragment>
             ))}
           </>
         )}

@@ -3,6 +3,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, formatHash, parseHash, type Mode, type UrlState } from '../lib/hash';
+import { distance } from '../lib/geo';
 import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, byYear, citiesOf, nationName, type Building } from '../lib/model';
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
@@ -30,6 +31,24 @@ interface Toast {
 
 /** process.env.GC_HASH is "off" in the claude.ai artifact build, where the page address cannot be shared */
 const HASH_ON = process.env.GC_HASH !== 'off';
+
+/** Middle of a set of buildings */
+function centre(list: Building[]): [number, number] {
+  return [list.reduce((s, b) => s + b.lng, 0) / list.length, list.reduce((s, b) => s + b.lat, 0) / list.length];
+}
+
+/** Other cities' buildings, city by city, the city closest to `city` first, oldest first within a city */
+function byNearestCity(city: string, others: Building[]): Building[] {
+  if (!others.length) return [];
+  const own = CITY_BUILDINGS.get(city);
+  const from = own && own.length ? centre(own) : centre(others);
+  const groups = new Map<string, Building[]>();
+  for (const b of others) groups.set(b.city, [...(groups.get(b.city) ?? []), b]);
+  return [...groups.entries()]
+    .map(([c, list]) => ({ c, list: [...list].sort(byYear), d: distance(from, centre(list)) }))
+    .sort((a, b) => a.d - b.d || a.c.localeCompare(b.c))
+    .flatMap((g) => g.list);
+}
 
 /** True when the page was reloaded (not opened from a link or typed in) */
 function reloaded(): boolean {
@@ -282,7 +301,7 @@ export default function App() {
   const focusCity = useCallback(
     (c: string, others: Building[] = []) => {
       remember();
-      setNearby({ city: c, items: [...others].sort((a, b) => a.city.localeCompare(b.city) || a.name.localeCompare(b.name)) });
+      setNearby({ city: c, items: byNearestCity(c, others) });
       setCity(c);
       setSelId('');
       setSheet(false);

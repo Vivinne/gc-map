@@ -933,3 +933,5 @@ button.brand:active { background: #444; }
 /* a merged circle ("Rome area"): the buildings of its other cities, under the city's own */
 .o-city.o-near { margin-top: 8px; border-top: 1px solid var(--rule); padding-top: 14px; }
 .others .o-row .no.no-n { transform: scale(0.45); }
+.o-city.o-near { text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; padding-bottom: 0; }
+.o-city.o-sub { padding: 10px 16px 2px; font-size: 12.5px; font-weight: 800; color: #000; }
