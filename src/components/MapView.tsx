@@ -9,11 +9,10 @@ import { MIN_DONUT, boundsOf, clusterAt, donutRadius, nearest, regionOf, type Cl
 import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, nationName, type Building } from '../lib/model';
 import { geoMercator, geoPath } from 'd3-geo';
 import { Icon } from './Icons';
+import { THEMES, type Theme, type ThemeId } from '../lib/theme';
 
 export const DETAIL_ZOOM = 11.5;
 const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]];
-const SEA = '#EEF1F4';
-const LAND = '#D6DBE1';
 
 export interface Padding {
   top: number;
@@ -60,6 +59,8 @@ interface Props {
   /** A city circle clicked: the city, and for a merged circle the buildings of its other cities */
   onCity(city: string, others?: Building[]): void;
   onReady?(): void;
+  /** colour palette: the map's sea, land, streets and buildings follow it */
+  theme: ThemeId;
   /** Full map button: the parent clears selection and filters, then the map shows Europe */
   onHome?(): void;
   /** The user zoomed out to the panorama (scale bar at 500 km or more): the parent clears the view */
@@ -167,7 +168,8 @@ function nationIcon(b: Building): string {
   return out;
 }
 
-function styleSpec(): StyleSpecification {
+function styleSpec(c: Theme['map']): StyleSpecification {
+  const { sea: SEA, land: LAND } = c;
   const { land, borders } = basemap();
   return {
     version: 8,
@@ -190,24 +192,27 @@ function styleSpec(): StyleSpecification {
         filter: ['match', ['get', 'class'], ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'minor', 'service'], true, false],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: {
-          'line-color': '#F4F6F8',
+          'line-color': c.road,
           'line-width': ['interpolate', ['exponential', 1.6], ['zoom'], 10, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 1.4, 0.4], 16, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 12, ['secondary', 'tertiary'], 9, 5]],
         },
       },
-      { id: 'ofm-buildings', type: 'fill', source: 'ofm', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': '#CBD1D8' } },
+      { id: 'ofm-buildings', type: 'fill', source: 'ofm', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': c.building } },
       { id: 'borders', type: 'line', source: 'borders', maxzoom: 10, paint: { 'line-color': '#FFFFFF', 'line-width': 1 } },
     ],
   };
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { nums: numsProp, numberAll, onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot } = props;
+  const { nums: numsProp, numberAll, onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot, theme } = props;
   const nums = numsProp ?? CITY_NO;
   const panoRef = useRef(onPanorama);
   const btnZoom = useRef(false);
   panoRef.current = onPanorama;
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
+  const themeRef = useRef(theme);
+  // street tiles arrived: from zoom 6 the background is land (see the 'data' handler)
+  const tilesOk = useRef(false);
   const [layer, setLayer] = useState<HTMLElement | null>(null);
   const [frame, setFrame] = useState(0);
   const [tip, setTip] = useState<Cluster | null>(null);
@@ -229,7 +234,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     try {
       map = new maplibregl.Map({
         container: box.current,
-        style: styleSpec(),
+        style: styleSpec(THEMES[theme].map),
         bounds: EUROPE,
         // the same framing as Home (the map button and the GC Atlas name), so going home looks like opening the site
         fitBoundsOptions: { padding: { top: padRef.current.top + 20, right: padRef.current.right + 20, bottom: padRef.current.bottom + 20, left: padRef.current.left + 20 } },
@@ -310,11 +315,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // Once street tiles arrive, their water layer draws the coasts from zoom 6. The 1:50m offline land
     // would otherwise show its coarse outline through (sea colour on real land near coasts), so from
     // zoom 6 the background becomes land and the offline land layer stops.
-    let tilesOk = false;
     map.on('data', (e) => {
-      if (tilesOk || (e as { sourceId?: string }).sourceId !== 'ofm' || !(e as { tile?: unknown }).tile) return;
-      tilesOk = true;
-      map.setPaintProperty('sea', 'background-color', ['step', ['zoom'], SEA, 6, LAND]);
+      if (tilesOk.current || (e as { sourceId?: string }).sourceId !== 'ofm' || !(e as { tile?: unknown }).tile) return;
+      tilesOk.current = true;
+      const { sea, land } = THEMES[themeRef.current].map;
+      map.setPaintProperty('sea', 'background-color', ['step', ['zoom'], sea, 6, land]);
       map.setLayerZoomRange('land', 0, 6);
     });
     mapRef.current = map;
@@ -370,6 +375,24 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     },
     [fitTo],
   );
+
+  // A new palette repaints the map's own layers; pins and labels read the colours as they draw
+  useEffect(() => {
+    themeRef.current = theme;
+    const map = mapRef.current;
+    if (!map) return;
+    const c = THEMES[theme].map;
+    try {
+      map.setPaintProperty('sea', 'background-color', tilesOk.current ? ['step', ['zoom'], c.sea, 6, c.land] : c.sea);
+      map.setPaintProperty('land', 'fill-color', c.land);
+      map.setPaintProperty('ofm-water', 'fill-color', c.sea);
+      map.setPaintProperty('ofm-roads', 'line-color', c.road);
+      map.setPaintProperty('ofm-river', 'line-color', c.sea);
+      map.setPaintProperty('ofm-buildings', 'fill-color', c.building);
+    } catch {
+      /* the style is still loading: it was built with this palette */
+    }
+  }, [theme]);
 
   useImperativeHandle(
     ref,
@@ -840,7 +863,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         marks.push(
           <g key="sel" className="sel-mark" transform={`translate(${x},${y})`}>
             <circle r={18} fill={ERAS[selected.era].color} opacity={0.2} />
-            <circle r={10} fill="#fff" stroke="#000" strokeWidth={3} />
+            <circle r={10} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
             <circle r={5.5} fill={ERAS[selected.era].color} />
           </g>,
         );

@@ -1,4 +1,4 @@
-export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me';
+export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me' | 'chart';
 
 /** Line icons drawn on a 16 px grid; colour follows the text colour */
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
@@ -53,6 +53,8 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
       return (<svg {...p}><path d="M8 11V2M4 5.5l4-4 4 4M2 14.5h12" {...s} strokeWidth={1.7} /></svg>);
     case 'me':
       return (<svg {...p}><circle cx="8" cy="5.2" r="3" {...s} strokeWidth={1.6} /><path d="M2.2 14.8c.8-3 3-4.6 5.8-4.6s5 1.6 5.8 4.6" {...s} strokeWidth={1.6} /></svg>);
+    case 'chart':
+      return (<svg {...p}><path d="M2 2v12h12" {...s} strokeWidth={1.5} /><path d="M4.5 10.5 7.5 7l2.5 2 4-5" {...s} strokeWidth={1.6} strokeLinejoin="round" /></svg>);
     case 'undo':
       return (<svg {...p}><path d="M5 3.5 2 6.5l3 3M2.5 6.5H10a4 4 0 0 1 0 8H7" {...s} strokeWidth={1.6} /></svg>);
   }

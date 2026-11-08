@@ -16,12 +16,17 @@ import MeView from './MeView';
 import QuizView, { type QuizRequest } from './QuizView';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import SearchPalette from './SearchPalette';
+import SettingsView from './SettingsView';
+import { applyTheme, savedTheme, type ThemeId } from '../lib/theme';
 
 const MOBILE_QUERY = '(max-width: 900px)';
 const LANDSCAPE_QUERY = '(max-width: 900px) and (orientation: landscape) and (max-height: 500px)';
 /** Width of the side card on a sideways phone (kept in step with globals.css) */
 const SIDE_CARD = 0.46;
 const TOTAL = BUILDINGS.length;
+
+// The saved palette is set before the first draw, so the page never flashes the other colours
+applyTheme(savedTheme());
 
 interface Toast {
   id: number;
@@ -112,6 +117,11 @@ export default function App() {
   // Personal data (seen, stars, collections, quiz results) stays.
   const initial = useMemo(() => readAddress(), []);
   const [mode, setMode] = useState<Mode>(initial.mode);
+  const [theme, setTheme] = useState<ThemeId>(savedTheme);
+  const changeTheme = useCallback((id: ThemeId) => {
+    applyTheme(id);
+    setTheme(id);
+  }, []);
   const [selId, setSelId] = useState(BY_ID.has(initial.b) ? initial.b : '');
   const [city, setCity] = useState(initial.city);
   const [filters, setFiltersRaw] = useState<Filters>(initial.filters);
@@ -502,10 +512,10 @@ export default function App() {
         else if (selId || city) closeCity();
         return;
       }
-      if (mode === 'me' || mode === 'quiz') {
+      if (mode === 'me' || mode === 'quiz' || mode === 'settings') {
         if (e.key === 'm') setMode('map');
-        if (e.key === 'q' && mode === 'me') setMode('quiz');
-        if (e.key === 'u' && mode === 'quiz') setMode('me');
+        if (e.key === 'q' && mode !== 'quiz') setMode('quiz');
+        if (e.key === 'u' && mode !== 'me') setMode('me');
         return;
       }
       if (e.key === 'm') setMode('map');
@@ -522,10 +532,11 @@ export default function App() {
   }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
   // ---------- pieces ----------
-  const modes: [Mode, string, 'map' | 'cards' | 'me', string][] = [
+  const modes: [Mode, string, 'map' | 'cards' | 'chart' | 'me', string][] = [
     ['map', 'Map', 'map', 'M'],
     ['quiz', 'Quiz', 'cards', 'Q'],
-    ['me', 'Data', 'me', 'U'],
+    ['me', 'Data', 'chart', 'U'],
+    ['settings', 'Settings', 'me', ''],
   ];
 
   const index = (
@@ -605,7 +616,7 @@ export default function App() {
           </button>
           <nav className="modes" aria-label="Views">
             {modes.map(([m, label, icon, key]) => (
-              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={`${label} (${key})`}>
+              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={key ? `${label} (${key})` : label}>
                 <Icon name={icon} size={17} />
                 {/* Progress shows as its icon alone */}
                 {label}
@@ -644,6 +655,7 @@ export default function App() {
         <div className={`pane map-pane${mode === 'map' ? ' on' : ''}`} aria-hidden={mode !== 'map'}>
           <MapView
             ref={mapRef}
+            theme={theme}
             buildings={results}
             selected={selected}
             hoverCity={hoverCity}
@@ -803,9 +815,12 @@ export default function App() {
               onDelete={(id) => setCollections((c) => Col.remove(c, id))}
               onUnstar={(id) => setStarred((s) => { const n = new Set(s); n.delete(id); return n; })}
               onRemoveFrom={(col, id) => setCollections((c) => Col.toggleIn(c, col, id))}
-              onExport={exportFile}
-              onImport={importFile}
             />
+          </div>
+        )}
+        {mode === 'settings' && (
+          <div className="pane on">
+            <SettingsView mobile={mobile} theme={theme} onTheme={changeTheme} onExport={exportFile} onImport={importFile} />
           </div>
         )}
       </main>

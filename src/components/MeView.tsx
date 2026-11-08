@@ -24,8 +24,6 @@ export interface MeProps {
   /** Take a building out of Starred, or out of one collection */
   onUnstar(id: string): void;
   onRemoveFrom(col: string, id: string): void;
-  onExport(): void;
-  onImport(text: string): void;
 }
 
 const DAY = 86400000;
@@ -313,7 +311,7 @@ function History({ quiz }: { quiz: QuizStore }) {
 
 /**
  * Collections: every collection as a folder (Starred first); a folder opens its own page with the buildings
- * it holds, what to do with them (map, quiz), and its name (rename, delete). Moving to another device: last.
+ * it holds, what to do with them (map, quiz), and its name (rename, delete).
  */
 function Collections(p: MeProps) {
   const { starred, collections, onQuiz, onMap, onCreate, onRename, onDelete, onUnstar, onRemoveFrom } = p;
@@ -470,28 +468,6 @@ function Collections(p: MeProps) {
           </button>
         )}
       </section>
-      <div className="me-foot">
-        <h2>Another device</h2>
-        <span className="note">Stars, collections and quiz results</span>
-        <button type="button" className="btn" onClick={p.onExport}>
-          <Icon name="download" size={14} />
-          Save progress to file
-        </button>
-        <label className="btn">
-          <Icon name="upload" size={14} />
-          Load file
-          <input
-            type="file"
-            accept=".json,application/json"
-            hidden
-            onChange={async (e) => {
-              const f = e.target.files?.[0];
-              e.target.value = '';
-              if (f) p.onImport(await f.text());
-            }}
-          />
-        </label>
-      </div>
     </>
   );
 }
