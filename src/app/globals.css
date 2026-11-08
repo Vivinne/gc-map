@@ -1007,3 +1007,22 @@ button.brand:active { background: #444; }
 .me.m .cf-t2 td.cf-x { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: block; padding: 0 !important; }
 /* the tab bar runs the full width, into the room kept for the scroll bar */
 .me .me-parts { border-bottom: 0; box-shadow: 0 0 0 100vmax #fff, 0 1px 0 100vmax var(--rule); clip-path: inset(0 -100vmax -1px -100vmax); }
+.me .cf-list { background: #fff; }
+.me .cf-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) 96px 16px; gap: 14px; align-items: center; width: 100%; height: 48px; padding: 0 16px; border-bottom: 1px solid #eef1f4; text-align: left; }
+.me .cf-row:last-child { border-bottom: 0; }
+.me button.cf-row:hover { background: var(--soft); }
+.me .cf-row b { font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.me .cf-row .cf-n { text-align: right; font-variant-numeric: tabular-nums; color: var(--mute); font-weight: 650; }
+.me .cf-row > svg { color: #8a929c; }
+.me .cf-row .cf-ic { width: 20px; height: 16px; margin: 0; }
+.me .cf-row .cf-ic::after { width: 20px; height: 13px; }
+.me .cf-head { height: 34px; font-size: 11.5px; font-weight: 750; color: var(--mute); border-bottom: 1px solid var(--rule); }
+.me .cf-new { grid-template-columns: 22px minmax(0, 1fr); color: var(--mute); font-weight: 700; }
+.me .cf-new > svg { justify-self: center; }
+.me .cf-new:hover { color: #000; }
+.me .cf-new input { width: 100%; height: 32px; border: 0; border-bottom: 2px solid #000; outline: 0; font: inherit; font-weight: 700; background: transparent; color: #000; }
+.me.m .cf-row { grid-template-columns: 22px minmax(0, 1fr) 40px 14px; gap: 10px; padding: 0 12px; height: 52px; }
+.me.m .cf-new { grid-template-columns: 22px minmax(0, 1fr); }
+.me .cf-row.cf-new { border: 0; border-top: 1px solid #eef1f4; background: #fff; justify-content: initial; }
+.me .cf-row.cf-new:hover { background: var(--soft); }
+.me .cf-row.star .cf-ic::before, .me .cf-row.star .cf-ic::after { background: #c8960c; }

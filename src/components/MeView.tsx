@@ -434,17 +434,25 @@ function Collections(p: MeProps) {
 
   return (
     <>
-      <div className="cf-grid">
+      {/* folders in a details view: one row each, name and number of buildings */}
+      <section className="card cf-list" aria-label="Collections">
+        <div className="cf-row cf-head" aria-hidden="true">
+          <span />
+          <span>Name</span>
+          <span className="cf-n">Buildings</span>
+          <span />
+        </div>
         {folders.map((f) => (
-          <button type="button" key={f.id} className={`cf${f.c ? '' : ' star'}`} onClick={() => setOpen(f.id)}>
+          <button type="button" key={f.id} className={`cf-row${f.c ? '' : ' star'}`} onClick={() => setOpen(f.id)}>
             <span className="cf-ic" aria-hidden="true" />
             <b>{f.name}</b>
-            <span>{items(f.ids).length} buildings</span>
+            <span className="cf-n">{items(f.ids).length}</span>
+            <Icon name="right" size={12} />
           </button>
         ))}
         {adding ? (
           <form
-            className="cf cf-new on"
+            className="cf-row cf-new on"
             onSubmit={(e) => {
               e.preventDefault();
               if (name.trim()) onCreate(name);
@@ -452,15 +460,16 @@ function Collections(p: MeProps) {
               setAdding(false);
             }}
           >
-            <input autoFocus value={name} maxLength={40} placeholder="Name" aria-label="New collection name" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setAdding(false)} onBlur={() => { if (name.trim()) onCreate(name); setName(''); setAdding(false); }} />
+            <Icon name="plus" size={13} />
+            <input autoFocus value={name} maxLength={40} placeholder="Name of the new collection" aria-label="New collection name" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setAdding(false)} onBlur={() => { if (name.trim()) onCreate(name); setName(''); setAdding(false); }} />
           </form>
         ) : (
-          <button type="button" className="cf cf-new" onClick={() => setAdding(true)}>
+          <button type="button" className="cf-row cf-new" onClick={() => setAdding(true)}>
             <Icon name="plus" size={13} />
-            New collection
+            <span>New collection</span>
           </button>
         )}
-      </div>
+      </section>
       <div className="me-foot">
         <h2>Another device</h2>
         <span className="note">Stars, collections and quiz results</span>
