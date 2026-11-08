@@ -275,15 +275,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
       save('quiz-setup', n);
       return n;
     });
-  // A quiz in progress is kept in the browser, so a reload or a closed tab comes back to the same question
-  const [phase, setPhase] = useState<Phase>(() => {
-    const r = load<Extract<Phase, { kind: 'run' }> | null>('quiz-run', null);
-    const ok = r && r.kind === 'run' && Array.isArray(r.qs) && r.qs.length && r.qs.every((q) => BY_ID.has(q.id)) && Array.isArray(r.picks) && r.picks.length === r.qs.length;
-    return ok ? { ...r, i: Math.min(Math.max(0, r.i | 0), r.qs.length - 1) } : { kind: 'setup' };
-  });
+  // A reload starts the quiz page afresh: a quiz in progress is not kept (an older copy kept by earlier versions is cleared)
+  const [phase, setPhase] = useState<Phase>({ kind: 'setup' });
   useEffect(() => {
-    save('quiz-run', phase.kind === 'run' ? phase : null);
-  }, [phase]);
+    save('quiz-run', null);
+  }, []);
   const [extra, setExtra] = useState<QuizScope | null>(null);
   const scopes = useMemo(() => quizScopes(starred, collections, extra), [starred, collections, extra]);
   // The ticked categories together (any of them); none ticked = every building

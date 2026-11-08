@@ -31,9 +31,26 @@ interface Toast {
 /** process.env.GC_HASH is "off" in the claude.ai artifact build, where the page address cannot be shared */
 const HASH_ON = process.env.GC_HASH !== 'off';
 
-/** The state named by the page address (unknown buildings, cities and countries are dropped) */
+/** True when the page was reloaded (not opened from a link or typed in) */
+function reloaded(): boolean {
+  try {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    return nav ? nav.type === 'reload' : performance.navigation?.type === 1;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The state named by the page address (unknown buildings, cities and countries are dropped).
+ * A reload starts from home, the clean full map: the address is cleared and not read.
+ */
 function readAddress(): UrlState {
   if (!HASH_ON || typeof window === 'undefined') return DEFAULT_STATE;
+  if (reloaded()) {
+    if (window.location.hash) window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    return DEFAULT_STATE;
+  }
   const s = parseHash(window.location.hash);
   const nations = new Set([...COUNTRIES, ...BUILDINGS.map(nationName)]);
   const b = BY_ID.get(s.b);
