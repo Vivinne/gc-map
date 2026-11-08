@@ -26,7 +26,47 @@ export const FIELDS: Field[] = ['name', 'style', 'architect', 'city'];
 export const FIELD_LABEL: Record<Field, string> = { name: 'Building', style: 'Style', architect: 'Architect', city: 'City' };
 
 export type Pair = `${Field}>${Field}`;
-export const PAIRS: Pair[] = FIELDS.flatMap((a) => FIELDS.filter((b) => b !== a).map((b) => `${a}>${b}` as Pair));
+/** A city has no style, so City and Style are never asked together */
+const UNPAIRED = new Set(['city>style', 'style>city']);
+export const PAIRS: Pair[] = FIELDS.flatMap((a) => FIELDS.filter((b) => b !== a).map((b) => `${a}>${b}` as Pair)).filter((p) => !UNPAIRED.has(p));
+
+/** Quiz style answers: one short name per style group */
+const QUIZ_STYLE: Record<string, string> = {
+  'Postwar / Contemporary': 'Modernism',
+  'Arts & Crafts / Art Nouveau / Secession': 'Art Nouveau',
+  'Baroque / Rococo': 'Baroque',
+  'Italian Rationalism / Futurism': 'Italian Rationalism',
+  'Early Christian / Byzantine': 'Byzantine',
+  'Industrial Revolution / New Materials': 'Modernism',
+  Bauhaus: 'Modernism',
+  'Neoclassicism / Gothic Revival': 'Neoclassicism',
+};
+
+/** Architects whose works are all answered under one style in the quiz */
+const ARCHITECT_QUIZ_STYLE: Record<string, string> = {
+  Michelangelo: 'Renaissance',
+  'Giuseppe Piermarini': 'Neoclassicism',
+};
+
+/** Buildings left out of the quiz */
+const QUIZ_SKIP = new Set(['Louvre Pyramid', 'Quirinal Palace']);
+
+/** Buildings asked without an architect (the name given is a patron, a ruler or "multiple architects") */
+const NO_ARCHITECT = new Set([
+  'Mediolanum',
+  'Arc de Triomphe',
+  'Castel del Monte',
+  'Arch of Constantine',
+  'Basilica of Maxentius and Constantine',
+  'Tate Modern',
+  'Metropolitan Museum of Art',
+  'Space Needle',
+]);
+
+/** Whether a building is in the quiz at all */
+export function inQuiz(b: Building): boolean {
+  return !QUIZ_SKIP.has(b.name);
+}
 
 /** A style heading as a list with slashes: "Renaissance and Mannerism" -> "Renaissance / Mannerism",
  *  "Arts and Crafts, Art Nouveau and Secession" -> "Arts and Crafts / Art Nouveau / Secession" (a name
@@ -39,8 +79,12 @@ export function slashed(style: string): string {
 
 export function valueOf(b: Building, f: Field): string {
   if (f === 'name') return b.name.replace(/\s+and\s+/g, ' & ');
-  if (f === 'style') return slashed(styleName(b));
+  if (f === 'style') {
+    const st = ARCHITECT_QUIZ_STYLE[ascii(whoOf(b))] ?? slashed(styleName(b));
+    return QUIZ_STYLE[st] ?? st;
+  }
   if (f === 'architect') {
+    if (NO_ARCHITECT.has(b.name)) return '';
     const w = ascii(whoOf(b));
     // a list of people ("A, B and C") becomes "A / B / C"; a firm name ("Shreve, Lamb & Harmon") stays
     return /\sand\s/.test(w) ? slashed(w) : w;
@@ -64,7 +108,7 @@ export interface Question {
 /** Buildings that can be asked with this pair (both fields known) */
 export function askable(pool: Building[], pair: Pair): Building[] {
   const [a, b] = splitPair(pair);
-  return pool.filter((x) => valueOf(x, a) && valueOf(x, b) && !offStyle(x, pair));
+  return pool.filter((x) => inQuiz(x) && valueOf(x, a) && valueOf(x, b) && !offStyle(x, pair));
 }
 
 /**
@@ -85,7 +129,8 @@ export function question(b: Building, pair: Pair, all: Building[], seed: number)
   const [ask, ans] = splitPair(pair);
   const prompt = valueOf(b, ask);
   const answer = valueOf(b, ans);
-  if (!prompt || !answer || offStyle(b, pair)) return null;
+  if (!inQuiz(b) || !prompt || !answer || offStyle(b, pair)) return null;
+  all = all.filter(inQuiz);
   const right = new Set(all.filter((x) => valueOf(x, ask) === prompt).map((x) => valueOf(x, ans)));
   right.add(answer);
   const near: string[] = [];

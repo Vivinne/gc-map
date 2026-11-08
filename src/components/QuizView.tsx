@@ -86,7 +86,7 @@ type Phase =
   | { kind: 'done'; qs: Question[]; picks: Picks; label: string; scope: string; again: () => void; planned: number };
 
 /** Question types in the order users ask for them: from the building first, then back to it, then the rest */
-const TYPE_ORDER: PairChoice[] = ['name>city', 'name>architect', 'name>style', 'city>name', 'architect>name', 'style>name', 'city>style', 'city>architect', 'style>city', 'style>architect', 'architect>city', 'architect>style', 'mixed'];
+const TYPE_ORDER: PairChoice[] = ['name>city', 'name>architect', 'name>style', 'city>name', 'architect>name', 'style>name', 'city>architect', 'style>architect', 'architect>city', 'architect>style', 'mixed'];
 
 interface Opt {
   id: string;
@@ -551,10 +551,10 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   // The question type as two short choices: what is shown, and what is asked (the other three fields)
   const [see, ask] = setup.type === 'mixed' ? ['any', ''] : setup.type.split('>');
   const seeOpts: Opt[] = [...FIELDS.map((f) => ({ id: f, label: FIELD_LABEL[f] })), { id: 'any', label: 'Any', rule: true }];
-  const askOpts: Opt[] = see === 'any' ? [{ id: '', label: 'Any' }] : FIELDS.filter((f) => f !== see).map((f) => ({ id: f, label: FIELD_LABEL[f] }));
+  const askOpts: Opt[] = see === 'any' ? [{ id: '', label: 'Any' }] : FIELDS.filter((f) => (PAIRS as string[]).includes(`${see}>${f}`)).map((f) => ({ id: f, label: FIELD_LABEL[f] }));
   const pickSee = (v: string) => {
     if (v === 'any') return setSetup({ type: 'mixed' });
-    const keep = ask && ask !== v ? ask : v === 'name' ? 'city' : 'name';
+    const keep = ask && (PAIRS as string[]).includes(`${v}>${ask}`) ? ask : v === 'name' ? 'city' : 'name';
     setSetup({ type: `${v}>${keep}` as PairChoice });
   };
   // The range: every category as a tick box in one menu, in groups; any mix of them is quizzed together
