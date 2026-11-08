@@ -935,3 +935,9 @@ button.brand:active { background: #444; }
 .others .o-row .no.no-n { transform: scale(0.45); }
 .o-city.o-near { text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; padding-bottom: 0; }
 .o-city.o-sub { padding: 10px 16px 2px; font-size: 12.5px; font-weight: 800; color: #000; }
+.me .ov-tiles .ov-k:not(:disabled) { box-shadow: inset 0 0 0 1px #9aa3ad, 0 3px 0 #9aa3ad; transition: transform 0.06s, box-shadow 0.06s; }
+.me .ov-tiles .ov-k:not(:disabled):hover { box-shadow: inset 0 0 0 2px #000, 0 3px 0 #000; }
+.me .ov-tiles .ov-k:not(:disabled):active { transform: translateY(3px); box-shadow: inset 0 0 0 2px #000; }
+.me .ov-tiles .ov-k.on:not(:disabled) { box-shadow: 0 3px 0 #000; }
+.me .ov-tiles .ov-k:disabled { box-shadow: none; }
+.me .ov-acc .ov-sub { margin-top: 2px; font-size: 12px; color: #8a929c; font-weight: 600; font-style: normal; }

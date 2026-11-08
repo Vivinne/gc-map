@@ -43,6 +43,12 @@ const PARTS: [Part, string][] = [
 /** The three groups a tile opens: every tested building, the mastered ones, the tested but not mastered ones */
 type Group = 'tested' | 'mastered' | 'notyet';
 const GROUP_LABEL: Record<Group, string> = { tested: 'Tested', mastered: 'Mastered', notyet: 'Not mastered yet' };
+/** What an empty group means */
+const EMPTY_LINE: Record<Group, string> = {
+  tested: 'No building asked yet. Take a quiz to start.',
+  mastered: 'None yet. A building is mastered when it is answered right twice, on two different days.',
+  notyet: 'None: every building tested is mastered.',
+};
 
 export default function MeView(p: MeProps) {
   const { quiz } = p;
@@ -114,8 +120,8 @@ function Overview({ quiz, onQuiz, onMap }: MeProps) {
     const n = groups[k].length;
     const on = open === k;
     return (
-      <button type="button" key={k} className={`k ov-k${on ? ' on' : ''}`} aria-expanded={on} disabled={!n} onClick={() => setOpen(on ? null : k)}>
-        <span className="go">{on ? 'Hide' : 'Show'}</span>
+      <button type="button" key={k} className={`k ov-k${on ? ' on' : ''}`} aria-expanded={on} onClick={() => setOpen(on ? null : k)}>
+        {/* the tile itself is the button: raised with a frame, pressed in when tapped, black while its list is open */}
         <b>
           {n}
           <small>/{all}</small>
@@ -130,19 +136,27 @@ function Overview({ quiz, onQuiz, onMap }: MeProps) {
   return (
     <>
       <div className="ov-tiles">
-        {tile('tested')}
-        {tile('mastered')}
-        {tile('notyet')}
-        {/* a share is shown only from 10 answers on; fewer answers are shown as a plain count */}
-        <div className="k">
-          <b>{week.total >= 10 ? pct(week.right, week.total) : week.total ? `${week.right}/${week.total}` : '\u2013'}</b>
-          <span>{week.total >= 10 ? `Right, last 7 days \u00b7 ${week.total} answers` : week.total ? 'Right answers, last 7 days' : 'Answers, last 7 days'}</span>
-          <div className="k-tr">
-            <i style={{ width: week.total >= 10 ? `${(week.right / week.total) * 100}%` : 0 }} />
-          </div>
+        {/* from the whole to the detail: how it goes overall, then what is not known yet, then what is */}
+        {/* right answers in the last 7 days: the share, and how many answers it is out of (nothing said twice) */}
+        <div className="k ov-acc">
+          <b>{week.total ? pct(week.right, week.total) : '\u2013'}</b>
+          <span>Accuracy</span>
+          <span className="ov-sub">{week.total ? `Last 7 days \u00b7 ${week.total} answers` : 'Last 7 days \u00b7 no answers yet'}</span>
         </div>
+        {tile('notyet')}
+        {tile('mastered')}
+        {tile('tested')}
       </div>
-      {open && (
+      {open && !list.length && (
+        <section className="card ov-list" aria-label={GROUP_LABEL[open]}>
+          <div className="hd">
+            <h2>{GROUP_LABEL[open]}</h2>
+            <span className="ct">0 buildings</span>
+          </div>
+          <p className="empty">{EMPTY_LINE[open]}</p>
+        </section>
+      )}
+      {open && list.length > 0 && (
         <section className="card ov-list" aria-label={GROUP_LABEL[open]}>
           <div className="hd">
             <h2>{GROUP_LABEL[open]}</h2>
