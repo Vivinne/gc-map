@@ -44,12 +44,11 @@ const QUIZ_STYLE: Record<string, string> = {
 
 /** Architects whose works are all answered under one style in the quiz */
 const ARCHITECT_QUIZ_STYLE: Record<string, string> = {
-  Michelangelo: 'Renaissance',
   'Giuseppe Piermarini': 'Neoclassicism',
 };
 
 /** Buildings left out of the quiz */
-const QUIZ_SKIP = new Set(['Louvre Pyramid', 'Quirinal Palace']);
+const QUIZ_SKIP = new Set(['Louvre Pyramid']);
 
 /** Buildings asked without an architect (the name given is a patron, a ruler or "multiple architects") */
 const NO_ARCHITECT = new Set([
@@ -61,6 +60,7 @@ const NO_ARCHITECT = new Set([
   'Tate Modern',
   'Metropolitan Museum of Art',
   'Space Needle',
+  'Quirinal Palace',
 ]);
 
 /** Whether a building is in the quiz at all */
