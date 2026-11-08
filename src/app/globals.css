@@ -817,3 +817,5 @@ label.btn:active { filter: brightness(0.86); }
 .hd .info { margin-left: 2px; }
 .qv-side .info-pop, .me-cols .info-pop, .me-next .info-pop, .me-day .info-pop { left: auto; right: -12px; }
 .is-mobile .info-pop, .qv.m .info-pop, .me.m .info-pop { position: fixed; left: 12px; right: 12px; top: auto; width: auto; margin-top: 8px; }
+.info-i { position: relative; }
+.info-i::before { content: ''; position: absolute; inset: -10px; }
