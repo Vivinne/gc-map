@@ -11,16 +11,16 @@ import { feature } from 'topojson-client';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const P = (...a) => resolve(ROOT, ...a);
 
-// ---------- Era groups (5 colours) ----------
+// ---------- Era groups (default colours: the Earth to sky palette, see src/lib/theme.ts) ----------
 export const ERAS = [
-  { id: 'ancient',     label: 'Ancient',      color: '#B5452E', styles: ['6.1', '6.2'] },
-  { id: 'medieval',    label: 'Medieval',     color: '#2F5D8C', styles: ['6.3', '6.4', '6.5'] },
-  { id: 'renaissance', label: 'Renaissance',  color: '#9A6700', styles: ['6.6'] },
-  { id: 'baroque',     label: 'Baroque',      color: '#C2185B', styles: ['6.7'] },
-  { id: 'c19',         label: '19th Century', color: '#2E7D5B', styles: ['6.8', '6.9', '6.10'] },
-  { id: 'modern',      label: 'Modern',       color: '#6B3FA0', styles: ['6.11', '6.12', '6.13'] },
-  { id: 'beauxarts',   label: 'Beaux-Arts',   color: '#5D4037', styles: ['6.14'] },
-  { id: 'others',      label: 'Others',       color: '#546E7A', styles: ['6.15'] },
+  { id: 'ancient',     label: 'Ancient',      color: '#D4896E', styles: ['6.1', '6.2'] },
+  { id: 'medieval',    label: 'Medieval',     color: '#BB8E4C', styles: ['6.3', '6.4', '6.5'] },
+  { id: 'renaissance', label: 'Renaissance',  color: '#94953E', styles: ['6.6'] },
+  { id: 'baroque',     label: 'Baroque',      color: '#599A68', styles: ['6.7'] },
+  { id: 'c19',         label: '19th Century', color: '#109399', styles: ['6.8', '6.9', '6.10'] },
+  { id: 'modern',      label: 'Modern',       color: '#497EB3', styles: ['6.11', '6.12', '6.13'] },
+  { id: 'beauxarts',   label: 'Beaux-Arts',   color: '#6B93A3', styles: ['6.14'] },
+  { id: 'others',      label: 'Others',       color: '#868D95', styles: ['6.15'] },
 ];
 const eraOfStyle = (sid) => ERAS.find((e) => e.styles.includes(sid))?.id;
 

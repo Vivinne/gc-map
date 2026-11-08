@@ -3,42 +3,42 @@
   {
    "id": "ancient",
    "label": "Ancient",
-   "color": "#B5452E"
+   "color": "#D4896E"
   },
   {
    "id": "medieval",
    "label": "Medieval",
-   "color": "#2F5D8C"
+   "color": "#BB8E4C"
   },
   {
    "id": "renaissance",
    "label": "Renaissance",
-   "color": "#9A6700"
+   "color": "#94953E"
   },
   {
    "id": "baroque",
    "label": "Baroque",
-   "color": "#C2185B"
+   "color": "#599A68"
   },
   {
    "id": "c19",
    "label": "19th Century",
-   "color": "#2E7D5B"
+   "color": "#109399"
   },
   {
    "id": "modern",
    "label": "Modern",
-   "color": "#6B3FA0"
+   "color": "#497EB3"
   },
   {
    "id": "beauxarts",
    "label": "Beaux-Arts",
-   "color": "#5D4037"
+   "color": "#6B93A3"
   },
   {
    "id": "others",
    "label": "Others",
-   "color": "#546E7A"
+   "color": "#868D95"
   }
  ],
  "styles": [
