@@ -1181,3 +1181,10 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .me-parts button.on { font-weight: 800 !important; }
 .btn:not(.dark) { background: #fff !important; box-shadow: inset 0 0 0 1px var(--g84); }
 .btn:not(.dark):hover { box-shadow: inset 0 0 0 1px var(--ink); }
+
+/* Building card: the architect in bold (a link when there are other works), the handout's keywords */
+.f-who-t { font-weight: 600; }
+.f-who { font: inherit; font-weight: 600; color: var(--ink); text-decoration: underline; text-decoration-color: var(--g80); text-underline-offset: 3px; cursor: pointer; transition: text-decoration-color var(--t-fast); }
+.f-who:hover { text-decoration-color: var(--ink); }
+.f-keys { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: -4px 0 0; padding: 0; }
+.f-keys li { font-size: 12.5px; font-weight: 600; line-height: 1.35; padding: 4px 8px; border-radius: 4px; background: #fff; box-shadow: inset 0 0 0 1px var(--rule); color: var(--ink); }
