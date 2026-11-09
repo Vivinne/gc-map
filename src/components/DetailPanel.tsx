@@ -251,6 +251,17 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
               <span className="c-back-t">{group ? group.label : b.city}</span>
             </button>
           )}
+          {/* photos of the building (Wikimedia Commons, new tab): on the left, apart from the card's controls */}
+          <a
+            className="c-ic c-photo"
+            href={`https://commons.wikimedia.org/w/index.php?search=${encodeURIComponent(`${b.name} ${b.city}`)}&title=Special:MediaSearch&type=image`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Photos of ${b.name} (new tab)`}
+            title="Photos (new tab)"
+          >
+            <Icon name="image" size={14} />
+          </a>
           <span className="c-sp" />
           {canStep && (
             <>
@@ -280,12 +291,6 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
           <div className="c-body">
             <Facts b={b} exam={false} onWho={(who) => onTag({ ...EMPTY, who })} />
             <Tags b={b} starred={starred} collections={collections} onTag={onTag} />
-            {/* photos of the building: a Google image search in a new tab, away from the card's controls */}
-            <a className="c-photos" href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${b.name} ${b.city}`)}`} target="_blank" rel="noopener noreferrer">
-              <Icon name="image" size={14} />
-              Photos on Google
-              <span className="c-photos-x" aria-hidden="true">↗</span>
-            </a>
           </div>
           {group && (
             <div className={`others-box${othersOpen ? ' open' : ''}`}>
