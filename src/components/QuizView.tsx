@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { type Collection } from '../lib/collections';
 import { BY_ID, COUNTRIES, ERAS, ERA_ORDER, type Building } from '../lib/model';
 import { QUIZ_BUILDINGS as BUILDINGS } from '../lib/quiz';
-import { FIELDS, FIELD_LABEL, PAIRS, addSession, buildQuiz, capacity, pairsFrom, record, splitPair, type Field, type Pair, type PairChoice, type Question, type QuizStore, type Session } from '../lib/quiz';
+import { FIELDS, FIELD_LABEL, PAIRS, QUICK_COUNT, addSession, shuffle, buildQuick, buildQuiz, capacity, pairsFrom, questionText, record, splitPair, type Field, type Pair, type PairChoice, type Question, type QuizStore, type Session } from '../lib/quiz';
+import { BUILDINGS as EVERY_BUILDING } from '../lib/model';
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
 import Help from './Help';
@@ -53,6 +54,8 @@ export interface QuizRequest {
   missed?: string[];
   /** Questions to ask (else the set-up's number) */
   count?: number;
+  /** The quick quiz (five questions: city, architect, style) */
+  quick?: boolean;
 }
 
 interface Props {
@@ -84,10 +87,51 @@ const MIN_Q = 1;
 /** A pick per question; null = skipped or not answered yet */
 type Picks = (string | null)[];
 
+/** How a quiz was made, so it can be made again with new questions (Practice again) */
+type Recipe = { kind: 'quick' } | { kind: 'setup'; setup: Setup; pool: Building[] } | { kind: 'missed'; entries: string[] };
+
 type Phase =
   | { kind: 'setup' }
-  | { kind: 'run'; qs: Question[]; i: number; picks: Picks; seen: number; label: string; scope: string }
-  | { kind: 'done'; qs: Question[]; picks: Picks; label: string; scope: string; again: () => void; planned: number };
+  | {
+      kind: 'run';
+      qs: Question[];
+      i: number;
+      picks: Picks;
+      /** Answer shown after each question: the pick is checked (and fixed) with Check */
+      reveal: boolean;
+      checked: boolean[];
+      seen: number;
+      label: string;
+      scope: string;
+      recipe: Recipe;
+    }
+  | { kind: 'done'; qs: Question[]; picks: Picks; answered: boolean[]; label: string; scope: string; recipe: Recipe; at: number };
+
+/** The last quiz made, kept so the set-up can offer Practice again */
+interface Last {
+  label: string;
+  scope: string;
+  recipe: { kind: 'quick' } | { kind: 'setup'; setup: Setup } | { kind: 'missed' };
+  ids: string[];
+}
+
+/** 199 of the 200 buildings are in the quiz; said where the range of a quiz is chosen */
+const IN_QUIZ_NOTE = `${BUILDINGS.length} of ${EVERY_BUILDING.length} buildings are in the quiz (${EVERY_BUILDING.filter((b) => !BUILDINGS.includes(b))
+  .map((b) => b.name)
+  .join(', ')} ${EVERY_BUILDING.length - BUILDINGS.length === 1 ? 'is' : 'are'} left out). A question needs the facts it asks about: a building with no known architect is not asked about its architect.`;
+
+/** A small "i" that shows a note under it while open */
+function Info({ text, label }: { text: string; label: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="qz-info">
+      <button type="button" className="qv-ib" aria-expanded={open} aria-label={label} title={label} onClick={() => setOpen(!open)}>
+        i
+      </button>
+      {open && <span className="qz-note" role="note">{text}</span>}
+    </span>
+  );
+}
 
 /** Question types in the order users ask for them: from the building first, then back to it, then the rest */
 const TYPE_ORDER: PairChoice[] = ['name>city', 'name>architect', 'name>style', 'city>name', 'architect>name', 'style>name', 'city>architect', 'style>architect', 'architect>city', 'architect>style', 'mixed'];
@@ -269,6 +313,12 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
       save('quiz-setup', n);
       return n;
     });
+  // Custom quiz: open or folded, as last left
+  const [customOpen, setCustomOpen] = useState(() => load<boolean>('quiz-custom-open', false));
+  const setCustom = (v: boolean) => {
+    save('quiz-custom-open', v);
+    setCustomOpen(v);
+  };
   // A reload starts the quiz page afresh: a quiz in progress is not kept (an older copy kept by earlier versions is cleared)
   const [phase, setPhase] = useState<Phase>({ kind: 'setup' });
   useEffect(() => {
@@ -285,17 +335,38 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   const cap = capacity(scope.items, pairs);
   const missedAll = useMemo(() => [...quiz.wrong].reverse(), [quiz.wrong]);
 
-  const begin = (qs: Question[], label: string, scopeLabel: string) => {
+  const [last, setLastRaw] = useState<Last | null>(() => load<Last | null>('quiz-last', null));
+  const begin = (qs: Question[], label: string, scopeLabel: string, recipe: Recipe) => {
     if (!qs.length) return;
-    setPhase({ kind: 'run', qs, i: 0, picks: qs.map(() => null), seen: 1, label, scope: scopeLabel });
+    const l: Last = { label, scope: scopeLabel, recipe: recipe.kind === 'setup' ? { kind: 'setup', setup: recipe.setup } : recipe, ids: qs.map((q) => q.id) };
+    save('quiz-last', l);
+    setLastRaw(l);
+    setPhase({ kind: 'run', qs, i: 0, picks: qs.map(() => null), reveal: setup.reveal, checked: qs.map(() => false), seen: 1, label, scope: scopeLabel, recipe });
   };
-  const startSetup = (s: Setup) => {
+  const seed = () => Math.floor(Math.random() * 1e9);
+  const startQuick = (avoid?: ReadonlySet<string>) => begin(buildQuick(BUILDINGS, BUILDINGS, seed(), avoid), 'Quick quiz', 'All', { kind: 'quick' });
+  const startSetup = (s: Setup, pool: Building[] = scope.items, label = scope.label, avoid?: ReadonlySet<string>) => {
     const ps = pairsFrom(s.shown, s.asked);
-    begin(buildQuiz(scope.items, ps, Math.max(Math.min(MIN_Q, cap), Math.min(s.count, cap)), BUILDINGS, Math.floor(Math.random() * 1e9)), pairsLabel(ps), scope.label);
+    const c = capacity(pool, ps);
+    begin(buildQuiz(pool, ps, Math.max(Math.min(MIN_Q, c), Math.min(s.count, c)), BUILDINGS, seed(), undefined, avoid), pairsLabel(ps), label, { kind: 'setup', setup: s, pool });
   };
   const startMissed = (entries: string[], scopeLabel = 'Missed') => {
-    begin(buildQuiz([], 'mixed', Math.min(30, entries.length), BUILDINGS, Math.floor(Math.random() * 1e9), entries), 'Missed', scopeLabel);
+    begin(buildQuiz([], 'mixed', Math.min(30, entries.length), BUILDINGS, seed(), entries), 'Missed', scopeLabel, { kind: 'missed', entries });
   };
+  /** The same kind of quiz again, with new questions: the last set's buildings go last */
+  const practiseAgain = (recipe: Recipe, label: string, avoid: ReadonlySet<string>) => {
+    if (recipe.kind === 'quick') startQuick(avoid);
+    else if (recipe.kind === 'setup') startSetup(recipe.setup, recipe.pool, label, avoid);
+    else startMissed(recipe.entries, label);
+  };
+  /** The same questions again, choices in a new order */
+  const retry = (qs: Question[], label: string, scopeLabel: string, recipe: Recipe) =>
+    begin(
+      qs.map((q, k) => ({ ...q, options: shuffle(q.options, seed() + k) })),
+      label,
+      scopeLabel,
+      recipe,
+    );
 
   // A request from Me: set the scope (and type) and start
   const handled = useRef(0);
@@ -306,46 +377,81 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
     const one = request.scope === 'all' ? [] : [request.scope];
     const typed = request.type ? fieldsOf(request.type) : {};
     const next = { ...setup, scopes: one, ...typed };
-    if (request.extra) setSetupRaw(next);
-    else setSetup({ scopes: one, ...typed });
+    if (!request.quick) {
+      if (request.extra) setSetupRaw(next);
+      else setSetup({ scopes: one, ...typed });
+    }
+    if (request.quick) return startQuick();
     if (request.missed) return startMissed(request.missed, request.extra?.label ?? 'Missed');
     const pool = request.extra && request.extra.id === request.scope ? request.extra.items : (quizScopes(starred, collections).find((x) => x.id === request.scope) ?? { items: BUILDINGS }).items;
     const label = request.extra?.label ?? quizScopes(starred, collections).find((x) => x.id === request.scope)?.label ?? 'All';
-    const ps = pairsFrom(next.shown, next.asked);
-    begin(buildQuiz(pool, ps, request.count ?? next.count, BUILDINGS, Math.floor(Math.random() * 1e9)), pairsLabel(ps), label);
+    startSetup({ ...next, count: request.count ?? next.count }, pool, label);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
 
-  // Finish: score, record every question that was reached (a skip counts as missed), keep the session
+  // An answer counts when given: with answers shown after each question, once checked
+  const answeredOf = (p: Extract<Phase, { kind: 'run' }>): boolean[] => p.qs.map((_, k) => p.picks[k] != null && (!p.reveal || !!p.checked[k]));
+  // End: record each answered question once (a skipped one is not an answer: it changes neither score nor
+  // mastery), keep the session. A second tap while it ends does nothing.
+  const ending = useRef(false);
   const finish = (p: Extract<Phase, { kind: 'run' }>) => {
-    const reached = p.qs.slice(0, Math.max(p.seen, p.picks.filter((x) => x != null).length));
-    const picks = p.picks.slice(0, reached.length);
-    const right = reached.filter((q, k) => picks[k] === q.answer).length;
+    if (ending.current) return;
+    ending.current = true;
+    const answered = answeredOf(p);
+    const total = answered.filter(Boolean).length;
+    const right = p.qs.filter((q, k) => answered[k] && p.picks[k] === q.answer).length;
+    const t = Date.now();
     onQuiz((s) => {
       let n = s;
-      reached.forEach((q, k) => (n = record(n, q, picks[k] === q.answer)));
-      const session: Session = { t: Date.now(), type: p.label === 'Missed' ? 'missed' : (TYPE_ORDER.find((t) => typeLabel(t) === p.label) ?? (p.label === 'Mixed' ? 'mixed' : p.label)), scope: p.scope, n: p.qs.length, total: reached.length, right };
+      p.qs.forEach((q, k) => {
+        if (answered[k]) n = record(n, q, p.picks[k] === q.answer, t);
+      });
+      const type = p.label === 'Missed' ? 'missed' : p.label === 'Quick quiz' ? 'quick' : (TYPE_ORDER.find((x) => typeLabel(x) === p.label) ?? (p.label === 'Mixed' ? 'mixed' : p.label));
+      const session: Session = { t, type, scope: p.scope, n: p.qs.length, total, right, skipped: p.qs.length - total };
       return addSession(n, session);
     });
-    const again = p.label === 'Missed' ? () => startMissed(p.qs.map((q) => `${q.id}|${q.pair}`), p.scope) : () => startSetup(setup);
-    setPhase({ kind: 'done', qs: reached, picks, label: p.label, scope: p.scope, again, planned: p.qs.length });
+    setConfirm(false);
+    setPhase({ kind: 'done', qs: p.qs, picks: p.picks, answered, label: p.label, scope: p.scope, recipe: p.recipe, at: Date.now() });
+  };
+  useEffect(() => {
+    if (phase.kind !== 'done') ending.current = false;
+  }, [phase]);
+  const [confirm, setConfirm] = useState(false);
+  /** End quiz: straight to the result when all is answered, else ask first */
+  const askEnd = (p: Extract<Phase, { kind: 'run' }>) => {
+    if (answeredOf(p).every(Boolean)) finish(p);
+    else setConfirm(true);
   };
 
   const run = phase.kind === 'run' ? phase : null;
   const go = (i: number) => run && setPhase({ ...run, i, seen: Math.max(run.seen, i + 1) });
   const pick = (o: string) => {
     if (!run) return;
-    // answers shown at once: the first pick stands
-    if (setup.reveal && run.picks[run.i] != null) return;
+    // a checked answer stays as it is
+    if (run.reveal && run.checked[run.i]) return;
     const picks = [...run.picks];
     picks[run.i] = picks[run.i] === o ? null : o;
     setPhase({ ...run, picks });
   };
-  const next = () => {
+  // The main button: Check (answers shown, a pick not checked yet), Skip (nothing picked), Next, or See results.
+  // Taps closer than 350 ms count once, so a double tap never checks and moves on in one go.
+  const tapAt = useRef(0);
+  const primary = () => {
     if (!run) return;
-    if (run.i + 1 >= run.qs.length) finish(run);
+    const now = Date.now();
+    if (now - tapAt.current < 350) return;
+    tapAt.current = now;
+    const picked = run.picks[run.i] != null;
+    if (run.reveal && picked && !run.checked[run.i]) {
+      const checked = [...run.checked];
+      checked[run.i] = true;
+      setPhase({ ...run, checked });
+      return;
+    }
+    if (run.i + 1 >= run.qs.length) askEnd(run);
     else go(run.i + 1);
   };
+  const next = primary;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -397,10 +503,15 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   // ---------- run ----------
   if (run) {
     const q = run.qs[run.i]!;
-    const b = BY_ID.get(q.id)!;
-    const done = run.picks.filter((x) => x != null).length;
+    const answered = answeredOf(run);
+    const done = answered.filter(Boolean).length;
     const last = run.i + 1 >= run.qs.length;
-    const state = (k: number) => (run.picks[k] != null ? 'ans' : k < run.seen && k !== run.i ? 'skip' : '');
+    const picked = run.picks[run.i] != null;
+    const checkedHere = run.reveal && run.checked[run.i];
+    const mainLabel = run.reveal && picked && !checkedHere ? 'Check' : !picked ? 'Skip' : last ? 'See results' : 'Next';
+    const state = (k: number) => (answered[k] ? 'ans' : k < run.seen && k !== run.i ? 'skip' : '');
+    const [before, after] = questionText(q.pair);
+    const unanswered = run.qs.length - done;
     return (
       <div className={`qv${mobile ? ' m' : ''}`}>
         <section className="card qv-main" aria-label="Question">
@@ -411,29 +522,36 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
                 <i key={k} className={k === run.i ? 'cur' : state(k)} />
               ))}
             </div>
+            {mobile && (
+              <button type="button" className="btn qv-end" onClick={() => askEnd(run)}>
+                End quiz
+              </button>
+            )}
           </div>
           <div className="bd">
             <div className="qv-k">{typeLabel(q.pair)}</div>
-            {/* no style colour here: it would give the style away */}
-            <div className="qv-p">
-              {q.prompt}
+            {/* the question as a sentence around its prompt; no style colour here: it would give the style away */}
+            <div className="qv-p qv-sent">
+              {before}
+              <b>{q.prompt}</b>
+              {after}
             </div>
             <ol className="qv-ops" role="radiogroup" aria-label="Answers">
               {q.options.map((o, k) => {
                 const mine = run.picks[run.i] === o;
-                // answers shown at once: after a pick, the right answer turns green and a wrong pick red
-                const shown = setup.reveal && run.picks[run.i] != null;
-                const cls = shown ? (o === q.answer ? ' ok' : mine ? ' no' : ' dim') : mine ? ' pick' : '';
+                // checked: the right answer turns green and a wrong pick red
+                const cls = checkedHere ? (o === q.answer ? ' ok' : mine ? ' no' : ' dim') : mine ? ' pick' : '';
                 return (
                   <li key={o}>
-                    <button type="button" role="radio" className={`qv-o${cls}`} aria-checked={mine} onClick={() => pick(o)}>
-                      <span className="i">{shown && o === q.answer ? <Icon name="check" size={11} /> : shown && mine ? <Icon name="close" size={10} /> : k + 1}</span>
+                    <button type="button" role="radio" className={`qv-o${cls}`} aria-checked={mine} aria-disabled={checkedHere || undefined} onClick={() => pick(o)}>
+                      <span className="i">{checkedHere && o === q.answer ? <Icon name="check" size={11} /> : checkedHere && mine ? <Icon name="close" size={10} /> : k + 1}</span>
                       <span>{o}</span>
                     </button>
                   </li>
                 );
               })}
             </ol>
+            {checkedHere && <p className={`qv-fb ${run.picks[run.i] === q.answer ? 'ok' : 'no'}`}>{run.picks[run.i] === q.answer ? 'Right.' : `The answer is ${q.answer}.`}</p>}
           </div>
           <div className="act">
             {mobile ? (
@@ -452,23 +570,33 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
                 Back
               </button>
             )}
-            {mobile && (
-              <button type="button" className="btn" onClick={() => finish(run)}>
-                Finish
-              </button>
-            )}
-            <button type="button" className="btn dark" onClick={next}>
-              {last ? 'Finish' : 'Next'}
+            <button type="button" className={`btn${picked ? ' dark' : ''}`} onClick={primary}>
+              {mainLabel}
               <Icon name="right" size={12} />
             </button>
           </div>
+          {confirm && (
+            <div className="qv-confirm" role="alertdialog" aria-label="End quiz">
+              <p>
+                End now? {unanswered} unanswered question{unanswered === 1 ? '' : 's'} will be listed as skipped.
+              </p>
+              <div className="qv-confirm-b">
+                <button type="button" className="btn" onClick={() => setConfirm(false)}>
+                  Keep going
+                </button>
+                <button type="button" className="btn dark" onClick={() => finish(run)}>
+                  End and see results
+                </button>
+              </div>
+            </div>
+          )}
         </section>
         {!mobile && (
           <section className="card qv-side" aria-label="This quiz">
             <div className="hd">
               <h2>This quiz</h2>
               <span className="rt">
-                {done} of {run.qs.length} done
+                {done} of {run.qs.length} answered
               </span>
             </div>
             <div className="bd">
@@ -491,10 +619,10 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             <div className="act">
               <button type="button" className="btn wide" onClick={() => setPhase({ kind: 'setup' })}>
                 <Icon name="undo" size={13} />
-                Settings
+                Quiz menu
               </button>
-              <button type="button" className="btn wide" onClick={() => finish(run)}>
-                Finish
+              <button type="button" className="btn wide" onClick={() => askEnd(run)}>
+                End quiz
               </button>
             </div>
           </section>
@@ -505,11 +633,11 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
 
   // ---------- result ----------
   if (phase.kind === 'done') {
-    const right = phase.qs.filter((q, k) => phase.picks[k] === q.answer).length;
-    const wrong = phase.qs.filter((q, k) => phase.picks[k] !== q.answer);
-    const planned = phase.planned;
-    const notReached = planned - phase.qs.length;
-    // The score is always out of the questions planned: questions never reached count as not answered
+    const n = phase.qs.length;
+    const answered = phase.answered.filter(Boolean).length;
+    const right = phase.qs.filter((q, k) => phase.answered[k] && phase.picks[k] === q.answer).length;
+    const wrong = phase.qs.filter((q, k) => phase.answered[k] && phase.picks[k] !== q.answer);
+    const skipped = n - answered;
     return (
       <div className={`qv${mobile ? ' m' : ''}`}>
         <section className="card qv-main" aria-label="Result">
@@ -520,24 +648,33 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             </span>
           </div>
           <div className="bd">
+            {/* accuracy counts answered questions only; how much was answered and skipped is said beside it */}
             <div className="qv-res">
-              <b>
-                {right} / {planned}
-              </b>
-              <span>{pct(right, planned)}</span>
+              <b>{answered ? pct(right, answered) : '\u2014'}</b>
+              <span>Accuracy{answered ? ` \u00b7 ${answered} answered` : ''}</span>
             </div>
-            {notReached > 0 && (
-              <p className="qv-sum">
-                {phase.qs.length} of {planned} answered
-              </p>
-            )}
+            <p className="qv-sum">
+              <span>
+                Completion <b>{answered} of {n}</b>
+              </span>
+              <span>
+                Right <b>{right}</b>
+              </span>
+              <span>
+                Wrong <b>{wrong.length}</b>
+              </span>
+              <span>
+                Skipped <b>{skipped}</b>
+              </span>
+            </p>
             <ol className="qv-rl">
               {phase.qs.map((q, k) => {
-                const p = phase.picks[k];
+                const p = phase.answered[k] ? phase.picks[k] : null;
                 const ok = p === q.answer;
                 return (
                   <li key={`${q.id}|${q.pair}`}>
-                    <button type="button" onClick={() => onOpen(q.id)}>
+                    {/* a second tap of End that lands here right after does not open the building */}
+                    <button type="button" onClick={() => Date.now() - phase.at > 600 && onOpen(q.id)}>
                       <span className={`m ${ok ? 'ok' : p == null ? 'sk' : 'bad'}`}>{ok ? '✓' : p == null ? '–' : '✕'}</span>
                       <span className="nm">
                         <b>{q.prompt}</b>
@@ -554,18 +691,21 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               })}
             </ol>
           </div>
-          <div className="act">
+          <div className="act qv-res-act">
             <button type="button" className="btn" onClick={() => setPhase({ kind: 'setup' })}>
               <Icon name="undo" size={13} />
-              Settings
+              Quiz menu
             </button>
             {wrong.length > 0 && (
               <button type="button" className="btn" onClick={() => startMissed(wrong.map((q) => `${q.id}|${q.pair}`), phase.scope)}>
                 Mistakes <span className="n">{wrong.length}</span>
               </button>
             )}
-            <button type="button" className="btn dark" onClick={phase.again}>
-              New questions
+            <button type="button" className="btn" onClick={() => retry(phase.qs, phase.label, phase.scope, phase.recipe)}>
+              Retry these questions
+            </button>
+            <button type="button" className="btn dark" onClick={() => practiseAgain(phase.recipe, phase.scope, new Set(phase.qs.map((q) => q.id)))}>
+              Practice again
               <Icon name="right" size={12} />
             </button>
           </div>
@@ -593,61 +733,122 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   const lo = Math.min(MIN_Q, cap);
   const n = Math.max(lo, Math.min(setup.count, cap));
   const setCount = (v: number) => setSetup({ count: Math.max(lo, Math.min(cap, Math.round(v) || lo)) });
+  // fewer questions than asked for, or the most there can be while some buildings of the range lack the facts
+  const short = cap > 0 && pairs.length > 0 && (setup.count > cap || (n >= cap && cap < scope.items.length));
+  const lastText =
+    last?.recipe.kind === 'quick'
+      ? 'Last: Quick quiz'
+      : last?.recipe.kind === 'setup'
+        ? `Last: ${last.label} \u00b7 ${last.scope} \u00b7 ${last.recipe.setup.count} questions`
+        : last
+          ? `Last: Mistakes \u00b7 ${last.scope}`
+          : '';
+  const again = () => {
+    if (!last) return;
+    const avoid = new Set(last.ids);
+    if (last.recipe.kind === 'quick') startQuick(avoid);
+    else if (last.recipe.kind === 'setup') {
+      const pool = scopes.find((x) => x.id === 'all')!.items;
+      const picks = scopes.filter((x) => last.recipe.kind === 'setup' && last.recipe.setup.scopes.includes(x.id) && x.id !== 'all');
+      const items = picks.length ? [...new Map(picks.flatMap((x) => x.items).map((b) => [b.id, b])).values()] : pool;
+      startSetup(last.recipe.setup, items, last.scope, avoid);
+    } else startMissed(missedAll, 'Missed');
+  };
   return (
     <div className={`qv${mobile ? ' m' : ''}`}>
-      <section className="card qv-main qv-setup qz2" aria-label="New quiz">
-        <div className="hd">
-          <h2>New quiz</h2>
-          <Help topic="quiz" />
-        </div>
-        <div className="bd">
-          <div className="qz2-row">
-            <span className="qz2-l">Question</span>
-            <div className="qz2-line">
-              <FieldMenu label="Question in" picked={setup.shown} onTick={(f) => tickField('shown', f)} />
+      <div className="qv-col">
+        {/* the first step: one button, five questions from the building to its city, architect and style */}
+        <section className="card qv-quick" aria-label="Quick quiz">
+          <div className="qq-t">
+            <h2>Quick quiz</h2>
+            <p>
+              {QUICK_COUNT} questions {'\u00b7'} City, architect &amp; style
+              <Info label="Which buildings are asked" text={IN_QUIZ_NOTE} />
+            </p>
+          </div>
+          <button type="button" className="btn dark" onClick={() => startQuick()}>
+            Start
+            <Icon name="right" size={12} />
+          </button>
+        </section>
+        {last && (
+          <section className="card qv-quick qv-again" aria-label="Practice again">
+            <div className="qq-t">
+              <h2>Practice again</h2>
+              <p>{lastText}. New questions, avoiding the last set where possible.</p>
+            </div>
+            <button type="button" className="btn" onClick={again} disabled={last.recipe.kind === 'missed' && !missedAll.length}>
+              Practice again
               <Icon name="right" size={12} />
-              <FieldMenu label="Answer in" picked={setup.asked} onTick={(f) => tickField('asked', f)} />
-            </div>
-            {!pairs.length && <p className="qz2-note">No question pairs these: City and Style are never asked together, nor a field with itself.</p>}
+            </button>
+          </section>
+        )}
+        <section className={`card qv-main qv-setup qz2${customOpen ? '' : ' shut'}`} aria-label="Custom quiz">
+          <div className="hd">
+            <button type="button" className="qv-fold" aria-expanded={customOpen} onClick={() => setCustom(!customOpen)}>
+              <h2>Custom quiz</h2>
+              <Icon name="down" size={12} />
+            </button>
+            <Help topic="quiz" />
           </div>
-          <div className="qz2-row">
-            <span className="qz2-l">Range</span>
-            <div className="qz2-line">
-              <RangeMenu groups={groups.filter((g) => g.items.length)} picked={setup.scopes} total={scope.items.length} onTick={tick} />
-            </div>
-          </div>
-          <div className="qz2-row">
-            <span className="qz2-l">Questions</span>
-            <div className="qz2-line">
-              <div className="qv-num">
-                <button type="button" aria-label="Fewer questions" disabled={n <= lo} onClick={() => setCount(n - 1)}>
-                  <Icon name="minus" size={12} />
-                </button>
-                <CountBox value={n} lo={lo} hi={cap} onSet={setCount} />
-                <button type="button" aria-label="More questions" disabled={n >= cap} onClick={() => setCount(n + 1)}>
-                  <Icon name="plus" size={12} />
+          {customOpen && (
+            <>
+              <div className="bd">
+                <div className="qz2-row">
+                  <span className="qz2-l">Question type</span>
+                  <div className="qz2-line">
+                    <FieldMenu label="Question in" picked={setup.shown} onTick={(f) => tickField('shown', f)} />
+                    <Icon name="right" size={12} />
+                    <FieldMenu label="Answer in" picked={setup.asked} onTick={(f) => tickField('asked', f)} />
+                  </div>
+                  {!pairs.length && <p className="qz2-note">No question pairs these: City and Style are never asked together, nor a field with itself.</p>}
+                </div>
+                <div className="qz2-row">
+                  <span className="qz2-l">
+                    Range
+                    <Info label="Which buildings are in the quiz" text={IN_QUIZ_NOTE} />
+                  </span>
+                  <div className="qz2-line">
+                    <RangeMenu groups={groups.filter((g) => g.items.length)} picked={setup.scopes} total={scope.items.length} onTick={tick} />
+                  </div>
+                </div>
+                <div className="qz2-row">
+                  <span className="qz2-l">Number of questions</span>
+                  <div className="qz2-line">
+                    <div className="qv-num">
+                      <button type="button" aria-label="Fewer questions" disabled={!cap || n <= lo} onClick={() => setCount(n - 1)}>
+                        <Icon name="minus" size={12} />
+                      </button>
+                      <CountBox value={n} lo={lo} hi={cap} onSet={setCount} />
+                      <button type="button" aria-label="More questions" disabled={!cap || n >= cap} onClick={() => setCount(n + 1)}>
+                        <Icon name="plus" size={12} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="qz2-row">
+                  <span className="qz2-l">Answers</span>
+                  <div className="qz2-line">
+                    <button type="button" role="switch" aria-checked={setup.reveal} className="qz2-sw" onClick={() => setSetup({ reveal: !setup.reveal })}>
+                      <span className={`sw2${setup.reveal ? ' on' : ''}`}>
+                        <i />
+                      </span>
+                      Show the answer after each question
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="qz2-go">
+                {(!cap || !pairs.length) && <p className="qz2-why">No questions fit this range. Add styles or countries.</p>}
+                {short && <p className="qz2-why">Only {cap} building{cap === 1 ? '' : 's'} in this range {cap === 1 ? 'has' : 'have'} the facts these questions need.</p>}
+                <button type="button" className="btn dark" disabled={!cap || !pairs.length} onClick={() => startSetup(setup)}>
+                  {!cap || !pairs.length ? 'Start' : `Start ${n} question${n === 1 ? '' : 's'}`}
                 </button>
               </div>
-            </div>
-          </div>
-          <div className="qz2-row">
-            <span className="qz2-l">Answers</span>
-            <div className="qz2-line">
-              <button type="button" role="switch" aria-checked={setup.reveal} className="qz2-sw" onClick={() => setSetup({ reveal: !setup.reveal })}>
-                <span className={`sw2${setup.reveal ? ' on' : ''}`}>
-                  <i />
-                </span>
-                Show answer after each question
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="qz2-go">
-          <button type="button" className="btn dark" disabled={!cap || !pairs.length} onClick={() => startSetup(setup)}>
-            Start
-          </button>
-        </div>
-      </section>
+            </>
+          )}
+        </section>
+      </div>
       {missedCard}
     </div>
   );

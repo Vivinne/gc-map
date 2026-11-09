@@ -3,7 +3,8 @@
 import { useMemo, useState } from 'react';
 import { type Collection } from '../lib/collections';
 import { EMPTY, type Filters } from '../lib/filter';
-import { byBuilding, recent, statusOf } from '../lib/mastery';
+import { groupStatus, recent, STATUS_LABEL, STATUS_RULE, type Status } from '../lib/mastery';
+import { load, save } from '../lib/storage';
 import { BY_ID, type Building } from '../lib/model';
 import { QUIZ_BUILDINGS as BUILDINGS, splitPair, valueOf, type LogEntry, type Pair, type QuizStore, type Session } from '../lib/quiz';
 import { Icon } from './Icons';
@@ -41,15 +42,19 @@ const PARTS: [Part, string][] = [
   ['collections', 'Collections'],
 ];
 
-/** The three groups a tile opens: every tested building, the mastered ones, the tested but not mastered ones */
-type Group = 'tested' | 'mastered' | 'notyet';
-const GROUP_LABEL: Record<Group, string> = { tested: 'Tested', mastered: 'Mastered', notyet: 'Not mastered yet' };
+/** The four states a tile opens, from what needs work to what is not asked yet */
+type Group = Status;
+const GROUPS: Group[] = ['weak', 'learning', 'mastered', 'untested'];
+const GROUP_LABEL = STATUS_LABEL;
 /** What an empty group means */
 const EMPTY_LINE: Record<Group, string> = {
-  tested: 'No building asked yet. Take a quiz to start.',
-  mastered: 'None yet. A building is mastered when it is answered right twice, on two different days.',
-  notyet: 'None: every building tested is mastered.',
+  weak: 'Nothing to fix: no fact was answered wrong last time.',
+  learning: 'None right now.',
+  mastered: 'None yet. A building is mastered when its city, architect and style are each answered right on 2 different days since the last mistake.',
+  untested: 'Every building has been asked.',
 };
+/** Shown once after the mastery rules changed */
+const NOTICE_KEY = 'notice-mastery-2';
 
 export default function MeView(p: MeProps) {
   const { quiz } = p;
@@ -76,18 +81,8 @@ export default function MeView(p: MeProps) {
 
 function Overview({ quiz, onQuiz, onMap }: MeProps) {
   const [open, setOpen] = useState<Group | null>(null);
-  const groups = useMemo(() => {
-    const by = byBuilding(quiz.log);
-    const g: Record<Group, Building[]> = { tested: [], mastered: [], notyet: [] };
-    for (const b of BUILDINGS) {
-      const st = statusOf(by.get(b.id));
-      if (st === 'untested') continue;
-      g.tested.push(b);
-      (st === 'mastered' ? g.mastered : g.notyet).push(b);
-    }
-    for (const k of Object.keys(g) as Group[]) g[k].sort((a, b) => a.name.localeCompare(b.name));
-    return g;
-  }, [quiz.log]);
+  const groups = useMemo(() => groupStatus(quiz.log), [quiz.log]);
+  const [notice, setNotice] = useState(() => load<boolean>(`${NOTICE_KEY}-pending`, false) && !load<boolean>(NOTICE_KEY, false));
   const week = recent(quiz.log, Date.now(), 7 * DAY);
   const all = BUILDINGS.length;
   const list = open ? groups[open] : [];
@@ -102,25 +97,51 @@ function Overview({ quiz, onQuiz, onMap }: MeProps) {
           <small>/{all}</small>
         </b>
         <span>{GROUP_LABEL[k]}</span>
+        <span className="ov-rule">{STATUS_RULE[k]}</span>
         <div className="k-tr">
           <i style={{ width: `${(n / all) * 100}%` }} />
         </div>
       </button>
     );
   };
+  // nothing answered yet: what this page will show, and the way to start
+  if (!quiz.log.length)
+    return (
+      <section className="card ov-empty" aria-label="No progress yet">
+        <h2>Your progress shows here after your first quiz</h2>
+        <p>Each building is tracked on its city, architect and style.</p>
+        <button type="button" className="btn dark" onClick={() => onQuiz({ scope: 'all', quick: true })}>
+          Quick quiz
+          <Icon name="right" size={12} />
+        </button>
+      </section>
+    );
   return (
     <>
+      {notice && (
+        <p className="ov-notice" role="status">
+          Mastery rules were updated. Your past answers are kept.
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              save(NOTICE_KEY, true);
+              setNotice(false);
+            }}
+          >
+            OK
+          </button>
+        </p>
+      )}
       <div className="ov-tiles">
-        {/* from the whole to the detail: how it goes overall, then what is not known yet, then what is */}
+        {/* from the whole to the detail: how it goes overall, then each state, from what needs work to what is not asked */}
         {/* right answers in the last 7 days: the share, and how many answers it is out of (nothing said twice) */}
         <div className="k ov-acc">
           <b>{week.total ? pct(week.right, week.total) : '\u2013'}</b>
           <span>Accuracy</span>
           <span className="ov-sub">{week.total ? `Last 7 days \u00b7 ${week.total} answers` : 'Last 7 days \u00b7 no answers yet'}</span>
         </div>
-        {tile('notyet')}
-        {tile('mastered')}
-        {tile('tested')}
+        {GROUPS.map(tile)}
       </div>
       {open && !list.length && (
         <section className="card ov-list" aria-label={GROUP_LABEL[open]}>
@@ -295,8 +316,12 @@ function History({ quiz }: { quiz: QuizStore }) {
                 <small>/{s.n}</small>
               </span>
             </div>
-            {s.total < s.n && <p className="qh-n">{s.total} of {s.n} answered</p>}
-            {s.right === s.total ? <p className="qh-ok">All right</p> : known && wrong.length ? <QATable rows={wrong} /> : null}
+            {s.total < s.n && (
+              <p className="qh-n">
+                {s.total} of {s.n} answered{s.skipped ? ` \u00b7 ${s.skipped} skipped` : ''}
+              </p>
+            )}
+            {s.total > 0 && s.right === s.total ? <p className="qh-ok">All right</p> : known && wrong.length ? <QATable rows={wrong} /> : null}
           </section>
         );
       })}

@@ -1,107 +1,121 @@
 /**
- * Personal statistics from the answer log: mastery per building, groups for the Me page,
- * correct share per day, buildings to practise next.
+ * Personal statistics from the answer log (the raw answers are kept; everything here is worked out from
+ * them each time, so a rule can change and the numbers follow without touching the record).
+ *
+ * Mastery is kept per building and fact (its city, architect, style). Each question type says which fact
+ * of which building it tests (PAIR_FACT): the building the question was made from, i.e. the one asked
+ * about or the right option. The four types between an architect and a city or a style test no single
+ * building and count for the quiz score only. A wrong pick never marks the building that was picked.
  */
 import { type Building } from './model';
-import { QUIZ_BUILDINGS as BUILDINGS, splitPair, type LogEntry, type Pair } from './quiz';
+import { QUIZ_BUILDINGS as BUILDINGS, dayKey, valueOf, type LogEntry, type Pair } from './quiz';
 
-export type Status = 'mastered' | 'learning' | 'weak' | 'untested';
-export const STATUSES: Status[] = ['mastered', 'learning', 'weak', 'untested'];
-export const STATUS_LABEL: Record<Status, string> = { mastered: 'Mastered', learning: 'Learning', weak: 'Weak', untested: 'Not tested' };
-/** How each state is reached (shown on pointing at the legend) */
+export type Fact = 'city' | 'architect' | 'style';
+export const FACTS: Fact[] = ['city', 'architect', 'style'];
+
+/** The fact of one building each question type tests; null = no single building */
+export const PAIR_FACT: Partial<Record<Pair, Fact | null>> = {
+  'name>city': 'city',
+  'city>name': 'city',
+  'name>architect': 'architect',
+  'architect>name': 'architect',
+  'name>style': 'style',
+  'style>name': 'style',
+  'architect>city': null,
+  'city>architect': null,
+  'architect>style': null,
+  'style>architect': null,
+};
+
+export type Status = 'weak' | 'learning' | 'mastered' | 'untested';
+export const STATUSES: Status[] = ['weak', 'learning', 'mastered', 'untested'];
+export const STATUS_LABEL: Record<Status, string> = { weak: 'Needs work', learning: 'Learning', mastered: 'Mastered', untested: 'Not tested' };
+/** How each state is reached, as shown next to it */
 export const STATUS_RULE: Record<Status, string> = {
-  mastered: 'The last two answers right, given on different days',
-  learning: 'The last answer right',
-  weak: 'The last answer wrong',
+  weak: 'The last answer on one of its facts was wrong',
+  learning: 'Answered, nothing to fix, not every fact mastered yet',
+  mastered: 'City, architect and style each right on 2 different days since the last mistake',
   untested: 'Never asked',
 };
 
-/** Answers per building, newest first */
-export function byBuilding(log: LogEntry[]): Map<string, LogEntry[]> {
+/** The day an answer was given: stored with it (the day where it was answered), else from its time */
+export function dayOf(e: LogEntry): string {
+  return e.d ?? dayKey(e.t);
+}
+
+/** The facts of a building that can be asked (it has the value): only these decide whether it is mastered */
+export function factsOf(b: Building): Fact[] {
+  return FACTS.filter((f) => !!valueOf(b, f) && !!valueOf(b, 'name'));
+}
+
+/** Answers per building and fact ("id|fact"), newest first; answers that test no single building are left out */
+export function byFact(log: LogEntry[]): Map<string, LogEntry[]> {
   const m = new Map<string, LogEntry[]>();
   for (let i = log.length - 1; i >= 0; i--) {
     const e = log[i]!;
-    const a = m.get(e.id);
+    const f = PAIR_FACT[e.pair] ?? null;
+    if (!f) continue;
+    const k = `${e.id}|${f}`;
+    const a = m.get(k);
     if (a) a.push(e);
-    else m.set(e.id, [e]);
+    else m.set(k, [e]);
   }
   return m;
 }
 
 /**
- * Mastered = the last two answers right and given on different days (two right answers in one sitting may
- * be short-term memory); weak = the last answer wrong; learning = otherwise answered
+ * One fact: not tested, wrong (its last answer wrong), mastered (right on at least 2 different days since
+ * its last wrong answer), else learning
  */
-export function statusOf(answers: LogEntry[] | undefined): Status {
+export function factStatus(answers: LogEntry[] | undefined): Status {
   if (!answers?.length) return 'untested';
   if (!answers[0]!.ok) return 'weak';
-  // the latest right answer and, before it, a right answer from an earlier day with no wrong answer between
-  const today = dayKey(answers[0]!.t);
-  for (let i = 1; i < answers.length; i++) {
-    const a = answers[i]!;
-    if (!a.ok) return 'learning';
-    if (dayKey(a.t) !== today) return 'mastered';
+  const days = new Set<string>();
+  for (const a of answers) {
+    if (!a.ok) break;
+    days.add(dayOf(a));
+    if (days.size >= 2) return 'mastered';
   }
+  return 'learning';
+}
+
+/**
+ * A building from its facts: not tested (none asked), needs work (a fact whose last answer is wrong),
+ * mastered (every fact it has mastered), else learning
+ */
+export function statusOf(b: Building, by: Map<string, LogEntry[]>): Status {
+  const st = factsOf(b).map((f) => factStatus(by.get(`${b.id}|${f}`)));
+  if (!st.length || st.every((s) => s === 'untested')) return 'untested';
+  if (st.includes('weak')) return 'weak';
+  if (st.every((s) => s === 'mastered')) return 'mastered';
   return 'learning';
 }
 
 export type Counts = Record<Status, number>;
 
 export function countStatus(list: Building[], by: Map<string, LogEntry[]>): Counts {
-  const c: Counts = { mastered: 0, learning: 0, weak: 0, untested: 0 };
-  for (const b of list) c[statusOf(by.get(b.id))]++;
+  const c: Counts = { weak: 0, learning: 0, mastered: 0, untested: 0 };
+  for (const b of list) c[statusOf(b, by)]++;
   return c;
 }
 
-/** Local calendar day key, e.g. 2026-11-03 */
-export function dayKey(t: number): string {
-  const d = new Date(t);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+/** The buildings in each state, by name */
+export function groupStatus(log: LogEntry[], list: Building[] = BUILDINGS): Record<Status, Building[]> {
+  const by = byFact(log);
+  const g: Record<Status, Building[]> = { weak: [], learning: [], mastered: [], untested: [] };
+  for (const b of list) g[statusOf(b, by)].push(b);
+  for (const k of STATUSES) g[k].sort((a, b) => a.name.localeCompare(b.name));
+  return g;
 }
 
-/** Share right per day for the last `days` days that have answers */
-export function perDay(log: LogEntry[], days = 14): { day: string; right: number; total: number }[] {
-  const m = new Map<string, { right: number; total: number }>();
-  for (const e of log) {
-    const k = dayKey(e.t);
-    const c = m.get(k) ?? { right: 0, total: 0 };
-    m.set(k, { right: c.right + (e.ok ? 1 : 0), total: c.total + 1 });
-  }
-  return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0])).slice(-days).map(([day, c]) => ({ day, ...c }));
-}
-
+/** Right answers over answers in the last `ms` (every question type; skipped questions are not answers) */
 export function recent(log: LogEntry[], now: number, ms: number): { right: number; total: number } {
   let right = 0;
   let total = 0;
-  for (const e of log) if (now - e.t <= ms) {
-    total++;
-    if (e.ok) right++;
-  }
+  for (const e of log)
+    if (now - e.t <= ms) {
+      total++;
+      if (e.ok) right++;
+    }
   return { right, total };
-}
-
-/** Buildings whose last answer is wrong, most misses first; with the field asked when it was last missed */
-export function practiseNext(log: LogEntry[], n = 6): { b: Building; pair: Pair; misses: number }[] {
-  const by = byBuilding(log);
-  const out: { b: Building; pair: Pair; misses: number; t: number }[] = [];
-  for (const b of BUILDINGS) {
-    const a = by.get(b.id);
-    if (statusOf(a) !== 'weak') continue;
-    out.push({ b, pair: a![0]!.pair, misses: a!.filter((e) => !e.ok).length, t: a![0]!.t });
-  }
-  return out.sort((x, y) => y.misses - x.misses || y.t - x.t).slice(0, n);
-}
-
-/** Right / total per pair from the log */
-export function perPair(log: LogEntry[]): Map<Pair, { right: number; total: number }> {
-  const m = new Map<Pair, { right: number; total: number }>();
-  for (const e of log) {
-    const c = m.get(e.pair) ?? { right: 0, total: 0 };
-    m.set(e.pair, { right: c.right + (e.ok ? 1 : 0), total: c.total + 1 });
-  }
-  return m;
-}
-
-export function askedField(p: Pair): string {
-  return splitPair(p)[1];
 }

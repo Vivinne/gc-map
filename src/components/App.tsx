@@ -143,7 +143,13 @@ export default function App() {
   useEffect(() => {
     if (mode === 'quiz') setQuizUsed(true);
   }, [mode]);
-  const [quiz, setQuiz] = useState<QuizStore>(() => cleanQuiz(load<unknown>('quiz', EMPTY_QUIZ), new Set(BY_ID.keys())));
+  const [quiz, setQuiz] = useState<QuizStore>(() => {
+    const raw = load<unknown>('quiz', EMPTY_QUIZ);
+    // answers kept before the mastery rules changed (no stored day): Progress says once that the rules changed
+    const log = (raw as { log?: { d?: unknown }[] } | null)?.log;
+    if (Array.isArray(log) && log.some((e) => e && !e.d) && !load<boolean>('notice-mastery-2', false)) save('notice-mastery-2-pending', true);
+    return cleanQuiz(raw, new Set(BY_ID.keys()));
+  });
   const [palette, setPalette] = useState<string | null>(null);
   // The other cities' buildings of the merged circle ("Rome area") a city list was opened from
   const [nearby, setNearby] = useState<{ city: string; items: Building[] }>({ city: '', items: [] });

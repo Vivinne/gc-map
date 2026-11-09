@@ -80,8 +80,26 @@ export function slashed(style: string): string {
   return [...parts, ...last.split(/\s+and\s+/)].join(' / ').replace(/\s+and\s+/g, ' & ');
 }
 
+/** A name compared without accents or case ("Pantheon" and "Panthéon" are the same to a reader) */
+function plainName(n: string): string {
+  return n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+let SAME_NAME: Set<string> | null = null;
+/** Whether another building reads the same: such names are asked with their years, e.g. "Pantheon (AD 118-125)" */
+function sharesName(b: Building): boolean {
+  if (!SAME_NAME) {
+    const n = new Map<string, number>();
+    for (const x of EVERY) n.set(plainName(x.name), (n.get(plainName(x.name)) ?? 0) + 1);
+    SAME_NAME = new Set([...n].filter(([, c]) => c > 1).map(([k]) => k));
+  }
+  return SAME_NAME.has(plainName(b.name));
+}
+
 export function valueOf(b: Building, f: Field): string {
-  if (f === 'name') return b.name.replace(/\s+and\s+/g, ' & ');
+  if (f === 'name') {
+    const n = b.name.replace(/\s+and\s+/g, ' & ');
+    return sharesName(b) && b.built ? `${n} (${ascii(b.built)})` : n;
+  }
   if (f === 'style') {
     const st = ARCHITECT_QUIZ_STYLE[ascii(whoOf(b))] ?? slashed(styleName(b));
     return QUIZ_STYLE[st] ?? st;
@@ -141,6 +159,8 @@ export function question(b: Building, pair: Pair, all: Building[], seed: number)
   for (const x of all) {
     const v = valueOf(x, ans);
     if (!v || right.has(v) || near.includes(v) || far.includes(v)) continue;
+    // a building that reads the same as the one asked about is never a choice beside it
+    if (x.id !== b.id && plainName(x.name) === plainName(b.name)) continue;
     (x.era === b.era ? near : far).push(v);
   }
   const wrong = [...shuffle(near, seed), ...shuffle(far, seed + 1)].slice(0, 3);
@@ -163,9 +183,11 @@ export interface Session {
   scope: string;
   /** Questions planned */
   n: number;
-  /** Questions answered */
+  /** Questions answered (skipped ones are not) */
   total: number;
   right: number;
+  /** Questions reached but left unanswered */
+  skipped?: number;
 }
 
 export interface QuizStore {
@@ -184,6 +206,14 @@ export interface LogEntry {
   pair: Pair;
   ok: boolean;
   t: number;
+  /** The local calendar day it was answered on, kept as given so a later change of time zone leaves it */
+  d?: string;
+}
+
+/** Local calendar day key, e.g. 2026-11-03 */
+export function dayKey(t: number): string {
+  const d = new Date(t);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 export const LOG_MAX = 3000;
@@ -195,12 +225,12 @@ export function record(s: QuizStore, q: Question, ok: boolean, t = Date.now()): 
   const key = `${q.id}|${q.pair}`;
   const cur = s.score[q.pair] ?? { right: 0, total: 0 };
   const wrong = ok ? s.wrong.filter((w) => w !== key) : [...s.wrong.filter((w) => w !== key), key];
-  const log = [...s.log, { id: q.id, pair: q.pair, ok, t }].slice(-LOG_MAX);
+  const log = [...s.log, { id: q.id, pair: q.pair, ok, t, d: dayKey(t) }].slice(-LOG_MAX);
   return { ...s, score: { ...s.score, [q.pair]: { right: cur.right + (ok ? 1 : 0), total: cur.total + 1 } }, wrong, log };
 }
 
 export function addSession(s: QuizStore, x: Session): QuizStore {
-  if (x.total < 1) return s;
+  if (x.total + (x.skipped ?? 0) < 1) return s;
   return { ...s, history: [...s.history, x].slice(-HISTORY_MAX) };
 }
 
@@ -223,7 +253,7 @@ export function pairsFrom(shown: Field[], asked: Field[]): Pair[] {
   });
 }
 
-export function buildQuiz(pool: Building[], choice: PairChoice | Pair[], count: number, all: Building[], seed: number, missed?: string[]): Question[] {
+export function buildQuiz(pool: Building[], choice: PairChoice | Pair[], count: number, all: Building[], seed: number, missed?: string[], avoid?: ReadonlySet<string>): Question[] {
   const out: Question[] = [];
   if (missed) {
     for (const [i, w] of shuffle(missed, seed).entries()) {
@@ -236,7 +266,8 @@ export function buildQuiz(pool: Building[], choice: PairChoice | Pair[], count: 
     return out;
   }
   const used = new Set<string>();
-  const order = shuffle(pool, seed);
+  // buildings of the last set go last, so a new set differs where the pool allows
+  const order = avoid?.size ? [...shuffle(pool.filter((b) => !avoid.has(b.id)), seed), ...shuffle(pool.filter((b) => avoid.has(b.id)), seed + 3)] : shuffle(pool, seed);
   let k = 0;
   // several types: each question starts from the next type in turn, so the types are asked about evenly
   const base = shuffle(pairsOf(choice), seed + 7);
@@ -256,6 +287,59 @@ export function buildQuiz(pool: Building[], choice: PairChoice | Pair[], count: 
   return out;
 }
 
+/** Quick quiz: five questions from the building to its city, architect and style, in turn */
+export const QUICK_PAIRS: Pair[] = ['name>city', 'name>architect', 'name>style'];
+export const QUICK_COUNT = 5;
+
+/** The quick quiz: question k asks QUICK_PAIRS[k % 3], each about another building (the last set's go last) */
+export function buildQuick(pool: Building[], all: Building[], seed: number, avoid?: ReadonlySet<string>): Question[] {
+  const order = avoid?.size ? [...shuffle(pool.filter((b) => !avoid.has(b.id)), seed), ...shuffle(pool.filter((b) => avoid.has(b.id)), seed + 3)] : shuffle(pool, seed);
+  const used = new Set<string>();
+  const out: Question[] = [];
+  let k = 0;
+  for (let i = 0; i < QUICK_COUNT; i++) {
+    const p = QUICK_PAIRS[i % QUICK_PAIRS.length]!;
+    for (const b of order) {
+      if (used.has(b.id)) continue;
+      const q = question(b, p, all, seed + k++);
+      if (q) {
+        out.push(q);
+        used.add(b.id);
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+/** A question as a sentence around its prompt: the prompt itself is shown apart (bold) */
+export function questionText(pair: Pair): [string, string] {
+  switch (pair) {
+    case 'name>city':
+      return ['Which city is ', ' in?'];
+    case 'name>architect':
+      return ['Who designed ', '?'];
+    case 'name>style':
+      return ['What is the style of ', '?'];
+    case 'city>name':
+      return ['Which of these buildings is in ', '?'];
+    case 'architect>name':
+      return ['Which of these buildings did ', ' design?'];
+    case 'style>name':
+      return ['Which of these buildings is ', '?'];
+    case 'architect>city':
+      return ['Which city has a building by ', '?'];
+    case 'city>architect':
+      return ['Which architect has a building in ', '?'];
+    case 'architect>style':
+      return ['Which style did ', ' work in?'];
+    case 'style>architect':
+      return ['Which architect worked in ', '?'];
+    default:
+      return ['', ''];
+  }
+}
+
 /** How many questions a set-up can give */
 export function capacity(pool: Building[], choice: PairChoice | Pair[]): number {
   const list = pairsOf(choice);
@@ -272,14 +356,15 @@ export function cleanQuiz(raw: unknown, ids: ReadonlySet<string>): QuizStore {
   const wrong = Array.isArray(r.wrong) ? r.wrong.filter((w): w is string => typeof w === 'string' && ids.has(w.split('|')[0]!) && PAIRS.includes(w.split('|')[1] as Pair)) : [];
   const history = Array.isArray(r.history)
     ? r.history
-        .filter((x): x is Session => !!x && Number.isFinite(x.t) && Number.isFinite(x.total) && Number.isFinite(x.right) && x.total > 0 && x.right <= x.total)
-        .map((x) => ({ t: x.t, type: String(x.type ?? ''), scope: String(x.scope ?? ''), n: Number.isFinite(x.n) ? x.n : x.total, total: x.total, right: x.right }))
+        .filter((x): x is Session => !!x && Number.isFinite(x.t) && Number.isFinite(x.total) && Number.isFinite(x.right) && x.total >= 0 && x.right <= x.total && (x.total > 0 || (Number.isFinite(x.skipped) && x.skipped! > 0)))
+        .map((x) => ({ t: x.t, type: String(x.type ?? ''), scope: String(x.scope ?? ''), n: Number.isFinite(x.n) ? x.n : x.total, total: x.total, right: x.right, ...(Number.isFinite(x.skipped) && x.skipped! > 0 ? { skipped: x.skipped } : {}) }))
         .slice(-HISTORY_MAX)
     : [];
   const log = Array.isArray(r.log)
     ? r.log
         .filter((x): x is LogEntry => !!x && typeof x.id === 'string' && ids.has(x.id) && PAIRS.includes(x.pair) && typeof x.ok === 'boolean' && Number.isFinite(x.t))
-        .map((x) => ({ id: x.id, pair: x.pair, ok: x.ok, t: x.t }))
+        // answers kept before the day was stored get it from their time once, here, and keep it from then on
+        .map((x) => ({ id: x.id, pair: x.pair, ok: x.ok, t: x.t, d: typeof x.d === 'string' && /^\d{4}-\d\d-\d\d$/.test(x.d) ? x.d : dayKey(x.t) }))
         .slice(-LOG_MAX)
     : [];
   return { score, wrong, history, log };

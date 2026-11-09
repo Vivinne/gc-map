@@ -127,9 +127,9 @@ function QuizSteps() {
       <Step
         n={1}
         title="Question"
-        line="You see one thing about a building and pick another from 4 choices."
+        line="One question about a building, 4 choices, one right."
       >
-        <div className="hs-q">Pantheon</div>
+        <div className="hs-q">Which city is Pantheon in?</div>
         <div className="hs-o">Paris</div>
         <div className="hs-o">Rome</div>
         <div className="hs-o">Milan</div>
@@ -157,11 +157,11 @@ function QuizSteps() {
       <Step
         n={3}
         title="Answers"
-        line="On: right or wrong at once, the first pick counts. Off: answers can change until Finish."
+        line="On: pick, then Check to see right or wrong; a checked answer stays. Off: answers can change until the end."
       >
         <div className="hs-r">
           <Sw on />
-          Show answer at once
+          Show the answer after each question
         </div>
         <div className="hs-o no">
           Paris <Icon name="close" size={9} />
@@ -172,10 +172,10 @@ function QuizSteps() {
       </Step>
       <Step
         n={4}
-        title="Finish"
-        line="Questions not answered count as wrong. A right answer takes a question off Mistakes."
+        title="Result"
+        line="Accuracy counts answered questions only. Skipped questions are listed apart and change nothing. A right answer takes a question off Mistakes."
       >
-        <div className="hs-score">7 / 10</div>
+        <div className="hs-score">80% · 10 answered</div>
         <div className="hs-r">
           <span className="hs-x">
             <Icon name="close" size={9} />
@@ -190,14 +190,18 @@ function QuizSteps() {
 function ProgressSteps() {
   return (
     <>
-      <Step title="Overview" line="Tap Tested, Mastered or Not mastered yet to see those buildings, then quiz them or show them on the map.">
+      <Step title="Overview" line="Each building is tracked on its city, architect and style. Questions between an architect and a city or a style count in the quiz score only. Tap a state to see its buildings.">
         <div className="hs-r">
-          <i className="hs-sq s-mastered" />
-          Mastered: right twice, on different days
+          <i className="hs-sq s-weak" />
+          Needs work: a fact's last answer was wrong
         </div>
         <div className="hs-r">
           <i className="hs-sq s-learning" />
-          Not mastered yet: tested, not mastered
+          Learning: nothing to fix, not all mastered
+        </div>
+        <div className="hs-r">
+          <i className="hs-sq s-mastered" />
+          Mastered: each fact right on 2 different days since the last mistake
         </div>
       </Step>
       <Step title="Mistakes" line="Questions you got wrong last time, with the answer. A right answer later takes them off.">
