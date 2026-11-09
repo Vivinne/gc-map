@@ -1194,3 +1194,7 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .app.is-mobile.mode-map .main { grid-row: 2 / 4; grid-column: 1; }
 .app.is-mobile.mode-map .tabbar { grid-row: 3; grid-column: 1; position: relative; transition: transform var(--t-mid) var(--ease), visibility 0s; }
 .app.is-mobile.mode-map.tabs-off .tabbar { transform: translateY(100%); visibility: hidden; transition: transform var(--t-mid) var(--ease-in), visibility 0s var(--t-mid); }
+/* the photo search sits under the tags, apart from the card's controls */
+.c-photos { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 12.5px; font-weight: 600; color: var(--mute); text-decoration: none; transition: color var(--t-fast); }
+.c-photos:hover { color: var(--ink); }
+.c-photos .c-photos-x { font-size: 11px; }

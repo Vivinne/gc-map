@@ -135,7 +135,7 @@ bauhaus-dessau-building-dessau | Bauhaus Dessau Building | Pinwheel plan · RC f
 villa-savoye-poissy | Villa Savoye | Five Points
 barcelona-pavilion-barcelona | Barcelona Pavilion | 
 fallingwater-pennsylvania | Fallingwater | Cantilever · Organic architecture
-unite-d-habitation | Unité d'Habitation | Vertical village · Béton brut · Brutalism
+unite-d-habitation | Unité d'Habitation | Vertical village · Béton brut
 notre-dame-du-haut-ronchamp-ronchamp | Notre-Dame-du-Haut (Ronchamp) | Free plan · Free facade
 aeg-turbine-factory-berlin | AEG Turbine Factory | 
 chrysler-building-new-york | Chrysler Building | Arched spire
@@ -162,9 +162,9 @@ casa-del-fascio-como | Casa del Fascio | Square plan · Glass blocks
 qt8-milan | QT8 | 
 asilo-sant-elia-como | Asilo Sant'Elia | Large windows · Kindergarten
 pirelli-tower-milan | Pirelli Tower | 
-torre-velasca-milan | Torre Velasca | Brutalism
-nakagin-capsule-tower-tokyo | Nakagin Capsule Tower | Capsule units · Metabolism
-centre-pompidou-paris | Centre Pompidou | Exposed structure · High-Tech
+torre-velasca-milan | Torre Velasca | 
+nakagin-capsule-tower-tokyo | Nakagin Capsule Tower | Capsule units
+centre-pompidou-paris | Centre Pompidou | Exposed structure
 tomba-brion | Tomba Brion | 
 guggenheim-museum-bilbao-bilbao | Guggenheim Museum Bilbao | Titanium curves
 maxxi-rome | MAXXI | Flowing walkways
@@ -179,22 +179,22 @@ bibliotheque-nationale-de-france-paris | Bibliothèque nationale de France | Fou
 musee-d-orsay-paris | Musée d'Orsay | Railway station · Great vault
 louvre-abu-dhabi-abu-dhabi | Louvre Abu Dhabi | Perforated dome
 philharmonie-de-paris-paris | Philharmonie de Paris | Aluminium panels · Perforations
-lloyd-s-building-london | Lloyd's Building | Bowellism · Exposed services
+lloyd-s-building-london | Lloyd's Building | Exposed services
 the-gherkin-london | The Gherkin | Gherkin shape
 london-city-hall-london | London City Hall | Glass sphere
 grand-court-london | Grand Court | Glass canopy
 reichstag-glass-dome-berlin | Reichstag (Glass Dome) | Glass dome · Spiral ramp · Democratic transparency
-jewish-museum-berlin-berlin | Jewish Museum Berlin | Deconstructivism
+jewish-museum-berlin-berlin | Jewish Museum Berlin | 
 dancing-house-prague | Dancing House | Curved twin towers
-vitra-fire-station | Vitra Fire Station | Leaning walls · Sharp angles · Deconstructivism
+vitra-fire-station | Vitra Fire Station | Leaning walls · Sharp angles
 phaeno-science-center | Phaeno Science Center | Cone supports
 wexner-center | Wexner Center | 
-salk-institute | Salk Institute | Brutalism
-vanna-venturi-house | Vanna Venturi House | Postmodernism
+salk-institute | Salk Institute | 
+vanna-venturi-house | Vanna Venturi House | 
 space-needle-seattle | Space Needle | 
 petronas-twin-towers-kuala-lumpur | Petronas Twin Towers | 
 allianz-arena-munich | Allianz Arena | Inflated ETFE skin
-marques-de-riscal-hotel-elciego | Marqués de Riscal Hotel | Deconstructivism
+marques-de-riscal-hotel-elciego | Marqués de Riscal Hotel | 
 tate-modern-london | Tate Modern | 
 metropolitan-museum-of-art-new-york | Metropolitan Museum of Art | 
 nevsky-prospect-saint-petersburg | Nevsky Prospect | 

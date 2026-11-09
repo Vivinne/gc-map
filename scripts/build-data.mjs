@@ -11,16 +11,19 @@ import { feature } from 'topojson-client';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const P = (...a) => resolve(ROOT, ...a);
 
-// ---------- Era groups (default colours: the Earth to sky palette, see src/lib/theme.ts) ----------
+// ---------- Era groups, in time order (default colours: the Earth to sky palette, see src/lib/theme.ts) ----------
 export const ERAS = [
-  { id: 'ancient',     label: 'Ancient',      color: '#D4896E', styles: ['6.1', '6.2'] },
-  { id: 'medieval',    label: 'Medieval',     color: '#BB8E4C', styles: ['6.3', '6.4', '6.5'] },
-  { id: 'renaissance', label: 'Renaissance',  color: '#94953E', styles: ['6.6'] },
-  { id: 'baroque',     label: 'Baroque',      color: '#599A68', styles: ['6.7'] },
-  { id: 'c19',         label: '19th Century', color: '#109399', styles: ['6.8', '6.9', '6.10'] },
-  { id: 'modern',      label: 'Modern',       color: '#497EB3', styles: ['6.11', '6.12', '6.13'] },
-  { id: 'beauxarts',   label: 'Beaux-Arts',   color: '#6B93A3', styles: ['6.14'] },
-  { id: 'others',      label: 'Others',       color: '#868D95', styles: ['6.15'] },
+  { id: 'ancient',       label: 'Ancient',       color: '#D58774', styles: ['6.1', '6.2'] },
+  { id: 'medieval',      label: 'Medieval',      color: '#C38C53', styles: ['6.3', '6.4', '6.5'] },
+  { id: 'renaissance',   label: 'Renaissance',   color: '#A6943C', styles: ['6.6'] },
+  // Mannerism has no handout heading of its own: its buildings move here through data/style-split.txt
+  { id: 'mannerism',     label: 'Mannerism',     color: '#799C51', styles: [] },
+  { id: 'baroque',       label: 'Baroque',       color: '#4B9C75', styles: ['6.7'] },
+  { id: 'neoclassicism', label: 'Neoclassicism', color: '#1B9794', styles: ['6.8'] },
+  { id: 'artnouveau',    label: 'Art Nouveau',   color: '#278CAB', styles: ['6.10'] },
+  { id: 'beauxarts',     label: 'Beaux-Arts',    color: '#6B8BA2', styles: ['6.14'] },
+  { id: 'modern',        label: 'Modern',        color: '#507CB5', styles: ['6.9', '6.11', '6.12', '6.13'] },
+  { id: 'others',        label: 'Others',        color: '#80878F', styles: ['6.15'] },
 ];
 const eraOfStyle = (sid) => ERAS.find((e) => e.styles.includes(sid))?.id;
 
@@ -302,11 +305,14 @@ function main() {
   // Building tags, edited by the user (data/tags-zh.txt, data/tags-en.txt): id | name | tags
   const readTags = (file, sep) => new Map(dataLines(file).map((l) => { const [id, , t = ''] = l.split('|').map((x) => x.trim()); return [id, t.split(sep).map((x) => x.trim()).filter(Boolean)]; }));
   const TAGS = { zh: readTags('data/tags-zh.txt', '\u30fb'), en: readTags('data/tags-en.txt', ' \u00b7 ') };
+  // Style shown on the card instead of Modernism (data/style-card.txt: id | name | style)
+  const STYLE_CARD = new Map(dataLines('data/style-card.txt').map((l) => { const [id, , st] = l.split('|').map((x) => x.trim()); return [id, st]; }));
+  for (const id of STYLE_CARD.keys()) if (!rows.some((r) => r.id === id)) errors.push(`style-card.txt: no building with id "${id}"`);
   const places = rows.map((r) => ({
     id: r.id, name: DISP.get(r.name)?.n || r.name, loc: r.loc, locLabel: DISP.get(r.name)?.lc || r.loc, year: r.year, built: r.built, who: DISP.get(r.name)?.w || r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
     style: r.style.name, styleId: r.style.id, era: r.era, eras: r.eras,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
-    tags: TAGS.zh.get(r.id) ?? [], tagsEn: TAGS.en.get(r.id) ?? [],
+    tags: TAGS.zh.get(r.id) ?? [], tagsEn: TAGS.en.get(r.id) ?? [], styleCard: STYLE_CARD.get(r.id) ?? '',
   }));
   for (const lang of ['zh', 'en']) for (const id of TAGS[lang].keys()) if (!rows.some((r) => r.id === id)) errors.push(`tags-${lang}.txt: no building with id "${id}"`);
   // Nation of each building from its first coordinate (Natural Earth 1:10m country polygons), so the

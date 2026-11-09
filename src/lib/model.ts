@@ -2,7 +2,7 @@ import { dataset } from './data';
 import type { Era, EraId, Place } from './types';
 
 /** Era order used everywhere (band, chips, donut segments) */
-export const ERA_ORDER: EraId[] = ['ancient', 'medieval', 'renaissance', 'baroque', 'c19', 'beauxarts', 'modern', 'others'];
+export const ERA_ORDER: EraId[] = ['ancient', 'medieval', 'renaissance', 'mannerism', 'baroque', 'neoclassicism', 'artnouveau', 'beauxarts', 'modern', 'others'];
 export const COUNTRIES = ['Italy', 'France', 'Germany', 'United Kingdom', 'United States', 'Others'] as const;
 export const EXAM_YEARS = Array.from({ length: 13 }, (_, i) => 2007 + i);
 

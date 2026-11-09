@@ -23,14 +23,16 @@ export const THEMES: Record<ThemeId, Theme> = {
     label: 'Earth to sky',
     note: 'Warm for the oldest styles, cool for the newest',
     eras: {
-      ancient: '#D4896E',
-      medieval: '#BB8E4C',
-      renaissance: '#94953E',
-      baroque: '#599A68',
-      c19: '#109399',
-      modern: '#497EB3',
-      beauxarts: '#6B93A3',
-      others: '#868D95'
+      ancient: '#D58774',
+      medieval: '#C38C53',
+      renaissance: '#A6943C',
+      mannerism: '#799C51',
+      baroque: '#4B9C75',
+      neoclassicism: '#1B9794',
+      artnouveau: '#278CAB',
+      modern: '#507CB5',
+      beauxarts: '#6B8BA2',
+      others: '#80878F'
     },
     map: {
       sea: '#ECF1F8',
@@ -44,13 +46,15 @@ export const THEMES: Record<ThemeId, Theme> = {
     label: 'Sunset',
     note: 'Orange, rose and violet to blue',
     eras: {
-      ancient: '#C8875A',
-      medieval: '#CF7F79',
-      renaissance: '#C97E9B',
-      baroque: '#B883BA',
-      c19: '#9D8CD0',
-      modern: '#7A97D7',
-      beauxarts: '#9295B7',
+      ancient: '#C68956',
+      medieval: '#CE826B',
+      renaissance: '#CE7E85',
+      mannerism: '#C87E9F',
+      baroque: '#BA82B7',
+      neoclassicism: '#A788CA',
+      artnouveau: '#8F90D4',
+      modern: '#7499D6',
+      beauxarts: '#8D97B8',
       others: '#9299A1'
     },
     map: {

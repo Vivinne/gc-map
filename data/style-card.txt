@@ -1,0 +1,11 @@
+# Style shown on the card instead of Modernism, taken out of the building's tags (user, 2026-11-09). id | name | style
+unite-d-habitation | Unité d'Habitation | Brutalism
+torre-velasca-milan | Torre Velasca | Brutalism
+nakagin-capsule-tower-tokyo | Nakagin Capsule Tower | Metabolism
+centre-pompidou-paris | Centre Pompidou | High-Tech
+lloyd-s-building-london | Lloyd's Building | Bowellism
+jewish-museum-berlin-berlin | Jewish Museum Berlin | Deconstructivism
+vitra-fire-station | Vitra Fire Station | Deconstructivism
+salk-institute | Salk Institute | Brutalism
+vanna-venturi-house | Vanna Venturi House | Postmodernism
+marques-de-riscal-hotel-elciego | Marqués de Riscal Hotel | Deconstructivism

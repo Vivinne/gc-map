@@ -3,42 +3,52 @@
   {
    "id": "ancient",
    "label": "Ancient",
-   "color": "#D4896E"
+   "color": "#D58774"
   },
   {
    "id": "medieval",
    "label": "Medieval",
-   "color": "#BB8E4C"
+   "color": "#C38C53"
   },
   {
    "id": "renaissance",
    "label": "Renaissance",
-   "color": "#94953E"
+   "color": "#A6943C"
+  },
+  {
+   "id": "mannerism",
+   "label": "Mannerism",
+   "color": "#799C51"
   },
   {
    "id": "baroque",
    "label": "Baroque",
-   "color": "#599A68"
+   "color": "#4B9C75"
   },
   {
-   "id": "c19",
-   "label": "19th Century",
-   "color": "#109399"
+   "id": "neoclassicism",
+   "label": "Neoclassicism",
+   "color": "#1B9794"
   },
   {
-   "id": "modern",
-   "label": "Modern",
-   "color": "#497EB3"
+   "id": "artnouveau",
+   "label": "Art Nouveau",
+   "color": "#278CAB"
   },
   {
    "id": "beauxarts",
    "label": "Beaux-Arts",
-   "color": "#6B93A3"
+   "color": "#6B8BA2"
+  },
+  {
+   "id": "modern",
+   "label": "Modern",
+   "color": "#507CB5"
   },
   {
    "id": "others",
    "label": "Others",
-   "color": "#868D95"
+   "color": "#80878F"
   }
  ],
  "styles": [
@@ -142,6 +152,7 @@
     "Magna Graecia",
     "Doric"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -190,6 +201,7 @@
     "Doric",
     "Peripteral"
    ],
+   "styleCard": "",
    "nation": "Greece",
    "nationBox": [
     20,
@@ -238,6 +250,7 @@
     "Ionic",
     "Caryatids"
    ],
+   "styleCard": "",
    "nation": "Greece",
    "nationBox": [
     20,
@@ -284,6 +297,7 @@
    "tagsEn": [
     "Great sewer"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -330,6 +344,7 @@
    "tagsEn": [
     "First aqueduct"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -380,6 +395,7 @@
    "tagsEn": [
     "Sala Ottagona"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -426,6 +442,7 @@
    "tagsEn": [
     "Three stacked orders"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -474,6 +491,7 @@
     "Rotunda",
     "Oculus"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -520,6 +538,7 @@
    "tagsEn": [
     "Concrete groin vaults"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -566,6 +585,7 @@
    "tagsEn": [
     "Triumphal arch"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -612,6 +632,7 @@
    "tagsEn": [
     "Forum"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -658,6 +679,7 @@
    "tagsEn": [
     "Corinthian"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -708,6 +730,7 @@
     "Palace",
     "Baths"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -758,6 +781,7 @@
     "Pendentive dome",
     "Square plan"
    ],
+   "styleCard": "",
    "nation": "Turkey",
    "nationBox": [
     26.03,
@@ -806,6 +830,7 @@
     "Greek Cross",
     "Gold mosaics"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -856,6 +881,7 @@
     "Rib vaults",
     "~~Clerestory~~"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -902,6 +928,7 @@
    "tagsEn": [
     "La Merveille"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -952,6 +979,7 @@
     "Pink marble",
     "Four tiers of loggias"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1014,6 +1042,7 @@
     "Blind arcades",
     "Leaning tower"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1033,7 +1062,7 @@
    "built": "1018–1207",
    "who": "—",
    "note": "Romanesque；內有 Cardinal of Portugal Chapel（Rossellino）",
-   "summary": "佛羅倫斯的 Romanesque 教堂，以綠白大理石幾何立面著稱，內有 Cardinal of Portugal Chapel。",
+   "summary": "佛羅倫斯的 Romanesque 教堂，以綠白大理石幾何立面著稱。",
    "country": "Italy",
    "exams": [],
    "style": "羅曼式建築（Romanesque）",
@@ -1062,6 +1091,7 @@
     "Green and white marble",
     "Geometric facade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1108,6 +1138,7 @@
    "tagsEn": [
     "Birth of Gothic"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1154,6 +1185,7 @@
    "tagsEn": [
     "Collégiale"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1200,6 +1232,7 @@
    "tagsEn": [
     "Napoleon’s coronation"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1246,6 +1279,7 @@
    "tagsEn": [
     "Chartres blue"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1292,6 +1326,7 @@
    "tagsEn": [
     "No transept"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1340,6 +1375,7 @@
     "Coronation church",
     "Decorated pointed arches"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1386,6 +1422,7 @@
    "tagsEn": [
     "42.3 m nave"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1428,6 +1465,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -1447,7 +1485,7 @@
    "built": "1176–1439",
    "who": "—",
    "note": "Hugo：Marvel；粉紅砂岩",
-   "summary": "粉紅砂岩建成，單一尖塔，一度是世界最高建築。Hugo 稱之為 Marvel。",
+   "summary": "粉紅砂岩建成，單一尖塔，一度是世界最高建築。",
    "country": "France",
    "exams": [],
    "style": "哥德式建築（Gothic）",
@@ -1476,6 +1514,7 @@
     "Pink sandstone",
     "Single spire"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1495,7 +1534,7 @@
    "built": "1240–1250",
    "who": "Friedrich II",
    "note": "Octagon Plan；歸為「Other」，與哥德大教堂不同類",
-   "summary": "皇帝 Friedrich II 在普利亞的八角形城堡，平面與八座八角塔規整，歸為「Other」，與哥德大教堂不同類。",
+   "summary": "八角形城堡，平面與八座八角塔都規整對稱。",
    "country": "Italy",
    "exams": [],
    "style": "哥德式建築（Gothic）",
@@ -1522,6 +1561,7 @@
    "tagsEn": [
     "Octagonal plan"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1564,6 +1604,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1606,6 +1647,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -1648,6 +1690,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1690,6 +1733,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1736,6 +1780,7 @@
    "tagsEn": [
     "Former mosque site"
    ],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -1778,6 +1823,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1828,6 +1874,7 @@
     "Black and white marble",
     "Inlaid marble floor"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1878,6 +1925,7 @@
     "Two-level church",
     "Giotto frescoes"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1926,6 +1974,7 @@
    "tagsEn": [
     "Oldest public building"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1945,7 +1994,7 @@
    "built": "1294-",
    "who": "Giorgio Vasari / Niccolò Matas (facade)",
    "note": "—",
-   "summary": "方濟會教堂，1294 年 5 月 12 日奠基；十六間禮拜堂，多有 Giotto 壁畫；新哥德式大理石立面為 1857–1863 年所建。",
+   "summary": "方濟會教堂；十六間禮拜堂，多有 Giotto 壁畫；新哥德式大理石立面為 1857–1863 年所建。",
    "country": "Italy",
    "exams": [
     2010
@@ -1954,9 +2003,7 @@
    "styleId": "6.5",
    "era": "medieval",
    "eras": [
-    "medieval",
-    "renaissance",
-    "c19"
+    "medieval"
    ],
    "points": [
     {
@@ -1976,6 +2023,7 @@
    "tagsEn": [
     "Giotto frescoes"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1995,7 +2043,7 @@
    "built": "1441–1478",
    "who": "Filippo Brunelleschi",
    "note": "與 Pazzi Chapel (Santa Croce) 同址",
-   "summary": "Santa Croce 修道院內，Brunelleschi 設計的禮拜堂，與 Pazzi Chapel (Santa Croce) 同址（資料來源兩列並存）。",
+   "summary": "Santa Croce 修道院內的禮拜堂，以灰色砂岩 pietra serena 與白牆勾勒出嚴格比例，是 Renaissance 中央式空間的典範。",
    "country": "Italy",
    "exams": [],
    "style": "哥德式建築（Gothic）",
@@ -2022,6 +2070,7 @@
    "tagsEn": [
     "Pietra serena"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2041,7 +2090,7 @@
    "built": "1303",
    "who": "Giotto",
    "note": "—",
-   "summary": "為銀行家 Enrico Scrovegni 的家族禮拜堂與陵墓；Giotto 壁畫覆蓋整個內部，西牆為〈最後審判〉。",
+   "summary": "為銀行家 Enrico Scrovegni 的家族禮拜堂與陵墓；壁畫覆蓋整個內部，西牆為〈最後審判〉。",
    "country": "Italy",
    "exams": [
     2010
@@ -2072,6 +2121,7 @@
     "Giotto frescoes",
     "Last Judgement"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2120,6 +2170,7 @@
     "Round-arched loggia",
     "Corinthian columns"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2172,6 +2223,7 @@
     "No wooden centering",
     "Last Judgement"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2218,6 +2270,7 @@
    "tagsEn": [
     "Palazzo prototype"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2266,6 +2319,7 @@
    "tagsEn": [
     "Triumphal-arch facade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2314,6 +2368,7 @@
     "Great hospital",
     "Cross-shaped courtyards"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2360,6 +2415,7 @@
    "tagsEn": [
     "Three tiers of pilasters"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2408,6 +2464,7 @@
    "tagsEn": [
     "Volutes"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2456,6 +2513,7 @@
     "Pediment",
     "Triumphal-arch facade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2506,6 +2564,7 @@
     "Di sotto in sù",
     "Illusionism"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2552,6 +2611,7 @@
    "tagsEn": [
     "Trompe l'oeil"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2598,6 +2658,7 @@
    "tagsEn": [
     "Rusticated facade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2648,6 +2709,7 @@
     "Red brick",
     "The Last Supper"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2696,6 +2758,7 @@
     "Central plan",
     "Doric"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2744,6 +2807,7 @@
     "Exedra",
     "Terraced garden"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2763,7 +2827,7 @@
    "built": "1506–",
    "who": "Donato Bramante",
    "note": "Greek Cross；大量拆除舊石柱 → Maestro Ruinante",
-   "summary": "Greek Cross 平面的新大殿方案。為了興建拆除了大量舊聖殿石柱，被稱為 Maestro Ruinante。",
+   "summary": "Greek Cross 平面的新大殿方案。為了興建拆除大量舊聖殿石柱，建築師因此被稱為 Maestro Ruinante。",
    "country": "Italy",
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
@@ -2790,6 +2854,7 @@
    "tagsEn": [
     "Greek Cross"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2809,7 +2874,7 @@
    "built": "1503–1519",
    "who": "Bernardino Luini",
    "note": "「Sistine Chapel of Milan」",
-   "summary": "內部滿覆 Luini 壁畫，被稱為「米蘭的 Sistine Chapel」，並有分隔修女的內牆。",
+   "summary": "內部滿覆壁畫，被稱為「米蘭的 Sistine Chapel」，並有分隔修女的內牆。",
    "country": "Italy",
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
@@ -2836,6 +2901,7 @@
    "tagsEn": [
     "Luini frescoes"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2860,9 +2926,9 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -2878,6 +2944,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -2902,9 +2969,9 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -2926,6 +2993,7 @@
     "Slipping triglyphs",
     "Displaced keystones"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2950,9 +3018,9 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -2976,6 +3044,7 @@
     "Recessed columns",
     "Birth of Mannerism"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3000,9 +3069,9 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -3024,6 +3093,7 @@
     "Oval",
     "Trapezoidal piazza"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3070,6 +3140,7 @@
    "tagsEn": [
     "Double dome"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3116,6 +3187,7 @@
    "tagsEn": [
     "Serliana"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3135,7 +3207,7 @@
    "built": "1549–1559",
    "who": "Andrea Palladio",
    "note": "Pojana 1549、Barbaro 1554、Badoer 1556、Foscari 1559（Foscari 又名 Malcontenta）",
-   "summary": "威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。包含 Pojana、Barbaro、Badoer、Foscari。",
+   "summary": "威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。",
    "country": "Italy",
    "exams": [
     2008
@@ -3194,6 +3266,7 @@
    "tagsEn": [
     "Temple front"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3218,9 +3291,9 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -3240,6 +3313,7 @@
    "tagsEn": [
     "Milan City Hall"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3259,14 +3333,14 @@
    "built": "1559–1575",
    "who": "Giacomo Vignola",
    "note": "Pentagon＋圓形庭院",
-   "summary": "建在五角形堡壘基座上的別墅，內部是圓形中庭，位於 Caprarola 山頂。",
+   "summary": "建在五角形堡壘基座上的別墅，內部是圓形中庭，位於山頂。",
    "country": "Italy",
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -3288,6 +3362,7 @@
     "Pentagonal plan",
     "Circular courtyard"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3312,9 +3387,9 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -3336,6 +3411,7 @@
     "U-shaped courtyard",
     "Medici offices"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3360,9 +3436,9 @@
    "exams": [],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance"
+    "mannerism"
    ],
    "points": [
     {
@@ -3382,6 +3458,7 @@
    "tagsEn": [
     "Medici passageway"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3436,6 +3513,7 @@
     "Central rotunda",
     "Dome"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3478,6 +3556,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3524,6 +3603,7 @@
    "tagsEn": [
     "Napoleon"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3572,6 +3652,7 @@
     "Pietra serena",
     "Modular grid"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3614,6 +3695,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3631,19 +3713,18 @@
    "locLabel": "Rome",
    "year": "1583",
    "built": "1583",
-   "who": "President Hall",
+   "who": "Domenico Fontana (facade); Carlo Maderno (Great Chapel)",
    "note": "—",
-   "summary": "教宗 Gregory XIII 的夏季居所；1583–1870 年為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為 Presidential Palace（總統府），即義大利共和國總統官邸。",
+   "summary": "原為教宗 Gregory XIII 的夏季居所；1870 年前為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為總統府。",
    "country": "Italy",
    "exams": [
     2017
    ],
    "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
    "styleId": "6.6",
-   "era": "renaissance",
+   "era": "mannerism",
    "eras": [
-    "renaissance",
-    "baroque"
+    "mannerism"
    ],
    "points": [
     {
@@ -3663,6 +3744,7 @@
    "tagsEn": [
     "Presidential palace"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3709,6 +3791,7 @@
    "tagsEn": [
     "Birth of Baroque"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3757,6 +3840,7 @@
     "Bronze canopy",
     "29 m"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3807,6 +3891,7 @@
     "Great dome",
     "Volute buttresses"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3857,6 +3942,7 @@
     "Undulating facade",
     "Oval dome"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3907,6 +3993,7 @@
     "Six-pointed star",
     "Spiral lantern"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3955,6 +4042,7 @@
     "Four river gods",
     "Hollow obelisk"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4003,6 +4091,7 @@
     "Oval and trapezoid piazza",
     "Doric colonnade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4049,6 +4138,7 @@
    "tagsEn": [
     "Semicircular projecting porch"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4095,6 +4185,7 @@
    "tagsEn": [
     "Transverse oval plan"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4114,7 +4205,7 @@
    "built": "1661–1710",
    "who": "Louis XIV",
    "note": "French Baroque；Louis XIV",
-   "summary": "Louis XIV 的 French Baroque 宮殿，鏡廳與花園軸線是絕對王權的象徵。",
+   "summary": "French Baroque 宮殿，鏡廳與花園軸線是絕對王權的象徵。",
    "country": "France",
    "exams": [
     2014
@@ -4145,6 +4236,7 @@
     "Hall of Mirrors",
     "Garden axis"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -4193,6 +4285,7 @@
     "Ceremonial staircase",
     "Forced-perspective colonnade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4241,6 +4334,7 @@
    "tagsEn": [
     "Hexagonal dome"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4287,6 +4381,7 @@
    "tagsEn": [
     "Bone decoration"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4333,6 +4428,7 @@
    "tagsEn": [
     "X-shaped plan"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4379,6 +4475,7 @@
    "tagsEn": [
     "Oceanus statue"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4427,6 +4524,7 @@
    "tagsEn": [
     "Long axial garden"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4451,9 +4549,9 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "baroque",
+   "era": "neoclassicism",
    "eras": [
-    "baroque"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -4469,6 +4567,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4476,7 +4575,7 @@
     18.52,
     47.08
    ],
-   "styleShown": "",
+   "styleShown": "Neoclassicism",
    "whoStyle": ""
   },
   {
@@ -4493,9 +4592,9 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "baroque",
+   "era": "neoclassicism",
    "eras": [
-    "baroque"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -4511,6 +4610,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4518,7 +4618,7 @@
     18.52,
     47.08
    ],
-   "styleShown": "",
+   "styleShown": "Neoclassicism",
    "whoStyle": ""
   },
   {
@@ -4535,9 +4635,9 @@
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
    "styleId": "6.7",
-   "era": "baroque",
+   "era": "neoclassicism",
    "eras": [
-    "baroque"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -4553,6 +4653,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4560,7 +4661,7 @@
     18.52,
     47.08
    ],
-   "styleShown": "",
+   "styleShown": "Neoclassicism",
    "whoStyle": ""
   },
   {
@@ -4601,6 +4702,7 @@
     "Latin cross",
     "Lengthened nave"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4647,6 +4749,7 @@
    "tagsEn": [
     "Baroque facade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4666,7 +4769,7 @@
    "built": "1647–1652",
    "who": "Gian Lorenzo Bernini",
    "note": "Bel Composto 美妙融合",
-   "summary": "位於羅馬 Santa Maria della Vittoria 教堂 Cornaro Chapel 的 Bernini 雕塑群，以雕塑、光線與建築融為一體，是 Bel Composto 的代表。",
+   "summary": "位於羅馬 Santa Maria della Vittoria 教堂 Cornaro Chapel 的雕塑群，以雕塑、光線與建築融為一體，是 Bel Composto 的代表。",
    "country": "Italy",
    "exams": [],
    "style": "巴洛克與洛可可建築（Baroque and Rococo）",
@@ -4693,6 +4796,7 @@
    "tagsEn": [
     "Bel composto"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4741,6 +4845,7 @@
     "Painted dome",
     "Trompe l'oeil"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4789,6 +4894,7 @@
    "tagsEn": [
     "Chamber of Deputies"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4837,6 +4943,7 @@
    "tagsEn": [
     "Senate"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4856,7 +4963,7 @@
    "built": "1852",
    "who": "Empress Elizabeth",
    "note": "—",
-   "summary": "1764 年 Catherine the Great 購入柏林商人的收藏為創立之始，1852 年起對外開放，藏品逾 300 萬件。",
+   "summary": "1764 年 Catherine the Great 購入柏林商人的收藏為創立之始，藏品逾 300 萬件。",
    "country": "Others",
    "exams": [
     2016
@@ -4885,6 +4992,7 @@
    "tagsEn": [
     "Winter Palace"
    ],
+   "styleCard": "",
    "nation": "Russia",
    "nationBox": [
     27.33,
@@ -4904,7 +5012,7 @@
    "built": "1957",
    "who": "Giovanni Antonio Medrano",
    "note": "—",
-   "summary": "1738 年 Charles VII 原擬建獵宮，改建為大型宮殿；1950 年成為國立博物館，1957 年啟用。",
+   "summary": "1738 年 Charles VII 原擬建獵宮，改建為大型宮殿；1950 年成為國立博物館。",
    "country": "Italy",
    "exams": [
     2016
@@ -4913,8 +5021,7 @@
    "styleId": "6.7",
    "era": "baroque",
    "eras": [
-    "baroque",
-    "c19"
+    "baroque"
    ],
    "points": [
     {
@@ -4930,6 +5037,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4954,9 +5062,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -4972,6 +5080,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -4996,9 +5105,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5020,6 +5129,7 @@
     "Cinema museum",
     "Former synagogue"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5044,9 +5154,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5062,6 +5172,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5086,9 +5197,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5110,6 +5221,7 @@
     "French Pantheon",
     "Tombs of the great"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -5134,9 +5246,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5158,6 +5270,7 @@
     "Triumphal arch",
     "Austerlitz"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -5182,9 +5295,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5206,6 +5319,7 @@
     "Ionic colonnade",
     "Rotunda"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -5230,9 +5344,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5248,6 +5362,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -5272,9 +5387,9 @@
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5294,6 +5409,7 @@
    "tagsEn": [
     "Square of Greek-style buildings"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -5320,9 +5436,9 @@
    ],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5342,6 +5458,7 @@
    "tagsEn": [
     "Ministry of the Interior"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5361,16 +5478,16 @@
    "built": "1937-1959",
    "who": "Enrico Del Debbio, Arnaldo Foschini and Vittorio Ballio Morpurgo",
    "note": "—",
-   "summary": "1943 年起因二戰停工，1946 年復工；1959 年完工後為外交部所在。",
+   "summary": "1943 年因二戰停工，1946 年復工；完工後為外交部所在。",
    "country": "Italy",
    "exams": [
     2017
    ],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5390,6 +5507,7 @@
    "tagsEn": [
     "Ministry of Foreign Affairs"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5409,16 +5527,16 @@
    "built": "1819",
    "who": "Juan de Villanueva",
    "note": "—",
-   "summary": "1785 年於 Charles III 時期委託，其後停工，Ferdinand VII 時期復工；1819 年 11 月首次對外開放。",
+   "summary": "1785 年於 Charles III 時期委託，其後停工，Ferdinand VII 時期復工並對外開放。",
    "country": "Others",
    "exams": [
     2016
    ],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
    "styleId": "6.8",
-   "era": "c19",
+   "era": "neoclassicism",
    "eras": [
-    "c19"
+    "neoclassicism"
    ],
    "points": [
     {
@@ -5434,6 +5552,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5458,9 +5577,9 @@
    "exams": [],
    "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
    "styleId": "6.9",
-   "era": "c19",
+   "era": "modern",
    "eras": [
-    "c19"
+    "modern"
    ],
    "points": [
     {
@@ -5480,6 +5599,7 @@
    "tagsEn": [
     "Slender cast-iron columns and vaults"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -5506,9 +5626,9 @@
    ],
    "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
    "styleId": "6.9",
-   "era": "c19",
+   "era": "modern",
    "eras": [
-    "c19"
+    "modern"
    ],
    "points": [
     {
@@ -5532,6 +5652,7 @@
     "Plate glass",
     "Prefabrication"
    ],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -5558,9 +5679,9 @@
    ],
    "style": "工業革命與新材料建築（Industrial Revolution and New Materials）",
    "styleId": "6.9",
-   "era": "c19",
+   "era": "modern",
    "eras": [
-    "c19"
+    "modern"
    ],
    "points": [
     {
@@ -5576,6 +5697,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -5595,14 +5717,14 @@
    "built": "1859–1860",
    "who": "Philip Webb / William Morris",
    "note": "Arts & Crafts 起點",
-   "summary": "為 Morris 建的紅磚住宅，是 Arts & Crafts 的起點。",
+   "summary": "紅磚住宅，是 Arts & Crafts 的起點。",
    "country": "United Kingdom",
    "exams": [],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5624,6 +5746,7 @@
     "Arts and Crafts",
     "Red brick"
    ],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -5650,9 +5773,9 @@
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5672,6 +5795,7 @@
    "tagsEn": [
     "Golden dome"
    ],
+   "styleCard": "",
    "nation": "Austria",
    "nationBox": [
     9.52,
@@ -5691,14 +5815,14 @@
    "built": "1903–1905",
    "who": "Giovanni Battista Bossi（Galimberti）",
    "note": "義大利 Stile Liberty",
-   "summary": "Giovanni Battista Bossi 設計的米蘭 Stile Liberty（新藝術）住宅，Via Malpighi 3，立面貼有約 170 ㎡ 的彩色陶磚。",
+   "summary": "Stile Liberty（新藝術）住宅，立面貼有約 170 ㎡ 的彩色陶磚。",
    "country": "Italy",
    "exams": [],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5720,6 +5844,7 @@
     "Stile Liberty",
     "Coloured ceramic-tile facade"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5739,14 +5864,14 @@
    "built": "1901–1903",
    "who": "Giuseppe Sommaruga",
    "note": "義大利 Stile Liberty",
-   "summary": "Giuseppe Sommaruga 設計的米蘭 Stile Liberty 宅邸，是義大利 Liberty 的代表作之一。",
+   "summary": "Stile Liberty 宅邸，是義大利 Liberty 的代表作之一。",
    "country": "Italy",
    "exams": [],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5766,6 +5891,7 @@
    "tagsEn": [
     "Stile Liberty"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5785,16 +5911,16 @@
    "built": "1882–",
    "who": "Antoni Gaudí",
    "note": "聖家堂；Gaudí 自 1882 年接手施工，至今仍在興建",
-   "summary": "Gaudí 設計的教堂，自 1882 年施工至今，主塔已於 2026 年達最終高度。",
+   "summary": "至今仍在興建的教堂，主塔已於 2026 年達最終高度。",
    "country": "Others",
    "exams": [
     2015
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5810,6 +5936,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5829,16 +5956,16 @@
    "built": "1883–1888",
    "who": "Antoni Gaudí",
    "note": "Gaudí 早期的住宅作品",
-   "summary": "Gaudí 的住宅作品，至今仍保持住宅外觀與用途（UNESCO 世界遺產「Works of Antoni Gaudí」之一）。",
+   "summary": "至今仍保持住宅外觀與用途（UNESCO 世界遺產之一）。",
    "country": "Others",
    "exams": [
     2015
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5854,6 +5981,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5880,9 +6008,9 @@
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5898,6 +6026,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5917,16 +6046,16 @@
    "built": "1904–1906",
    "who": "Antoni Gaudí",
    "note": "由 Gaudí 改建的既有建築",
-   "summary": "既有建築經 Gaudí 改建而成，仍保留集合住宅的原設計，兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。",
+   "summary": "由既有建築改建而成，仍保留集合住宅的原設計，兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。",
    "country": "Others",
    "exams": [
     2015
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5946,6 +6075,7 @@
    "tagsEn": [
     "Coloured tile facade"
    ],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5965,16 +6095,16 @@
    "built": "1906–1912",
    "who": "Antoni Gaudí",
    "note": "Gaudí 設計的集合住宅",
-   "summary": "Gaudí 設計的集合住宅，大致保留原設計，現兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。",
+   "summary": "集合住宅，大致保留原設計，現兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。",
    "country": "Others",
    "exams": [
     2015
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -5996,6 +6126,7 @@
     "Apartment building",
     "Undulating facade"
    ],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -6015,16 +6146,16 @@
    "built": "1900–1914",
    "who": "Antoni Gaudí",
    "note": "Gaudí 設計的公園，至今仍作公共公園使用",
-   "summary": "Gaudí 設計的公園，至今仍作公共公園使用，由巴塞隆納市政府持有（UNESCO 世界遺產之一）。",
+   "summary": "至今仍作公共公園使用，由巴塞隆納市政府持有（UNESCO 世界遺產之一）。",
    "country": "Others",
    "exams": [
     2015
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -6040,6 +6171,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -6066,9 +6198,9 @@
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -6088,6 +6220,7 @@
    "tagsEn": [
     "Crypt"
    ],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -6114,9 +6247,9 @@
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -6138,6 +6271,7 @@
     "Plant-curve staircase",
     "Birth of Art Nouveau"
    ],
+   "styleCard": "",
    "nation": "Belgium",
    "nationBox": [
     2.52,
@@ -6164,9 +6298,9 @@
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -6182,6 +6316,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -6201,16 +6336,16 @@
    "built": "1905-1911",
    "who": "Josef Hoffmann",
    "note": "—",
-   "summary": "為 Adolphe Stoclet 興建，2009 年列入 UNESCO 世界遺產。",
+   "summary": "為業主 Adolphe Stoclet 興建的宅邸，2009 年列入 UNESCO 世界遺產。",
    "country": "Others",
    "exams": [
     2012
    ],
    "style": "工藝美術、新藝術與分離派建築（Arts and Crafts, Art Nouveau and Secession）",
    "styleId": "6.10",
-   "era": "c19",
+   "era": "artnouveau",
    "eras": [
-    "c19"
+    "artnouveau"
    ],
    "points": [
     {
@@ -6230,6 +6365,7 @@
    "tagsEn": [
     "Gesamtkunstwerk"
    ],
+   "styleCard": "",
    "nation": "Belgium",
    "nationBox": [
     2.52,
@@ -6274,6 +6410,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Netherlands",
    "nationBox": [
     3.45,
@@ -6320,6 +6457,7 @@
    "tagsEn": [
     "Housing unit"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -6372,6 +6510,7 @@
     "RC frame",
     "Glass curtain wall"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -6421,6 +6560,7 @@
    "tagsEn": [
     "Five Points"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -6440,7 +6580,7 @@
    "built": "1928–1929",
    "who": "Ludwig Mies van der Rohe",
    "note": "大理石牆、倒影池；承重柱與隔牆分離",
-   "summary": "1929 年世博的德國館，以大理石牆、倒影池與承重柱與隔牆分離創造流動空間，1986 年原地重建。",
+   "summary": "1929 年世博的德國館，以大理石牆、倒影池，以及承重柱與隔牆分離，創造流動空間，1986 年原地重建。",
    "country": "Others",
    "exams": [
     2012
@@ -6465,6 +6605,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -6515,6 +6656,7 @@
     "Cantilever",
     "Organic architecture"
    ],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6557,14 +6699,13 @@
    ],
    "tags": [
     "垂直聚落",
-    "清水混凝土",
-    "粗獷主義"
+    "清水混凝土"
    ],
    "tagsEn": [
     "Vertical village",
-    "Béton brut",
-    "Brutalism"
+    "Béton brut"
    ],
+   "styleCard": "Brutalism",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -6613,6 +6754,7 @@
     "Free plan",
     "Free facade"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -6657,6 +6799,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -6705,6 +6848,7 @@
    "tagsEn": [
     "Arched spire"
    ],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6747,6 +6891,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6793,6 +6938,7 @@
    "tagsEn": [
     "Glass curtain wall"
    ],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6835,6 +6981,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -6883,6 +7030,7 @@
    "tagsEn": [
     "Spiral ramp"
    ],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6929,6 +7077,7 @@
    "tagsEn": [
     "Raumplan"
    ],
+   "styleCard": "",
    "nation": "Czechia",
    "nationBox": [
     12.08,
@@ -6973,6 +7122,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Finland",
    "nationBox": [
     20.62,
@@ -7021,6 +7171,7 @@
     "Wave",
     "Brick"
    ],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -7065,6 +7216,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -7113,6 +7265,7 @@
    "tagsEn": [
     "Glass walls"
    ],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -7161,6 +7314,7 @@
    "tagsEn": [
     "Five Points"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -7205,6 +7359,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -7249,6 +7404,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Netherlands",
    "nationBox": [
     3.45,
@@ -7293,6 +7449,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7312,7 +7469,7 @@
    "built": "1938-1939",
    "who": "Aino Aalto and Alvar Aalto",
    "note": "—",
-   "summary": "為 Harry 與 Maire Gullichsen 所建，平面為變形 L 形。",
+   "summary": "為業主 Harry 與 Maire Gullichsen 所建，平面為變形 L 形。",
    "country": "Others",
    "exams": [
     2010
@@ -7337,6 +7494,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Finland",
    "nationBox": [
     20.62,
@@ -7381,6 +7539,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Russia",
    "nationBox": [
     27.33,
@@ -7400,7 +7559,7 @@
    "built": "1946",
    "who": "Richard Neutra",
    "note": "—",
-   "summary": "為 Edgar J. Kaufmann 的沙漠度假住宅。",
+   "summary": "業主 Edgar J. Kaufmann 的沙漠度假住宅。",
    "country": "United States",
    "exams": [
     2010
@@ -7425,6 +7584,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -7469,6 +7629,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -7517,6 +7678,7 @@
    "tagsEn": [
     "Glass corners"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -7561,6 +7723,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -7611,6 +7774,7 @@
     "Square plan",
     "Glass blocks"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7653,6 +7817,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7701,6 +7866,7 @@
     "Large windows",
     "Kindergarten"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7743,6 +7909,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7783,12 +7950,9 @@
      "status": "Supplementary - to be verified"
     }
    ],
-   "tags": [
-    "粗獷主義"
-   ],
-   "tagsEn": [
-    "Brutalism"
-   ],
+   "tags": [],
+   "tagsEn": [],
+   "styleCard": "Brutalism",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7830,13 +7994,12 @@
     }
    ],
    "tags": [
-    "膠囊單元",
-    "新陳代謝派"
+    "膠囊單元"
    ],
    "tagsEn": [
-    "Capsule units",
-    "Metabolism"
+    "Capsule units"
    ],
+   "styleCard": "Metabolism",
    "nation": "Japan",
    "nationBox": [
     130.86,
@@ -7878,13 +8041,12 @@
     }
    ],
    "tags": [
-    "結構外露",
-    "高科技建築"
+    "結構外露"
    ],
    "tagsEn": [
-    "Exposed structure",
-    "High-Tech"
+    "Exposed structure"
    ],
+   "styleCard": "High-Tech",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -7904,7 +8066,7 @@
    "built": "1969–1978",
    "who": "Carlo Scarpa",
    "note": "—",
-   "summary": "以混凝土、水與幾何構成的家族墓園，細部豐富，是 Scarpa 最重要的晚期作品。",
+   "summary": "以混凝土、水與幾何構成的家族墓園，細部豐富，是建築師最重要的晚期作品。",
    "country": "Italy",
    "exams": [],
    "style": "戰後與當代建築（Postwar and Contemporary）",
@@ -7927,6 +8089,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7977,6 +8140,7 @@
    "tagsEn": [
     "Titanium curves"
    ],
+   "styleCard": "",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -8025,6 +8189,7 @@
    "tagsEn": [
     "Flowing walkways"
    ],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -8067,6 +8232,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -8111,6 +8277,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -8130,7 +8297,7 @@
    "built": "1931–1933",
    "who": "Giovanni Muzio",
    "note": "2025 Triennale 展場",
-   "summary": "位於 Parco Sempione，是 Triennale 的展場，2025 年再度為 Triennale 展出之地。",
+   "summary": "位於 Parco Sempione，是 Triennale 的展場。",
    "country": "Italy",
    "exams": [],
    "style": "戰後與當代建築（Postwar and Contemporary）",
@@ -8153,6 +8320,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -8195,6 +8363,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -8237,6 +8406,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -8285,6 +8455,7 @@
     "Glass",
     "Light structure"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -8327,6 +8498,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -8373,6 +8545,7 @@
    "tagsEn": [
     "Four L-shaped corner towers"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -8423,6 +8596,7 @@
     "Railway station",
     "Great vault"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -8469,6 +8643,7 @@
    "tagsEn": [
     "Perforated dome"
    ],
+   "styleCard": "",
    "nation": "United Arab Emirates",
    "nationBox": [
     51.57,
@@ -8517,6 +8692,7 @@
     "Aluminium panels",
     "Perforations"
    ],
+   "styleCard": "",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -8558,13 +8734,12 @@
     }
    ],
    "tags": [
-    "內臟主義",
     "設備外露"
    ],
    "tagsEn": [
-    "Bowellism",
     "Exposed services"
    ],
+   "styleCard": "Bowellism",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -8611,6 +8786,7 @@
    "tagsEn": [
     "Gherkin shape"
    ],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -8657,6 +8833,7 @@
    "tagsEn": [
     "Glass sphere"
    ],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -8703,6 +8880,7 @@
    "tagsEn": [
     "Glass canopy"
    ],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -8753,6 +8931,7 @@
     "Spiral ramp",
     "Democratic transparency"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -8795,12 +8974,9 @@
      "status": "Supplementary - to be verified"
     }
    ],
-   "tags": [
-    "解構主義"
-   ],
-   "tagsEn": [
-    "Deconstructivism"
-   ],
+   "tags": [],
+   "tagsEn": [],
+   "styleCard": "Deconstructivism",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -8849,6 +9025,7 @@
    "tagsEn": [
     "Curved twin towers"
    ],
+   "styleCard": "",
    "nation": "Czechia",
    "nationBox": [
     12.08,
@@ -8891,14 +9068,13 @@
    ],
    "tags": [
     "傾斜牆",
-    "銳角",
-    "解構主義"
+    "銳角"
    ],
    "tagsEn": [
     "Leaning walls",
-    "Sharp angles",
-    "Deconstructivism"
+    "Sharp angles"
    ],
+   "styleCard": "Deconstructivism",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -8945,6 +9121,7 @@
    "tagsEn": [
     "Cone supports"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -8987,6 +9164,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -9027,12 +9205,9 @@
      "status": "Supplementary - to be verified"
     }
    ],
-   "tags": [
-    "粗獷主義"
-   ],
-   "tagsEn": [
-    "Brutalism"
-   ],
+   "tags": [],
+   "tagsEn": [],
+   "styleCard": "Brutalism",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -9073,12 +9248,9 @@
      "status": "Supplementary - to be verified"
     }
    ],
-   "tags": [
-    "後現代主義"
-   ],
-   "tagsEn": [
-    "Postmodernism"
-   ],
+   "tags": [],
+   "tagsEn": [],
+   "styleCard": "Postmodernism",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -9123,6 +9295,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -9167,6 +9340,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Malaysia",
    "nationBox": [
     100.13,
@@ -9215,6 +9389,7 @@
    "tagsEn": [
     "Inflated ETFE skin"
    ],
+   "styleCard": "",
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -9257,12 +9432,9 @@
      "status": "Supplementary - to be verified"
     }
    ],
-   "tags": [
-    "解構主義"
-   ],
-   "tagsEn": [
-    "Deconstructivism"
-   ],
+   "tags": [],
+   "tagsEn": [],
+   "styleCard": "Deconstructivism",
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -9307,6 +9479,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -9351,6 +9524,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -9395,6 +9569,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Russia",
    "nationBox": [
     27.33,
@@ -9439,6 +9614,7 @@
    ],
    "tags": [],
    "tagsEn": [],
+   "styleCard": "",
    "nation": "Italy",
    "nationBox": [
     6.6,

@@ -135,7 +135,7 @@ bauhaus-dessau-building-dessau | Bauhaus Dessau Building | 風車平面・鋼筋
 villa-savoye-poissy | Villa Savoye | 建築五點
 barcelona-pavilion-barcelona | Barcelona Pavilion | 
 fallingwater-pennsylvania | Fallingwater | 懸臂・有機建築
-unite-d-habitation | Unité d'Habitation | 垂直聚落・清水混凝土・粗獷主義
+unite-d-habitation | Unité d'Habitation | 垂直聚落・清水混凝土
 notre-dame-du-haut-ronchamp-ronchamp | Notre-Dame-du-Haut (Ronchamp) | 自由平面・自由立面
 aeg-turbine-factory-berlin | AEG Turbine Factory | 
 chrysler-building-new-york | Chrysler Building | 拱形尖頂
@@ -162,9 +162,9 @@ casa-del-fascio-como | Casa del Fascio | 方形平面・玻璃磚
 qt8-milan | QT8 | 
 asilo-sant-elia-como | Asilo Sant'Elia | 大量開窗・幼兒園
 pirelli-tower-milan | Pirelli Tower | 
-torre-velasca-milan | Torre Velasca | 粗獷主義
-nakagin-capsule-tower-tokyo | Nakagin Capsule Tower | 膠囊單元・新陳代謝派
-centre-pompidou-paris | Centre Pompidou | 結構外露・高科技建築
+torre-velasca-milan | Torre Velasca | 
+nakagin-capsule-tower-tokyo | Nakagin Capsule Tower | 膠囊單元
+centre-pompidou-paris | Centre Pompidou | 結構外露
 tomba-brion | Tomba Brion | 
 guggenheim-museum-bilbao-bilbao | Guggenheim Museum Bilbao | 鈦曲面
 maxxi-rome | MAXXI | 流動天橋
@@ -179,22 +179,22 @@ bibliotheque-nationale-de-france-paris | Bibliothèque nationale de France | 四
 musee-d-orsay-paris | Musée d'Orsay | 火車站・大拱頂
 louvre-abu-dhabi-abu-dhabi | Louvre Abu Dhabi | 穿孔圓頂
 philharmonie-de-paris-paris | Philharmonie de Paris | 鋁板・孔洞
-lloyd-s-building-london | Lloyd's Building | 內臟主義・設備外露
+lloyd-s-building-london | Lloyd's Building | 設備外露
 the-gherkin-london | The Gherkin | 小黃瓜
 london-city-hall-london | London City Hall | 透明球體
 grand-court-london | Grand Court | 玻璃天幕結構
 reichstag-glass-dome-berlin | Reichstag (Glass Dome) | 玻璃穹頂・螺旋坡道・民主透明
-jewish-museum-berlin-berlin | Jewish Museum Berlin | 解構主義
+jewish-museum-berlin-berlin | Jewish Museum Berlin | 
 dancing-house-prague | Dancing House | 曲面雙塔
-vitra-fire-station | Vitra Fire Station | 傾斜牆・銳角・解構主義
+vitra-fire-station | Vitra Fire Station | 傾斜牆・銳角
 phaeno-science-center | Phaeno Science Center | 錐形支撐
 wexner-center | Wexner Center | 
-salk-institute | Salk Institute | 粗獷主義
-vanna-venturi-house | Vanna Venturi House | 後現代主義
+salk-institute | Salk Institute | 
+vanna-venturi-house | Vanna Venturi House | 
 space-needle-seattle | Space Needle | 
 petronas-twin-towers-kuala-lumpur | Petronas Twin Towers | 
 allianz-arena-munich | Allianz Arena | ETFE 充氣外殼
-marques-de-riscal-hotel-elciego | Marqués de Riscal Hotel | 解構主義
+marques-de-riscal-hotel-elciego | Marqués de Riscal Hotel | 
 tate-modern-london | Tate Modern | 
 metropolitan-museum-of-art-new-york | Metropolitan Museum of Art | 
 nevsky-prospect-saint-petersburg | Nevsky Prospect | 

@@ -541,7 +541,7 @@ export default function App() {
       else if (e.key === 'ArrowLeft' && selId) step(-1);
       else if (e.key === 's' && selId) toggleStar(selId);
       else if (e.key === 'f') setFiltersOpen((o) => !o);
-      else if (/^[1-8]$/.test(e.key)) toggleStyle(ERA_ORDER[Number(e.key) - 1]!);
+      else if (/^[0-9]$/.test(e.key)) toggleStyle(ERA_ORDER[(Number(e.key) + 9) % 10]!); // 1–9, then 0 for the tenth
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

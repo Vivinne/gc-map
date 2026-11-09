@@ -254,10 +254,6 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
               </button>
             </>
           )}
-          {/* photos of the building: a Google image search in a new tab */}
-          <a className="c-ic" href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${b.name} ${b.city}`)}`} target="_blank" rel="noopener noreferrer" aria-label={`Photos of ${b.name} (Google Images, new tab)`} title="Photos (Google Images)">
-            <Icon name="image" size={14} />
-          </a>
           <button type="button" className={`c-ic${kept ? ' on' : ''}`} aria-expanded={menu} aria-haspopup="menu" aria-label="Collect" title="Collect" onClick={() => setMenu(!menu)}>
             <Icon name={kept ? 'starOn' : 'star'} size={14} />
           </button>
@@ -276,6 +272,12 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
           <div className="c-body">
             <Facts b={b} exam={false} onWho={(who) => onTag({ ...EMPTY, who })} />
             <Tags b={b} starred={starred} collections={collections} onTag={onTag} />
+            {/* photos of the building: a Google image search in a new tab, away from the card's controls */}
+            <a className="c-photos" href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${b.name} ${b.city}`)}`} target="_blank" rel="noopener noreferrer">
+              <Icon name="image" size={14} />
+              Photos on Google
+              <span className="c-photos-x" aria-hidden="true">↗</span>
+            </a>
           </div>
           {group && (
             <div className={`others-box${othersOpen ? ' open' : ''}`}>

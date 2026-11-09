@@ -23,20 +23,20 @@ Tempietto | Renaissance
 San Maurizio al Monastero Maggiore | Renaissance
 Cortile del Belvedere | Renaissance
 St. Peter's Basilica | Renaissance
-Laurentian Library | Mannerism
-Palazzo Te | Mannerism
-Fontainebleau | Mannerism
-Piazza del Campidoglio | Mannerism
+Laurentian Library | Mannerism | mannerism
+Palazzo Te | Mannerism | mannerism
+Fontainebleau | Mannerism | mannerism
+Piazza del Campidoglio | Mannerism | mannerism
 St. Peter's Basilica Dome | Renaissance
 Basilica Palladiana | Renaissance
 Palladio's Villas | Renaissance
-Palazzo Marino | Mannerism
-Villa Farnese | Mannerism
-Uffizi | Mannerism
-Vasari Corridor | Mannerism
+Palazzo Marino | Mannerism | mannerism
+Villa Farnese | Mannerism | mannerism
+Uffizi | Mannerism | mannerism
+Vasari Corridor | Mannerism | mannerism
 Villa Capra (La Rotonda) | Renaissance
 Il Redentore | Renaissance
-Quirinal Palace | Mannerism
+Quirinal Palace | Mannerism | mannerism
 AEG Turbine Factory | Modernism
 Robie House | Modernism
 Fagus Factory | Modernism
@@ -69,3 +69,7 @@ Neue Nationalgalerie | Modernism
 Van Gogh Museum | Modernism
 # 2026-11-07 the user: Filippo Brunelleschi is Renaissance (his Pazzi Chapel entry is quizzed under Renaissance, not the Gothic heading of Santa Croce)
 Santa Croce - Pazzi Chapel | Renaissance | renaissance
+# 2026-11-09 the user: Mannerism is its own map category; Piermarini's works are Neoclassicism
+Teatro alla Scala | Neoclassicism | neoclassicism
+Palazzo Reale | Neoclassicism | neoclassicism
+Palazzo Belgioioso | Neoclassicism | neoclassicism

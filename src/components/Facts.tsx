@@ -1,4 +1,4 @@
-import { architectOf, hasOtherWorks, keywordsOf, styleOf } from '../lib/keywords';
+import { architectOf, cardStyleOf, hasOtherWorks, keywordsOf } from '../lib/keywords';
 import { ascii, examNote, whoOf, type Building } from '../lib/model';
 
 /**
@@ -14,23 +14,25 @@ export default function Facts({ b, data = true, summary = true, exam: showExam =
   const place = [built, b.city].filter(Boolean).join(', ');
   const who = architectOf(b);
   const keys = keywordsOf(b);
+  const style = cardStyleOf(b);
   return (
     <div className="facts">
       {data && (
         <div className="f-data">
           {place && <p>{place}</p>}
-          {who && (
-            <p>
-              {onWho && hasOtherWorks(b) ? (
-                <button type="button" className="f-who" title={`Every building by ${who}`} onClick={() => onWho(whoOf(b))}>
-                  {who}
-                </button>
-              ) : (
-                <b className="f-who-t">{who}</b>
-              )}
-            </p>
-          )}
-          <p>{styleOf(b)}</p>
+          <p>
+            {!who ? (
+              // no architect known: a dash, so the line is never missing
+              <b className="f-who-t">-</b>
+            ) : onWho && hasOtherWorks(b) ? (
+              <button type="button" className="f-who" title={`Every building by ${who}`} onClick={() => onWho(whoOf(b))}>
+                {who}
+              </button>
+            ) : (
+              <b className="f-who-t">{who}</b>
+            )}
+          </p>
+          {style && <p>{style}</p>}
         </div>
       )}
       {keys.length > 0 && (

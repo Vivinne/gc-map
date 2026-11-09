@@ -19,7 +19,7 @@ Basilica di Sant'Ambrogio | 379–386（原堂）；約 1080–12 世紀（現�
 Mont-Saint-Michel Abbey | 1023–1521 | 築在潮汐島岩頂上的修道院，Romanesque 與 Gothic 並存，La Merveille 奇蹟樓是代表。
 Parma Baptistery | 1196–1270 | 八角形洗禮堂，外覆粉紅 Verona 大理石，立面有四層 loggias，風格從 Romanesque 過渡到 Gothic。
 Pisa Cathedral and Leaning Tower | 1063–1118（主教堂）；1173–1372（斜塔） | Italian Romanesque 的彩色大理石盲拱廊代表。獨立鐘塔在施工期間因地基不均沉降而傾斜，成為世界知名的斜塔。
-San Miniato al Monte | 1018–1207 | 佛羅倫斯的 Romanesque 教堂，以綠白大理石幾何立面著稱，內有 Cardinal of Portugal Chapel。
+San Miniato al Monte | 1018–1207 | 佛羅倫斯的 Romanesque 教堂，以綠白大理石幾何立面著稱。
 Basilica of Saint-Denis | 1135–1144（Suger 工程） | 法國王室陵寢，後殿首度整合肋拱、尖拱與大片彩色玻璃，被視為哥德大教堂的起點。
 Notre-Dame de Mantes-la-Jolie | 約 1170–約 1220 | Collégiale（參事會教堂），早期哥德教堂，形式與 Notre-Dame de Paris 相近。
 Notre-Dame de Paris | 1163–1345 | High Gothic 大教堂，1804 年拿破崙在此加冕。2019 年大火燒毀尖塔與屋頂，之後重建。
@@ -28,8 +28,8 @@ Bourges Cathedral | 1195–約 1230 | 沒有橫向耳堂（Transept）的哥德�
 Reims Cathedral | 1211–約 1275 | 法國歷代君王的加冕教堂，立面雕刻豐富，並有裝飾尖拱。
 Amiens Cathedral | 1220–約 1270 | 中殿高 42.3 m，是法國最大的哥德大教堂之一，立面雕刻保存完整。
 Salisbury Cathedral | 1220–1258（尖塔約 1320） | 英國少見的單一風格 Early English Gothic，尖塔高度冠於英國，保存一份 Magna Carta 抄本。
-Strasbourg Cathedral | 1176–1439 | 粉紅砂岩建成，單一尖塔，一度是世界最高建築。Hugo 稱之為 Marvel。
-Castel del Monte | 約 1240–約 1250 | 皇帝 Friedrich II 在普利亞的八角形城堡，平面與八座八角塔規整，歸為「Other」，與哥德大教堂不同類。
+Strasbourg Cathedral | 1176–1439 | 粉紅砂岩建成，單一尖塔，一度是世界最高建築。
+Castel del Monte | 約 1240–約 1250 | 八角形城堡，平面與八座八角塔都規整對稱。
 Sainte-Chapelle | 1242–1248 | Rayonnant 風格的王室禮拜堂，為安放聖遺物而建，上層牆面幾乎全是彩色玻璃。
 Cologne Cathedral | 1248–1880 | 德國哥德大教堂，歷時六百多年才完工，是 1248 年起建中世紀設計的忠實完成。
 Cathédrale Sainte-Croix d'Orléans | 1278–1829 | 宗教戰爭中被毀後，以哥德式重建，延續了近兩百年。
@@ -40,7 +40,7 @@ Siena Cathedral | 約 1215–1263 | 黑白條紋大理石建成，內部地面�
 Basilica di San Francesco d'Assisi | 1228–1253 | 上下兩層教堂，滿牆是 Giotto 的壁畫，結構上較少使用飛扶壁。
 Ospedale degli Innocenti (Foundling Hospital) | 1419–1445 | 被視為第一座 Renaissance 建築，以圓拱、Corinthian 柱與嚴謹比例組成的柱廊，是歐洲最早的孤兒院之一。
 Santa Maria del Fiore Dome | 1420–1436 | 雙層殼體、魚骨砌磚、不用木鷹架，是當時最大的磚造穹頂。內部繪有 Vasari、Zuccari 的《最後審判》。
-Santa Croce - Pazzi Chapel | 約 1441–1478 前後 | Santa Croce 修道院內，Brunelleschi 設計的禮拜堂，與 Pazzi Chapel (Santa Croce) 同址（資料來源兩列並存）。
+Santa Croce - Pazzi Chapel | 約 1441–1478 前後 | Santa Croce 修道院內的禮拜堂，以灰色砂岩 pietra serena 與白牆勾勒出嚴格比例，是 Renaissance 中央式空間的典範。
 Pazzi Chapel (Santa Croce) | 約 1441–1478 前後 | Santa Croce 內，以灰色砂岩 pietra serena 與白牆勾勒出嚴格比例的禮拜堂，是 Renaissance 中央式空間的典範。立面由 Niccolò Matas 設計。
 Palazzo Medici Riccardi | 1444–1484 | 佛羅倫斯 Renaissance 宮殿的原型，由 Cosimo il Vecchio 出資，三層外牆自下而上由粗石變平滑。
 Tempio Malatestiano | 1450–約 1468（未完成） | 在中世紀教堂外包一層仿凱旋門的立面，是 Rimini 領主 Sigismondo Malatesta 的紀念建築，內有 Giotto Crucifix，未完工。
@@ -54,17 +54,17 @@ Palazzo Gondi | 1490–約 1501 | 佛羅倫斯的 Renaissance 宮殿，採用 Me
 Santa Maria delle Grazie (Tribuna) | 1492–1497 | 新建的後殿與穹頂，帶有 Lombard 風格的紅磚與空間。同寺餐廳牆上有《最後的晚餐》。
 Tempietto | 1502–約 1510 | 建在傳說中聖彼得殉教處的小型圓形神殿，Doric 柱圍繞，是盛期 Renaissance Central Plan 的典範。
 Cortile del Belvedere | 1505–1560 年代 | 教宗 Julius II 的庭園，以階梯與透視軸線連接梵蒂岡宮與觀景樓，開創文藝復興庭園類型。
-St. Peter's Basilica (First Design) | 1506– | Greek Cross 平面的新大殿方案。為了興建拆除了大量舊聖殿石柱，被稱為 Maestro Ruinante。
-San Maurizio al Monastero Maggiore | 1503–1519 | 內部滿覆 Luini 壁畫，被稱為「米蘭的 Sistine Chapel」，並有分隔修女的內牆。
+St. Peter's Basilica (First Design) | 1506– | Greek Cross 平面的新大殿方案。為了興建拆除大量舊聖殿石柱，建築師因此被稱為 Maestro Ruinante。
+San Maurizio al Monastero Maggiore | 1503–1519 | 內部滿覆壁畫，被稱為「米蘭的 Sistine Chapel」，並有分隔修女的內牆。
 Fontainebleau | 1528–1570 前後 | 法國王室行宮，把義大利 Renaissance 帶入法國，形成 Fontainebleau 畫派。
 Palazzo Te | 1524–1534 | Mannerism 代表，故意讓 Triglyph 下滑、拱心石錯位，營造出不穩定感。
 Laurentian Library | 1524–1571 | 三股階梯從門廳湧入閱覽室，柱子嵌進牆內，是 Mannerism 的開端。
 Piazza del Campidoglio | 1538–1655 | 以橢圓與梯形平面把不對稱的三棟建築整合成一個廣場，中央立有 Marcus Aurelius 騎馬像。
 St. Peter's Basilica Dome | 1546–1590 | 雙層圓頂，高度主宰羅馬天際線，由 Giacomo della Porta 完工。
 Basilica Palladiana | 1549–1614 | 為 Vicenza 的中世紀市政廳加上兩層拱廊，使用 Serliana 拱，成為廣泛流傳的母題。
-Palladio's Villas | 1549–1559（四座） | 威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。包含 Pojana、Barbaro、Badoer、Foscari。
+Palladio's Villas | 1549–1559（四座） | 威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。
 Palazzo Marino | 1558–1563 | 為銀行家所建，現為米蘭市政廳，面向 Scala 廣場。
-Villa Farnese | 1559–1575 | 建在五角形堡壘基座上的別墅，內部是圓形中庭，位於 Caprarola 山頂。
+Villa Farnese | 1559–1575 | 建在五角形堡壘基座上的別墅，內部是圓形中庭，位於山頂。
 Uffizi | 1560–1581 | U 形長中庭，向 Arno 河開口，原為 Medici 家族的行政辦公室，後來成為美術館。
 Vasari Corridor | 1565 | 約 1 km 的空中走廊，連接 Ponte Vecchio、Palazzo Vecchio、Uffizi 與 Pitti，讓統治者免於走在街上。
 Villa Capra (La Rotonda) | 1566–約 1570 | 四面對稱、各有希臘神廟柱廊，中央圓廳覆穹頂，是 Palladian 風格的典範。
@@ -81,7 +81,7 @@ Fontana dei Quattro Fiumi | 1648–1651 | 四座河神像代表四大洲河流�
 Piazza San Pietro | 1656–1667 | 橢圓加梯形的廣場，環以四排 Doric 柱廊，像雙臂擁抱信眾。
 Santa Maria della Pace | 1656–1667 | 半圓形柱廊門廊伸入小廣場，把建築與周邊都市空間結合。
 Sant'Andrea al Quirinale | 1658–1670 | 橫向橢圓平面的小教堂，祭壇與入口軸線相交，空間戲劇性十足。
-Palace of Versailles | 1661–1710 | Louis XIV 的 French Baroque 宮殿，鏡廳與花園軸線是絕對王權的象徵。
+Palace of Versailles | 1661–1710 | French Baroque 宮殿，鏡廳與花園軸線是絕對王權的象徵。
 Scala Regia | 1663–1666 | 梵蒂岡儀典入口階梯，利用逐漸縮小的柱子與透視拉長視覺長度。
 Cappella della Sindone | 1668–1694 | 安放都靈裹屍布的禮拜堂，圓頂由錐形透空拱券網格組成，光線從縫隙滲入。
 San Bernardino alle Ossa | 1679–1695 | 米蘭的 Ossario 人骨小堂，牆面以骨骸裝飾。
@@ -93,7 +93,7 @@ Palazzo Reale (Milan) | 1769–1778 | 米蘭統治者的宮殿，18 世紀改為
 Palazzo Belgioioso | 1772–1781 | 米蘭的新古典宮殿，面對小廣場，立面對稱克制。
 St. Peter's Basilica Facade and Nave | 1607–1626 | 在原 Greek Cross 平面上加長中殿，使大殿成為拉丁十字，並完成立面，1626 年落成。
 Santa Susanna | 1597–1603 | 早期 Baroque 立面，柱子從平面逐漸凸出，向中軸聚集。
-Ecstasy of Saint Teresa | 1647–1652 | 位於羅馬 Santa Maria della Vittoria 教堂 Cornaro Chapel 的 Bernini 雕塑群，以雕塑、光線與建築融為一體，是 Bel Composto 的代表。
+Ecstasy of Saint Teresa | 1647–1652 | 位於羅馬 Santa Maria della Vittoria 教堂 Cornaro Chapel 的雕塑群，以雕塑、光線與建築融為一體，是 Bel Composto 的代表。
 Sant'Ignazio di Loyola | 1626–1650（穹頂畫 1685） | 因無經費蓋穹頂，改在天花上畫出立體穹頂（trompe l'oeil），站在圓盤標記處看最逼真。
 Basilique du Sacré-Cœur | 1875–1914 | 俯視巴黎的白色 Romano-Byzantine 大教堂，原為巴黎公社事件後的贖罪建築。
 Mole Antonelliana | 1863–1889 | 原為猶太會堂，建築師逝世後才完工，高 167.5 m，現為國家電影博物館，是都靈地標。
@@ -106,16 +106,16 @@ Königsplatz | 1816–1862 | 以希臘建築包圍的廣場，慕尼黑「Isar-A
 Bibliothèque Sainte-Geneviève | 1838–1850 | 外牆是石造，內部閱覽室用鑄鐵細柱與拱頂，是鐵結構進入公共建築的早期範例。
 Crystal Palace | 1850–1851 | 為 1851 年世博而建的全鐵骨架加平板玻璃大廳，以預製件約九個月就建成。
 Eiffel Tower | 1887–1889 | 1889 年世博的入口，鍛鐵桁架高 300 m，一度是世界最高建築。
-Red House | 1859–1860 | 為 Morris 建的紅磚住宅，是 Arts & Crafts 的起點。
+Red House | 1859–1860 | 紅磚住宅，是 Arts & Crafts 的起點。
 Secession Building | 1897–1898 | 維也納分離派展館，頂上有金色月桂球頂，立面平滑，門上寫有「給時代藝術，給藝術自由」。
-Casa Galimberti | 1903–1905 | Giovanni Battista Bossi 設計的米蘭 Stile Liberty（新藝術）住宅，Via Malpighi 3，立面貼有約 170 ㎡ 的彩色陶磚。
-Palazzo Castiglioni | 1901–1903 | Giuseppe Sommaruga 設計的米蘭 Stile Liberty 宅邸，是義大利 Liberty 的代表作之一。
-Sagrada Família | 1882–（施工中；主塔 2026 達最終高度） | Gaudí 設計的教堂，自 1882 年施工至今，主塔已於 2026 年達最終高度。
-Casa Vicens | 1883–1888 | Gaudí 的住宅作品，至今仍保持住宅外觀與用途（UNESCO 世界遺產「Works of Antoni Gaudí」之一）。
+Casa Galimberti | 1903–1905 | Stile Liberty（新藝術）住宅，立面貼有約 170 ㎡ 的彩色陶磚。
+Palazzo Castiglioni | 1901–1903 | Stile Liberty 宅邸，是義大利 Liberty 的代表作之一。
+Sagrada Família | 1882–（施工中；主塔 2026 達最終高度） | 至今仍在興建的教堂，主塔已於 2026 年達最終高度。
+Casa Vicens | 1883–1888 | 至今仍保持住宅外觀與用途（UNESCO 世界遺產之一）。
 Palau Güell | 1885–1890 | 原為 Güell 家的住宅，現作文化與觀光設施，保留原有建築形式與裝飾（UNESCO 世界遺產之一）。
-Casa Batlló | 1904–1906 | 既有建築經 Gaudí 改建而成，仍保留集合住宅的原設計，兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。
-Casa Milà | 1906–1912 | Gaudí 設計的集合住宅，大致保留原設計，現兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。
-Park Güell | 1900–1914 | Gaudí 設計的公園，至今仍作公共公園使用，由巴塞隆納市政府持有（UNESCO 世界遺產之一）。
+Casa Batlló | 1904–1906 | 由既有建築改建而成，仍保留集合住宅的原設計，兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。
+Casa Milà | 1906–1912 | 集合住宅，大致保留原設計，現兼作辦公、文化與觀光用途（UNESCO 世界遺產之一）。
+Park Güell | 1900–1914 | 至今仍作公共公園使用，由巴塞隆納市政府持有（UNESCO 世界遺產之一）。
 Colònia Güell | 1908–1914 | Colònia Güell 教堂的地下禮拜堂（Crypt）；原規劃中的教堂只完成這一部分，現仍作教堂使用（UNESCO 世界遺產之一）。
 Tassel House | 1892–1893 | 以鑄鐵與玻璃、曲線植物紋樣打造的住宅，被視為 Art Nouveau 的開端。
 Schröder House | 1924 | 以三原色與直線平面構成的住宅，內部可用滑動隔間改變空間，是 De Stijl 唯一的實際住宅。
@@ -123,7 +123,7 @@ Pavillon de l'Esprit Nouveau | 1924–1925 | 1925 年巴黎世博中擅自參展
 Bauhaus Dessau Building | 1925–1926 | Bauhaus 遷到 Dessau 後的新校舍，風車形平面、RC 框架與玻璃帷幕牆。
 Weissenhof Estate | 1925–1927 | 1927 年斯圖加特的現代住宅展，邀請多位現代建築師共同打造，2027 年是 100 週年。
 Villa Savoye | 1928–1931 | 把新建築五點（底層挑空、自由平面、自由立面、水平長窗、屋頂花園）全部納入的住宅。
-Barcelona Pavilion | 1928–1929 | 1929 年世博的德國館，以大理石牆、倒影池與承重柱與隔牆分離創造流動空間，1986 年原地重建。
+Barcelona Pavilion | 1928–1929 | 1929 年世博的德國館，以大理石牆、倒影池，以及承重柱與隔牆分離，創造流動空間，1986 年原地重建。
 Fallingwater | 1936–1939 | 把住宅懸挑在瀑布上方，岩石與瀑布成為空間的一部分，是有機建築的標誌。
 Unité d'Habitation | 1947–1952 | 垂直聚落，把住宅、商店、屋頂花園放進單一巨大混凝土建築，是 Brutalism 的起點。
 Notre-Dame-du-Haut (Ronchamp) | 1950–1955 | 廊香教堂，雕塑般的白色曲面牆與厚重屋頂，自由平面，戰後朝聖教堂。
@@ -143,12 +143,12 @@ Pirelli Tower | 1956–1960 | 米蘭 127 m 高樓，兩端收尖，一度是義�
 Torre Velasca | 1954–1958 | 上部挑出、模仿倫巴底中世紀城堡的輪廓，是都市脈絡主義的代表。
 Nakagin Capsule Tower | 1970–1972 | 可更換的預製膠囊單元掛在核心筒上，是 Metabolism 的代表，2022 年已拆除。
 Centre Pompidou | 1971–1977 | 把結構、管線、電梯與設備全部移到外面，並用顏色區分系統，使內部空間完全自由。
-Tomba Brion | 1969–1978 | 以混凝土、水與幾何構成的家族墓園，細部豐富，是 Scarpa 最重要的晚期作品。
+Tomba Brion | 1969–1978 | 以混凝土、水與幾何構成的家族墓園，細部豐富，是建築師最重要的晚期作品。
 Guggenheim Museum Bilbao | 1993–1997 | 鈦金屬曲面外觀，帶動 Bilbao 的城市復興，被稱為「畢爾包效應」。
 MAXXI | 2003–2010 | 羅馬的當代藝術館，由交錯的長條形展廳與流動的天橋組成，混凝土與玻璃。
 Gallaratese Quarter | 1967–1973 | 米蘭郊區的長條形住宅，長廊與規則的方窗，La Tendenza 的代表。
 Generali Tower (CityLife) | 2011–2017 | 米蘭「Twisted」高樓，樓板逐層旋轉，使外形扭轉上升。
-Palazzo dell'Arte (Triennale) | 1931–1933 | 位於 Parco Sempione，是 Triennale 的展場，2025 年再度為 Triennale 展出之地。
+Palazzo dell'Arte (Triennale) | 1931–1933 | 位於 Parco Sempione，是 Triennale 的展場。
 Polimi Campus Nord |  | 
 Museo Castelvecchio | 1957–1964 | 把中世紀城堡改造為博物館，以陰影縫隙、構造碎片與展品配置聞名。
 Louvre Pyramid | 1984–1989 | Louvre 庭院的玻璃金字塔，成為地下入口大廳的採光天窗，是 Mitterrand Grands Projets 之一。
@@ -172,21 +172,21 @@ Vanna Venturi House | 1959–1964 | 山形屋頂中間斷開、立面既對稱�
 Nevsky Prospect | 1710-1718 | 1710–1715 年先建 Moika 至 Fontanka 一段；1723 年成為俄國第一條有街燈的街道。
 North Doors, Florence Baptistery | 1424 | 20 面嵌板描繪基督生平，由下往上讀；框架上方另有 8 面福音書作者與教會聖師嵌板；1424 年復活節安裝。
 Palazzo del Viminale | 1911-1925 | 1925 年 7 月 9 日啟用，自此為內政部所在。
-Palazzo della Farnesina | 1937-1959 | 1943 年起因二戰停工，1946 年復工；1959 年完工後為外交部所在。
-Quirinal Palace | 1583 | 教宗 Gregory XIII 的夏季居所；1583–1870 年為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為 Presidential Palace（總統府），即義大利共和國總統官邸。
+Palazzo della Farnesina | 1937-1959 | 1943 年因二戰停工，1946 年復工；完工後為外交部所在。
+Quirinal Palace | 1583 | 原為教宗 Gregory XIII 的夏季居所；1870 年前為教宗居所，1871–1946 年為義大利王室官邸，1946 年後為總統府。
 Palazzo Montecitorio |  | 為 Ludovico Ludovisi 樞機而設計，Gregory XV 逝世後停工，Innocent XII 時期重啟；1871 年起為 Chamber of Deputies（眾議院）所在，1918 年起長期使用。
 Palazzo Madama | 15th-1505 | 業主為 Medici 家族，現為 Senate of the Republic（參議院）所在。
-Hermitage Museum | 1852 | 1764 年 Catherine the Great 購入柏林商人的收藏為創立之始，1852 年起對外開放，藏品逾 300 萬件。
-Capodimonte Museum | 1957 | 1738 年 Charles VII 原擬建獵宮，改建為大型宮殿；1950 年成為國立博物館，1957 年啟用。
+Hermitage Museum | 1852 | 1764 年 Catherine the Great 購入柏林商人的收藏為創立之始，藏品逾 300 萬件。
+Capodimonte Museum | 1957 | 1738 年 Charles VII 原擬建獵宮，改建為大型宮殿；1950 年成為國立博物館。
 Metropolitan Museum of Art | 1880 | 1870 年創立，1880 年遷入第五大道現址；第一件入藏品為羅馬石棺，至今仍展出。
 Bargello Museum | 1255-1367 | 原為 Capitano del Popolo 與 podestà 官署，為佛羅倫斯最古老的公共建築；1865 年成為國立博物館，藏有義大利最大宗的哥德與文藝復興雕刻。
-Prado Museum | 1819 | 1785 年於 Charles III 時期委託，其後停工，Ferdinand VII 時期復工；1819 年 11 月首次對外開放。
+Prado Museum | 1819 | 1785 年於 Charles III 時期委託，其後停工，Ferdinand VII 時期復工並對外開放。
 Robie House | 1909-1910 | 屋頂向外懸挑，不靠承重牆支撐。
 Glasgow School of Art | 1897-1909 | 分兩期建成：1899 年完成前半，1909 年完成後半；2014、2018 年兩度失火。
 Space Needle | 1961 | 為 1962 年世界博覽會而建，高 184 m。
 Petronas Twin Towers | 1993-1996 | 高 451.9 m；1998–2004 年為世界最高建築，並為世界最高雙子塔。
 Allianz Arena | 2002-2005 | 外殼為充氣 ETFE 板，為首座可整面變色的球場；Bayern Munich 自 2005 年起使用。
-Palais Stoclet | 1905-1911 | 為 Adolphe Stoclet 興建，2009 年列入 UNESCO 世界遺產。
+Palais Stoclet | 1905-1911 | 為業主 Adolphe Stoclet 興建的宅邸，2009 年列入 UNESCO 世界遺產。
 Glass House | 1947-1949 | 外牆為炭黑色鋼構與玻璃。
 Louvre Museum | 12th-1857 | 12th century 末由 Philip II 始建為要塞；1546 年 Francis I 起以 French Renaissance 風格重建；1793 年 8 月 10 日成為博物館。
 Weissenhof Double House | 1927 | Werkbund 住宅區第 14–15 號；採 Five Points 與底層挑空柱，兩戶共用中央樓梯。
@@ -194,13 +194,13 @@ Marqués de Riscal Hotel | 2003-2006 | 位於 Marqués de Riscal 酒莊內；沿
 Sainte Marie de La Tourette | 1956-1960 | 多明我會修道院；四道厚重矩形量體圍成封閉內院，起伏玻璃面由 Iannis Xenakis 設計。
 Van Gogh Museum | 1973 | 1963 年受託興建，1973 年 6 月 2 日開幕。
 Dutch Pavilion | 1953 | 1912 年的原館後來被拆除，1953 年重建。
-Villa Mairea | 1938-1939 | 為 Harry 與 Maire Gullichsen 所建，平面為變形 L 形。
+Villa Mairea | 1938-1939 | 為業主 Harry 與 Maire Gullichsen 所建，平面為變形 L 形。
 Viipuri Library | 1935 | 設計時屬芬蘭，今屬俄羅斯；深圓筒天窗使日光均勻灑在閱覽桌上。
-Kaufmann Desert House | 1946 | 為 Edgar J. Kaufmann 的沙漠度假住宅。
+Kaufmann Desert House | 1946 | 業主 Edgar J. Kaufmann 的沙漠度假住宅。
 Millard House | 1923-1924 | 為書商 Alice Millard 興建；16 英寸方形混凝土砌塊相互咬合，並以鋼筋與砂漿加固。
 Fagus Factory | 1911-1913 | 玻璃立面的轉角不設支柱；2011 年列入 UNESCO 世界遺產。
 Sommerfeld House | 1920-1921 | 受 Prairie Houses 影響；以退役戰艦拆下的木材建造，樓梯上方有 Josef Albers 的大型彩繪玻璃；二戰中大部分被毀。
 Church of San Bernardino | 1482-1491 | Federico da Montefeltro 的家族陵墓；拉丁十字平面、筒形拱頂。
-Santa Croce | 1294- | 方濟會教堂，1294 年 5 月 12 日奠基；十六間禮拜堂，多有 Giotto 壁畫；新哥德式大理石立面為 1857–1863 年所建。
-Scrovegni Chapel | 1303 | 為銀行家 Enrico Scrovegni 的家族禮拜堂與陵墓；Giotto 壁畫覆蓋整個內部，西牆為〈最後審判〉。
+Santa Croce | 1294- | 方濟會教堂；十六間禮拜堂，多有 Giotto 壁畫；新哥德式大理石立面為 1857–1863 年所建。
+Scrovegni Chapel | 1303 | 為銀行家 Enrico Scrovegni 的家族禮拜堂與陵墓；壁畫覆蓋整個內部，西牆為〈最後審判〉。
 Tate Modern | 1947-1963 | 由發電廠改建，2000 年 5 月 11 日開幕；2016 年 6 月 17 日新館開放。

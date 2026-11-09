@@ -6,6 +6,15 @@ export function styleOf(b: Building): string {
   return valueOf(b, 'style');
 }
 
+/** Broad styles the coloured category tag already names: the card does not repeat them on the style line */
+const BROAD = new Set(['Ancient Greece', 'Ancient Rome', 'Renaissance', 'Baroque', 'Modernism', 'Neoclassicism', 'Art Nouveau']);
+
+/** The style line of the card: a finer style (Brutalism, Deconstructivism…) in place of Modernism, nothing for a broad style */
+export function cardStyleOf(b: Building): string {
+  const st = styleOf(b) === 'Modernism' && b.styleCard ? b.styleCard : styleOf(b);
+  return BROAD.has(st) ? '' : st;
+}
+
 /** A tag written as "~~x~~": the building lacks x (shown struck through) */
 export interface Keyword {
   text: string;
