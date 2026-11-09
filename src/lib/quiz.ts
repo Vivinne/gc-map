@@ -52,6 +52,7 @@ const QUIZ_SKIP = new Set(['Louvre Pyramid']);
 
 /** Buildings asked without an architect (the name given is a patron, a ruler or "multiple architects") */
 const NO_ARCHITECT = new Set([
+  'Versailles',
   'Mediolanum',
   'Arc de Triomphe',
   'Castel del Monte',
@@ -102,7 +103,9 @@ export function valueOf(b: Building, f: Field): string {
   }
   if (f === 'style') {
     const st = ARCHITECT_QUIZ_STYLE[ascii(whoOf(b))] ?? slashed(styleName(b));
-    return QUIZ_STYLE[st] ?? st;
+    const v = QUIZ_STYLE[st] ?? st;
+    // "Others" is a filing group, not a style: such a building is never asked about its style
+    return v === 'Others' ? '' : v;
   }
   if (f === 'architect') {
     if (NO_ARCHITECT.has(b.name)) return '';
