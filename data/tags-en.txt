@@ -1,0 +1,205 @@
+# Building tags, English. id | name (do not edit) | tags separated by ' · ' ; empty = no tags; ~~x~~ = struck (the building lacks x)
+valle-dei-templi-agrigento | Valle dei Templi | Magna Graecia · Doric
+parthenon-athens | Parthenon | Doric · Peripteral
+erechtheion-athens | Erechtheion | Ionic · Caryatids
+cloaca-maxima-rome | Cloaca Maxima | Great sewer
+aqua-appia-rome | Aqua Appia | First aqueduct
+domus-aurea-rome | Domus Aurea | Sala Ottagona
+colosseum-rome | Colosseum | Three stacked orders
+pantheon-rome | Pantheon | Rotunda · Oculus
+basilica-of-maxentius-and-constantine-rome | Basilica of Maxentius and Constantine | Concrete groin vaults
+arch-of-constantine-rome | Arch of Constantine | Triumphal arch
+roman-forum-and-imperial-fora-rome | Roman Forum and Imperial Fora | Forum
+colonne-di-san-lorenzo-milan | Colonne di San Lorenzo | Corinthian
+mediolanum-imperial-palace-district-circo-thermae-herculeae-milan | Mediolanum | Western Roman capital · Palace · Baths
+hagia-sophia-istanbul | Hagia Sophia | Pendentive dome · Square plan
+basilica-di-san-marco-venice | Basilica di San Marco | Greek Cross · Gold mosaics
+basilica-di-sant-ambrogio-milan | Basilica di Sant'Ambrogio | Red brick · Rib vaults · ~~Clerestory~~
+mont-saint-michel-abbey-mont-saint-michel | Mont-Saint-Michel Abbey | La Merveille
+parma-baptistery-parma | Parma Baptistery | Octagonal · Pink marble · Four tiers of loggias
+pisa-cathedral-and-leaning-tower-pisa | Pisa Cathedral and Leaning Tower | Coloured marble · Blind arcades · Leaning tower
+san-miniato-al-monte-florence | San Miniato al Monte | Green and white marble · Geometric facade
+basilica-of-saint-denis-saint-denis | Basilica of Saint-Denis | Birth of Gothic
+notre-dame-de-mantes-la-jolie-mantes | Notre-Dame de Mantes-la-Jolie | Collégiale
+notre-dame-de-paris-paris | Notre-Dame de Paris | Napoleon’s coronation
+chartres-cathedral-chartres | Chartres Cathedral | Chartres blue
+bourges-cathedral-bourges | Bourges Cathedral | No transept
+reims-cathedral-reims | Reims Cathedral | Coronation church · Decorated pointed arches
+amiens-cathedral-amiens | Amiens Cathedral | 42.3 m nave
+salisbury-cathedral-salisbury | Salisbury Cathedral | 
+strasbourg-cathedral-strasbourg | Strasbourg Cathedral | Pink sandstone · Single spire
+castel-del-monte-puglia | Castel del Monte | Octagonal plan
+sainte-chapelle-paris | Sainte-Chapelle | 
+cologne-cathedral-cologne | Cologne Cathedral | 
+cathedrale-sainte-croix-d-orleans-orleans | Cathédrale Sainte-Croix d'Orléans | 
+duomo-di-milano-milan | Duomo di Milano | 
+seville-cathedral-seville | Seville Cathedral | Former mosque site
+santa-maria-del-fiore-main-body-florence | Santa Maria del Fiore (Main Body) | 
+siena-cathedral-siena | Siena Cathedral | Black and white marble · Inlaid marble floor
+basilica-di-san-francesco-d-assisi-assisi | Basilica di San Francesco d'Assisi | Two-level church · Giotto frescoes
+bargello-museum-florence | Bargello Museum | Oldest public building
+santa-croce-florence | Santa Croce | Giotto frescoes
+santa-croce-pazzi-chapel-florence | Santa Croce - Pazzi Chapel | Pietra serena
+scrovegni-chapel-padua | Scrovegni Chapel | Giotto frescoes · Last Judgement
+ospedale-degli-innocenti-foundling-hospital-florence | Ospedale degli Innocenti (Foundling Hospital) | Round-arched loggia · Corinthian columns
+santa-maria-del-fiore-dome-florence | Santa Maria del Fiore Dome | Double shell · Herringbone brickwork · No wooden centering · Last Judgement
+pazzi-chapel-santa-croce-florence | Pazzi Chapel (Santa Croce) | 
+palazzo-medici-riccardi-florence | Palazzo Medici Riccardi | Palazzo prototype
+tempio-malatestiano-rimini | Tempio Malatestiano | Triumphal-arch facade
+ca-granda-milan | Ca' Granda | Great hospital · Cross-shaped courtyards
+palazzo-rucellai-florence | Palazzo Rucellai | Three tiers of pilasters
+santa-maria-novella-facade-florence | Santa Maria Novella (Facade) | Volutes
+sant-andrea-mantua | Sant'Andrea | Pediment · Triumphal-arch facade
+camera-degli-sposi-mantua | Camera degli Sposi | Ceiling fresco · Di sotto in sù · Illusionism
+santa-maria-presso-san-satiro-milan | Santa Maria presso San Satiro | Trompe l'oeil
+palazzo-gondi-florence | Palazzo Gondi | Rusticated facade
+santa-maria-delle-grazie-tribuna-milan | Santa Maria delle Grazie | Red brick · The Last Supper
+tempietto-rome | Tempietto | Central plan · Doric
+cortile-del-belvedere-vatican | Cortile del Belvedere | Exedra · Terraced garden
+st-peters-first-design-vatican | St. Peter's Basilica | Greek Cross
+san-maurizio-al-monastero-maggiore-milan | San Maurizio al Monastero Maggiore | Luini frescoes
+fontainebleau-fontainebleau | Fontainebleau | 
+palazzo-te-mantua | Palazzo Te | Slipping triglyphs · Displaced keystones
+laurentian-library-florence | Laurentian Library | Triple-flight staircase · Recessed columns · Birth of Mannerism
+piazza-del-campidoglio-rome | Piazza del Campidoglio | Oval · Trapezoidal piazza
+st-peters-dome-vatican | St. Peter's Basilica Dome | Double dome
+basilica-palladiana-vicenza | Basilica Palladiana | Serliana
+palladio-s-villas-veneto | Palladio's Villas | Temple front
+palazzo-marino-milan | Palazzo Marino | Milan City Hall
+villa-farnese-caprarola | Villa Farnese | Pentagonal plan · Circular courtyard
+uffizi-florence | Uffizi | U-shaped courtyard · Medici offices
+vasari-corridor-florence | Vasari Corridor | Medici passageway
+villa-capra-la-rotonda-vicenza | Villa Capra (La Rotonda) | Four identical fronts · Greek porticoes · Central rotunda · Dome
+il-redentore-venice | Il Redentore | 
+sforza-castle-milan | Sforza Castle | Napoleon
+basilica-di-san-lorenzo-florence | Basilica di San Lorenzo | Pietra serena · Modular grid
+pienza-cathedral-pienza | Pienza Cathedral | 
+church-of-san-bernardino-urbino | Church of San Bernardino | 
+quirinal-palace-rome | Quirinal Palace | Presidential palace
+louvre-museum-paris | Louvre Museum | 
+gesu-church-of-the-gesu-rome | Church of Gesù | Birth of Baroque
+baldacchino-st-peter-s-vatican | St. Peter's Baldacchino | Bronze canopy · 29 m
+santa-maria-della-salute-venice | Santa Maria della Salute | Octagonal · Great dome · Volute buttresses
+san-carlo-alle-quattro-fontane-rome | San Carlo alle Quattro Fontane | Oval plan · Undulating facade · Oval dome
+sant-ivo-alla-sapienza-rome | Sant'Ivo alla Sapienza | Six-pointed star · Spiral lantern
+fontana-dei-quattro-fiumi-rome | Fontana dei Quattro Fiumi | Four river gods · Hollow obelisk
+piazza-san-pietro-vatican | Piazza San Pietro | Oval and trapezoid piazza · Doric colonnade
+santa-maria-della-pace-rome | Santa Maria della Pace | Semicircular projecting porch
+sant-andrea-al-quirinale-rome | Sant'Andrea al Quirinale | Transverse oval plan
+palace-of-versailles-versailles | Versailles | Hall of Mirrors · Garden axis
+scala-regia-vatican | Scala Regia | Ceremonial staircase · Forced-perspective colonnade
+cappella-della-sindone-turin | Cappella della Sindone | Hexagonal dome
+san-bernardino-alle-ossa-milan | San Bernardino alle Ossa | Bone decoration
+palazzina-di-caccia-di-stupinigi-turin | Palazzina di Caccia di Stupinigi | X-shaped plan
+trevi-fountain-rome | Trevi Fountain | Oceanus statue
+royal-palace-of-caserta-caserta | Royal Palace of Caserta | Long axial garden
+teatro-alla-scala-milan | Teatro alla Scala | 
+palazzo-reale-milan-milan | Palazzo Reale | 
+palazzo-belgioioso-milan | Palazzo Belgioioso | 
+st-peters-facade-nave-vatican | St. Peter's Basilica Facade and Nave | Latin cross · Lengthened nave
+santa-susanna-rome | Santa Susanna | Baroque facade
+ecstasy-of-saint-teresa-rome | Ecstasy of Saint Teresa | Bel composto
+sant-ignazio-di-loyola-rome | Sant'Ignazio di Loyola | Painted dome · Trompe l'oeil
+palazzo-montecitorio-rome | Palazzo Montecitorio | Chamber of Deputies
+palazzo-madama-rome | Palazzo Madama | Senate
+hermitage-museum-saint-petersburg | Hermitage Museum / Winter Palace | Winter Palace
+capodimonte-museum-naples | Capodimonte Museum | 
+basilique-du-sacre-c-ur-paris | Basilique du Sacré-Cœur | 
+mole-antonelliana-turin | Mole Antonelliana | Cinema museum · Former synagogue
+arco-della-pace-milan | Arco della Pace | 
+pantheon-paris | Panthéon | French Pantheon · Tombs of the great
+arc-de-triomphe-arc-du-carrousel-paris | Arc de Triomphe | Triumphal arch · Austerlitz
+altes-museum-berlin | Altes Museum | Ionic colonnade · Rotunda
+alte-pinakothek-munich | Alte Pinakothek | 
+konigsplatz-munich | Königsplatz | Square of Greek-style buildings
+palazzo-del-viminale-rome | Palazzo del Viminale | Ministry of the Interior
+palazzo-della-farnesina-rome | Palazzo della Farnesina | Ministry of Foreign Affairs
+prado-museum-madrid | Prado Museum | 
+bibliotheque-sainte-genevieve-paris | Bibliothèque Sainte-Geneviève | Slender cast-iron columns and vaults
+crystal-palace-london | Crystal Palace | Iron frame · Plate glass · Prefabrication
+eiffel-tower-paris | Eiffel Tower | 
+red-house-kent | Red House | Arts and Crafts · Red brick
+secession-building-vienna | Secession Building | Golden dome
+casa-galimberti-milan | Casa Galimberti | Stile Liberty · Coloured ceramic-tile facade
+palazzo-castiglioni-milan | Palazzo Castiglioni | Stile Liberty
+sagrada-familia-barcelona | Sagrada Família | 
+casa-vicens-barcelona | Casa Vicens | 
+palau-guell-barcelona | Palau Güell | 
+casa-batllo-barcelona | Casa Batlló | Coloured tile facade
+casa-mila-barcelona | Casa Milà | Apartment building · Undulating facade
+park-guell-barcelona | Park Güell | 
+colonia-guell-barcelona | Colònia Güell | Crypt
+tassel-house-brussels | Tassel House | Plant-curve staircase · Birth of Art Nouveau
+glasgow-school-of-art-glasgow | Glasgow School of Art | 
+palais-stoclet-brussels | Palais Stoclet | Gesamtkunstwerk
+schroder-house-utrecht | Schröder House | 
+pavillon-de-l-esprit-nouveau-paris | Pavillon de l'Esprit Nouveau | Housing unit
+bauhaus-dessau-building-dessau | Bauhaus Dessau Building | Pinwheel plan · RC frame · Glass curtain wall
+weissenhof-estate-stuttgart | Weissenhof Estate | 
+villa-savoye-poissy | Villa Savoye | Five Points
+barcelona-pavilion-barcelona | Barcelona Pavilion | 
+fallingwater-pennsylvania | Fallingwater | Cantilever · Organic architecture
+unite-d-habitation | Unité d'Habitation | Vertical village · Béton brut · Brutalism
+notre-dame-du-haut-ronchamp-ronchamp | Notre-Dame-du-Haut (Ronchamp) | Free plan · Free facade
+aeg-turbine-factory-berlin | AEG Turbine Factory | 
+chrysler-building-new-york | Chrysler Building | Arched spire
+empire-state-building-new-york | Empire State Building | 
+seagram-building-new-york | Seagram Building | Glass curtain wall
+neue-nationalgalerie-berlin | Neue Nationalgalerie | 
+guggenheim-museum-new-york-new-york | Guggenheim Museum New York | Spiral ramp
+muller-house-prague | Müller House | Raumplan
+paimio-sanatorium-paimio | Paimio Sanatorium | 
+mit-baker-house-cambridge | MIT Baker House | Wave · Brick
+robie-house-chicago | Robie House | 
+glass-house-new-canaan | Glass House | Glass walls
+weissenhof-double-house-stuttgart | Weissenhof Double House | Five Points
+sainte-marie-de-la-tourette-eveux | Sainte Marie de La Tourette | 
+van-gogh-museum-amsterdam | Van Gogh Museum | 
+dutch-pavilion-venice | Dutch Pavilion | 
+villa-mairea-noormarkku | Villa Mairea | 
+viipuri-library-vyborg | Viipuri Library | 
+kaufmann-desert-house-palm-springs | Kaufmann Desert House | 
+millard-house-pasadena | Millard House | 
+fagus-factory-alfeld | Fagus Factory | Glass corners
+sommerfeld-house-berlin | Sommerfeld House | 
+casa-del-fascio-como | Casa del Fascio | Square plan · Glass blocks
+qt8-milan | QT8 | 
+asilo-sant-elia-como | Asilo Sant'Elia | Large windows · Kindergarten
+pirelli-tower-milan | Pirelli Tower | 
+torre-velasca-milan | Torre Velasca | Brutalism
+nakagin-capsule-tower-tokyo | Nakagin Capsule Tower | Capsule units · Metabolism
+centre-pompidou-paris | Centre Pompidou | Exposed structure · High-Tech
+tomba-brion | Tomba Brion | 
+guggenheim-museum-bilbao-bilbao | Guggenheim Museum Bilbao | Titanium curves
+maxxi-rome | MAXXI | Flowing walkways
+gallaratese-quarter-milan | Gallaratese Quarter | 
+generali-tower-citylife-milan | Generali Tower (CityLife) | 
+palazzo-dell-arte-triennale-milan | Palazzo dell'Arte (Triennale) | 
+polimi-campus-nord-milan | Polimi Campus Nord | 
+museo-castelvecchio-verona | Museo Castelvecchio | 
+louvre-pyramid-paris | Louvre Pyramid | Glass · Light structure
+grande-arche-paris | Grande Arche | 
+bibliotheque-nationale-de-france-paris | Bibliothèque nationale de France | Four L-shaped corner towers
+musee-d-orsay-paris | Musée d'Orsay | Railway station · Great vault
+louvre-abu-dhabi-abu-dhabi | Louvre Abu Dhabi | Perforated dome
+philharmonie-de-paris-paris | Philharmonie de Paris | Aluminium panels · Perforations
+lloyd-s-building-london | Lloyd's Building | Bowellism · Exposed services
+the-gherkin-london | The Gherkin | Gherkin shape
+london-city-hall-london | London City Hall | Glass sphere
+grand-court-london | Grand Court | Glass canopy
+reichstag-glass-dome-berlin | Reichstag (Glass Dome) | Glass dome · Spiral ramp · Democratic transparency
+jewish-museum-berlin-berlin | Jewish Museum Berlin | Deconstructivism
+dancing-house-prague | Dancing House | Curved twin towers
+vitra-fire-station | Vitra Fire Station | Leaning walls · Sharp angles · Deconstructivism
+phaeno-science-center | Phaeno Science Center | Cone supports
+wexner-center | Wexner Center | 
+salk-institute | Salk Institute | Brutalism
+vanna-venturi-house | Vanna Venturi House | Postmodernism
+space-needle-seattle | Space Needle | 
+petronas-twin-towers-kuala-lumpur | Petronas Twin Towers | 
+allianz-arena-munich | Allianz Arena | Inflated ETFE skin
+marques-de-riscal-hotel-elciego | Marqués de Riscal Hotel | Deconstructivism
+tate-modern-london | Tate Modern | 
+metropolitan-museum-of-art-new-york | Metropolitan Museum of Art | 
+nevsky-prospect-saint-petersburg | Nevsky Prospect | 
+north-doors-florence-baptistery-florence | North Doors, Florence Baptistery | 
