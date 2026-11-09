@@ -756,98 +756,116 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   };
   return (
     <div className={`qv${mobile ? ' m' : ''}`}>
-      <div className="qv-col">
-        {/* the first step: one button, five questions from the building to its city, architect and style */}
-        <section className="card qv-quick" aria-label="Quick quiz">
-          <div className="qq-t">
-            <h2>Quick quiz</h2>
-            <p>
-              {QUICK_COUNT} questions {'\u00b7'} City, architect &amp; style
-              <Info label="Which buildings are asked" text={IN_QUIZ_NOTE} />
-            </p>
-          </div>
-          <button type="button" className="btn dark" onClick={() => startQuick()}>
-            Start
-            <Icon name="right" size={12} />
-          </button>
-        </section>
-        {last && (
-          <section className="card qv-quick qv-again" aria-label="Practice again">
+      <div className={`qv-col${customOpen ? ' open' : ''}`}>
+        {/* your own quiz first: the same card as the others, its current set-up said in one line, a Start of its own;
+            the settings open under it */}
+        <section className={`card qv-quick qv-custom qz2${customOpen ? ' open' : ''}`} aria-label="Custom quiz">
+          <div className="qq-row">
             <div className="qq-t">
-              <h2>Practice again</h2>
-              <p>{lastText}. New questions, avoiding the last set where possible.</p>
+              <h2>
+                Custom quiz
+                <Help topic="quiz" />
+              </h2>
+              <p>Choose the question type, the range and how many.</p>
+              <p className="qq-now">
+                {pairs.length ? pairsLabel(pairs) : 'No question type'} {'\u00b7'} {scope.label} {'\u00b7'} {cap && pairs.length ? `${n} question${n === 1 ? '' : 's'}` : 'no questions fit'}
+              </p>
             </div>
-            <button type="button" className="btn" onClick={again} disabled={last.recipe.kind === 'missed' && !missedAll.length}>
-              Practice again
-              <Icon name="right" size={12} />
-            </button>
-          </section>
-        )}
-        <section className={`card qv-main qv-setup qz2${customOpen ? '' : ' shut'}`} aria-label="Custom quiz">
-          <div className="hd">
-            <button type="button" className="qv-fold" aria-expanded={customOpen} onClick={() => setCustom(!customOpen)}>
-              <h2>Custom quiz</h2>
-              <Icon name="down" size={12} />
-            </button>
-            <Help topic="quiz" />
+            <div className="qq-go">
+              <button type="button" className="btn grey" disabled={!cap || !pairs.length} onClick={() => startSetup(setup)}>
+                Start
+                <Icon name="right" size={12} />
+              </button>
+              <button type="button" className="btn qv-fold" aria-expanded={customOpen} onClick={() => setCustom(!customOpen)}>
+                {customOpen ? 'Hide settings' : 'Settings'}
+                <Icon name="down" size={12} />
+              </button>
+            </div>
           </div>
           {customOpen && (
-            <>
-              <div className="bd">
-                <div className="qz2-row">
-                  <span className="qz2-l">Question type</span>
-                  <div className="qz2-line">
-                    <FieldMenu label="Question in" picked={setup.shown} onTick={(f) => tickField('shown', f)} />
-                    <Icon name="right" size={12} />
-                    <FieldMenu label="Answer in" picked={setup.asked} onTick={(f) => tickField('asked', f)} />
-                  </div>
-                  {!pairs.length && <p className="qz2-note">No question pairs these: City and Style are never asked together, nor a field with itself.</p>}
+            <div className="bd qq-set">
+              <div className="qz2-row">
+                <span className="qz2-l">Question type</span>
+                <div className="qz2-line">
+                  <FieldMenu label="Question in" picked={setup.shown} onTick={(f) => tickField('shown', f)} />
+                  <Icon name="right" size={12} />
+                  <FieldMenu label="Answer in" picked={setup.asked} onTick={(f) => tickField('asked', f)} />
                 </div>
-                <div className="qz2-row">
-                  <span className="qz2-l">
-                    Range
-                    <Info label="Which buildings are in the quiz" text={IN_QUIZ_NOTE} />
-                  </span>
-                  <div className="qz2-line">
-                    <RangeMenu groups={groups.filter((g) => g.items.length)} picked={setup.scopes} total={scope.items.length} onTick={tick} />
-                  </div>
+                {!pairs.length && <p className="qz2-note">No question pairs these: City and Style are never asked together, nor a field with itself.</p>}
+              </div>
+              <div className="qz2-row">
+                <span className="qz2-l">
+                  Range
+                  <Info label="Which buildings are in the quiz" text={IN_QUIZ_NOTE} />
+                </span>
+                <div className="qz2-line">
+                  <RangeMenu groups={groups.filter((g) => g.items.length)} picked={setup.scopes} total={scope.items.length} onTick={tick} />
                 </div>
-                <div className="qz2-row">
-                  <span className="qz2-l">Number of questions</span>
-                  <div className="qz2-line">
-                    <div className="qv-num">
-                      <button type="button" aria-label="Fewer questions" disabled={!cap || n <= lo} onClick={() => setCount(n - 1)}>
-                        <Icon name="minus" size={12} />
-                      </button>
-                      <CountBox value={n} lo={lo} hi={cap} onSet={setCount} />
-                      <button type="button" aria-label="More questions" disabled={!cap || n >= cap} onClick={() => setCount(n + 1)}>
-                        <Icon name="plus" size={12} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="qz2-row">
-                  <span className="qz2-l">Answers</span>
-                  <div className="qz2-line">
-                    <button type="button" role="switch" aria-checked={setup.reveal} className="qz2-sw" onClick={() => setSetup({ reveal: !setup.reveal })}>
-                      <span className={`sw2${setup.reveal ? ' on' : ''}`}>
-                        <i />
-                      </span>
-                      Show the answer after each question
+              </div>
+              <div className="qz2-row">
+                <span className="qz2-l">Number of questions</span>
+                <div className="qz2-line">
+                  <div className="qv-num">
+                    <button type="button" aria-label="Fewer questions" disabled={!cap || n <= lo} onClick={() => setCount(n - 1)}>
+                      <Icon name="minus" size={12} />
+                    </button>
+                    <CountBox value={n} lo={lo} hi={cap} onSet={setCount} />
+                    <button type="button" aria-label="More questions" disabled={!cap || n >= cap} onClick={() => setCount(n + 1)}>
+                      <Icon name="plus" size={12} />
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="qz2-go">
-                {(!cap || !pairs.length) && <p className="qz2-why">No questions fit this range. Add styles or countries.</p>}
-                {short && <p className="qz2-why">Only {cap} building{cap === 1 ? '' : 's'} in this range {cap === 1 ? 'has' : 'have'} the facts these questions need.</p>}
-                <button type="button" className="btn dark" disabled={!cap || !pairs.length} onClick={() => startSetup(setup)}>
-                  {!cap || !pairs.length ? 'Start' : `Start ${n} question${n === 1 ? '' : 's'}`}
-                </button>
+              <div className="qz2-row">
+                <span className="qz2-l">Answers</span>
+                <div className="qz2-line">
+                  <button type="button" role="switch" aria-checked={setup.reveal} className="qz2-sw" onClick={() => setSetup({ reveal: !setup.reveal })}>
+                    <span className={`sw2${setup.reveal ? ' on' : ''}`}>
+                      <i />
+                    </span>
+                    Show the answer after each question
+                  </button>
+                </div>
               </div>
-            </>
+              {(!cap || !pairs.length) && <p className="qz2-why">No questions fit this range. Add styles or countries.</p>}
+              {short && <p className="qz2-why">Only {cap} building{cap === 1 ? '' : 's'} in this range {cap === 1 ? 'has' : 'have'} the facts these questions need.</p>}
+            </div>
           )}
         </section>
+        {/* the first step: one button, five questions from the building to its city, architect and style */}
+        <section className="card qv-quick" aria-label="Quick quiz">
+          <div className="qq-row">
+            <div className="qq-t">
+              <h2>Quick quiz</h2>
+              <p>
+                {QUICK_COUNT} questions {'\u00b7'} City, architect &amp; style
+                <Info label="Which buildings are asked" text={IN_QUIZ_NOTE} />
+              </p>
+            </div>
+            <div className="qq-go">
+              <button type="button" className="btn dark" onClick={() => startQuick()}>
+                Start
+                <Icon name="right" size={12} />
+              </button>
+            </div>
+          </div>
+        </section>
+        {last && (
+          <section className="card qv-quick qv-again" aria-label="Practice again">
+            <div className="qq-row">
+              <div className="qq-t">
+                <h2>Practice again</h2>
+                <p>{lastText}. New questions, avoiding the last set where possible.</p>
+              </div>
+              <div className="qq-go">
+                <button type="button" className="btn" onClick={again} disabled={last.recipe.kind === 'missed' && !missedAll.length}>
+                  Practice again
+                  <Icon name="right" size={12} />
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
       </div>
       {missedCard}
     </div>

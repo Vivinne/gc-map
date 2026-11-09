@@ -1231,22 +1231,32 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .ov-empty { padding: 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .ov-empty h2 { font-size: 18px; }
 .ov-empty p { color: var(--mute); font-size: 14px; margin-bottom: 8px; }
-/* Quiz set-up: Quick quiz (and Practice again) above Custom quiz, in the left column */
+/* Quiz set-up: Custom quiz, Quick quiz, Practice again: cards of one shape (text left, buttons right, one height) */
 .qv-col { grid-column: span 8; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.qv-col > .qv-main { grid-column: auto; }
+/* the cards share one height (the tallest) while the settings are folded */
+.qv-col:not(.open) { display: grid; grid-auto-rows: 1fr; }
+.qv-col:not(.open) > .card { height: 100%; }
+.qv-col:not(.open) .qq-row { height: 100%; }
 .qv.m .qv-col { grid-column: 1 / -1; }
-.qv .card.qv-quick { flex-direction: row; align-items: center; gap: 16px; padding: 16px; }
+.qv .card.qv-quick { padding: 0; }
+.qq-row { display: flex; align-items: center; gap: 16px; padding: 16px; min-height: 104px; }
 .qv-quick .qq-t { flex: 1; min-width: 0; }
-.qv-quick h2 { font-size: 16px; font-weight: 800; }
+.qv-quick h2 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.qv-quick h2 .help-q { margin-left: 2px; }
 .qv-quick p { margin-top: 4px; font-size: 13px; color: var(--mute); font-weight: 600; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.qv-quick .btn { height: 44px; padding: 0 18px; flex: none; }
+.qv-quick .qq-now { color: var(--ink); font-weight: 650; }
+.qq-go { display: flex; flex-direction: column; gap: 8px; flex: none; width: 148px; }
+.qq-go .btn { height: 44px; padding: 0 16px; justify-content: center; }
+.qv-quick .btn.grey { background: var(--g89) !important; color: var(--ink); box-shadow: none; }
+.qv-quick .btn.grey:hover:not(:disabled) { background: var(--g85) !important; box-shadow: none; }
 .qv-again .btn { background: #fff; }
-.qv.m .card.qv-quick { flex-wrap: wrap; }
-.qv.m .qv-quick .btn { width: 100%; justify-content: center; }
-.qv-fold { display: flex; align-items: center; gap: 8px; height: 44px; margin-left: -4px; padding: 0 4px; }
-.qv-fold svg { transition: transform var(--t-fast); }
-.qv-fold[aria-expanded='false'] svg { transform: rotate(-90deg); }
-.qv-setup.shut .hd { border-bottom: 0; }
+.qv-custom .qv-fold { height: 36px; background: transparent; box-shadow: inset 0 0 0 1px var(--g89); font-size: 12.5px; }
+.qv-custom .qv-fold svg { transition: transform var(--t-fast); }
+.qv-custom .qv-fold[aria-expanded='true'] svg { transform: rotate(180deg); }
+.qv-custom .qq-set { border-top: 1px solid var(--g96); }
+.qv.m .qq-row { flex-wrap: wrap; min-height: 0; }
+.qv.m .qq-go { width: 100%; flex-direction: row; }
+.qv.m .qq-go .btn { flex: 1; }
 .qz-info { position: relative; display: inline-flex; vertical-align: middle; }
 .qv-ib { width: 32px; height: 32px; margin: -6px -4px; position: relative; display: grid; place-items: center; font: italic 700 11px/1 Georgia, serif; color: var(--mute); }
 .qv-ib::before { content: ''; position: absolute; inset: 6px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--g80); }
