@@ -1209,8 +1209,8 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .c-peek.prev { right: calc(100% + 8px); }
 .c-peek.next { left: calc(100% + 8px); }
 .c-peek > :first-child { border-top-left-radius: inherit; border-top-right-radius: inherit; }
-.c-peek .c-bar { height: 44px; }
-.c-peek .c-body { overflow: hidden; }
+.c-peek .c-scroll, .c-peek .c-body { overflow: hidden; }
+.c-peek .others-h { display: flex; }
 .side[data-swipe] .c-peek { visibility: visible; }
 /* the coloured top of a phone sheet follows the sheet's rounded top corners (the drag handle, absolutely placed, is its first child) */
 .is-mobile .side.sheet .c-top, .is-mobile .side.sheet .cp-top { border-top-left-radius: inherit; border-top-right-radius: inherit; }

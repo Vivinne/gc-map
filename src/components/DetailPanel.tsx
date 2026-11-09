@@ -267,23 +267,62 @@ interface CardProps {
   detail: number;
   /** Map numbers in use: inside a city (no filter) or 1 to N over what the filters show */
   nums: ReadonlyMap<string, number>;
-  /** Phone: the previous and next buildings, shown beside the card while it is swiped sideways */
-  peek?: { prev: Building; next: Building };
+  /** Phone: the previous and next buildings (and whether each is collected), shown beside the card while it is swiped sideways */
+  peek?: { prev: Building; next: Building; prevKept: boolean; nextKept: boolean; prevStarred: boolean; nextStarred: boolean };
 }
 
-/** Phone: the previous / next building's card, beside the open one, seen while the card is swiped sideways */
-function Peek({ b, side, no }: { b: Building; side: 'prev' | 'next'; no?: number }) {
+/** Phone: the previous / next building's card, beside the open one, seen while the card is swiped sideways.
+ * The same top as the card it will become (back label, photo, arrows, star, close), so nothing moves when it takes over. */
+function Peek({ b, side, no, back, kept, starred, collections, others }: { b: Building; side: 'prev' | 'next'; no?: number; back?: string; kept: boolean; starred: boolean; collections: Collection[]; others?: { label: string; n: number } }) {
   return (
     <div className={`c-peek ${side}`} aria-hidden="true">
       <div className="c-top" style={{ background: ERAS[b.era].color }}>
-        <div className="c-bar" />
+        <div className="c-bar">
+          {back != null && (
+            <span className="c-back">
+              <Icon name="left" size={12} />
+              <span className="c-back-t">{back}</span>
+            </span>
+          )}
+          <span className="c-ic c-photo">
+            <Icon name="image" size={14} />
+          </span>
+          <span className="c-sp" />
+          <span className="c-ic">
+            <Icon name="left" size={13} />
+          </span>
+          <span className="c-ic">
+            <Icon name="right" size={13} />
+          </span>
+          <span className="c-ic">
+            <Icon name={kept ? 'starOn' : 'star'} size={14} />
+          </span>
+          <span className="c-ic">
+            <Icon name="close" size={12} />
+          </span>
+        </div>
         <h1>
           {no != null && <span className="c-no">{no}</span>}
           <span>{b.name.toUpperCase()}</span>
         </h1>
       </div>
-      <div className="c-body">
-        <Facts b={b} exam={false} onWho={() => {}} />
+      <div className="grab">
+        <i />
+      </div>
+      <div className="c-scroll">
+        <div className="c-body">
+          <Facts b={b} exam={false} onWho={() => {}} />
+          <Tags b={b} starred={starred} collections={collections} onTag={() => {}} />
+        </div>
+        {others && (
+          <div className="others-box">
+            <span className="others-h">
+              <span className="t">Also in {others.label}</span>
+              <span className="n">{others.n}</span>
+              <Icon name="down" size={12} />
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -457,8 +496,19 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
       </div>
       {mobile && peek && (
         <>
-          <Peek b={peek.prev} side="prev" no={nums.get(peek.prev.id)} />
-          <Peek b={peek.next} side="next" no={nums.get(peek.next.id)} />
+          {[peek.prev, peek.next].map((x, k) => (
+            <Peek
+              key={k}
+              b={x}
+              side={k ? 'next' : 'prev'}
+              no={group || (CITY_BUILDINGS.get(x.city)?.length ?? 0) > 1 ? nums.get(x.id) : undefined}
+              back={group ? group.label : (CITY_BUILDINGS.get(x.city)?.length ?? 0) > 1 ? x.city : undefined}
+              kept={k ? peek.nextKept : peek.prevKept}
+              starred={k ? peek.nextStarred : peek.prevStarred}
+              collections={collections}
+              others={group ? { label: group.label, n: group.list.length - 1 } : (CITY_BUILDINGS.get(x.city)?.length ?? 0) > 1 ? { label: x.city, n: (CITY_BUILDINGS.get(x.city)?.length ?? 1) - 1 } : undefined}
+            />
+          ))}
         </>
       )}
       {menu && <CollectMenu b={b} starred={starred} collections={collections} onStar={onStar} onToggle={onToggleCol} onCreate={onCreateCol} onClose={() => setMenu(false)} />}

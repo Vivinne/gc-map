@@ -735,7 +735,13 @@ export default function App() {
               starred={starred.has(selected.id)}
               mobile={mobile}
               canStep={!!nav && nav.list.length > 1}
-              peek={nav && nav.list.length > 1 ? { prev: nav.list[(nav.index - 1 + nav.list.length) % nav.list.length]!, next: nav.list[(nav.index + 1) % nav.list.length]! } : undefined}
+              peek={(() => {
+                if (!nav || nav.list.length < 2) return undefined;
+                const prev = nav.list[(nav.index - 1 + nav.list.length) % nav.list.length]!;
+                const next = nav.list[(nav.index + 1) % nav.list.length]!;
+                const kept = (id: string) => starred.has(id) || collections.some((c) => c.ids.includes(id));
+                return { prev, next, prevKept: kept(prev.id), nextKept: kept(next.id), prevStarred: starred.has(prev.id), nextStarred: starred.has(next.id) };
+              })()}
               onPrev={() => step(-1)}
               onNext={() => step(1)}
               onClose={closeCity}
