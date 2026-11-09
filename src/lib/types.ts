@@ -46,6 +46,9 @@ export interface Place {
   style: string;
   /** One style for a building filed under a combined heading (data/style-split.txt); empty = the heading */
   styleShown: string;
+  /** Feature tags (data/tags-zh.txt, data/tags-en.txt); "~~x~~" = the building lacks x */
+  tags: string[];
+  tagsEn: string[];
   /** Style the architect is quizzed under (user's list); empty when not stated */
   whoStyle: string;
   styleId: string;

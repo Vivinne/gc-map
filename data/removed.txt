@@ -1,0 +1,5 @@
+# Buildings taken off the site by the user (2026-11-09), by handout name. Their lines in the other data files are kept but ignored.
+Pazzi Chapel (Santa Croce)
+Church of San Bernardino
+Louvre Museum
+Weissenhof Estate

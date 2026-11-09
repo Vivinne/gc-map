@@ -1,7 +1,7 @@
-# Building tags, Chinese. id | name (do not edit) | tags separated by ・ ; empty = no tags; ~~x~~ = struck (the building lacks x)
-valle-dei-templi-agrigento | Valle dei Templi | 大希臘・多立克
-parthenon-athens | Parthenon | 多立克・圍柱式
-erechtheion-athens | Erechtheion | 愛奧尼克・女像柱
+# Building tags, Chinese. id | name (for reading; the id is the key) | tags separated by ・ ; empty = no tags; ~~x~~ = struck (the building lacks x)
+valle-dei-templi-agrigento | Valle dei Templi | 大希臘・Doric
+parthenon-athens | Parthenon | Doric・圍柱式
+erechtheion-athens | Erechtheion | Ionic・女像柱
 cloaca-maxima-rome | Cloaca Maxima | 大下水道
 aqua-appia-rome | Aqua Appia | 第一條引水道
 domus-aurea-rome | Domus Aurea | 八角廳
@@ -10,7 +10,7 @@ pantheon-rome | Pantheon | 圓形大廳・圓頂天窗
 basilica-of-maxentius-and-constantine-rome | Basilica of Maxentius and Constantine | 混凝土十字拱
 arch-of-constantine-rome | Arch of Constantine | 凱旋門
 roman-forum-and-imperial-fora-rome | Roman Forum and Imperial Fora | 羅馬廣場
-colonne-di-san-lorenzo-milan | Colonne di San Lorenzo | 科林斯
+colonne-di-san-lorenzo-milan | Colonne di San Lorenzo | Corinthian
 mediolanum-imperial-palace-district-circo-thermae-herculeae-milan | Mediolanum | 西羅馬首都・宮殿・浴場
 hagia-sophia-istanbul | Hagia Sophia | 帆拱穹頂・方形平面
 basilica-di-san-marco-venice | Basilica di San Marco | 希臘十字・金色馬賽克
@@ -34,16 +34,15 @@ cologne-cathedral-cologne | Cologne Cathedral |
 cathedrale-sainte-croix-d-orleans-orleans | Cathédrale Sainte-Croix d'Orléans | 
 duomo-di-milano-milan | Duomo di Milano | 
 seville-cathedral-seville | Seville Cathedral | 清真寺舊址
-santa-maria-del-fiore-main-body-florence | Santa Maria del Fiore (Main Body) | 
+santa-maria-del-fiore-main-body-florence | Santa Maria del Fiore | 
 siena-cathedral-siena | Siena Cathedral | 黑白大理石・鑲嵌大理石地面
 basilica-di-san-francesco-d-assisi-assisi | Basilica di San Francesco d'Assisi | 雙層教堂・Giotto 壁畫
 bargello-museum-florence | Bargello Museum | 最古老公共建築
 santa-croce-florence | Santa Croce | Giotto 壁畫
 santa-croce-pazzi-chapel-florence | Santa Croce - Pazzi Chapel | 灰色砂岩
 scrovegni-chapel-padua | Scrovegni Chapel | Giotto 壁畫・〈最後審判〉
-ospedale-degli-innocenti-foundling-hospital-florence | Ospedale degli Innocenti (Foundling Hospital) | 圓拱柱廊・科林斯柱
+ospedale-degli-innocenti-foundling-hospital-florence | Foundling Hospital | 圓拱柱廊・Corinthian 柱
 santa-maria-del-fiore-dome-florence | Santa Maria del Fiore Dome | 雙層殼體・魚骨砌磚・無木鷹架・〈最後審判〉
-pazzi-chapel-santa-croce-florence | Pazzi Chapel (Santa Croce) | 
 palazzo-medici-riccardi-florence | Palazzo Medici Riccardi | 宮殿原型
 tempio-malatestiano-rimini | Tempio Malatestiano | 凱旋門立面
 ca-granda-milan | Ca' Granda | 大醫院・十字形庭院
@@ -54,7 +53,7 @@ camera-degli-sposi-mantua | Camera degli Sposi | 天頂壁畫・仰視透視・�
 santa-maria-presso-san-satiro-milan | Santa Maria presso San Satiro | 錯視畫
 palazzo-gondi-florence | Palazzo Gondi | 粗石立面
 santa-maria-delle-grazie-tribuna-milan | Santa Maria delle Grazie | 紅磚・〈最後的晚餐〉
-tempietto-rome | Tempietto | 集中式平面・多立克
+tempietto-rome | Tempietto | 集中式平面・Doric
 cortile-del-belvedere-vatican | Cortile del Belvedere | 半圓形壁龕・階梯庭園
 st-peters-first-design-vatican | St. Peter's Basilica | 希臘十字
 san-maurizio-al-monastero-maggiore-milan | San Maurizio al Monastero Maggiore | Luini 壁畫
@@ -74,16 +73,14 @@ il-redentore-venice | Il Redentore |
 sforza-castle-milan | Sforza Castle | 拿破崙
 basilica-di-san-lorenzo-florence | Basilica di San Lorenzo | 灰色砂岩・模矩
 pienza-cathedral-pienza | Pienza Cathedral | 
-church-of-san-bernardino-urbino | Church of San Bernardino | 
 quirinal-palace-rome | Quirinal Palace | 總統府
-louvre-museum-paris | Louvre Museum | 
 gesu-church-of-the-gesu-rome | Church of Gesù | 巴洛克起源
 baldacchino-st-peter-s-vatican | St. Peter's Baldacchino | 青銅華蓋・29 m
 santa-maria-della-salute-venice | Santa Maria della Salute | 八角形・大穹頂・渦卷支撐
 san-carlo-alle-quattro-fontane-rome | San Carlo alle Quattro Fontane | 橢圓平面・波浪立面・卵形穹頂
 sant-ivo-alla-sapienza-rome | Sant'Ivo alla Sapienza | 六角星形・螺旋燈籠頂
 fontana-dei-quattro-fiumi-rome | Fontana dei Quattro Fiumi | 四河神像・空心方尖碑
-piazza-san-pietro-vatican | Piazza San Pietro | 橢圓＋梯形廣場・多立克柱廊
+piazza-san-pietro-vatican | Piazza San Pietro | 橢圓＋梯形廣場・Doric 柱廊
 santa-maria-della-pace-rome | Santa Maria della Pace | 半圓外推陽台
 sant-andrea-al-quirinale-rome | Sant'Andrea al Quirinale | 橫向橢圓平面
 palace-of-versailles-versailles | Versailles | 鏡廳・花園軸線
@@ -102,14 +99,14 @@ ecstasy-of-saint-teresa-rome | Ecstasy of Saint Teresa | 美妙融合
 sant-ignazio-di-loyola-rome | Sant'Ignazio di Loyola | 錯視穹頂・錯視畫
 palazzo-montecitorio-rome | Palazzo Montecitorio | 眾議院
 palazzo-madama-rome | Palazzo Madama | 參議院
-hermitage-museum-saint-petersburg | Hermitage Museum / Winter Palace | 冬宮
+hermitage-museum-saint-petersburg | Hermitage Museum | 冬宮
 capodimonte-museum-naples | Capodimonte Museum | 
 basilique-du-sacre-c-ur-paris | Basilique du Sacré-Cœur | 
 mole-antonelliana-turin | Mole Antonelliana | 電影博物館・原猶太會堂
 arco-della-pace-milan | Arco della Pace | 
 pantheon-paris | Panthéon | 法國萬神殿・名人墓
 arc-de-triomphe-arc-du-carrousel-paris | Arc de Triomphe | 凱旋門・奧斯特里茨
-altes-museum-berlin | Altes Museum | 愛奧尼克柱廊・圓廳
+altes-museum-berlin | Altes Museum | Ionic 柱廊・圓廳
 alte-pinakothek-munich | Alte Pinakothek | 
 konigsplatz-munich | Königsplatz | 希臘式建築廣場
 palazzo-del-viminale-rome | Palazzo del Viminale | 內政部
@@ -135,7 +132,6 @@ palais-stoclet-brussels | Palais Stoclet | 總體藝術
 schroder-house-utrecht | Schröder House | 
 pavillon-de-l-esprit-nouveau-paris | Pavillon de l'Esprit Nouveau | 單元住宅
 bauhaus-dessau-building-dessau | Bauhaus Dessau Building | 風車平面・鋼筋混凝土框架・玻璃帷幕
-weissenhof-estate-stuttgart | Weissenhof Estate | 
 villa-savoye-poissy | Villa Savoye | 建築五點
 barcelona-pavilion-barcelona | Barcelona Pavilion | 
 fallingwater-pennsylvania | Fallingwater | 懸臂・有機建築
@@ -147,7 +143,7 @@ empire-state-building-new-york | Empire State Building |
 seagram-building-new-york | Seagram Building | 玻璃帷幕
 neue-nationalgalerie-berlin | Neue Nationalgalerie | 
 guggenheim-museum-new-york-new-york | Guggenheim Museum New York | 螺旋斜坡
-muller-house-prague | Müller House | 空間計畫
+muller-house-prague | Müller House | Raumplan
 paimio-sanatorium-paimio | Paimio Sanatorium | 
 mit-baker-house-cambridge | MIT Baker House | 波浪・磚造
 robie-house-chicago | Robie House | 
@@ -173,8 +169,8 @@ tomba-brion | Tomba Brion |
 guggenheim-museum-bilbao-bilbao | Guggenheim Museum Bilbao | 鈦曲面
 maxxi-rome | MAXXI | 流動天橋
 gallaratese-quarter-milan | Gallaratese Quarter | 
-generali-tower-citylife-milan | Generali Tower (CityLife) | 
-palazzo-dell-arte-triennale-milan | Palazzo dell'Arte (Triennale) | 
+generali-tower-citylife-milan | Generali Tower | 
+palazzo-dell-arte-triennale-milan | Palazzo dell'Arte | 
 polimi-campus-nord-milan | Polimi Campus Nord | 
 museo-castelvecchio-verona | Museo Castelvecchio | 
 louvre-pyramid-paris | Louvre Pyramid | 玻璃・輕結構

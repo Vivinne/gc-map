@@ -134,6 +134,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "大希臘",
+    "Doric"
+   ],
+   "tagsEn": [
+    "Magna Graecia",
+    "Doric"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -173,6 +181,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Parthenon",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "Doric",
+    "圍柱式"
+   ],
+   "tagsEn": [
+    "Doric",
+    "Peripteral"
    ],
    "nation": "Greece",
    "nationBox": [
@@ -214,6 +230,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "Ionic",
+    "女像柱"
+   ],
+   "tagsEn": [
+    "Ionic",
+    "Caryatids"
+   ],
    "nation": "Greece",
    "nationBox": [
     20,
@@ -254,6 +278,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "大下水道"
+   ],
+   "tagsEn": [
+    "Great sewer"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -293,6 +323,12 @@
      "sourceUrl": "https://aroundus.com/p/8123240-aqua-appia",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "第一條引水道"
+   ],
+   "tagsEn": [
+    "First aqueduct"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -338,6 +374,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "八角廳"
+   ],
+   "tagsEn": [
+    "Sala Ottagona"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -377,6 +419,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Colosseum",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "三層疊柱式"
+   ],
+   "tagsEn": [
+    "Three stacked orders"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -418,6 +466,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "圓形大廳",
+    "圓頂天窗"
+   ],
+   "tagsEn": [
+    "Rotunda",
+    "Oculus"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -457,6 +513,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Maxentius",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "混凝土十字拱"
+   ],
+   "tagsEn": [
+    "Concrete groin vaults"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -498,6 +560,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "凱旋門"
+   ],
+   "tagsEn": [
+    "Triumphal arch"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -537,6 +605,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Roman_Forum",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "羅馬廣場"
+   ],
+   "tagsEn": [
+    "Forum"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -578,6 +652,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "Corinthian"
+   ],
+   "tagsEn": [
+    "Corinthian"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -617,6 +697,16 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Milan",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "西羅馬首都",
+    "宮殿",
+    "浴場"
+   ],
+   "tagsEn": [
+    "Western Roman capital",
+    "Palace",
+    "Baths"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -660,6 +750,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "帆拱穹頂",
+    "方形平面"
+   ],
+   "tagsEn": [
+    "Pendentive dome",
+    "Square plan"
+   ],
    "nation": "Turkey",
    "nationBox": [
     26.03,
@@ -699,6 +797,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_San_Marco",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "希臘十字",
+    "金色馬賽克"
+   ],
+   "tagsEn": [
+    "Greek Cross",
+    "Gold mosaics"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -740,6 +846,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "紅磚",
+    "肋拱",
+    "~~高側窗~~"
+   ],
+   "tagsEn": [
+    "Red brick",
+    "Rib vaults",
+    "~~Clerestory~~"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -780,6 +896,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "奇蹟樓"
+   ],
+   "tagsEn": [
+    "La Merveille"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -819,6 +941,16 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Parma_Baptistery",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "八角形",
+    "粉紅大理石",
+    "四層涼廊"
+   ],
+   "tagsEn": [
+    "Octagonal",
+    "Pink marble",
+    "Four tiers of loggias"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -872,6 +1004,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "彩色大理石",
+    "盲拱廊",
+    "斜塔"
+   ],
+   "tagsEn": [
+    "Coloured marble",
+    "Blind arcades",
+    "Leaning tower"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -911,6 +1053,14 @@
      "sourceUrl": "https://it.wikipedia.org/wiki/Basilica_di_San_Miniato_al_Monte",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "綠白大理石",
+    "幾何立面"
+   ],
+   "tagsEn": [
+    "Green and white marble",
+    "Geometric facade"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -952,6 +1102,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "哥德起點"
+   ],
+   "tagsEn": [
+    "Birth of Gothic"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -991,6 +1147,12 @@
      "sourceUrl": "https://travel.sygic.com/en/poi/notre-dame-de-mantes-poi:4841495",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "參事會教堂"
+   ],
+   "tagsEn": [
+    "Collégiale"
    ],
    "nation": "France",
    "nationBox": [
@@ -1032,6 +1194,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "拿破崙加冕地"
+   ],
+   "tagsEn": [
+    "Napoleon’s coronation"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1071,6 +1239,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Chartres_Cathedral",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "沙特藍"
+   ],
+   "tagsEn": [
+    "Chartres blue"
    ],
    "nation": "France",
    "nationBox": [
@@ -1112,6 +1286,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "無耳堂"
+   ],
+   "tagsEn": [
+    "No transept"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1151,6 +1331,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Reims_Cathedral",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "加冕教堂",
+    "裝飾尖拱"
+   ],
+   "tagsEn": [
+    "Coronation church",
+    "Decorated pointed arches"
    ],
    "nation": "France",
    "nationBox": [
@@ -1192,6 +1380,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "中殿 42.3 m"
+   ],
+   "tagsEn": [
+    "42.3 m nave"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1232,6 +1426,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -1271,6 +1467,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Strasbourg_Cathedral",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "粉紅砂岩",
+    "單一尖塔"
+   ],
+   "tagsEn": [
+    "Pink sandstone",
+    "Single spire"
    ],
    "nation": "France",
    "nationBox": [
@@ -1312,6 +1516,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "八角形平面"
+   ],
+   "tagsEn": [
+    "Octagonal plan"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1352,6 +1562,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1392,6 +1604,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -1432,6 +1646,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -1472,6 +1688,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1512,6 +1730,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "清真寺舊址"
+   ],
+   "tagsEn": [
+    "Former mosque site"
+   ],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -1524,7 +1748,7 @@
   },
   {
    "id": "santa-maria-del-fiore-main-body-florence",
-   "name": "Santa Maria del Fiore (Main Body)",
+   "name": "Santa Maria del Fiore",
    "loc": "Florence",
    "locLabel": "Florence",
    "year": "1296–1436",
@@ -1552,6 +1776,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1593,6 +1819,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Siena_Cathedral",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "黑白大理石",
+    "鑲嵌大理石地面"
+   ],
+   "tagsEn": [
+    "Black and white marble",
+    "Inlaid marble floor"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -1636,6 +1870,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "雙層教堂",
+    "Giotto 壁畫"
+   ],
+   "tagsEn": [
+    "Two-level church",
+    "Giotto frescoes"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1677,6 +1919,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Bargello",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "最古老公共建築"
+   ],
+   "tagsEn": [
+    "Oldest public building"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -1722,6 +1970,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "Giotto 壁畫"
+   ],
+   "tagsEn": [
+    "Giotto frescoes"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1761,6 +2015,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "灰色砂岩"
+   ],
+   "tagsEn": [
+    "Pietra serena"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -1804,6 +2064,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "Giotto 壁畫",
+    "〈最後審判〉"
+   ],
+   "tagsEn": [
+    "Giotto frescoes",
+    "Last Judgement"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -1816,7 +2084,7 @@
   },
   {
    "id": "ospedale-degli-innocenti-foundling-hospital-florence",
-   "name": "Ospedale degli Innocenti (Foundling Hospital)",
+   "name": "Foundling Hospital",
    "loc": "Florence",
    "locLabel": "Florence",
    "year": "1419–1445",
@@ -1843,6 +2111,14 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Ospedale_degli_Innocenti",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "圓拱柱廊",
+    "Corinthian 柱"
+   ],
+   "tagsEn": [
+    "Round-arched loggia",
+    "Corinthian columns"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -1884,45 +2160,17 @@
      "status": "Supplementary - to be verified"
     }
    ],
-   "nation": "Italy",
-   "nationBox": [
-    6.6,
-    37.92,
-    18.52,
-    47.08
+   "tags": [
+    "雙層殼體",
+    "魚骨砌磚",
+    "無木鷹架",
+    "〈最後審判〉"
    ],
-   "styleShown": "Renaissance",
-   "whoStyle": ""
-  },
-  {
-   "id": "pazzi-chapel-santa-croce-florence",
-   "name": "Pazzi Chapel (Santa Croce)",
-   "loc": "Florence",
-   "locLabel": "Florence",
-   "year": "約 1441–1478 前後",
-   "built": "1441–1478",
-   "who": "Filippo Brunelleschi",
-   "note": "Santa Croce 內；立面由 Niccolò Matas 設計",
-   "summary": "Santa Croce 內，以灰色砂岩 pietra serena 與白牆勾勒出嚴格比例的禮拜堂，是 Renaissance 中央式空間的典範。立面由 Niccolò Matas 設計。",
-   "country": "Italy",
-   "exams": [],
-   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
-   "styleId": "6.6",
-   "era": "renaissance",
-   "eras": [
-    "renaissance"
-   ],
-   "points": [
-    {
-     "id": "pazzi-chapel-santa-croce-florence~0",
-     "sub": "",
-     "lat": 43.768417,
-     "lng": 11.262722,
-     "precision": "page",
-     "note": "same point as Santa Croce (user decision)",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Santa_Croce,_Florence",
-     "status": "Supplementary - to be verified"
-    }
+   "tagsEn": [
+    "Double shell",
+    "Herringbone brickwork",
+    "No wooden centering",
+    "Last Judgement"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -1963,6 +2211,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Medici_Riccardi",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "宮殿原型"
+   ],
+   "tagsEn": [
+    "Palazzo prototype"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2006,6 +2260,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "凱旋門立面"
+   ],
+   "tagsEn": [
+    "Triumphal-arch facade"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2046,6 +2306,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "大醫院",
+    "十字形庭院"
+   ],
+   "tagsEn": [
+    "Great hospital",
+    "Cross-shaped courtyards"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2085,6 +2353,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Rucellai",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "三層壁柱"
+   ],
+   "tagsEn": [
+    "Three tiers of pilasters"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2128,6 +2402,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "渦卷"
+   ],
+   "tagsEn": [
+    "Volutes"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2167,6 +2447,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_Sant'Andrea,_Mantua",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "山牆",
+    "凱旋門立面"
+   ],
+   "tagsEn": [
+    "Pediment",
+    "Triumphal-arch facade"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2208,6 +2496,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "天頂壁畫",
+    "仰視透視",
+    "錯視"
+   ],
+   "tagsEn": [
+    "Ceiling fresco",
+    "Di sotto in sù",
+    "Illusionism"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2248,6 +2546,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "錯視畫"
+   ],
+   "tagsEn": [
+    "Trompe l'oeil"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2287,6 +2591,12 @@
      "sourceUrl": "https://aroundus.com/p/8125110-palazzo-gondi",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "粗石立面"
+   ],
+   "tagsEn": [
+    "Rusticated facade"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2330,6 +2640,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "紅磚",
+    "〈最後的晚餐〉"
+   ],
+   "tagsEn": [
+    "Red brick",
+    "The Last Supper"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2369,6 +2687,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/San_Pietro_in_Montorio",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "集中式平面",
+    "Doric"
+   ],
+   "tagsEn": [
+    "Central plan",
+    "Doric"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2410,6 +2736,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "半圓形壁龕",
+    "階梯庭園"
+   ],
+   "tagsEn": [
+    "Exedra",
+    "Terraced garden"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2449,6 +2783,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "希臘十字"
+   ],
+   "tagsEn": [
+    "Greek Cross"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2490,6 +2830,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "Luini 壁畫"
+   ],
+   "tagsEn": [
+    "Luini frescoes"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2530,6 +2876,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -2569,6 +2917,14 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_Te",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "滑落三豎線",
+    "拱心石錯位"
+   ],
+   "tagsEn": [
+    "Slipping triglyphs",
+    "Displaced keystones"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2610,6 +2966,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "三股樓梯",
+    "嵌牆暗柱",
+    "矯飾主義開端"
+   ],
+   "tagsEn": [
+    "Triple-flight staircase",
+    "Recessed columns",
+    "Birth of Mannerism"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2649,6 +3015,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_del_Campidoglio",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "橢圓",
+    "梯形廣場"
+   ],
+   "tagsEn": [
+    "Oval",
+    "Trapezoidal piazza"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2690,6 +3064,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "雙層圓頂"
+   ],
+   "tagsEn": [
+    "Double dome"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2729,6 +3109,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_Palladiana",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "塞利奧拱"
+   ],
+   "tagsEn": [
+    "Serliana"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2802,6 +3188,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "神廟立面"
+   ],
+   "tagsEn": [
+    "Temple front"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2841,6 +3233,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Marino",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "米蘭市政廳"
+   ],
+   "tagsEn": [
+    "Milan City Hall"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -2882,6 +3280,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "五角形平面",
+    "圓形中庭"
+   ],
+   "tagsEn": [
+    "Pentagonal plan",
+    "Circular courtyard"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2922,6 +3328,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "U 形中庭",
+    "Medici 辦公室"
+   ],
+   "tagsEn": [
+    "U-shaped courtyard",
+    "Medici offices"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -2961,6 +3375,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Vasari_Corridor",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "Medici 走廊"
+   ],
+   "tagsEn": [
+    "Medici passageway"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3004,6 +3424,18 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "四面對稱",
+    "希臘柱廊",
+    "中央圓廳",
+    "穹頂"
+   ],
+   "tagsEn": [
+    "Four identical fronts",
+    "Greek porticoes",
+    "Central rotunda",
+    "Dome"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3044,6 +3476,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3083,6 +3517,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sforza_Castle",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "拿破崙"
+   ],
+   "tagsEn": [
+    "Napoleon"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3124,6 +3564,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "灰色砂岩",
+    "模矩"
+   ],
+   "tagsEn": [
+    "Pietra serena",
+    "Modular grid"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3164,48 +3612,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
-   "nation": "Italy",
-   "nationBox": [
-    6.6,
-    37.92,
-    18.52,
-    47.08
-   ],
-   "styleShown": "Renaissance",
-   "whoStyle": ""
-  },
-  {
-   "id": "church-of-san-bernardino-urbino",
-   "name": "Church of San Bernardino",
-   "loc": "Urbino",
-   "locLabel": "Urbino",
-   "year": "1482-1491",
-   "built": "1482-1491",
-   "who": "Francesco di Giorgio Martini",
-   "note": "—",
-   "summary": "Federico da Montefeltro 的家族陵墓；拉丁十字平面、筒形拱頂。",
-   "country": "Italy",
-   "exams": [
-    2010
-   ],
-   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
-   "styleId": "6.6",
-   "era": "renaissance",
-   "eras": [
-    "renaissance"
-   ],
-   "points": [
-    {
-     "id": "church-of-san-bernardino-urbino~0",
-     "sub": "",
-     "lat": 43.722465,
-     "lng": 12.648267,
-     "precision": "page",
-     "note": "coordinates taken from Komoot (highlight \"Church of San Bernardino degli Zoccolanti\", from its map link); checked on Google Maps by the project owner",
-     "sourceUrl": "https://www.komoot.com/highlight/4266733",
-     "status": "Supplementary - to be verified"
-    }
-   ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3249,6 +3657,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "總統府"
+   ],
+   "tagsEn": [
+    "Presidential palace"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3257,48 +3671,6 @@
     47.08
    ],
    "styleShown": "Mannerism",
-   "whoStyle": ""
-  },
-  {
-   "id": "louvre-museum-paris",
-   "name": "Louvre Museum",
-   "loc": "Paris",
-   "locLabel": "Paris",
-   "year": "12th-1857",
-   "built": "12th-1857",
-   "who": "I. M. Pei",
-   "note": "—",
-   "summary": "12th century 末由 Philip II 始建為要塞；1546 年 Francis I 起以 French Renaissance 風格重建；1793 年 8 月 10 日成為博物館。",
-   "country": "France",
-   "exams": [
-    2012
-   ],
-   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
-   "styleId": "6.6",
-   "era": "modern",
-   "eras": [
-    "modern"
-   ],
-   "points": [
-    {
-     "id": "louvre-museum-paris~0",
-     "sub": "",
-     "lat": 48.8625,
-     "lng": 2.336389,
-     "precision": "page",
-     "note": "converted from the page string 48° 51′ 45″ N, 2° 20′ 11″ O",
-     "sourceUrl": "https://de.wikipedia.org/wiki/Louvre",
-     "status": "Supplementary - to be verified"
-    }
-   ],
-   "nation": "France",
-   "nationBox": [
-    -4.79,
-    42.33,
-    8.2,
-    51.09
-   ],
-   "styleShown": "Modernism",
    "whoStyle": ""
   },
   {
@@ -3330,6 +3702,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Church_of_the_Ges%C3%B9",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "巴洛克起源"
+   ],
+   "tagsEn": [
+    "Birth of Baroque"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3371,6 +3749,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "青銅華蓋",
+    "29 m"
+   ],
+   "tagsEn": [
+    "Bronze canopy",
+    "29 m"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3411,6 +3797,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "八角形",
+    "大穹頂",
+    "渦卷支撐"
+   ],
+   "tagsEn": [
+    "Octagonal",
+    "Great dome",
+    "Volute buttresses"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3450,6 +3846,16 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/San_Carlo_alle_Quattro_Fontane",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "橢圓平面",
+    "波浪立面",
+    "卵形穹頂"
+   ],
+   "tagsEn": [
+    "Oval plan",
+    "Undulating facade",
+    "Oval dome"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3493,6 +3899,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "六角星形",
+    "螺旋燈籠頂"
+   ],
+   "tagsEn": [
+    "Six-pointed star",
+    "Spiral lantern"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3532,6 +3946,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Piazza_Navona",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "四河神像",
+    "空心方尖碑"
+   ],
+   "tagsEn": [
+    "Four river gods",
+    "Hollow obelisk"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3573,6 +3995,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "橢圓＋梯形廣場",
+    "Doric 柱廊"
+   ],
+   "tagsEn": [
+    "Oval and trapezoid piazza",
+    "Doric colonnade"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3613,6 +4043,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "半圓外推陽台"
+   ],
+   "tagsEn": [
+    "Semicircular projecting porch"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3652,6 +4088,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Andrea_al_Quirinale",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "橫向橢圓平面"
+   ],
+   "tagsEn": [
+    "Transverse oval plan"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3695,6 +4137,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "鏡廳",
+    "花園軸線"
+   ],
+   "tagsEn": [
+    "Hall of Mirrors",
+    "Garden axis"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -3734,6 +4184,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Apostolic_Palace",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "儀典階梯",
+    "透視柱列"
+   ],
+   "tagsEn": [
+    "Ceremonial staircase",
+    "Forced-perspective colonnade"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3777,6 +4235,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "六角圓頂"
+   ],
+   "tagsEn": [
+    "Hexagonal dome"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3816,6 +4280,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/San_Bernardino_alle_Ossa",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "人骨裝飾"
+   ],
+   "tagsEn": [
+    "Bone decoration"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3857,6 +4327,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "X 型平面"
+   ],
+   "tagsEn": [
+    "X-shaped plan"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3896,6 +4372,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Trevi_Fountain",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "海神雕像"
+   ],
+   "tagsEn": [
+    "Oceanus statue"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -3939,6 +4421,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "長軸花園"
+   ],
+   "tagsEn": [
+    "Long axial garden"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -3979,6 +4467,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4019,6 +4509,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4059,6 +4551,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4098,6 +4592,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/St._Peter's_Basilica",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "拉丁十字",
+    "加長中殿"
+   ],
+   "tagsEn": [
+    "Latin cross",
+    "Lengthened nave"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -4139,6 +4641,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "巴洛克立面"
+   ],
+   "tagsEn": [
+    "Baroque facade"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4179,6 +4687,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "美妙融合"
+   ],
+   "tagsEn": [
+    "Bel composto"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4218,6 +4732,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Sant'Ignazio,_Rome",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "錯視穹頂",
+    "錯視畫"
+   ],
+   "tagsEn": [
+    "Painted dome",
+    "Trompe l'oeil"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -4261,6 +4783,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "眾議院"
+   ],
+   "tagsEn": [
+    "Chamber of Deputies"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4303,6 +4831,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "參議院"
+   ],
+   "tagsEn": [
+    "Senate"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4315,7 +4849,7 @@
   },
   {
    "id": "hermitage-museum-saint-petersburg",
-   "name": "Hermitage Museum / Winter Palace",
+   "name": "Hermitage Museum",
    "loc": "Saint Petersburg (Russia)",
    "locLabel": "Saint Petersburg, RU",
    "year": "1852",
@@ -4344,6 +4878,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Hermitage_Museum",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "冬宮"
+   ],
+   "tagsEn": [
+    "Winter Palace"
    ],
    "nation": "Russia",
    "nationBox": [
@@ -4388,6 +4928,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4428,6 +4970,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -4467,6 +5011,14 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Mole_Antonelliana",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "電影博物館",
+    "原猶太會堂"
+   ],
+   "tagsEn": [
+    "Cinema museum",
+    "Former synagogue"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -4508,6 +5060,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4547,6 +5101,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Panth%C3%A9on,_Paris",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "法國萬神殿",
+    "名人墓"
+   ],
+   "tagsEn": [
+    "French Pantheon",
+    "Tombs of the great"
    ],
    "nation": "France",
    "nationBox": [
@@ -4588,6 +5150,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "凱旋門",
+    "奧斯特里茨"
+   ],
+   "tagsEn": [
+    "Triumphal arch",
+    "Austerlitz"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -4627,6 +5197,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Altes_Museum",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "Ionic 柱廊",
+    "圓廳"
+   ],
+   "tagsEn": [
+    "Ionic colonnade",
+    "Rotunda"
    ],
    "nation": "Germany",
    "nationBox": [
@@ -4668,6 +5246,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -4707,6 +5287,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/K%C3%B6nigsplatz_(M%C3%BCnchen)",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "希臘式建築廣場"
+   ],
+   "tagsEn": [
+    "Square of Greek-style buildings"
    ],
    "nation": "Germany",
    "nationBox": [
@@ -4750,6 +5336,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "內政部"
+   ],
+   "tagsEn": [
+    "Ministry of the Interior"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -4791,6 +5383,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Palazzo_della_Farnesina",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "外交部"
+   ],
+   "tagsEn": [
+    "Ministry of Foreign Affairs"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -4834,6 +5432,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -4873,6 +5473,12 @@
      "sourceUrl": "https://travel.sygic.com/en/poi/sainte-genevieve-library-poi:54976",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "鑄鐵細柱拱頂"
+   ],
+   "tagsEn": [
+    "Slender cast-iron columns and vaults"
    ],
    "nation": "France",
    "nationBox": [
@@ -4916,6 +5522,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "鐵骨架",
+    "平板玻璃",
+    "預製"
+   ],
+   "tagsEn": [
+    "Iron frame",
+    "Plate glass",
+    "Prefabrication"
+   ],
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -4958,6 +5574,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -4997,6 +5615,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Red_House,_Bexleyheath",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "工藝美術運動",
+    "紅磚"
+   ],
+   "tagsEn": [
+    "Arts and Crafts",
+    "Red brick"
    ],
    "nation": "United Kingdom",
    "nationBox": [
@@ -5040,6 +5666,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "金球頂"
+   ],
+   "tagsEn": [
+    "Golden dome"
+   ],
    "nation": "Austria",
    "nationBox": [
     9.52,
@@ -5080,6 +5712,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "自由風格",
+    "彩色陶磚立面"
+   ],
+   "tagsEn": [
+    "Stile Liberty",
+    "Coloured ceramic-tile facade"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5119,6 +5759,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Palazzo_Castiglioni",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "自由風格"
+   ],
+   "tagsEn": [
+    "Stile Liberty"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -5162,6 +5808,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5204,6 +5852,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5246,6 +5896,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5287,6 +5939,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Casa_Batll%C3%B3",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "彩色磁磚立面"
+   ],
+   "tagsEn": [
+    "Coloured tile facade"
    ],
    "nation": "Spain",
    "nationBox": [
@@ -5330,6 +5988,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "集合住宅",
+    "波浪立面"
+   ],
+   "tagsEn": [
+    "Apartment building",
+    "Undulating facade"
+   ],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5372,6 +6038,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5413,6 +6081,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Col%C3%B2nia_G%C3%BCell",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "地下禮拜堂"
+   ],
+   "tagsEn": [
+    "Crypt"
    ],
    "nation": "Spain",
    "nationBox": [
@@ -5456,6 +6130,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "曲線植物樓梯",
+    "新藝術開端"
+   ],
+   "tagsEn": [
+    "Plant-curve staircase",
+    "Birth of Art Nouveau"
+   ],
    "nation": "Belgium",
    "nationBox": [
     2.52,
@@ -5498,6 +6180,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -5539,6 +6223,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Stoclet_Palace",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "總體藝術"
+   ],
+   "tagsEn": [
+    "Gesamtkunstwerk"
    ],
    "nation": "Belgium",
    "nationBox": [
@@ -5582,6 +6272,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Netherlands",
    "nationBox": [
     3.45,
@@ -5621,6 +6313,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Pavillon_de_l'Esprit_Nouveau",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "單元住宅"
+   ],
+   "tagsEn": [
+    "Housing unit"
    ],
    "nation": "France",
    "nationBox": [
@@ -5664,6 +6362,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "風車平面",
+    "鋼筋混凝土框架",
+    "玻璃帷幕"
+   ],
+   "tagsEn": [
+    "Pinwheel plan",
+    "RC frame",
+    "Glass curtain wall"
+   ],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -5672,46 +6380,6 @@
     54.91
    ],
    "styleShown": "Bauhaus",
-   "whoStyle": ""
-  },
-  {
-   "id": "weissenhof-estate-stuttgart",
-   "name": "Weissenhof Estate",
-   "loc": "Stuttgart（德）",
-   "locLabel": "Stuttgart, DE",
-   "year": "1925–1927",
-   "built": "1925–1927",
-   "who": "Ludwig Mies van der Rohe",
-   "note": "2027＝100 週年",
-   "summary": "1927 年斯圖加特的現代住宅展，邀請多位現代建築師共同打造，2027 年是 100 週年。",
-   "country": "Germany",
-   "exams": [],
-   "style": "包浩斯、風格派、裝飾藝術與現代主義建築（Bauhaus, De Stijl, Art Deco and Modernism）",
-   "styleId": "6.11",
-   "era": "modern",
-   "eras": [
-    "modern"
-   ],
-   "points": [
-    {
-     "id": "weissenhof-estate-stuttgart~0",
-     "sub": "",
-     "lat": 48.8005,
-     "lng": 9.17767,
-     "precision": "page",
-     "note": "",
-     "sourceUrl": "https://en.wikipedia.org/wiki/Weissenhof_Estate",
-     "status": "Supplementary - to be verified"
-    }
-   ],
-   "nation": "Germany",
-   "nationBox": [
-    5.85,
-    47.27,
-    15.02,
-    54.91
-   ],
-   "styleShown": "Modernism",
    "whoStyle": ""
   },
   {
@@ -5746,6 +6414,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Villa_Savoye",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "建築五點"
+   ],
+   "tagsEn": [
+    "Five Points"
    ],
    "nation": "France",
    "nationBox": [
@@ -5789,6 +6463,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -5831,6 +6507,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "懸臂",
+    "有機建築"
+   ],
+   "tagsEn": [
+    "Cantilever",
+    "Organic architecture"
+   ],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -5871,6 +6555,16 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "垂直聚落",
+    "清水混凝土",
+    "粗獷主義"
+   ],
+   "tagsEn": [
+    "Vertical village",
+    "Béton brut",
+    "Brutalism"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -5910,6 +6604,14 @@
      "sourceUrl": "https://latitude.to/articles-by-country/fr/france/7548/notre-dame-du-haut",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "自由平面",
+    "自由立面"
+   ],
+   "tagsEn": [
+    "Free plan",
+    "Free facade"
    ],
    "nation": "France",
    "nationBox": [
@@ -5953,6 +6655,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -5995,6 +6699,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "拱形尖頂"
+   ],
+   "tagsEn": [
+    "Arched spire"
+   ],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6035,6 +6745,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6074,6 +6786,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Seagram_Building",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "玻璃帷幕"
+   ],
+   "tagsEn": [
+    "Glass curtain wall"
    ],
    "nation": "United States of America",
    "nationBox": [
@@ -6115,6 +6833,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -6157,6 +6877,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "螺旋斜坡"
+   ],
+   "tagsEn": [
+    "Spiral ramp"
+   ],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6196,6 +6922,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Villa_M%C3%BCller",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "Raumplan"
+   ],
+   "tagsEn": [
+    "Raumplan"
    ],
    "nation": "Czechia",
    "nationBox": [
@@ -6239,6 +6971,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Finland",
    "nationBox": [
     20.62,
@@ -6278,6 +7012,14 @@
      "sourceUrl": "https://exhibits.lib.ttu.edu/s/archlib/item/41850",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "波浪",
+    "磚造"
+   ],
+   "tagsEn": [
+    "Wave",
+    "Brick"
    ],
    "nation": "United States of America",
    "nationBox": [
@@ -6321,6 +7063,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6362,6 +7106,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Glass_House_(New_Canaan,_Connecticut)",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "玻璃外牆"
+   ],
+   "tagsEn": [
+    "Glass walls"
    ],
    "nation": "United States of America",
    "nationBox": [
@@ -6405,6 +7155,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "建築五點"
+   ],
+   "tagsEn": [
+    "Five Points"
+   ],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -6447,6 +7203,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -6489,6 +7247,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Netherlands",
    "nationBox": [
     3.45,
@@ -6531,6 +7291,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -6573,6 +7335,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Finland",
    "nationBox": [
     20.62,
@@ -6615,6 +7379,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Russia",
    "nationBox": [
     27.33,
@@ -6657,6 +7423,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6699,6 +7467,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -6740,6 +7510,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Fagus_Factory",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "玻璃轉角"
+   ],
+   "tagsEn": [
+    "Glass corners"
    ],
    "nation": "Germany",
    "nationBox": [
@@ -6783,6 +7559,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -6825,6 +7603,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "方形平面",
+    "玻璃磚"
+   ],
+   "tagsEn": [
+    "Square plan",
+    "Glass blocks"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -6865,6 +7651,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -6904,6 +7692,14 @@
      "sourceUrl": "https://aroundus.com/p/8132223-asilo-sant-elia",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "大量開窗",
+    "幼兒園"
+   ],
+   "tagsEn": [
+    "Large windows",
+    "Kindergarten"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -6945,6 +7741,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -6984,6 +7782,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Torre_Velasca",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "粗獷主義"
+   ],
+   "tagsEn": [
+    "Brutalism"
    ],
    "nation": "Italy",
    "nationBox": [
@@ -7025,6 +7829,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "膠囊單元",
+    "新陳代謝派"
+   ],
+   "tagsEn": [
+    "Capsule units",
+    "Metabolism"
+   ],
    "nation": "Japan",
    "nationBox": [
     130.86,
@@ -7064,6 +7876,14 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Centre_Pompidou",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "結構外露",
+    "高科技建築"
+   ],
+   "tagsEn": [
+    "Exposed structure",
+    "High-Tech"
    ],
    "nation": "France",
    "nationBox": [
@@ -7105,6 +7925,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7149,6 +7971,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "鈦曲面"
+   ],
+   "tagsEn": [
+    "Titanium curves"
+   ],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -7191,6 +8019,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "流動天橋"
+   ],
+   "tagsEn": [
+    "Flowing walkways"
+   ],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7231,6 +8065,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7243,7 +8079,7 @@
   },
   {
    "id": "generali-tower-citylife-milan",
-   "name": "Generali Tower (CityLife)",
+   "name": "Generali Tower",
    "loc": "Milan",
    "locLabel": "Milan",
    "year": "2011–2017",
@@ -7273,6 +8109,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7285,7 +8123,7 @@
   },
   {
    "id": "palazzo-dell-arte-triennale-milan",
-   "name": "Palazzo dell'Arte (Triennale)",
+   "name": "Palazzo dell'Arte",
    "loc": "Milan",
    "locLabel": "Milan",
    "year": "1931–1933",
@@ -7313,6 +8151,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7353,6 +8193,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7393,6 +8235,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7432,6 +8276,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Louvre_Pyramid",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "玻璃",
+    "輕結構"
+   ],
+   "tagsEn": [
+    "Glass",
+    "Light structure"
    ],
    "nation": "France",
    "nationBox": [
@@ -7473,6 +8325,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -7512,6 +8366,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Biblioth%C3%A8que_nationale_de_France",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "四角 L 型"
+   ],
+   "tagsEn": [
+    "Four L-shaped corner towers"
    ],
    "nation": "France",
    "nationBox": [
@@ -7555,6 +8415,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "火車站",
+    "大拱頂"
+   ],
+   "tagsEn": [
+    "Railway station",
+    "Great vault"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -7594,6 +8462,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/Louvre_Abu_Dhabi",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "穿孔圓頂"
+   ],
+   "tagsEn": [
+    "Perforated dome"
    ],
    "nation": "United Arab Emirates",
    "nationBox": [
@@ -7635,6 +8509,14 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "鋁板",
+    "孔洞"
+   ],
+   "tagsEn": [
+    "Aluminium panels",
+    "Perforations"
+   ],
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -7674,6 +8556,14 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Lloyd's_building",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "內臟主義",
+    "設備外露"
+   ],
+   "tagsEn": [
+    "Bowellism",
+    "Exposed services"
    ],
    "nation": "United Kingdom",
    "nationBox": [
@@ -7715,6 +8605,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "小黃瓜"
+   ],
+   "tagsEn": [
+    "Gherkin shape"
+   ],
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -7754,6 +8650,12 @@
      "sourceUrl": "https://de.wikipedia.org/wiki/City_Hall_(London)",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "透明球體"
+   ],
+   "tagsEn": [
+    "Glass sphere"
    ],
    "nation": "United Kingdom",
    "nationBox": [
@@ -7795,6 +8697,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "玻璃天幕結構"
+   ],
+   "tagsEn": [
+    "Glass canopy"
+   ],
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -7834,6 +8742,16 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Reichstag_building",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "玻璃穹頂",
+    "螺旋坡道",
+    "民主透明"
+   ],
+   "tagsEn": [
+    "Glass dome",
+    "Spiral ramp",
+    "Democratic transparency"
    ],
    "nation": "Germany",
    "nationBox": [
@@ -7877,6 +8795,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "解構主義"
+   ],
+   "tagsEn": [
+    "Deconstructivism"
+   ],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -7919,6 +8843,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "曲面雙塔"
+   ],
+   "tagsEn": [
+    "Curved twin towers"
+   ],
    "nation": "Czechia",
    "nationBox": [
     12.08,
@@ -7958,6 +8888,16 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Vitra_Fire_Station",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "傾斜牆",
+    "銳角",
+    "解構主義"
+   ],
+   "tagsEn": [
+    "Leaning walls",
+    "Sharp angles",
+    "Deconstructivism"
    ],
    "nation": "Germany",
    "nationBox": [
@@ -7999,6 +8939,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "錐形支撐"
+   ],
+   "tagsEn": [
+    "Cone supports"
+   ],
    "nation": "Germany",
    "nationBox": [
     5.85,
@@ -8039,6 +8985,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -8079,6 +9027,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "粗獷主義"
+   ],
+   "tagsEn": [
+    "Brutalism"
+   ],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -8118,6 +9072,12 @@
      "sourceUrl": "https://en.wikipedia.org/wiki/Vanna_Venturi_House",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "後現代主義"
+   ],
+   "tagsEn": [
+    "Postmodernism"
    ],
    "nation": "United States of America",
    "nationBox": [
@@ -8161,6 +9121,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -8203,6 +9165,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Malaysia",
    "nationBox": [
     100.13,
@@ -8244,6 +9208,12 @@
      "sourceUrl": "https://www.latlong.net/place/allianz-arena-munich-germany-31644.html",
      "status": "Supplementary - to be verified"
     }
+   ],
+   "tags": [
+    "ETFE 充氣外殼"
+   ],
+   "tagsEn": [
+    "Inflated ETFE skin"
    ],
    "nation": "Germany",
    "nationBox": [
@@ -8287,6 +9257,12 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [
+    "解構主義"
+   ],
+   "tagsEn": [
+    "Deconstructivism"
+   ],
    "nation": "Spain",
    "nationBox": [
     -9.29,
@@ -8329,6 +9305,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United Kingdom",
    "nationBox": [
     -6.24,
@@ -8371,6 +9349,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "United States of America",
    "nationBox": [
     -124.74,
@@ -8413,6 +9393,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Russia",
    "nationBox": [
     27.33,
@@ -8455,6 +9437,8 @@
      "status": "Supplementary - to be verified"
     }
    ],
+   "tags": [],
+   "tagsEn": [],
    "nation": "Italy",
    "nationBox": [
     6.6,

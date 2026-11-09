@@ -3,7 +3,7 @@ import { ascii, examNote, whoOf, type Building } from '../lib/model';
 
 /**
  * Body of a building everywhere it appears (card, search preview, review answer): the English data lines
- * (no field labels; the architect in bold), the handout's keywords, the summary, then supplementary notes
+ * (no field labels; the architect in bold), the feature tags, the summary, then supplementary notes
  * last in small grey italic. With `onWho`, an architect who has other buildings on the site is a link that
  * lists all of them.
  */
@@ -36,7 +36,7 @@ export default function Facts({ b, data = true, summary = true, exam: showExam =
       {keys.length > 0 && (
         <ul className="f-keys" aria-label="Keywords">
           {keys.map((k) => (
-            <li key={k}>{k}</li>
+            <li key={k.text}>{k.struck ? <s title={`No ${k.text}`}>{k.text}</s> : k.text}</li>
           ))}
         </ul>
       )}

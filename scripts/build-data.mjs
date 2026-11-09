@@ -152,8 +152,14 @@ function gapsMarkdown(places, unlocated) {
 
 // ---------- Main ----------
 function main() {
-  const { rows, styles } = parseHandout(readFileSync(P('content/handout-c3-s6.md'), 'utf8'));
+  // Buildings the user took off the site (data/removed.txt): dropped here, and lines about them in the other data files are ignored
+  const REMOVED = new Set(dataLines('data/removed.txt').map((l) => l.trim()));
+  const gone = (n) => REMOVED.has(n);
+  const parsed = parseHandout(readFileSync(P('content/handout-c3-s6.md'), 'utf8'));
+  const { styles } = parsed;
+  const rows = parsed.rows.filter((r) => !gone(r.name));
   const errors = [], warns = [];
+  for (const n of REMOVED) if (!parsed.rows.some((r) => r.name === n)) errors.push(`removed.txt: no handout row named "${n}"`);
 
   // Displayed person names (data/architects.txt): full names for architects, short common names for rulers
   const ARCH = new Map(dataLines('data/architects.txt').map((l) => l.split('|').map((x) => x.trim())));
@@ -174,7 +180,7 @@ function main() {
   }
   // English built span for display (data/years-display.txt); rows not listed show their span as written
   const BUILT = new Map(dataLines('data/years-display.txt').map((l) => l.split('|').map((x) => x.trim())));
-  for (const n of BUILT.keys()) if (!rows.some((r) => r.name === n)) errors.push(`years-display.txt: name matches no handout row: ${n}`);
+  for (const n of BUILT.keys()) if (!gone(n) && !rows.some((r) => r.name === n)) errors.push(`years-display.txt: name matches no handout row: ${n}`);
   for (const r of rows) r.built = BUILT.get(r.name) ?? r.year;
   const COUNTRIES = ['Italy', 'France', 'Germany', 'United Kingdom', 'United States', 'Others'];
   const cmap = new Map(dataLines('data/countries.txt').map((l) => l.split('|').map((x) => x.trim())));
@@ -190,7 +196,7 @@ function main() {
     if (!list.length || list.some((id) => !ERAS.some((e) => e.id === id))) errors.push(`extra-styles.txt: bad era id for ${n}`);
     extraMap.set(n, list);
   }
-  for (const n of extraMap.keys()) if (!rows.some((r) => r.name === n)) errors.push(`extra-styles.txt: name matches no handout row: ${n}`);
+  for (const n of extraMap.keys()) if (!gone(n) && !rows.some((r) => r.name === n)) errors.push(`extra-styles.txt: name matches no handout row: ${n}`);
   const exMap = new Map();
   for (const l of dataLines('data/exams.txt')) {
     const [n, ys] = l.split('|').map((x) => x.trim());
@@ -199,9 +205,9 @@ function main() {
     exMap.set(n, yrs.sort((a, c) => a - c));
   }
   for (const r of rows) r.exams = exMap.get(r.name) ?? [];
-  for (const n of exMap.keys()) if (!rows.some((r) => r.name === n)) errors.push(`exams.txt: name matches no handout row: ${n}`);
+  for (const n of exMap.keys()) if (!gone(n) && !rows.some((r) => r.name === n)) errors.push(`exams.txt: name matches no handout row: ${n}`);
   const rowNames = new Set(rows.map((r) => r.name));
-  for (const n of entries.keys()) if (!rowNames.has(n)) errors.push(`entries.txt: name matches no handout row: ${n}`);
+  for (const n of entries.keys()) if (!gone(n) && !rowNames.has(n)) errors.push(`entries.txt: name matches no handout row: ${n}`);
 
   // Leak scan
   for (const r of rows) for (const f of ['name', 'loc', 'year', 'who', 'note', 'summary']) for (const re of LEAK) if (re.test(r[f])) errors.push(`Leak: ${r.name}.${f} matches ${re}`);
@@ -226,7 +232,7 @@ function main() {
     if (!line.trim() || line.startsWith('#')) continue;
     const [key, sub = '', page = '', raw = '', note = ''] = line.split('|').map((s) => s.trim());
     const row = byName.get(key);
-    if (!row) { errors.push(`geo-raw line ${i + 1}: building not found: "${key}"`); continue; }
+    if (!row) { if (!gone(key)) errors.push(`geo-raw line ${i + 1}: building not found: "${key}"`); continue; }
     if (raw === 'NONE' || raw === '') { misses.push({ name: key, sub, page, reason: note || 'No coordinate found' }); continue; }
     let c;
     try { c = parseCoord(raw); } catch (e) { errors.push(`geo-raw line ${i + 1}: ${e.message}`); continue; }
@@ -258,7 +264,7 @@ function main() {
       const [name, sub = '', lat, lng, conf = '', note = ''] = line.split(',').map((s) => s.trim());
       const at = `geo-estimate line ${i + 1}`;
       const row = byName.get(name);
-      if (!row) { errors.push(`${at}: building not found: "${name}"`); continue; }
+      if (!row) { if (!gone(name)) errors.push(`${at}: building not found: "${name}"`); continue; }
       if (!row.loc) { errors.push(`${at}: "${name}" has no handout location, so no estimate is allowed`); continue; }
       if (!Number.isFinite(+lat) || !Number.isFinite(+lng) || !lat || !lng || Math.abs(+lat) > 90 || Math.abs(+lng) > 180) { errors.push(`${at}: lat/lng is not a valid number`); continue; }
       if (!CONF[conf]) { errors.push(`${at}: conf must be h, m or l`); continue; }
@@ -279,7 +285,7 @@ function main() {
       const [name, sub = '', lat, lng, url = '', note = ''] = line.split(',').map((s) => s.trim());
       if (!lat || !lng) continue;
       const row = byName.get(name);
-      if (!row) { errors.push(`geo-manual line ${i + 1}: building not found: "${name}"`); continue; }
+      if (!row) { if (!gone(name)) errors.push(`geo-manual line ${i + 1}: building not found: "${name}"`); continue; }
       if (!Number.isFinite(+lat) || !Number.isFinite(+lng) || Math.abs(+lat) > 90 || Math.abs(+lng) > 180) { errors.push(`geo-manual line ${i + 1}: lat/lng is not a valid number`); continue; }
       const mbox = CITY[cityKey(row.loc)];
       if (mbox) { const d = km(mbox[0], mbox[1], +lat, +lng); if (d > mbox[2]) errors.push(`geo-manual line ${i + 1}: coordinate is ${d.toFixed(0)} km from "${cityKey(row.loc)}" (limit ${mbox[2]}): ${name}`); }
@@ -292,12 +298,17 @@ function main() {
   // Assemble
   // Display overrides synced from the user's Doc (data/doc-display.txt): name, location label and architect shown to readers; keys stay as in the handout
   const DISP = new Map(dataLines('data/doc-display.txt').map((l) => { const [k, n, lc, w] = l.split('|').map((x) => x.trim()); return [k, { n, lc, w }]; }));
-  for (const k of DISP.keys()) if (!rows.some((r) => r.name === k)) errors.push(`doc-display.txt: no building named "${k}"`);
+  for (const k of DISP.keys()) if (!gone(k) && !rows.some((r) => r.name === k)) errors.push(`doc-display.txt: no building named "${k}"`);
+  // Building tags, edited by the user (data/tags-zh.txt, data/tags-en.txt): id | name | tags
+  const readTags = (file, sep) => new Map(dataLines(file).map((l) => { const [id, , t = ''] = l.split('|').map((x) => x.trim()); return [id, t.split(sep).map((x) => x.trim()).filter(Boolean)]; }));
+  const TAGS = { zh: readTags('data/tags-zh.txt', '\u30fb'), en: readTags('data/tags-en.txt', ' \u00b7 ') };
   const places = rows.map((r) => ({
     id: r.id, name: DISP.get(r.name)?.n || r.name, loc: r.loc, locLabel: DISP.get(r.name)?.lc || r.loc, year: r.year, built: r.built, who: DISP.get(r.name)?.w || r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
     style: r.style.name, styleId: r.style.id, era: r.era, eras: r.eras,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
+    tags: TAGS.zh.get(r.id) ?? [], tagsEn: TAGS.en.get(r.id) ?? [],
   }));
+  for (const lang of ['zh', 'en']) for (const id of TAGS[lang].keys()) if (!rows.some((r) => r.id === id)) errors.push(`tags-${lang}.txt: no building with id "${id}"`);
   // Nation of each building from its first coordinate (Natural Earth 1:10m country polygons), so the
   // map's Country button can frame the real country of a building filed under "Others" (e.g. Spain)
   {
@@ -347,7 +358,8 @@ function main() {
   // One style for buildings filed under a combined heading (data/style-split.txt, reviewed by the user)
   for (const l of dataLines('data/style-split.txt')) {
     const [n, st, era] = l.split('|').map((x) => x.trim());
-    const p = places.find((x) => x.name === n);
+    if (gone(n)) continue;
+    const p = places.find((x) => x.id === byName.get(n)?.id) ?? places.find((x) => x.name === n);
     if (!p) { errors.push(`style-split.txt: no building named "${n}"`); continue; }
     p.styleShown = st;
     if (era) {

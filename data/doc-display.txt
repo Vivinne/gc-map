@@ -42,7 +42,7 @@ Palazzo Reale (Milan) | Palazzo Reale |  |
 Ecstasy of Saint Teresa |  | Rome | 
 Palazzo Montecitorio |  |  | Gian Lorenzo Bernini
 Palazzo Madama |  |  | Paolo Maruscelli (Baroque facade)
-Hermitage Museum | Hermitage Museum / Winter Palace | Saint Petersburg, RU | Empress Elizabeth
+Hermitage Museum |  | Saint Petersburg, RU | Empress Elizabeth
 Arco della Pace |  |  | Luigi Cagnola (Napoleone)
 Arc de Triomphe／Arc du Carrousel | Arc de Triomphe |  | Napoleone
 Alte Pinakothek |  | Munich | 
@@ -97,3 +97,8 @@ Marqués de Riscal Hotel |  | Elciego, ES |
 Tate Modern |  |  | Multiple architects
 Metropolitan Museum of Art |  |  | Multiple architects
 Nevsky Prospect |  | Saint Petersburg, RU | Peter the Great
+# 2026-11-09 the user renamed these in the tag doc
+Santa Maria del Fiore (Main Body) | Santa Maria del Fiore |  | 
+Ospedale degli Innocenti (Foundling Hospital) | Foundling Hospital |  | 
+Generali Tower (CityLife) | Generali Tower |  | 
+Palazzo dell'Arte (Triennale) | Palazzo dell'Arte |  | 
