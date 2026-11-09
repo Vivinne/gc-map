@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ERAS, ascii, shortYear } from '../lib/model';
+import { ERAS, ascii, shortYear, type Building } from '../lib/model';
+import { type EraId } from '../lib/types';
 import { search, type Hit } from '../lib/search';
 import Facts from './Facts';
 import { Icon } from './Icons';
@@ -15,7 +16,22 @@ interface Props {
   onCity(city: string): void;
   /** Keep the text as a list filter */
   onKeep(q: string): void;
+  /** Buildings opened, newest first: shown while nothing is typed */
+  recent: Building[];
+  /** A style picked from the examples: show its buildings */
+  onStyle(e: EraId): void;
 }
+
+/** What the search finds, said where it is typed */
+export const SEARCH_HINT = 'Search buildings, architects, cities, styles';
+
+/** Fixed examples while nothing is typed: one architect, one city, one style; each opens its result */
+const EXAMPLES: { kind: 'architect' | 'city' | 'style'; label: string; value: string }[] = [
+  { kind: 'architect', label: 'Le Corbusier', value: 'Le Corbusier' },
+  { kind: 'city', label: 'Rome', value: 'Rome' },
+  { kind: 'style', label: 'Baroque', value: 'baroque' },
+];
+
 
 // Last kind of input on the page, to tell keyboard use from pointer use
 let lastInput: 'key' | 'pointer' = 'pointer';
@@ -24,7 +40,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('pointerdown', () => (lastInput = 'pointer'), true);
 }
 
-export default function SearchPalette({ initial, mobile, onClose, onOpen, onArchitect, onCity, onKeep }: Props) {
+export default function SearchPalette({ initial, mobile, onClose, onOpen, onArchitect, onCity, onKeep, recent, onStyle }: Props) {
   const [q, setQ] = useState(initial);
   const [cur, setCur] = useState(0);
   const input = useRef<HTMLInputElement>(null);
@@ -45,6 +61,15 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
     };
   }, []);
   const res = useMemo(() => search(q), [q]);
+  // Nothing typed: the buildings opened lately (a phone shows 3, more on request) and the examples
+  const idle = !q.trim();
+  const [moreRecent, setMoreRecent] = useState(false);
+  const recentShown = recent.slice(0, mobile && !moreRecent ? 3 : 5);
+  const idleRun: (() => void)[] = [
+    ...recentShown.map((b) => () => onOpen(b.id)),
+    ...EXAMPLES.map((x) => () => (x.kind === 'architect' ? onArchitect(x.value) : x.kind === 'city' ? onCity(x.value) : onStyle(x.value as EraId))),
+  ];
+  const count = idle ? idleRun.length : res.flat.length;
 
   useEffect(() => {
     input.current?.focus();
@@ -67,13 +92,14 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setCur((c) => Math.min(res.flat.length - 1, c + 1));
+      setCur((c) => Math.min(count - 1, c + 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setCur((c) => Math.max(0, c - 1));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      choose(res.flat[cur]);
+      if (idle) idleRun[cur]?.();
+      else choose(res.flat[cur]);
     } else if (e.key === 'Tab') {
       e.preventDefault();
       if (q.trim() && res.matched.length) onKeep(q.trim());
@@ -97,7 +123,10 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
         <button type="button" key={`a-${h.who}`} {...common}>
           <span className="av">{initials(h.who)}</span>
           <span className="nm">{h.who}</span>
-          <span className="loc">{ys.length ? `${Math.min(...ys)}\u2013${Math.max(...ys)}` : ''}</span>
+          {/* the years of this architect's buildings on this site, not a life or a whole career */}
+          <span className="loc" title="Years of the buildings on this site">
+            {ys.length ? `Works here ${Math.min(...ys) === Math.max(...ys) ? Math.min(...ys) : `${Math.min(...ys)}\u2013${Math.max(...ys)}`}` : ''}
+          </span>
           <span className="cnt-n">{h.items.length}</span>
         </button>
       );
@@ -135,10 +164,10 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
             ref={input}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search"
+            placeholder={SEARCH_HINT}
             aria-label="Search"
             role="combobox"
-            aria-expanded={res.flat.length > 0}
+            aria-expanded={count > 0}
             aria-controls="pal-results"
             autoComplete="off"
             spellCheck={false}
@@ -149,6 +178,42 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
         </div>
         <div className="pal-body">
           <div className="pal-res" id="pal-results" role="listbox" ref={listRef}>
+            {idle && (
+              <>
+                {recentShown.length > 0 && <h5>Recently opened</h5>}
+                {recentShown.map((b, k) => (
+                  <button type="button" key={`r-${b.id}`} data-cur={cur === k} className={`hit${cur === k ? ' on' : ''}`} onMouseMove={() => setCur(k)} onClick={() => onOpen(b.id)} role="option" aria-selected={cur === k}>
+                    <i className="sq" style={{ background: ERAS[b.era].color }} />
+                    <span className="nm">{b.name}</span>
+                    <span className="loc">{b.city}</span>
+                  </button>
+                ))}
+                {mobile && !moreRecent && recent.length > 3 && (
+                  <button type="button" className="pal-more-b" onClick={() => setMoreRecent(true)}>
+                    Show {Math.min(5, recent.length) - 3} more
+                  </button>
+                )}
+                <h5>Try</h5>
+                {EXAMPLES.map((x, j) => {
+                  const k = recentShown.length + j;
+                  return (
+                    <button type="button" key={`x-${x.value}`} data-cur={cur === k} className={`hit${cur === k ? ' on' : ''}`} onMouseMove={() => setCur(k)} onClick={() => idleRun[k]?.()} role="option" aria-selected={cur === k}>
+                      {x.kind === 'architect' ? (
+                        <span className="av">{initials(x.label)}</span>
+                      ) : x.kind === 'city' ? (
+                        <span className="av city">
+                          <Icon name="map" size={14} />
+                        </span>
+                      ) : (
+                        <i className="sq" style={{ background: ERAS[x.value as EraId].color }} />
+                      )}
+                      <span className="nm">{x.label}</span>
+                      <span className="loc">{x.kind === 'architect' ? 'Architect' : x.kind === 'city' ? 'City' : 'Style'}</span>
+                    </button>
+                  );
+                })}
+              </>
+            )}
             {q.trim() && res.flat.length === 0 && (
               <div className="pal-empty">
                 <b>No results for "{q.trim()}"</b>

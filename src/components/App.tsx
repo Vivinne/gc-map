@@ -8,6 +8,7 @@ import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, 
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
+import Guide, { GUIDE_KEY, GUIDE_LINE } from './Guide';
 import type { EraId } from '../lib/types';
 import { BuildingCard, CityPanel, ResultsPanel, cityOrder } from './DetailPanel';
 import { Icon } from './Icons';
@@ -15,7 +16,7 @@ import IndexPanel from './IndexPanel';
 import MeView from './MeView';
 import QuizView, { type QuizRequest } from './QuizView';
 import MapView, { SHEET_SHARE, type MapHandle, type Padding } from './MapView';
-import SearchPalette from './SearchPalette';
+import SearchPalette, { SEARCH_HINT } from './SearchPalette';
 import SettingsView from './SettingsView';
 import Leave from './Leave';
 import { applyTheme, savedTheme, type ThemeId } from '../lib/theme';
@@ -128,6 +129,8 @@ export default function App() {
   const [selId, setSelId] = useState(BY_ID.has(initial.b) ? initial.b : '');
   const [city, setCity] = useState(initial.city);
   const [filters, setFiltersRaw] = useState<Filters>(initial.filters);
+  // Buildings opened, newest first (search shows the latest when nothing is typed)
+  const [recent, setRecent] = useState<string[]>(() => load<string[]>('recent', []).filter((id) => BY_ID.has(id)).slice(0, 10));
   const [seen, setSeen] = useState<Set<string>>(() => new Set([...load<string[]>('seen', []), ...(BY_ID.has(initial.b) ? [initial.b] : [])]));
   const [starred, setStarred] = useState<Set<string>>(() => new Set(load<string[]>('starred', [])));
   const [collections, setCollections] = useState<Col.Collection[]>(() => {
@@ -157,6 +160,15 @@ export default function App() {
   const [hoverCity, setHoverCity] = useState('');
   const [sheet, setSheet] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // First visit: the getting-started card shows until hidden (Settings has the same text for later)
+  const [guideHidden, setGuideHidden] = useState(() => load<boolean>(GUIDE_KEY, false));
+  // The map could not start (no WebGL): the Map page becomes the building list (the getting-started text joins it)
+  const [mapDown, setMapDown] = useState(false);
+  const downList = useRef<HTMLDivElement>(null);
+  const hideGuide = () => {
+    save(GUIDE_KEY, true);
+    setGuideHidden(true);
+  };
   const [hoverId, setHoverId] = useState('');
   // The list of what the filters show (like a city list): opened by a building tag and by the card's back button
   const [resultsOpen, setResultsOpen] = useState(initial.list && !isEmpty(initial.filters));
@@ -332,6 +344,11 @@ export default function App() {
       setSelId(id);
       setCity(b.city);
       setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
+      setRecent((r) => {
+        const n = [id, ...r.filter((x) => x !== id)].slice(0, 10);
+        save('recent', n);
+        return n;
+      });
       setSheet(false);
       if (opts.fly !== false) afterPanel(() => mapRef.current?.showBuilding(b));
     },
@@ -555,12 +572,34 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
+  // Phone: the getting-started card takes room above the map; when it comes or goes, a map left at its opening
+  // view is framed again in the room it now has
+  useEffect(() => {
+    if (!mobile || !mapReady || mode !== 'map' || panelOpen || !isEmpty(filters)) return;
+    afterPanel(() => mapRef.current?.home());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guideHidden, mapReady]);
+
+  // The two ways to begin (getting-started card, Settings, a map that cannot show): the building list, or a quick quiz
+  const browse = () => {
+    setPalette(null);
+    setMode('map');
+    if (mobile) setSheet(true);
+    else setFiltersOpen(true);
+  };
+  const quickQuiz = () => {
+    setPalette(null);
+    setSheet(false);
+    setMode('quiz');
+    setQuizReq({ scope: 'all', quick: true, nonce: Date.now() });
+  };
+
   // ---------- pieces ----------
-  const modes: [Mode, string, 'map' | 'cards' | 'chart' | 'me', string][] = [
+  const modes: [Mode, string, 'map' | 'cards' | 'chart' | 'gear', string][] = [
     ['map', 'Map', 'map', 'M'],
     ['quiz', 'Quiz', 'cards', 'Q'],
-    ['me', 'Data', 'chart', 'U'],
-    ['settings', 'Settings', 'me', ''],
+    ['me', 'Progress', 'chart', 'U'],
+    ['settings', 'Settings', 'gear', ''],
   ];
 
   const index = (
@@ -629,36 +668,53 @@ export default function App() {
           >
             GC Atlas
           </button>
-          {/* the filters belong to the map: on Quiz and Me the button stays plain, it lights up again back on the map */}
-          <button type="button" className={`fbtn${mode === 'map' && filtersOpen ? ' open' : ''}${mode === 'map' && activeFilters ? ' on' : ''}`} aria-expanded={mode === 'map' && filtersOpen} aria-label="Filters" onClick={() => setFiltersOpen((o) => !o)} title="Filters (F)">
-            <Icon name="filter" size={16} />
+          {/* the filters belong to the map: on Quiz and Progress the button stays plain, it lights up again back on the map */}
+          <button type="button" className={`fbtn${mode === 'map' && filtersOpen ? ' open' : ''}${mode === 'map' && activeFilters ? ' on' : ''}`} aria-expanded={mode === 'map' && filtersOpen} aria-label="List" onClick={() => setFiltersOpen((o) => !o)} title="List and filters (F)">
+            <Icon name="list" size={16} />
+            List
             {mode === 'map' && activeFilters > 0 && <span className="badge">{activeFilters}</span>}
           </button>
           <button type="button" className="search" onClick={() => setPalette('')} title="Search (/)">
             <Icon name="search" size={16} />
-            <span className="ph">{filters.q || 'Search'}</span>
+            <span className="ph">{filters.q || SEARCH_HINT}</span>
           </button>
           <nav className="modes" aria-label="Views">
-            {modes.map(([m, label, icon, key]) => (
-              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={key ? `${label} (${key})` : label}>
-                <Icon name={icon} size={17} />
-                {/* Progress shows as its icon alone */}
-                {label}
-              </button>
-            ))}
+            {modes.map(([m, label, icon, key]) =>
+              m === 'settings' ? (
+                // Settings: the gear alone, as wide as a tap; its name shows on pointing or keyboard focus
+                <button type="button" key={m} className={`ic tip${mode === m ? ' on' : ''}`} aria-current={mode === m} aria-label={label} data-tip={label} onClick={() => setMode(m)}>
+                  <Icon name={icon} size={18} />
+                </button>
+              ) : (
+                <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={key ? `${label} (${key})` : label}>
+                  <Icon name={icon} size={17} />
+                  {label}
+                </button>
+              ),
+            )}
           </nav>
         </header>
       ) : (
         mode === 'map' && (
           <header className="m-top">
-            <button type="button" className="m-search" onClick={() => setPalette('')}>
-              <Icon name="search" size={17} />
-              <span>{filters.q || 'Search'}</span>
-            </button>
-            <button type="button" className={`m-fbtn${activeFilters ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label="All filters and list">
-              <Icon name="filter" size={17} />
-              {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
-            </button>
+            {/* what the site is, always in view on a phone */}
+            <p className="m-brand">
+              <b>GC Atlas</b> {'\u00b7'} Architecture map &amp; quiz
+            </p>
+            <div className="m-row">
+              <button type="button" className="m-search" onClick={() => setPalette('')}>
+                <Icon name="search" size={17} />
+                <span>{filters.q || SEARCH_HINT}</span>
+              </button>
+              {/* the buildings, with their filters: named, so it reads as the way to see what is here */}
+              <button type="button" className={`m-fbtn m-list${activeFilters ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label={`List${activeFilters ? `, ${activeFilters} filters on` : ''}`}>
+                <Icon name="list" size={17} />
+                List
+                {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
+              </button>
+            </div>
+            {/* first visit: under the search, before the map (which moves down for it and back when it is hidden) */}
+            {!guideHidden && !mapDown && !panelOpen && <Guide className="m" onBrowse={browse} onQuick={quickQuiz} onHide={hideGuide} />}
           </header>
         )
       )}
@@ -677,6 +733,8 @@ export default function App() {
           </div>
         </Leave>
         <div className={`pane map-pane${mode === 'map' ? ' on' : ''}`} aria-hidden={mode !== 'map'}>
+          {/* first visit, desktop: over the top left of the map, where the panels open (it steps aside while one is open) */}
+          {!mobile && !guideHidden && !mapDown && !filtersOpen && !panelOpen && <Guide className="d" onBrowse={browse} onQuick={quickQuiz} onHide={hideGuide} />}
           <MapView
             ref={mapRef}
             theme={theme}
@@ -714,6 +772,32 @@ export default function App() {
             }}
             onCity={focusCity}
             onReady={() => setMapReady(true)}
+            onFail={() => setMapDown(true)}
+            fallback={
+              <div className="map-down">
+                <section className="map-down-h" aria-label="Map unavailable">
+                  <h2>The map can't be shown in this browser.</h2>
+                  <p>{GUIDE_LINE} You can still browse the buildings or take a quiz.</p>
+                  <div className="guide-b">
+                    <button type="button" className="btn dark" onClick={() => downList.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                      <Icon name="list" size={14} />
+                      Browse buildings
+                    </button>
+                    <button type="button" className="btn" onClick={quickQuiz}>
+                      <Icon name="cards" size={14} />
+                      Quick quiz
+                    </button>
+                  </div>
+                  <details className="map-down-d">
+                    <summary>Details</summary>
+                    <p>The map draws with WebGL (3D graphics in the browser), which is turned off or blocked here. Turning on hardware acceleration in the browser settings, or another browser, usually brings it back.</p>
+                  </details>
+                </section>
+                <div ref={downList} className="map-down-l">
+                  {index}
+                </div>
+              </div>
+            }
             onHome={() => {
               clearView();
               // after the panels have closed, so the map is framed in the whole free area
@@ -854,7 +938,21 @@ export default function App() {
         )}
         {mode === 'settings' && (
           <div className="pane on">
-            <SettingsView mobile={mobile} theme={theme} onTheme={changeTheme} onExport={exportFile} onImport={importFile} />
+            <SettingsView
+              mobile={mobile}
+              theme={theme}
+              onTheme={changeTheme}
+              onExport={exportFile}
+              onImport={importFile}
+              onBrowse={browse}
+              onQuick={quickQuiz}
+              guideHidden={guideHidden}
+              onShowGuide={() => {
+                save(GUIDE_KEY, false);
+                setGuideHidden(false);
+                setMode('map');
+              }}
+            />
           </div>
         )}
       </main>
@@ -872,7 +970,7 @@ export default function App() {
       )}
 
       {mobile && sheet && (
-        <div className="m-sheet" role="dialog" aria-label="Filters and list">
+        <div className="m-sheet" role="dialog" aria-label="Buildings">
           <div className="m-sheet-h">
             <b>{results.length} buildings</b>
             <button type="button" className="icon-btn" aria-label="Close" onClick={() => setSheet(false)}>
@@ -922,6 +1020,18 @@ export default function App() {
             setPalette(null);
             setMode('map');
             focusCity(c);
+          }}
+          recent={recent.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b)}
+          onStyle={(e) => {
+            // a style picked from the examples: its buildings, as the style tag in the filters shows them
+            setPalette(null);
+            setMode('map');
+            fitNext.current = true;
+            before.current = null;
+            setSelId('');
+            setCity('');
+            setResultsOpen(true);
+            setFiltersRaw((f) => ({ ...f, styles: [e], q: '' }));
           }}
           onKeep={(q) => {
             setPalette(null);

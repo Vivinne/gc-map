@@ -1,4 +1,4 @@
-export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me' | 'chart' | 'image';
+export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me' | 'chart' | 'image' | 'gear' | 'list' | 'info';
 
 /** Line icons drawn on a 16 px grid; colour follows the text colour */
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
@@ -51,6 +51,13 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
       return (<svg {...p}><path d="M8 1.5v9M4 7l4 4 4-4M2 14.5h12" {...s} strokeWidth={1.7} /></svg>);
     case 'upload':
       return (<svg {...p}><path d="M8 11V2M4 5.5l4-4 4 4M2 14.5h12" {...s} strokeWidth={1.7} /></svg>);
+    case 'gear':
+      // a cog: teeth from a dashed ring, a ring, a hole
+      return (<svg {...p}><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth={2.2} strokeDasharray="2.2 2.51" /><circle cx="8" cy="8" r="4.1" {...s} strokeWidth={1.7} /><circle cx="8" cy="8" r="1.6" {...s} strokeWidth={1.5} /></svg>);
+    case 'list':
+      return (<svg {...p}><path d="M5.5 4h8M5.5 8h8M5.5 12h8" {...s} strokeWidth={1.7} /><circle cx="2.6" cy="4" r="1.05" fill="currentColor" /><circle cx="2.6" cy="8" r="1.05" fill="currentColor" /><circle cx="2.6" cy="12" r="1.05" fill="currentColor" /></svg>);
+    case 'info':
+      return (<svg {...p}><circle cx="8" cy="8" r="6.3" {...s} strokeWidth={1.5} /><path d="M8 7.2v4.3" {...s} strokeWidth={1.8} /><circle cx="8" cy="4.9" r="1" fill="currentColor" /></svg>);
     case 'me':
       return (<svg {...p}><circle cx="8" cy="5.2" r="3" {...s} strokeWidth={1.6} /><path d="M2.2 14.8c.8-3 3-4.6 5.8-4.6s5 1.6 5.8 4.6" {...s} strokeWidth={1.6} /></svg>);
     case 'chart':

@@ -64,6 +64,10 @@ interface Props {
   /** A city circle clicked: the city, and for a merged circle the buildings of its other cities */
   onCity(city: string, others?: Building[]): void;
   onReady?(): void;
+  /** The map cannot start (no WebGL): told once, so the page can offer the list instead */
+  onFail?(): void;
+  /** Shown in place of the map when it cannot start */
+  fallback?: React.ReactNode;
   /** colour palette: the map's sea, land, streets and buildings follow it */
   theme: ThemeId;
   /** phone: height of the tab bar lying over the bottom of the map (0 while it is hidden) */
@@ -214,7 +218,7 @@ function styleSpec(c: Theme['map']): StyleSpecification {
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { nums: numsProp, numberAll, onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onHome, onPanorama, foot, theme, tabInset = 0 } = props;
+  const { nums: numsProp, numberAll, onCountry, buildings, selected, hoverCity, hoverId, insetCity, padding, reducedMotion, compact, sideways, onSelect, onCity, onReady, onFail, fallback, onHome, onPanorama, foot, theme, tabInset = 0 } = props;
   const nums = numsProp ?? CITY_NO;
   const panoRef = useRef(onPanorama);
   const btnZoom = useRef(false);
@@ -229,8 +233,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const [tip, setTip] = useState<Cluster | null>(null);
   const [pinHover, setPinHover] = useState('');
   const [awayOpen, setAwayOpen] = useState(false);
-  // WebGL missing or blocked: the map cannot start; the rest of the app (list, quiz, me) keeps working
+  // WebGL missing or blocked: the map cannot start; the rest of the app (list, quiz, progress) keeps working
   const [noMap, setNoMap] = useState(false);
+  // The map runs but its detail tiles did not arrive (network): said over the map, with Retry
+  const [tileFail, setTileFail] = useState(false);
   const padRef = useRef(padding);
   padRef.current = padding;
   const compactRef = useRef(!!compact);
@@ -258,11 +264,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       });
     } catch {
       setNoMap(true);
+      onFail?.();
       return;
     }
     map.touchZoomRotate.disableRotation();
-    map.on('error', () => {
-      /* tile server unreachable: the offline layers keep working */
+    map.on('error', (e) => {
+      // tile server unreachable: the offline layers keep working; say so while no detail tile has come
+      const ev = e as { sourceId?: string; error?: { message?: string; url?: string } };
+      if (!tilesOk.current && (ev.sourceId === 'ofm' || /openfreemap/.test(`${ev.error?.message ?? ''} ${ev.error?.url ?? ''}`))) setTileFail(true);
     });
     let raf = 0;
     const bump = () => {
@@ -333,6 +342,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     map.on('data', (e) => {
       if (tilesOk.current || (e as { sourceId?: string }).sourceId !== 'ofm' || !(e as { tile?: unknown }).tile) return;
       tilesOk.current = true;
+      setTileFail(false);
       const { sea, land } = THEMES[themeRef.current].map;
       map.setPaintProperty('sea', 'background-color', ['step', ['zoom'], sea, 6, land]);
       map.setLayerZoomRange('land', 0, 6);
@@ -1017,12 +1027,25 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   }
 
   return (
-    <div className="map-box">
+    <div className={`map-box${noMap ? ' no-map' : ''}`}>
       <div ref={box} className="map-canvas" />
-      {noMap && (
-        <p className="map-fail" role="alert">
-          The map needs WebGL, which this browser has turned off. The list, Quiz and Me still work.
-        </p>
+      {noMap && <div className="map-fail">{fallback}</div>}
+      {tileFail && !noMap && (
+        <div className={`map-tiles${compact ? ' m' : ''}`} role="status">
+          <span>Map detail didn't load.</span>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              const m = mapRef.current;
+              setTileFail(false);
+              tilesOk.current = false;
+              m?.setStyle(styleSpec(THEMES[themeRef.current].map));
+            }}
+          >
+            Retry
+          </button>
+        </div>
       )}
       {overlay}
       {inset}

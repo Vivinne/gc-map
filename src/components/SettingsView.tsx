@@ -3,6 +3,7 @@
 import { ERA_ORDER, ERAS } from '../lib/model';
 import { THEMES, THEME_ORDER, type ThemeId } from '../lib/theme';
 import { Icon } from './Icons';
+import Guide, { GUIDE_NOTE } from './Guide';
 
 interface Props {
   mobile: boolean;
@@ -10,13 +11,31 @@ interface Props {
   onTheme(id: ThemeId): void;
   onExport(): void;
   onImport(text: string): void;
+  onBrowse(): void;
+  onQuick(): void;
+  guideHidden: boolean;
+  onShowGuide(): void;
 }
 
-/** Settings: the colour palette, and moving study progress to another device. */
+/** Settings: what the site is for, the colour palette, and moving study progress to another device. */
 export default function SettingsView(p: Props) {
   return (
     <div className={p.mobile ? 'me m set' : 'me set'}>
       <div className="me-pg">
+        <section className="card" aria-labelledby="set-about">
+          <div className="hd">
+            <h2 id="set-about">About &amp; getting started</h2>
+          </div>
+          <div className="bd set-about">
+            <Guide className="s" onBrowse={p.onBrowse} onQuick={p.onQuick} />
+            <p className="note">{GUIDE_NOTE}</p>
+            {p.guideHidden && (
+              <button type="button" className="btn" onClick={p.onShowGuide}>
+                Show the getting-started card on the map
+              </button>
+            )}
+          </div>
+        </section>
         <section className="card" aria-labelledby="set-colours">
           <div className="hd">
             <h2 id="set-colours">Colours</h2>

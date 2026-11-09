@@ -119,7 +119,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 /* ---------- top bar: 48 px, controls 32 px high, 8 px apart ---------- */
 .brand { flex: none; background: var(--brand); color: #fff; display: flex; align-items: center; padding: 0 16px; font-stretch: 125%; font-weight: 850; font-size: 16px; letter-spacing: -0.01em; }
 .fbtn, .search { height: 32px; margin: 8px 0 8px 8px; background: var(--soft); display: flex; align-items: center; gap: 8px; }
-.fbtn { position: relative; width: 36px; padding: 0; justify-content: center; font-weight: 700; font-size: 13px; }
+.fbtn { position: relative; width: auto; padding: 0 12px; justify-content: center; font-weight: 650; font-size: 13px; }
 .fbtn:first-of-type { margin-left: 16px; }
 .fbtn:hover, .search:hover { background: var(--g93); }
 .fbtn.on, .fbtn.open { background: var(--ink); color: #fff; }
@@ -187,6 +187,8 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .map-pane { visibility: hidden; }
 .map-pane.on { visibility: visible; }
 .map-box, .map-canvas { position: absolute; inset: 0; }
+/* marks beyond the edge of the map are cut there, never drawn over the bars around it */
+.map-box { overflow: hidden; }
 .map-canvas { background: var(--sea); }
 .overlay { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; font-family: inherit; }
 .overlay .mk { pointer-events: auto; cursor: pointer; }
@@ -676,7 +678,10 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .app.is-mobile.mode-me, .app.is-mobile.mode-settings, .app.is-mobile.mode-quiz { grid-template-rows: minmax(0, 1fr) auto; }
 .is-mobile .main { grid-column: 1; grid-row: 2; }
 .is-mobile.mode-me .main, .is-mobile.mode-settings .main, .is-mobile.mode-quiz .main { grid-row: 1; }
-.m-top { grid-row: 1; min-width: 0; background: #fff; z-index: 5; display: flex; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; border-bottom: 1px solid var(--rule); }
+.m-top { grid-row: 1; min-width: 0; background: #fff; z-index: 5; display: flex; flex-direction: column; gap: 6px; padding: calc(6px + env(safe-area-inset-top)) 12px 8px; border-bottom: 1px solid var(--rule); }
+.m-row { display: flex; gap: 8px; }
+.m-brand { font-size: 13px; line-height: 18px; color: var(--g40, #555); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-brand b { color: var(--ink); font-weight: 800; }
 .m-search { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; background: var(--soft); color: var(--mute); font-size: 15px; }
 .m-fbtn { position: relative; flex: none; width: 40px; height: 40px; display: grid; place-items: center; background: var(--soft); }
 .m-fbtn.on { background: var(--ink); color: #fff; }
@@ -721,7 +726,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .me.m .me-mastery .hd { min-height: 0; }
 .is-mobile .sheet .c-top, .is-mobile .sheet .cp-top { touch-action: none; }
 .qv .hd .rt { text-decoration: none; }
-.map-fail { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; font-weight: 700; color: var(--mute); background: var(--sea); }
+.map-fail { position: absolute; inset: 0; z-index: 4; background: #fff; overflow-y: auto; }
 .crash { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; font-weight: 700; }
 .me-next .hd .rt { text-decoration: none; }
 
@@ -1262,3 +1267,78 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .qv-sum { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .qv-sum b { color: var(--ink); font-weight: 750; }
 .qv-res-act { justify-content: flex-end; }
+/* Desktop Settings: the gear alone, 48 px wide; its name in a tip on pointing or keyboard focus */
+.modes button.ic.tip { width: 48px; padding: 0; justify-content: center; position: relative; }
+.tip[data-tip]::after { content: attr(data-tip); position: absolute; top: calc(100% + 6px); right: 4px; z-index: 30; padding: 5px 8px; border-radius: 6px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 600; white-space: nowrap; pointer-events: none; opacity: 0; transform: translateY(-2px); transition: opacity var(--t-fast), transform var(--t-fast); }
+.tip[data-tip]:hover::after, .tip[data-tip]:focus-visible::after { opacity: 1; transform: none; }
+/* Getting started: what the site is for and the two ways to begin */
+.guide { display: flex; flex-direction: column; gap: 10px; }
+.guide-t { font-size: 14px; line-height: 1.45; font-weight: 600; color: var(--ink); }
+.guide-b { display: flex; flex-wrap: wrap; gap: 8px; }
+.guide-b .btn { height: 44px; padding: 0 14px; font-size: 13.5px; gap: 6px; }
+.guide-top { display: flex; align-items: flex-start; gap: 8px; }
+.guide-top .guide-t { flex: 1; min-width: 0; }
+.guide-x { flex: none; height: 44px; margin: -12px -8px -8px 0; padding: 0 10px; font-size: 13px; font-weight: 650; color: var(--mute); }
+.guide-x:hover { color: var(--ink); }
+.guide.m { padding: 10px 0 2px; border-top: 1px solid var(--g96); }
+.guide.m .guide-b .btn { flex: 1; justify-content: center; }
+.guide.d { position: absolute; z-index: 6; top: 16px; left: 16px; width: 356px; padding: 16px; background: #fff; border-radius: var(--r-m); box-shadow: 0 0 0 1px var(--rule), 0 6px 20px rgba(0, 0, 0, 0.08); }
+.guide.s { padding-bottom: 4px; }
+.set-about { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; }
+.pal-more-b { display: block; width: 100%; min-height: 44px; padding: 0 20px; text-align: left; font-size: 13px; font-weight: 650; color: var(--mute); }
+.pal-more-b:hover { background: var(--soft); color: var(--ink); }
+/* Building list: the chosen (one line), the styles (one row), the order, More filters, then the buildings */
+.ix-head { padding: 12px 0 4px; border-bottom: 1px solid var(--rule); display: flex; flex-direction: column; gap: 10px; }
+.ix-pills { display: flex; gap: 4px; overflow-x: auto; padding: 0 16px; scrollbar-width: none; flex: none; }
+.ix-pills::-webkit-scrollbar, .ix-styles::-webkit-scrollbar { display: none; }
+.ix-pills .pill { flex: none; }
+.pill > i { width: 10px; height: 10px; flex: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6); }
+.ix-pills .ix-clear { width: auto; padding: 0 12px; flex: none; }
+/* the style row runs past the edge: half of the next chip shows and the edge fades, so it reads as more to the side */
+.ix-styles { display: flex; gap: 4px; overflow-x: auto; padding: 0 16px; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent); }
+.ix-styles .chip { flex: none; height: 36px; }
+.ix-bar { display: flex; align-items: center; gap: 10px; padding: 0 16px; flex-wrap: wrap; }
+.ix-sort { display: flex; gap: 2px; }
+.ix-sort button { height: 32px; padding: 0 12px; font-size: 12.5px; font-weight: 650; background: var(--soft); border-radius: var(--r-s); }
+.ix-sort button.on { background: var(--ink); color: #fff; }
+.ix-how { font-size: 12px; color: var(--mute); font-weight: 600; }
+.ix-more { display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 16px; font-size: 13px; font-weight: 700; width: 100%; }
+.ix-more svg { transition: transform var(--t-fast); }
+.ix-more[aria-expanded='false'] svg { transform: rotate(-90deg); }
+.ix-more-bd { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 8px; }
+.ix-more-bd h3 { font-size: 12px; font-weight: 700; color: var(--mute); margin-top: 4px; }
+.ix-more-bd .chip { height: 36px; }
+/* a style heading in the list: a thin strip, not a control */
+.ix-g { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 16px; font-size: 12px; font-weight: 750; color: var(--mute); background: var(--soft); position: sticky; top: 0; z-index: 1; }
+.ix-g i { width: 10px; height: 10px; flex: none; }
+.ix-g span { margin-left: auto; font-weight: 600; }
+.ix-row { display: flex; align-items: flex-start; gap: 10px; width: 100%; min-height: 44px; padding: 8px 16px; text-align: left; }
+.ix-row .sq { width: 10px; height: 10px; flex: none; margin-top: 5px; }
+.ix-row:hover { background: var(--soft); }
+.ix-row.sel { background: var(--ink); color: #fff; }
+.ix-t { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.ix-t b { font-size: 14px; font-weight: 650; line-height: 1.3; overflow-wrap: anywhere; }
+.ix-t span { font-size: 12.5px; color: var(--mute); line-height: 1.35; }
+.ix-t .ix-w { color: var(--g66); overflow-wrap: anywhere; }
+.ix-row.sel .ix-t span { color: var(--g84); }
+.ix-empty .link { text-decoration: underline; font-weight: 650; color: var(--ink); }
+.ix .list { padding-top: 0; }
+/* the list button names itself */
+.m-fbtn.m-list { width: auto; padding: 0 12px; display: flex; gap: 6px; font-size: 14px; font-weight: 650; }
+.fbtn { gap: 6px; }
+/* No map: the Map page is the building list, under a short word on why and the two ways to go on */
+.map-box.no-map .ctrls, .map-box.no-map .scale, .map-box.no-map .locator, .map-box.no-map .foot, .map-box.no-map .overlay { display: none !important; }
+.map-down { max-width: 720px; margin: 0 auto; }
+.map-down-h { padding: 24px 16px 16px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--rule); }
+.map-down-h h2 { font-size: 18px; font-weight: 800; }
+.map-down-h > p { font-size: 14px; line-height: 1.5; color: var(--ink); }
+.map-down-d summary { cursor: pointer; font-size: 13px; font-weight: 650; color: var(--mute); min-height: 32px; display: flex; align-items: center; }
+.map-down-d p { font-size: 13px; color: var(--mute); line-height: 1.5; }
+.map-down-l .index { border: 0; }
+.map-down-l .index-scroll { overflow: visible; }
+/* The map runs but its detail did not arrive: a strip over the top of the map, with Retry */
+.map-tiles { position: absolute; z-index: 5; top: 16px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; background: #fff; border-radius: var(--r-m); box-shadow: 0 0 0 1px var(--rule), 0 4px 14px rgba(0, 0, 0, 0.08); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.map-tiles .btn { height: 36px; padding: 0 12px; }
+.map-tiles.m { top: auto; bottom: calc(112px + env(safe-area-inset-bottom)); }
+/* a phone sheet open: the strip waits under it */
+.app.tabs-off .map-tiles.m { display: none; }
