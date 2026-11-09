@@ -32,13 +32,13 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
   useEffect(() => {
     if (expand) setFull(true);
   }, [expand]);
-  const drag = useRef<{ y: number; dy: number; id: number } | null>(null);
+  const drag = useRef<{ y: number; dy: number; id: number; h: number } | null>(null);
   const [dy, setDy] = useState(0);
   // The drag starts on the top of the sheet (handle, controls strip, title), never on a button
   const onDown = (e: React.PointerEvent) => {
     const t = e.target as Element;
     if (!t.closest('.grab, .c-top, .cp-top') || t.closest('button:not(.grab)')) return;
-    drag.current = { y: e.clientY, dy: 0, id: e.pointerId };
+    drag.current = { y: e.clientY, dy: 0, id: e.pointerId, h: (e.currentTarget as Element).getBoundingClientRect().height };
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
   const onMove = (e: React.PointerEvent) => {
@@ -69,7 +69,15 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
     <section
       className={`side ${className}${mobile ? ` sheet${full ? ' full' : ''}` : ''}`}
       aria-label={label}
-      style={mobile && dy ? { transform: `translateY(${Math.max(-200, dy)}px)`, transition: 'none' } : undefined}
+      // Dragged down: the sheet slides down. Dragged up: it grows from the bottom edge, which stays put,
+      // so nothing opens up under it while the finger moves
+      style={
+        mobile && dy
+          ? dy > 0
+            ? { transform: `translateY(${dy}px)`, transition: 'none' }
+            : { height: `${(drag.current?.h ?? 0) - dy}px`, maxHeight: '100%', transition: 'none' }
+          : undefined
+      }
       onPointerDown={mobile ? onDown : undefined}
       onPointerMove={mobile ? onMove : undefined}
       onPointerUp={mobile ? onUp : undefined}

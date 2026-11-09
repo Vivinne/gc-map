@@ -1199,3 +1199,5 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .c-photos:hover { color: var(--ink); }
 .c-photos .c-photos-x { font-size: 11px; }
 .is-mobile .c-photos { min-height: 44px; margin-top: 4px; padding-right: 8px; }
+/* phone: dragging the title of a sheet never selects its text */
+.is-mobile .sheet .c-top, .is-mobile .sheet .cp-top { -webkit-user-select: none; user-select: none; }

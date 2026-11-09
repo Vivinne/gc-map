@@ -184,7 +184,8 @@ export default function App() {
   // Derived lists (deferred so chips respond at once and the map follows)
   const dFilters = useDeferredValue(filters);
   const results = useMemo(() => apply(dFilters, starred).sort(byYear), [dFilters, starred]);
-  const counts = useMemo(() => tagCounts(filters, starred), [filters, starred]);
+  // Each filter chip shows its own fixed total (all buildings with that tag); the header counts what the filters select
+  const counts = useMemo(() => tagCounts(EMPTY, starred), [starred]);
   const selected = selId ? (BY_ID.get(selId) ?? null) : null;
 
 
