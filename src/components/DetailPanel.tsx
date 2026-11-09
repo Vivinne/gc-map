@@ -33,7 +33,7 @@ interface SheetProps {
  * Touch, anywhere on the sheet: the sheet follows the finger up and down and, on release, rests where it was
  * left: full when pulled well up, folded (card) or closed (list) when pushed well down, otherwise normal; once
  * expanded, the content scrolls and a pull down at its top shrinks the sheet. Sideways, the card follows the
- * finger and, past half its width, gives way to the previous / next building. Mouse: drag the top.
+ * finger and, past a third of its width, gives way to the previous / next building. Mouse: drag the top.
  */
 /** Space between the card and the neighbour's card beside it (phone, sideways swipe) */
 const PEEK_GAP = 8;
@@ -175,7 +175,7 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
         el.style.height = `${px}px`;
       } else if (g.mode === 'h') {
         const dir = dx < 0 ? 1 : -1;
-        if (Math.abs(dx) > g.W / 2) {
+        if (Math.abs(dx) > g.W / 3) {
           // on with the finger until the neighbour's card stands where this one was, then it becomes the card
           el.style.transition = `transform 200ms ${EASE_OUT}`;
           el.style.transform = `translateX(${-dir * (g.W + PEEK_GAP)}px)`;
