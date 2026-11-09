@@ -331,10 +331,10 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
               <span className="c-back-t">{group ? group.label : b.city}</span>
             </button>
           )}
-          {/* photos of the building (Wikimedia Commons, new tab): on the left, apart from the card's controls */}
+          {/* photos of the building (Bing image search, new tab): on the left, apart from the card's controls */}
           <a
             className="c-ic c-photo"
-            href={`https://commons.wikimedia.org/w/index.php?search=${encodeURIComponent(b.photoQuery || `${b.name} ${b.city}`)}&title=Special:MediaSearch&type=image`}
+            href={`https://www.bing.com/images/search?q=${encodeURIComponent(b.photoQuery || `${b.name} ${b.city}`)}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Photos of ${b.name} (new tab)`}

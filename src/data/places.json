@@ -743,7 +743,7 @@
     "Baths"
    ],
    "styleCard": "",
-   "photoQuery": "Palazzo imperiale Milano",
+   "photoQuery": "Mediolanum palazzo imperiale via Brisa",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5619,7 +5619,7 @@
     "Ministry of Foreign Affairs"
    ],
    "styleCard": "",
-   "photoQuery": "",
+   "photoQuery": "Palazzo della Farnesina Ministero degli Esteri",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7556,7 +7556,7 @@
    "tags": [],
    "tagsEn": [],
    "styleCard": "",
-   "photoQuery": "Van Gogh Museum Rietveld",
+   "photoQuery": "Van Gogh Museum Amsterdam building",
    "nation": "Netherlands",
    "nationBox": [
     3.45,
@@ -7602,7 +7602,7 @@
    "tags": [],
    "tagsEn": [],
    "styleCard": "",
-   "photoQuery": "",
+   "photoQuery": "Padiglione Olanda Rietveld Giardini",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -7978,7 +7978,7 @@
    "tags": [],
    "tagsEn": [],
    "styleCard": "",
-   "photoQuery": "Quartiere QT8",
+   "photoQuery": "QT8 Milano quartiere",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -8722,7 +8722,7 @@
     "Four L-shaped corner towers"
    ],
    "styleCard": "",
-   "photoQuery": "Bibliothèque François-Mitterrand",
+   "photoQuery": "BnF François Mitterrand Perrault towers",
    "nation": "France",
    "nationBox": [
     -4.79,
@@ -9162,7 +9162,7 @@
    "tags": [],
    "tagsEn": [],
    "styleCard": "Deconstructivism",
-   "photoQuery": "Jüdisches Museum Berlin",
+   "photoQuery": "Jewish Museum Berlin Libeskind",
    "nation": "Germany",
    "nationBox": [
     5.85,
