@@ -1,7 +1,6 @@
 'use client';
 
-import { ERA_ORDER, ERAS } from '../lib/model';
-import { THEMES, THEME_ORDER, type ThemeId } from '../lib/theme';
+import { type ThemeId } from '../lib/theme';
 import { Icon } from './Icons';
 import Guide, { GUIDE_NOTE } from './Guide';
 
@@ -17,7 +16,7 @@ interface Props {
   onShowGuide(): void;
 }
 
-/** Settings: what the site is for, the colour palette, and moving study progress to another device. */
+/** Settings: what the site is for, and moving study progress to another device. */
 export default function SettingsView(p: Props) {
   return (
     <div className={p.mobile ? 'me m set' : 'me set'}>
@@ -34,32 +33,6 @@ export default function SettingsView(p: Props) {
                 Show the getting-started card on the map
               </button>
             )}
-          </div>
-        </section>
-        <section className="card" aria-labelledby="set-colours">
-          <div className="hd">
-            <h2 id="set-colours">Colours</h2>
-          </div>
-          <div className="bd th-list" role="radiogroup" aria-labelledby="set-colours">
-            {THEME_ORDER.map((id) => {
-              const t = THEMES[id];
-              const on = p.theme === id;
-              return (
-                <button type="button" role="radio" aria-checked={on} key={id} className={`th-opt${on ? ' on' : ''}`} onClick={() => p.onTheme(id)}>
-                  <span className="th-dot" aria-hidden="true">{on && <Icon name="check" size={12} />}</span>
-                  <span className="th-txt">
-                    <b>{t.label}</b>
-                    <small>{t.note}</small>
-                  </span>
-                  {/* the styles from oldest to newest, so the gradient reads left to right */}
-                  <span className="th-strip" aria-hidden="true">
-                    {ERA_ORDER.map((e) => (
-                      <i key={e} style={{ background: t.eras[e] }} title={ERAS[e].label} />
-                    ))}
-                  </span>
-                </button>
-              );
-            })}
           </div>
         </section>
         <section className="card" aria-labelledby="set-device">

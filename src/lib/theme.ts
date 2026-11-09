@@ -66,12 +66,14 @@ export const THEMES: Record<ThemeId, Theme> = {
   }
 };
 
-export const THEME_ORDER: ThemeId[] = ['b3', 'd2'];
+/** Only Earth to sky is offered (Sunset was taken out, user 2026-11-09) */
+export const THEME_ORDER: ThemeId[] = ['b3'];
 const KEY = 'theme';
 
 export function savedTheme(): ThemeId {
-  const t = load<string>(KEY, 'b3');
-  return t === 'd2' ? 'd2' : 'b3';
+  // a Sunset choice kept from before goes back to Earth to sky
+  load<string>(KEY, 'b3');
+  return 'b3';
 }
 
 /** Switches the style colours (read through ERAS by every view) and the page colours. */

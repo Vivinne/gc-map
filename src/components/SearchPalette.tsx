@@ -23,7 +23,7 @@ interface Props {
 }
 
 /** What the search finds, said where it is typed */
-export const SEARCH_HINT = 'Search buildings, architects, cities, styles';
+export const SEARCH_HINT = 'Search';
 
 /** Fixed examples while nothing is typed: one architect, one city, one style; each opens its result */
 const EXAMPLES: { kind: 'architect' | 'city' | 'style'; label: string; value: string }[] = [
@@ -123,10 +123,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
         <button type="button" key={`a-${h.who}`} {...common}>
           <span className="av">{initials(h.who)}</span>
           <span className="nm">{h.who}</span>
-          {/* the years of this architect's buildings on this site, not a life or a whole career */}
-          <span className="loc" title="Years of the buildings on this site">
-            {ys.length ? `Works here ${Math.min(...ys) === Math.max(...ys) ? Math.min(...ys) : `${Math.min(...ys)}\u2013${Math.max(...ys)}`}` : ''}
-          </span>
+          <span className="loc">{ys.length ? `${Math.min(...ys)}\u2013${Math.max(...ys)}` : ''}</span>
           <span className="cnt-n">{h.items.length}</span>
         </button>
       );

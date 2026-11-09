@@ -669,9 +669,8 @@ export default function App() {
             GC Atlas
           </button>
           {/* the filters belong to the map: on Quiz and Progress the button stays plain, it lights up again back on the map */}
-          <button type="button" className={`fbtn${mode === 'map' && filtersOpen ? ' open' : ''}${mode === 'map' && activeFilters ? ' on' : ''}`} aria-expanded={mode === 'map' && filtersOpen} aria-label="List" onClick={() => setFiltersOpen((o) => !o)} title="List and filters (F)">
-            <Icon name="list" size={16} />
-            List
+          <button type="button" className={`fbtn${mode === 'map' && filtersOpen ? ' open' : ''}${mode === 'map' && activeFilters ? ' on' : ''}`} aria-expanded={mode === 'map' && filtersOpen} aria-label="Filters" onClick={() => setFiltersOpen((o) => !o)} title="Filters (F)">
+            <Icon name="filter" size={16} />
             {mode === 'map' && activeFilters > 0 && <span className="badge">{activeFilters}</span>}
           </button>
           <button type="button" className="search" onClick={() => setPalette('')} title="Search (/)">
@@ -697,19 +696,13 @@ export default function App() {
       ) : (
         mode === 'map' && (
           <header className="m-top">
-            {/* what the site is, always in view on a phone */}
-            <p className="m-brand">
-              <b>GC Atlas</b> {'\u00b7'} Architecture map &amp; quiz
-            </p>
             <div className="m-row">
               <button type="button" className="m-search" onClick={() => setPalette('')}>
                 <Icon name="search" size={17} />
                 <span>{filters.q || SEARCH_HINT}</span>
               </button>
-              {/* the buildings, with their filters: named, so it reads as the way to see what is here */}
-              <button type="button" className={`m-fbtn m-list${activeFilters ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label={`List${activeFilters ? `, ${activeFilters} filters on` : ''}`}>
-                <Icon name="list" size={17} />
-                List
+              <button type="button" className={`m-fbtn${activeFilters ? ' on' : ''}`} onClick={() => setSheet(true)} aria-label="All filters and list">
+                <Icon name="filter" size={17} />
                 {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
               </button>
             </div>
@@ -970,7 +963,7 @@ export default function App() {
       )}
 
       {mobile && sheet && (
-        <div className="m-sheet" role="dialog" aria-label="Buildings">
+        <div className="m-sheet" role="dialog" aria-label="Filters and list">
           <div className="m-sheet-h">
             <b>{results.length} buildings</b>
             <button type="button" className="icon-btn" aria-label="Close" onClick={() => setSheet(false)}>
