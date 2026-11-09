@@ -308,11 +308,14 @@ function main() {
   // Style shown on the card instead of Modernism (data/style-card.txt: id | name | style)
   const STYLE_CARD = new Map(dataLines('data/style-card.txt').map((l) => { const [id, , st] = l.split('|').map((x) => x.trim()); return [id, st]; }));
   for (const id of STYLE_CARD.keys()) if (!rows.some((r) => r.id === id)) errors.push(`style-card.txt: no building with id "${id}"`);
+  // Photo link search words where "name city" finds other pictures (data/photo-query.txt: id | name | search)
+  const PHOTO = new Map(dataLines('data/photo-query.txt').map((l) => { const [id, , q] = l.split('|').map((x) => x.trim()); return [id, q]; }));
+  for (const id of PHOTO.keys()) if (!rows.some((r) => r.id === id)) errors.push(`photo-query.txt: no building with id "${id}"`);
   const places = rows.map((r) => ({
     id: r.id, name: DISP.get(r.name)?.n || r.name, loc: r.loc, locLabel: DISP.get(r.name)?.lc || r.loc, year: r.year, built: r.built, who: DISP.get(r.name)?.w || r.who, note: r.note, summary: r.summary ?? '', country: r.country, exams: r.exams,
     style: r.style.name, styleId: r.style.id, era: r.era, eras: r.eras,
     points: (pts.get(r.name) ?? []).map((p, n) => ({ id: `${r.id}~${n}`, ...p })),
-    tags: TAGS.zh.get(r.id) ?? [], tagsEn: TAGS.en.get(r.id) ?? [], styleCard: STYLE_CARD.get(r.id) ?? '',
+    tags: TAGS.zh.get(r.id) ?? [], tagsEn: TAGS.en.get(r.id) ?? [], styleCard: STYLE_CARD.get(r.id) ?? '', photoQuery: PHOTO.get(r.id) ?? '',
   }));
   for (const lang of ['zh', 'en']) for (const id of TAGS[lang].keys()) if (!rows.some((r) => r.id === id)) errors.push(`tags-${lang}.txt: no building with id "${id}"`);
   // Nation of each building from its first coordinate (Natural Earth 1:10m country polygons), so the

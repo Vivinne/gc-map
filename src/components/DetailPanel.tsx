@@ -334,7 +334,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
           {/* photos of the building (Wikimedia Commons, new tab): on the left, apart from the card's controls */}
           <a
             className="c-ic c-photo"
-            href={`https://commons.wikimedia.org/w/index.php?search=${encodeURIComponent(`${b.name} ${b.city}`)}&title=Special:MediaSearch&type=image`}
+            href={`https://commons.wikimedia.org/w/index.php?search=${encodeURIComponent(b.photoQuery || `${b.name} ${b.city}`)}&title=Special:MediaSearch&type=image`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Photos of ${b.name} (new tab)`}

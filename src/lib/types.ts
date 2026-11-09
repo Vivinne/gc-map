@@ -51,6 +51,8 @@ export interface Place {
   tagsEn: string[];
   /** Style shown on the card in place of Modernism (data/style-card.txt); empty = none */
   styleCard: string;
+  /** Photo link search words (data/photo-query.txt); empty = name and city */
+  photoQuery: string;
   /** Style the architect is quizzed under (user's list); empty when not stated */
   whoStyle: string;
   styleId: string;

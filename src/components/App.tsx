@@ -4,7 +4,7 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 import { EMPTY, apply, isEmpty, tagCounts, type Filters } from '../lib/filter';
 import { DEFAULT_STATE, formatHash, parseHash, type Mode, type UrlState } from '../lib/hash';
 import { distance } from '../lib/geo';
-import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, byYear, citiesOf, nationName, type Building } from '../lib/model';
+import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, byStyle, byYear, citiesOf, nationName, type Building } from '../lib/model';
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
@@ -53,7 +53,7 @@ function byNearestCity(city: string, others: Building[]): Building[] {
   const groups = new Map<string, Building[]>();
   for (const b of others) groups.set(b.city, [...(groups.get(b.city) ?? []), b]);
   return [...groups.entries()]
-    .map(([c, list]) => ({ c, list: [...list].sort(byYear), d: distance(from, centre(list)) }))
+    .map(([c, list]) => ({ c, list: [...list].sort(byStyle), d: distance(from, centre(list)) }))
     .sort((a, b) => a.d - b.d || a.c.localeCompare(b.c))
     .flatMap((g) => g.list);
 }
@@ -183,7 +183,8 @@ export default function App() {
 
   // Derived lists (deferred so chips respond at once and the map follows)
   const dFilters = useDeferredValue(filters);
-  const results = useMemo(() => apply(dFilters, starred).sort(byYear), [dFilters, starred]);
+  // a country picked: by style category, then start year (as a city's own list); otherwise by start year
+  const results = useMemo(() => apply(dFilters, starred).sort(dFilters.countries.length ? byStyle : byYear), [dFilters, starred]);
   // Each filter chip shows its own fixed total (all buildings with that tag); the header counts what the filters select
   const counts = useMemo(() => tagCounts(EMPTY, starred), [starred]);
   const selected = selId ? (BY_ID.get(selId) ?? null) : null;
