@@ -587,13 +587,14 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qv-o.pick { box-shadow: inset 0 0 0 2px var(--ink); }
 .qv-o.pick .i { background: var(--ink); border-color: var(--ink); color: #fff; }
 .qv-list { list-style: none; }
-.qv-list button { width: 100%; display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; height: 34px; border-bottom: 1px solid var(--g96); font-size: 13px; }
+.qv-list button { width: 100%; display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 34px; padding: 6px 0; line-height: 1.3; border-bottom: 1px solid var(--g96); font-size: 13px; }
 .qv-list button:disabled { opacity: 1; color: var(--g74); }
-.qv-list li.cur button { background: var(--g96); box-shadow: inset 4px 0 0 var(--ink); margin: 0 -8px; padding: 0 8px; width: calc(100% + 16px); }
+.qv-list li.cur button { background: var(--g96); box-shadow: inset 4px 0 0 var(--ink); margin: 0 -8px; padding: 6px 8px; width: calc(100% + 16px); }
 .qv-list .m { font-weight: 800; color: var(--g86); }
 .qv-list .m.ans, .qv-list li.cur .m { color: var(--ink); }
 .qv-list .m.skip { color: var(--g66); }
-.qv-list .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* long names wrap to a second line rather than being cut */
+.qv-list .nm { overflow-wrap: anywhere; }
 .qv-list .a { color: var(--mute); font-size: 12px; }
 .qv-side .bd { overflow: visible; }
 .qv .wk { height: auto; max-height: 336px; overflow-y: auto; }
@@ -609,7 +610,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .qv-rl .m.bad { color: var(--wrong); }
 .qv-rl .m.sk { color: var(--g74); }
 .qv-rl .nm { min-width: 0; }
-.qv-rl .nm b { display: block; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qv-rl .nm b { display: block; font-weight: 650; overflow-wrap: anywhere; }
 .qv-rl .nm span { color: var(--mute); font-size: 12px; }
 .qv-rl .an { min-width: 0; text-align: right; font-size: 12.5px; display: flex; flex-direction: column; align-items: flex-end; }
 /* a long answer (several architects) wraps inside its column instead of running off the screen */

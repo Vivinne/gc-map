@@ -349,7 +349,7 @@
     "First aqueduct"
    ],
    "styleCard": "",
-   "photoQuery": "",
+   "photoQuery": "Aqua Appia map",
    "nation": "Italy",
    "nationBox": [
     6.6,
@@ -5343,11 +5343,11 @@
    "name": "Arc de Triomphe",
    "loc": "Paris",
    "locLabel": "Paris",
-   "year": "1806–1836（Étoile）；1806–1808（Carrousel）",
+   "year": "1806–1836",
    "built": "1806–1836",
    "who": "Napoleone",
    "note": "皆紀念 1805 Austerlitz",
-   "summary": "兩座凱旋門皆為紀念 1805 年 Austerlitz 戰役而建，Carrousel 較小，Étoile 則是星形廣場的中心。",
+   "summary": "為紀念 1805 年 Austerlitz 戰役而建，位於星形廣場（Étoile）的中心。",
    "country": "France",
    "exams": [],
    "style": "新古典與哥德復興建築（Neoclassicism and Gothic Revival）",
