@@ -463,7 +463,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           const bb = boundsOf(both);
           const p = padRef.current;
           const top = Math.max(p.top, 8 + LOC.m.h + 8);
-          const z = bb ? Math.min(15, m.cameraForBounds(bb, { padding: { top: top + 16, right: p.right + 16, bottom: p.bottom + 16, left: Math.max(p.left, 16) } })?.zoom ?? 13) : 13;
+          const pad = { top: top + 16, right: p.right + 16, bottom: p.bottom + 16, left: Math.max(p.left, 16) };
+          const zMirror = bb ? (m.cameraForBounds(bb, { padding: pad })?.zoom ?? 13) : 13;
+          // never further out than the plain fit of the city, so its numbered pins stay (a building at the city's
+          // edge would otherwise pull the view out to the whole region)
+          const cb = boundsOf(city);
+          const zCity = cb ? (m.cameraForBounds(cb, { padding: pad })?.zoom ?? 13) : 13;
+          const z = Math.min(15, Math.max(zMirror, zCity));
           m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: freeCentre(z, b.lat), duration: motion(MAP_MS), easing: EASE });
           return;
         }
