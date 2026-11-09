@@ -1198,3 +1198,4 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .c-photos { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 12.5px; font-weight: 600; color: var(--mute); text-decoration: none; transition: color var(--t-fast); }
 .c-photos:hover { color: var(--ink); }
 .c-photos .c-photos-x { font-size: 11px; }
+.is-mobile .c-photos { min-height: 44px; margin-top: 4px; padding-right: 8px; }
