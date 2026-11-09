@@ -8,7 +8,8 @@ import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, 
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
-import Guide, { GUIDE_KEY, GUIDE_LINE } from './Guide';
+import { GUIDE_LINE } from './Guide';
+import Tour, { markSeen, toursSeen, type TourId } from './Tour';
 import type { EraId } from '../lib/types';
 import { BuildingCard, CityPanel, ResultsPanel, cityOrder } from './DetailPanel';
 import { Icon } from './Icons';
@@ -160,15 +161,17 @@ export default function App() {
   const [hoverCity, setHoverCity] = useState('');
   const [sheet, setSheet] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  // First visit: the getting-started card shows until hidden (Settings has the same text for later)
-  const [guideHidden, setGuideHidden] = useState(() => load<boolean>(GUIDE_KEY, false));
+  // Page guides: each page's guide opens the first time the page is opened (Settings opens them again)
+  const [tour, setTour] = useState<TourId | null>(null);
+  const closeTour = useCallback(() => {
+    setTour((t) => {
+      if (t) markSeen(t);
+      return null;
+    });
+  }, []);
   // The map could not start (no WebGL): the Map page becomes the building list (the getting-started text joins it)
   const [mapDown, setMapDown] = useState(false);
   const downList = useRef<HTMLDivElement>(null);
-  const hideGuide = () => {
-    save(GUIDE_KEY, true);
-    setGuideHidden(true);
-  };
   const [hoverId, setHoverId] = useState('');
   // The list of what the filters show (like a city list): opened by a building tag and by the card's back button
   const [resultsOpen, setResultsOpen] = useState(initial.list && !isEmpty(initial.filters));
@@ -572,13 +575,12 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [palette, sheet, selId, city, mode, step, toggleStar, toggleStyle, results, closeDetail, closeCity, filtersOpen]);
 
-  // Phone: the getting-started card takes room above the map; when it comes or goes, a map left at its opening
-  // view is framed again in the room it now has
   useEffect(() => {
-    if (!mobile || !mapReady || mode !== 'map' || panelOpen || !isEmpty(filters)) return;
-    afterPanel(() => mapRef.current?.home());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guideHidden, mapReady]);
+    const id: TourId = mode === 'map' ? 'map' : mode === 'quiz' ? 'quiz' : mode === 'me' ? 'progress' : 'settings';
+    // the map's guide waits for the map (a map that cannot start shows its own word instead)
+    if (id === 'map' && (mapDown || !mapReady)) return;
+    if (!toursSeen().includes(id)) setTour(id);
+  }, [mode, mapReady, mapDown]);
 
   // The two ways to begin (getting-started card, Settings, a map that cannot show): the building list, or a quick quiz
   const browse = () => {
@@ -706,8 +708,6 @@ export default function App() {
                 {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
               </button>
             </div>
-            {/* first visit: under the search, before the map (which moves down for it and back when it is hidden) */}
-            {!guideHidden && !mapDown && !panelOpen && <Guide className="m" onBrowse={browse} onQuick={quickQuiz} onHide={hideGuide} />}
           </header>
         )
       )}
@@ -726,8 +726,6 @@ export default function App() {
           </div>
         </Leave>
         <div className={`pane map-pane${mode === 'map' ? ' on' : ''}`} aria-hidden={mode !== 'map'}>
-          {/* first visit, desktop: over the top left of the map, where the panels open (it steps aside while one is open) */}
-          {!mobile && !guideHidden && !mapDown && !filtersOpen && !panelOpen && <Guide className="d" onBrowse={browse} onQuick={quickQuiz} onHide={hideGuide} />}
           <MapView
             ref={mapRef}
             theme={theme}
@@ -937,14 +935,7 @@ export default function App() {
               onTheme={changeTheme}
               onExport={exportFile}
               onImport={importFile}
-              onBrowse={browse}
-              onQuick={quickQuiz}
-              guideHidden={guideHidden}
-              onShowGuide={() => {
-                save(GUIDE_KEY, false);
-                setGuideHidden(false);
-                setMode('map');
-              }}
+              onTour={setTour}
             />
           </div>
         )}
@@ -973,6 +964,8 @@ export default function App() {
           {index}
         </div>
       )}
+
+      {tour && <Tour id={tour} mobile={mobile} onClose={closeTour} />}
 
       {toast && (
         <div className="toast" role="status" key={toast.id}>
