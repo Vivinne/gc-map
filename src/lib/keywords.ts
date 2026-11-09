@@ -7,7 +7,7 @@ export function styleOf(b: Building): string {
 }
 
 /** Broad styles the coloured category tag already names: the card does not repeat them on the style line */
-const BROAD = new Set(['Ancient Greece', 'Ancient Rome', 'Renaissance', 'Baroque', 'Modernism', 'Neoclassicism', 'Art Nouveau']);
+const BROAD = new Set(['Ancient Greece', 'Ancient Rome', 'Renaissance', 'Mannerism', 'Baroque', 'Modernism', 'Neoclassicism', 'Art Nouveau']);
 
 /** The style line of the card: a finer style (Brutalism, Deconstructivism…) in place of Modernism, nothing for a broad style */
 export function cardStyleOf(b: Building): string {
