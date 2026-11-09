@@ -1212,3 +1212,5 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .c-peek .c-bar { height: 44px; }
 .c-peek .c-body { overflow: hidden; }
 .side[data-swipe] .c-peek { visibility: visible; }
+/* the coloured top of a phone sheet follows the sheet's rounded top corners (the drag handle, absolutely placed, is its first child) */
+.is-mobile .side.sheet .c-top, .is-mobile .side.sheet .cp-top { border-top-left-radius: inherit; border-top-right-radius: inherit; }
