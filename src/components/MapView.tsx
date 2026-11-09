@@ -457,20 +457,32 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         // Phone, held upright: the open building sits in the middle of the map left free above the card,
         // at the scale that shows its whole city
         if (m && city.length > 1 && compactRef.current && !sidewaysRef.current) {
-          // the city mirrored around the building: a view centred on the building that holds all of it,
-          // below the locator (shown at this scale) and above the card
-          const both = [...city, ...city.map((x) => ({ ...x, id: `${x.id}~m`, lng: 2 * b.lng - x.lng, lat: 2 * b.lat - x.lat }))];
-          const bb = boundsOf(both);
+          // the scale that shows the whole city below the locator (shown at this scale) and above the card;
+          // the building as near the middle of that free area as the city allows, so no pin goes under either
           const p = padRef.current;
           const top = Math.max(p.top, 8 + LOC.m.h + 8);
-          const pad = { top: top + 16, right: p.right + 16, bottom: p.bottom + 16, left: Math.max(p.left, 16) };
-          const zMirror = bb ? (m.cameraForBounds(bb, { padding: pad })?.zoom ?? 13) : 13;
-          // never further out than the plain fit of the city, so its numbered pins stay (a building at the city's
-          // edge would otherwise pull the view out to the whole region)
+          const { clientWidth: W, clientHeight: H } = m.getContainer();
+          // the card may still be opening: count its height now rather than the padding of the moment
+          const bottom = Math.max(p.bottom, Math.round(H * SHEET_SHARE) + 36);
+          const pad = { top: top + 16, right: p.right + 16, bottom: bottom + 16, left: Math.max(p.left, 16) };
           const cb = boundsOf(city);
-          const zCity = cb ? (m.cameraForBounds(cb, { padding: pad })?.zoom ?? 13) : 13;
-          const z = Math.min(15, Math.max(zMirror, zCity));
-          m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: freeCentre(z, b.lat), duration: motion(MAP_MS), easing: EASE });
+          const z = Math.min(15, cb ? (m.cameraForBounds(cb, { padding: pad })?.zoom ?? 13) : 13);
+          const k = 2 ** (z - m.getZoom());
+          const o = m.project([b.lng, b.lat]);
+          const rel = city.map((x) => {
+            const q = m.project([x.lng, x.lat]);
+            return { x: (q.x - o.x) * k, y: (q.y - o.y) * k };
+          });
+          const fit = (lo: number, hi: number, d: number[]) => {
+            const a = lo - Math.min(...d);
+            const z2 = hi - Math.max(...d);
+            const want = (lo + hi) / 2;
+            // a tight fit leaves a and z2 equal up to rounding
+            return a <= z2 ? Math.min(z2, Math.max(a, want)) : (a + z2) / 2;
+          };
+          const bx = fit(pad.left, W - pad.right, rel.map((r) => r.x));
+          const by = fit(pad.top, H - pad.bottom, rel.map((r) => r.y));
+          m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: [bx - W / 2, by - H / 2], duration: motion(MAP_MS), easing: EASE });
           return;
         }
         if (city.length > 1) {
