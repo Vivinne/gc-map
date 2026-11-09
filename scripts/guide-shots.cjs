@@ -100,20 +100,20 @@ const SCENES = [
       while (await rm.count()) { await rm.first().click(); await p.waitForTimeout(200); }
       await search(p, phone, 'pantheon');
       await p.keyboard.press('Enter');
-      await p.waitForTimeout(1500);
+      await p.waitForTimeout(2500);
     },
     crop: async (p, phone) => (phone ? union(p, ['.side .grab', '.side .c-top', '.side .c-body', '.side .others-h'], 4, 'w') : union(p, ['.side'], 10)),
     marks: (phone) => [
       { q: '.c-back-t', label: 'Back to the city' },
-      { q: '.c-photo svg', label: 'Opens photos of it' },
-      { q: '.c-bar [aria-label="Previous"] svg', label: 'Previous or next building' },
+      { q: '.c-photo svg', label: 'Opens photos of it', desk: true },
+      { q: '.c-bar [aria-label="Previous"] svg', label: 'Previous or next building', desk: true },
       { q: '.c-bar [aria-label="Collect"] svg', label: 'Stars it or adds it to a list' },
-      { q: '.c-bar [aria-label="Close"] svg', label: 'Closes the card' },
+      { q: '.c-bar [aria-label="Close"] svg', label: 'Closes the card', desk: true },
       { q: '.f-who, .f-who-t', label: 'Who designed it' },
-      { q: '.f-keys', label: 'Features to look for', at: 'l' },
+      { q: '.f-keys li', label: 'Features to look for', side: 'l' },
       { q: '.c-tag', label: 'Shows every building of this style' },
       { q: '.others-h', label: 'Lists the others in this city' },
-      ...(phone ? [{ q: '.grab i', label: 'Drag to make it bigger or smaller', side: 't' }, { q: '.c-top h1, .c-top', label: 'Swipe for the next building', side: 'r' }] : []),
+      ...(phone ? [{ q: '.grab i', label: 'Drag to make it bigger or smaller', side: 't' }, { q: '.side h1', label: 'Swipe for the next building', side: 'r' }] : []),
     ],
   },
   {
@@ -171,7 +171,7 @@ const SCENES = [
       { q: '.qv-res', label: 'Right answers out of those answered' },
       { q: '.qv-sum', label: 'Skipped ones do not count' },
       { q: nth('.qv-main .qv-rl, .qv-main li', 0), label: 'Opens the building', at: 'l' },
-      { q: byText('.qv-res-act .btn', 'Quiz menu'), label: 'Back to the quiz menu', ...(phone ? { side: 'l' } : {}) },
+      { q: byText('.qv-res-act .btn', 'Quiz menu'), label: 'Back to the quiz menu', desk: true },
       { q: byText('.qv-res-act .btn', 'Mistakes'), label: 'Quizzes only the wrong ones' },
       { q: byText('.qv-res-act .btn', 'Retry'), label: 'Asks the same questions again' },
       { q: byText('.qv-res-act .btn', 'Practice again'), label: 'New questions of the same kind' },
@@ -288,7 +288,7 @@ function emit() {
       const file = path.join(RAW, `${dev}-${s.id}.png`);
       await p.screenshot({ path: file, clip: crop });
       const marks = [];
-      for (const m of s.marks(d.phone)) {
+      for (const m of s.marks(d.phone).filter((m) => !(d.phone && m.desk))) {
         const pt = await pointOf(p, m);
         if (!pt) { console.log(dev, s.id, 'missing', m.q); continue; }
         const f = (v, d) => +(v / d).toFixed(4);
@@ -299,7 +299,7 @@ function emit() {
       if (DEBUG) {
         await p.evaluate((ms) => {
           for (const m of ms) { const e = document.createElement('div'); e.className = 'gdbg'; e.style.cssText = `position:fixed;z-index:9999;left:${m.x - 5}px;top:${m.y - 5}px;width:10px;height:10px;border-radius:50%;background:red`; e.title = m.label; document.body.appendChild(e); }
-        }, await Promise.all(s.marks(d.phone).map((m) => pointOf(p, m))).then((a) => a.filter(Boolean)));
+        }, await Promise.all(s.marks(d.phone).filter((m) => !(d.phone && m.desk)).map((m) => pointOf(p, m))).then((a) => a.filter(Boolean)));
         await p.screenshot({ path: path.join(DEBUG, `${dev}-${s.id}.png`) });
         await p.evaluate(() => document.querySelectorAll('.gdbg').forEach((e) => e.remove()));
       }
