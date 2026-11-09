@@ -30,9 +30,10 @@ interface SheetProps {
 
 /**
  * Desktop: a panel in the left column of the map. Phone: a bottom sheet.
- * Touch, anywhere on the sheet: a swipe up expands it (or unfolds a folded card), a swipe down shrinks,
- * folds or closes it; once expanded, the content scrolls and a swipe down at its top shrinks the sheet.
- * A sideways swipe steps to the previous / next building (card only). Mouse: drag the top of the sheet.
+ * Touch, anywhere on the sheet: the sheet follows the finger up and down and, on release, rests where it was
+ * left: full when pulled well up, folded (card) or closed (list) when pushed well down, otherwise normal; once
+ * expanded, the content scrolls and a pull down at its top shrinks the sheet. Sideways, the card follows the
+ * finger and, past a quarter of its width, gives way to the previous / next building. Mouse: drag the top.
  */
 function Sheet({ mobile, onClose, children, className, label, folded, onFold, expand, onStep }: SheetProps) {
   const [full, setFull] = useState(false);
@@ -81,20 +82,39 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
   };
 
   // Touch: the whole sheet. Native listeners, so a swipe that moves the sheet can stop the page from scrolling.
+  // The sheet follows the finger (height up and down, position sideways) by direct style changes, and on release
+  // glides to the nearest resting place: folded, normal, full (or closed / the next building)
+  const normalH = useRef(0);
   useEffect(() => {
     const el = box.current;
     if (!mobile || !el) return;
-    let t: { x: number; y: number; h: number; top: number; mode: '' | 'v' | 'h' | 'scroll' } | null = null;
+    const MS = 240;
+    const EASE_OUT = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
+    let t: { x: number; y: number; h: number; H: number; W: number; foldH: number; top: number; mode: '' | 'v' | 'h' | 'scroll' } | null = null;
+    let busy = 0;
     const scroller = (n: Element | null): Element | null => {
       for (let x = n; x && x !== el; x = x.parentElement) if (x.scrollHeight > x.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(x).overflowY)) return x;
       return null;
     };
+    const clear = () => {
+      el.style.transition = 'none';
+      el.style.height = '';
+      el.style.maxHeight = '';
+      el.style.transform = '';
+      el.style.opacity = '';
+      requestAnimationFrame(() => requestAnimationFrame(() => (el.style.transition = '')));
+    };
     const start = (e: TouchEvent) => {
-      if (e.touches.length !== 1 || (e.target as Element).closest('input, textarea')) return (t = null);
+      if (busy || e.touches.length !== 1 || (e.target as Element).closest('input, textarea')) return (t = null);
       // lists (city, results) keep their own scrolling: only their top moves the sheet; the card answers anywhere
       if (!now.current.onFold && !(e.target as Element).closest('.grab, .c-top, .cp-top')) return (t = null);
       const p = e.touches[0]!;
-      t = { x: p.clientX, y: p.clientY, h: el.getBoundingClientRect().height, top: scroller(e.target as Element)?.scrollTop ?? 0, mode: '' };
+      const r = el.getBoundingClientRect();
+      const H = el.parentElement?.getBoundingClientRect().height ?? window.innerHeight;
+      const head = el.querySelector('.c-top, .cp-top')?.getBoundingClientRect();
+      // the normal height: as measured when last seen at rest, not expanded and not folded
+      if (!now.current.full && !now.current.folded) normalH.current = r.height;
+      t = { x: p.clientX, y: p.clientY, h: r.height, H, W: r.width, foldH: head ? head.bottom - r.top : 80, top: scroller(e.target as Element)?.scrollTop ?? 0, mode: '' };
     };
     const move = (e: TouchEvent) => {
       if (!t) return;
@@ -102,34 +122,89 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
       const dx = p.clientX - t.x;
       const d = p.clientY - t.y;
       if (!t.mode) {
-        if (Math.max(Math.abs(dx), Math.abs(d)) < 10) return;
+        if (Math.max(Math.abs(dx), Math.abs(d)) < 8) return;
         if (Math.abs(dx) > Math.abs(d) * 1.5) t.mode = now.current.onStep ? 'h' : 'scroll';
         // expanded: the content scrolls, except a pull down from its very top
         else t.mode = !now.current.full || (d > 0 && t.top <= 0) ? 'v' : 'scroll';
+        if (t.mode !== 'scroll') el.style.transition = 'none';
       }
       if (t.mode === 'scroll') return;
       e.preventDefault();
       if (t.mode === 'v') {
-        drag.current = { y: t.y, dy: d, id: -1, h: t.h };
-        setDy(d);
+        const h = Math.max(Math.min(t.foldH, t.h) * 0.6, Math.min(t.H, t.h - d));
+        el.style.maxHeight = '100%';
+        el.style.height = `${h}px`;
+      } else {
+        el.style.transform = `translateX(${dx}px)`;
+        el.style.opacity = `${1 - Math.min(0.5, Math.abs(dx) / t.W)}`;
       }
     };
     const end = (e: TouchEvent) => {
       if (!t) return;
-      const p = e.changedTouches[0]!;
-      const dx = p.clientX - t.x;
-      const d = p.clientY - t.y;
-      if (t.mode === 'v') {
-        drag.current = null;
-        setDy(0);
-        settle(d);
-      } else if (t.mode === 'h' && Math.abs(dx) > 50) now.current.onStep?.(dx < 0 ? 1 : -1);
+      const g = t;
       t = null;
+      const p = e.changedTouches[0]!;
+      const dx = p.clientX - g.x;
+      const d = p.clientY - g.y;
+      if (g.mode === 'v') {
+        const { onFold: of, onClose: oc } = now.current;
+        const h = Math.max(Math.min(g.foldH, g.h) * 0.6, Math.min(g.H, g.h - d));
+        const normal = Math.min(normalH.current || g.H * 0.52, g.H * 0.52);
+        // full only when pulled well above the middle; folded / closed only when pushed well below it
+        let to: 'full' | 'normal' | 'fold' | 'close' = 'normal';
+        if (h > normal + (g.H - normal) * 0.45) to = 'full';
+        else if (h < (of ? (normal + g.foldH) / 2 : normal * 0.6)) to = of ? 'fold' : 'close';
+        if (to === 'close') {
+          clear();
+          oc();
+          return;
+        }
+        const px = to === 'full' ? g.H : to === 'fold' ? g.foldH : normal;
+        busy = window.setTimeout(() => {
+          busy = 0;
+          setFull(to === 'full');
+          if (of) of(to === 'fold');
+          requestAnimationFrame(clear);
+        }, MS);
+        el.style.transition = `height ${MS}ms ${EASE_OUT}`;
+        el.style.height = `${px}px`;
+      } else if (g.mode === 'h') {
+        const dir = dx < 0 ? 1 : -1;
+        if (Math.abs(dx) > Math.min(90, g.W * 0.25)) {
+          // out with the finger, then the next building comes in from the other side
+          el.style.transition = `transform 160ms ease-in, opacity 160ms ease-in`;
+          el.style.transform = `translateX(${-dir * g.W}px)`;
+          el.style.opacity = '0';
+          busy = window.setTimeout(() => {
+            now.current.onStep?.(dir as -1 | 1);
+            el.style.transition = 'none';
+            el.style.transform = `translateX(${dir * g.W * 0.35}px)`;
+            requestAnimationFrame(() =>
+              requestAnimationFrame(() => {
+                el.style.transition = `transform ${MS}ms ${EASE_OUT}, opacity ${MS}ms ${EASE_OUT}`;
+                el.style.transform = 'translateX(0)';
+                el.style.opacity = '1';
+                busy = window.setTimeout(() => {
+                  busy = 0;
+                  clear();
+                }, MS);
+              }),
+            );
+          }, 160);
+        } else {
+          el.style.transition = `transform ${MS}ms ${EASE_OUT}, opacity ${MS}ms ${EASE_OUT}`;
+          el.style.transform = 'translateX(0)';
+          el.style.opacity = '1';
+          busy = window.setTimeout(() => {
+            busy = 0;
+            clear();
+          }, MS);
+        }
+      }
     };
     const cancel = () => {
       t = null;
-      drag.current = null;
-      setDy(0);
+      if (!busy) clear();
     };
     el.addEventListener('touchstart', start, { passive: true });
     el.addEventListener('touchmove', move, { passive: false });
@@ -140,6 +215,7 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
       el.removeEventListener('touchmove', move);
       el.removeEventListener('touchend', end);
       el.removeEventListener('touchcancel', cancel);
+      window.clearTimeout(busy);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mobile]);
