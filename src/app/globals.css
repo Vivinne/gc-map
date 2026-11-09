@@ -308,9 +308,10 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .pal-res { flex: 1; overflow-y: auto; padding: 6px 0 10px; min-height: 300px; }
 .pal-res h5 { font-size: 12px; color: var(--mute); font-weight: 650; padding: 10px 20px 4px; }
 .pal-empty, .pal-more { padding: 14px 20px; color: var(--mute); font-size: 13px; }
-.hit { display: flex; align-items: center; gap: 12px; width: 100%; height: 42px; padding: 0 20px; font-size: 14px; }
+.hit { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 42px; padding: 6px 20px; font-size: 14px; line-height: 1.3; text-align: left; }
 .hit .sq { width: 12px; height: 12px; flex: none; }
-.hit .nm { font-weight: 650; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* long names wrap to a second line rather than being cut */
+.hit .nm { font-weight: 650; min-width: 0; overflow-wrap: anywhere; }
 .hit .loc { color: var(--mute); font-size: 12.5px; margin-left: auto; white-space: nowrap; }
 .hit .yr { font-size: 12.5px; color: var(--mute); min-width: 52px; text-align: right; white-space: nowrap; }
 .hit .av { width: 26px; height: 26px; flex: none; background: var(--ink); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; margin-left: -7px; }
