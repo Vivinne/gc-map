@@ -24,20 +24,46 @@ interface SheetProps {
   onFold?(folded: boolean): void;
   /** Changes when the sheet should open to full height (phone: the open building's pin tapped again) */
   expand?: number;
+  /** Card only: a sideways swipe steps to the previous (-1) or next (1) building */
+  onStep?(dir: -1 | 1): void;
 }
 
-/** Desktop: a panel in the left column of the map. Phone: a bottom sheet that expands by tap or drag on its top edge */
-function Sheet({ mobile, onClose, children, className, label, folded, onFold, expand }: SheetProps) {
+/**
+ * Desktop: a panel in the left column of the map. Phone: a bottom sheet.
+ * Touch, anywhere on the sheet: a swipe up expands it (or unfolds a folded card), a swipe down shrinks,
+ * folds or closes it; once expanded, the content scrolls and a swipe down at its top shrinks the sheet.
+ * A sideways swipe steps to the previous / next building (card only). Mouse: drag the top of the sheet.
+ */
+function Sheet({ mobile, onClose, children, className, label, folded, onFold, expand, onStep }: SheetProps) {
   const [full, setFull] = useState(false);
   useEffect(() => {
     if (expand) setFull(true);
   }, [expand]);
+  const box = useRef<HTMLElement>(null);
   const drag = useRef<{ y: number; dy: number; id: number; h: number } | null>(null);
   const [dy, setDy] = useState(0);
-  // The drag starts on the top of the sheet (handle, controls strip, title), never on a button
+  // the state the touch handlers read (they are attached once)
+  const now = useRef({ full, folded, onFold, onClose, onStep });
+  now.current = { full, folded, onFold, onClose, onStep };
+
+  // Where a vertical swipe or drag of `d` px ends: expand, unfold, shrink, fold or close
+  const settle = (d: number) => {
+    const { full: f, folded: fo, onFold: of, onClose: oc } = now.current;
+    if (d < -40) {
+      if (of && fo) of(false);
+      else setFull(true);
+    } else if (d > 40) {
+      if (f) setFull(false);
+      else if (of && !fo) of(true);
+      else if (!of) oc();
+    }
+  };
+
+  // Mouse: drag the top of the sheet (handle, controls strip, title), never a button
   const onDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
     const t = e.target as Element;
-    if (!t.closest('.grab, .c-top, .cp-top') || t.closest('button:not(.grab)')) return;
+    if (!t.closest('.grab, .c-top, .cp-top') || t.closest('button:not(.grab), a')) return;
     drag.current = { y: e.clientY, dy: 0, id: e.pointerId, h: (e.currentTarget as Element).getBoundingClientRect().height };
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
@@ -49,24 +75,78 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
   const onUp = (e: React.PointerEvent) => {
     if (!drag.current || drag.current.id !== e.pointerId) return;
     const d = drag.current.dy;
-    const onGrab = !!document.elementFromPoint(e.clientX, e.clientY - d)?.closest('.grab');
     drag.current = null;
     setDy(0);
-    if (Math.abs(d) < 6) {
-      if (onGrab) setFull(!full);
-      return;
-    }
-    if (d < -40) {
-      if (onFold && folded) onFold(false);
-      else setFull(true);
-    } else if (d > 40) {
-      if (full) setFull(false);
-      else if (onFold && !folded) onFold(true);
-      else if (!onFold) onClose();
-    }
+    if (Math.abs(d) >= 6) settle(d);
   };
+
+  // Touch: the whole sheet. Native listeners, so a swipe that moves the sheet can stop the page from scrolling.
+  useEffect(() => {
+    const el = box.current;
+    if (!mobile || !el) return;
+    let t: { x: number; y: number; h: number; top: number; mode: '' | 'v' | 'h' | 'scroll' } | null = null;
+    const scroller = (n: Element | null): Element | null => {
+      for (let x = n; x && x !== el; x = x.parentElement) if (x.scrollHeight > x.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(x).overflowY)) return x;
+      return null;
+    };
+    const start = (e: TouchEvent) => {
+      if (e.touches.length !== 1 || (e.target as Element).closest('input, textarea')) return (t = null);
+      // lists (city, results) keep their own scrolling: only their top moves the sheet; the card answers anywhere
+      if (!now.current.onFold && !(e.target as Element).closest('.grab, .c-top, .cp-top')) return (t = null);
+      const p = e.touches[0]!;
+      t = { x: p.clientX, y: p.clientY, h: el.getBoundingClientRect().height, top: scroller(e.target as Element)?.scrollTop ?? 0, mode: '' };
+    };
+    const move = (e: TouchEvent) => {
+      if (!t) return;
+      const p = e.touches[0]!;
+      const dx = p.clientX - t.x;
+      const d = p.clientY - t.y;
+      if (!t.mode) {
+        if (Math.max(Math.abs(dx), Math.abs(d)) < 10) return;
+        if (Math.abs(dx) > Math.abs(d) * 1.5) t.mode = now.current.onStep ? 'h' : 'scroll';
+        // expanded: the content scrolls, except a pull down from its very top
+        else t.mode = !now.current.full || (d > 0 && t.top <= 0) ? 'v' : 'scroll';
+      }
+      if (t.mode === 'scroll') return;
+      e.preventDefault();
+      if (t.mode === 'v') {
+        drag.current = { y: t.y, dy: d, id: -1, h: t.h };
+        setDy(d);
+      }
+    };
+    const end = (e: TouchEvent) => {
+      if (!t) return;
+      const p = e.changedTouches[0]!;
+      const dx = p.clientX - t.x;
+      const d = p.clientY - t.y;
+      if (t.mode === 'v') {
+        drag.current = null;
+        setDy(0);
+        settle(d);
+      } else if (t.mode === 'h' && Math.abs(dx) > 50) now.current.onStep?.(dx < 0 ? 1 : -1);
+      t = null;
+    };
+    const cancel = () => {
+      t = null;
+      drag.current = null;
+      setDy(0);
+    };
+    el.addEventListener('touchstart', start, { passive: true });
+    el.addEventListener('touchmove', move, { passive: false });
+    el.addEventListener('touchend', end);
+    el.addEventListener('touchcancel', cancel);
+    return () => {
+      el.removeEventListener('touchstart', start);
+      el.removeEventListener('touchmove', move);
+      el.removeEventListener('touchend', end);
+      el.removeEventListener('touchcancel', cancel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobile]);
+
   return (
     <section
+      ref={box}
       className={`side ${className}${mobile ? ` sheet${full ? ' full' : ''}` : ''}`}
       aria-label={label}
       // Dragged down: the sheet slides down. Dragged up: it grows from the bottom edge, which stays put,
@@ -84,7 +164,7 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
       onPointerCancel={mobile ? () => ((drag.current = null), setDy(0)) : undefined}
     >
       {mobile && (
-        <div className="grab" role="button" aria-label={full ? 'Shrink' : 'Expand'}>
+        <div className="grab" role="button" tabIndex={0} aria-label={full ? 'Shrink' : 'Expand'} onClick={() => (folded && onFold ? onFold(false) : setFull(!full))}>
           <i />
         </div>
       )}
@@ -238,7 +318,7 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
     body.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [detail]);
   return (
-    <Sheet mobile={mobile} onClose={onClose} className={`card${folded ? ' folded' : ''}`} label={b.name} folded={folded} onFold={setFolded} expand={detail}>
+    <Sheet mobile={mobile} onClose={onClose} className={`card${folded ? ' folded' : ''}`} label={b.name} folded={folded} onFold={setFolded} expand={detail} onStep={canStep ? (d) => (d > 0 ? onNext() : onPrev()) : undefined}>
       <div
         className="c-top"
         style={{ background: ERAS[b.era].color }}

@@ -12,6 +12,8 @@ import { Icon } from './Icons';
 import { THEMES, type Theme, type ThemeId } from '../lib/theme';
 
 export const DETAIL_ZOOM = 11.5;
+/** Phone: share of the map height an open card or list takes at first (kept in step with globals.css) */
+export const SHEET_SHARE = 0.52;
 /** Camera moves: one length and one curve, the same as the panels (fast start, soft landing; --ease in globals.css) */
 const MAP_MS = 420;
 const EASE = (t: number) => 1 - (1 - t) ** 4;
@@ -407,6 +409,18 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     }
   }, [theme]);
 
+  // Offset from the map's middle to the middle of the area left free (panels, card, and on a phone the
+  // locator at the top when it shows at that zoom), so a building moved there is centred where it can be seen
+  const freeCentre = (z: number, lat: number): [number, number] => {
+    const p = padRef.current;
+    const c = compactRef.current;
+    const mpp = (40075016.686 * Math.cos((lat * Math.PI) / 180)) / (512 * 2 ** z);
+    const loc = c && !sidewaysRef.current && (z >= LOC_ZOOM || mpp <= LOC_MPP);
+    const top = loc ? Math.max(p.top, 8 + LOC.m.h + 8) : p.top;
+    const bottom = c ? p.bottom : p.bottom + 44;
+    return [(p.left - p.right) / 2, (top - bottom) / 2];
+  };
+
   useImperativeHandle(
     ref,
     () => ({
@@ -432,13 +446,23 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       },
       restore: (v) => mapRef.current?.easeTo({ center: v.center, zoom: v.zoom, duration: motion(MAP_MS), easing: EASE }),
       focus: (b) => {
-        const p = padRef.current;
+        const m = mapRef.current;
+        if (!m) return;
         // offset, not padding: easeTo keeps a padding for later camera moves
-        const bottom = compactRef.current ? p.bottom : p.bottom + 44;
-        mapRef.current?.easeTo({ center: [b.lng, b.lat], offset: [(p.left - p.right) / 2, (p.top - bottom) / 2], duration: motion(MAP_MS), easing: EASE });
+        m.easeTo({ center: [b.lng, b.lat], offset: freeCentre(m.getZoom(), b.lat), duration: motion(MAP_MS), easing: EASE });
       },
       showBuilding: (b) => {
         const city = CITY_BUILDINGS.get(b.city) ?? [b];
+        const m = mapRef.current;
+        // Phone, held upright: the open building sits in the middle of the map left free above the card,
+        // at the scale that shows its whole city
+        if (m && city.length > 1 && compactRef.current && !sidewaysRef.current) {
+          const bb = boundsOf(city);
+          const p = padRef.current;
+          const z = bb ? Math.min(15, m.cameraForBounds(bb, { padding: { top: p.top + 24, right: p.right + 24, bottom: p.bottom + 24, left: p.left + 24 } })?.zoom ?? 13) : 13;
+          m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: freeCentre(z, b.lat), duration: motion(MAP_MS), easing: EASE });
+          return;
+        }
         if (city.length > 1) {
           // Whole city, at least city scale so the numbered pins show
           fitTo(city, 15);
@@ -477,7 +501,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const m = mapRef.current;
       const H = m ? m.getContainer().clientHeight : 600;
       const cur = padRef.current;
-      const p = compactRef.current ? (sidewaysRef.current ? cur : { top: cur.top, right: 56, bottom: Math.round(H * 0.44) + 36, left: 0 }) : { top: 0, right: 56, bottom: 48, left: 372 };
+      const p = compactRef.current ? (sidewaysRef.current ? cur : { top: cur.top, right: 56, bottom: Math.round(H * SHEET_SHARE) + 36, left: 0 }) : { top: 0, right: 56, bottom: 48, left: 372 };
       const extra = compactRef.current ? 16 : 40;
       mapRef.current?.fitBounds(
         [

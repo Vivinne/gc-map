@@ -14,7 +14,7 @@ import { Icon } from './Icons';
 import IndexPanel from './IndexPanel';
 import MeView from './MeView';
 import QuizView, { type QuizRequest } from './QuizView';
-import MapView, { type MapHandle, type Padding } from './MapView';
+import MapView, { SHEET_SHARE, type MapHandle, type Padding } from './MapView';
 import SearchPalette from './SearchPalette';
 import SettingsView from './SettingsView';
 import Leave from './Leave';
@@ -281,7 +281,7 @@ export default function App() {
   const padding: Padding = mobile
     ? wide
       ? { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: 36 + tabInset, left: panelOpen ? Math.round(window.innerWidth * SIDE_CARD) + 8 : 0 }
-      : { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: (panelOpen ? Math.round(mainHeight * 0.44) : tabInset) + 36, left: 0 }
+      : { top: 8 + (activeChips.length ? 40 : 0), right: 56, bottom: (panelOpen ? Math.round(mainHeight * SHEET_SHARE) : tabInset) + 36, left: 0 }
     : { top: 0, right: 56, bottom: 48, left: filtersOpen || panelOpen ? 372 : 0 };
 
   // ---------- actions ----------
