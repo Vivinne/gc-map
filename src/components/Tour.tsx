@@ -94,7 +94,7 @@ export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: bool
         <div className="tour-bd" key={i}>
           <h2>{p.title}</h2>
           <p className="tour-line">{p.line}</p>
-          {shot && <Shot shot={shot} numbered={mobile} />}
+          {shot && (mobile ? <Spot shot={shot} /> : <Shot shot={shot} />)}
           {p.keys && (
             <p className="tour-keys">
               {p.keys.map(([ks, what]) => (
@@ -145,11 +145,15 @@ function spread(wish: number[], size: number[], gap: number, lo: number, hi: num
 }
 
 type Side = 't' | 'b' | 'l' | 'r';
+type Mark = GuideShot['marks'][number];
+/** The control's box as fractions of the picture */
+const boxOf = (m: Mark) => m.b ?? [m.x, m.y, 0, 0];
+
 /** Each control leads out through the nearest edge of the picture, so as little of the picture is crossed as can be */
-function sides(marks: GuideShot['marks'], w: number, h: number): Side[] {
+function sides(marks: Mark[], w: number, h: number): Side[] {
   return marks.map((m) => {
     if (m.side) return m.side;
-    const [bx, by, bw, bh] = m.b ?? [m.x, m.y, 0, 0];
+    const [bx, by, bw, bh] = boxOf(m);
     const d: [Side, number][] = [
       ['l', bx * w],
       ['r', (1 - bx - bw) * w],
@@ -160,16 +164,90 @@ function sides(marks: GuideShot['marks'], w: number, h: number): Side[] {
   });
 }
 
-/** Room for labels: beside the picture (computer words / phone numbers) and above or below it */
-const ROOM = { words: { side: 176, top: 40 }, numbers: { side: 30, top: 30 } };
-/** Rough width of a label, to keep the ones above or below the picture apart */
-const labelWidth = (t: string) => t.length * 7.2 + 4;
+/** Ring: radius, and its fixed distance from the control's edge */
+const RING = 4;
+const RING_GAP = 4;
+/** Label column beside the picture; band above and below it */
+const SIDE = 190;
+const BAND = 64;
+/** Where lines turn: between these distances from the picture's edge; labels start beyond */
+const TURN = [8, 34] as const;
+const TO_LABEL = 42;
+const LABEL_W = 150;
+const textWidth = (t: string) => Math.min(LABEL_W, t.length * 6.9 + 6);
+const textLines = (t: string) => Math.ceil((t.length * 6.9 + 6) / LABEL_W);
+
+interface Placed {
+  k: number;
+  label: string;
+  side: Side;
+  /** ring centre */
+  rx: number;
+  ry: number;
+  /** label anchor */
+  lx: number;
+  ly: number;
+  path: string;
+}
 
 /**
- * A screenshot with a line from each marked control out of it: to words beside it (computer), or to a hollow
- * number (phone) with the words listed underneath.
+ * Lays out the marks of a picture drawn at (x, y, w, h): a ring a fixed distance outside each control, a line of
+ * straight horizontal and vertical runs from the ring out of the picture to its label. Labels along one edge keep
+ * the order of their controls; where a label has to move away from its control's line, the turns are staggered
+ * so no two lines cross or overlap.
  */
-function Shot({ shot, numbered }: { shot: GuideShot; numbered: boolean }) {
+function layout(marks: Mark[], x: number, y: number, w: number, h: number, W: number, H: number): Placed[] {
+  const side = sides(marks, w, h);
+  const out: Placed[] = [];
+  for (const sd of ['l', 'r', 't', 'b'] as Side[]) {
+    const group = marks.map((m, k) => ({ m, k })).filter((g) => side[g.k] === sd);
+    if (!group.length) continue;
+    const vertical = sd === 'l' || sd === 'r';
+    const ring = group.map(({ m }) => {
+      const [bx, by, bw, bh] = boxOf(m);
+      const d = RING_GAP + RING;
+      if (sd === 'l') return { rx: x + bx * w - d, ry: y + (by + bh / 2) * h };
+      if (sd === 'r') return { rx: x + (bx + bw) * w + d, ry: y + (by + bh / 2) * h };
+      if (sd === 't') return { rx: x + (bx + bw / 2) * w, ry: y + by * h - d };
+      return { rx: x + (bx + bw / 2) * w, ry: y + (by + bh) * h + d };
+    });
+    const idx = group.map((_, i) => i).sort((a, b) => (vertical ? ring[a]!.ry - ring[b]!.ry : ring[a]!.rx - ring[b]!.rx));
+    const along = idx.map((i) => (vertical ? ring[i]!.ry : ring[i]!.rx));
+    const sizes = idx.map((i) => (vertical ? textLines(group[i]!.m.label) * 16 : textWidth(group[i]!.m.label)));
+    const pos = vertical ? spread(along, sizes, 8, 0, H) : spread(along, sizes, 14, 0, W);
+    // edge of the picture the lines leave by, and the direction away from it
+    const edge = sd === 'l' ? x : sd === 'r' ? x + w : sd === 't' ? y : y + h;
+    const out1 = sd === 'l' || sd === 't' ? -1 : 1;
+    // turns: lines moved one way turn nearer the picture the further along they are, so none cross
+    const moved = idx.map((_, j) => pos[j]! - along[j]!);
+    const pos1 = idx.map((_, j) => j).filter((j) => moved[j]! > 0.5);
+    const neg1 = idx.map((_, j) => j).filter((j) => moved[j]! < -0.5);
+    const turn = new Map<number, number>();
+    const step = (n: number) => (n > 1 ? (TURN[1] - TURN[0]) / (n - 1) : 0);
+    pos1.forEach((j, q) => turn.set(j, TURN[1] - q * step(pos1.length)));
+    neg1.forEach((j, q) => turn.set(j, TURN[0] + q * step(neg1.length)));
+    idx.forEach((i, j) => {
+      const { m } = group[i]!;
+      const r = ring[i]!;
+      const p = pos[j]!;
+      const end = edge + out1 * TO_LABEL;
+      const t = turn.get(j);
+      let pts: [number, number][];
+      if (vertical) {
+        const sx = r.rx + out1 * RING;
+        pts = t == null ? [[sx, r.ry], [end, r.ry]] : [[sx, r.ry], [edge + out1 * t, r.ry], [edge + out1 * t, p], [end, p]];
+        out.push({ k: group[i]!.k, label: m.label, side: sd, rx: r.rx, ry: r.ry, lx: end, ly: t == null ? r.ry : p, path: pts.map((q) => q.join(',')).join(' ') });
+      } else {
+        const sy = r.ry + out1 * RING;
+        pts = t == null ? [[r.rx, sy], [r.rx, end]] : [[r.rx, sy], [r.rx, edge + out1 * t], [p, edge + out1 * t], [p, end]];
+        out.push({ k: group[i]!.k, label: m.label, side: sd, rx: r.rx, ry: r.ry, lx: t == null ? r.rx : p, ly: end, path: pts.map((q) => q.join(',')).join(' ') });
+      }
+    });
+  }
+  return out;
+}
+
+function useBox(shot: GuideShot) {
   const box = useRef<HTMLDivElement>(null);
   const img = useRef<HTMLImageElement>(null);
   const [size, setSize] = useState<{ W: number; H: number; x: number; y: number; w: number; h: number } | null>(null);
@@ -186,108 +264,94 @@ function Shot({ shot, numbered }: { shot: GuideShot; numbered: boolean }) {
     if (img.current) ro.observe(img.current);
     return () => ro.disconnect();
   }, [measure, shot]);
+  return { box, img, size, measure };
+}
 
-  const room = numbered ? ROOM.numbers : ROOM.words;
+/** Computer: a screenshot with a line from each marked control out to a few words beside or above / below it */
+function Shot({ shot }: { shot: GuideShot }) {
+  const { box, img, size, measure } = useBox(shot);
   const side = sides(shot.marks, size?.w ?? shot.w, size?.h ?? shot.h);
-  // the line starts at the edge of the control that faces its label, so the mark does not cover the control
-  const marks = shot.marks.map((m, k) => {
-    const sd = side[k]!;
-    const [bx, by, bw, bh] = m.b ?? [m.x, m.y, 0, 0];
-    const at = sd === 'l' ? { x: bx, y: by + bh / 2 } : sd === 'r' ? { x: bx + bw, y: by + bh / 2 } : sd === 't' ? { x: bx + bw / 2, y: by } : { x: bx + bw / 2, y: by + bh };
-    return { ...m, ...at, k, side: sd };
-  });
-  const hasT = marks.some((m) => m.side === 't');
-  const hasB = marks.some((m) => m.side === 'b');
-  type Placed = (typeof marks)[number] & { px: number; py: number; lx: number; ly: number };
-  const placed: Placed[] = [];
-  if (size) {
-    const { x, y, w, h, W } = size;
-    for (const sd of ['l', 'r', 't', 'b'] as Side[]) {
-      const group = marks.filter((m) => m.side === sd);
-      if (!group.length) continue;
-      if (sd === 'l' || sd === 'r') {
-        group.sort((a, b) => a.y - b.y);
-        const ys = spread(group.map((m) => y + m.y * h), group.map(() => (numbered ? 20 : 18)), numbered ? 4 : 10, y, y + h);
-        const lx = sd === 'l' ? x - (numbered ? 15 : 34) : x + w + (numbered ? 15 : 34);
-        // the ring sits just outside the control, not on it
-        group.forEach((m, k) => placed.push({ ...m, px: x + m.x * w + (sd === 'l' ? -5 : 5), py: y + m.y * h, lx, ly: ys[k]! }));
-      } else {
-        group.sort((a, b) => a.x - b.x);
-        const ws = group.map((m) => (numbered ? 20 : labelWidth(m.label)));
-        const xs = spread(group.map((m) => x + m.x * w), ws, numbered ? 4 : 12, 0, W);
-        const ly = sd === 't' ? y - room.top / 2 : y + h + room.top / 2;
-        group.forEach((m, k) => placed.push({ ...m, px: x + m.x * w, py: y + m.y * h + (sd === 't' ? -5 : 5), lx: xs[k]!, ly }));
-      }
-    }
-  }
-  // numbers read in order around the picture: top, left, right, bottom; each top to bottom, left to right
-  const rank: Record<Side, number> = { t: 0, l: 1, r: 2, b: 3 };
-  const order = placed.slice().sort((a, b) => rank[a.side] - rank[b.side] || a.ly - b.ly || a.lx - b.lx);
-  const num = new Map(order.map((m, k) => [m.k, k + 1]));
-
-  const path = (m: Placed) => {
-    if (m.side === 'l' || m.side === 'r') {
-      // straight out along its own row to the edge, then bend in the margin to its label
-      const edge = m.side === 'l' ? size!.x : size!.x + size!.w;
-      const bend = m.side === 'l' ? Math.min(edge - 4, m.lx + 12) : Math.max(edge + 4, m.lx - 12);
-      return `${m.px},${m.py} ${edge},${m.py} ${bend},${m.ly} ${m.lx},${m.ly}`;
-    }
-    // straight up or down to the edge, then bend in the margin to its label
-    const edge = m.side === 't' ? size!.y : size!.y + size!.h;
-    const end = m.side === 't' ? m.ly + (numbered ? 10 : 8) : m.ly - (numbered ? 10 : 8);
-    return `${m.px},${m.py} ${m.px},${edge} ${m.lx},${end}`;
-  };
-
+  const hasT = side.includes('t');
+  const hasB = side.includes('b');
+  const placed = size ? layout(shot.marks, size.x, size.y, size.w, size.h, size.W, size.H) : [];
   return (
-    <div className={`tour-shot${numbered ? ' num' : ''}`}>
-      <div className="ts-box" ref={box} style={{ padding: `${hasT ? room.top : 0}px ${room.side}px ${hasB ? room.top : 0}px` }}>
+    <div className="tour-shot">
+      <div className="ts-box" ref={box} style={{ padding: `${hasT ? BAND : 0}px ${SIDE}px ${hasB ? BAND : 0}px` }}>
         <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} />
         {size && (
           <svg className="ts-lines" width={size.W} height={size.H} aria-hidden="true">
             {placed.map((m) => (
               <g key={m.k}>
-                <polyline points={path(m)} className="ts-halo" />
-                <polyline points={path(m)} className="ts-line" />
-                <circle cx={m.px} cy={m.py} r={4} className="ts-dot" />
-                {numbered && (
-                  <>
-                    <circle cx={m.lx} cy={m.ly} r={10} className="ts-num" />
-                    <text x={m.lx} y={m.ly + 3.8} textAnchor="middle" className="ts-numt">
-                      {num.get(m.k)}
-                    </text>
-                  </>
-                )}
+                <polyline points={m.path} className="ts-halo" />
+                <polyline points={m.path} className="ts-line" />
+                <circle cx={m.rx} cy={m.ry} r={RING} className="ts-dot" />
               </g>
             ))}
           </svg>
         )}
-        {size &&
-          !numbered &&
-          placed.map((m) => (
-            <span
-              key={m.k}
-              className={`ts-label ${m.side}`}
-              style={
-                m.side === 'l'
-                  ? { right: size.W - m.lx + 4, top: m.ly }
-                  : m.side === 'r'
-                    ? { left: m.lx + 4, top: m.ly }
-                    : { left: m.lx, top: m.ly }
-              }
-            >
-              {m.label}
-            </span>
-          ))}
+        {placed.map((m) => (
+          <span
+            key={m.k}
+            className={`ts-label ${m.side}`}
+            style={
+              m.side === 'l'
+                ? { right: size!.W - m.lx + 6, top: m.ly }
+                : m.side === 'r'
+                  ? { left: m.lx + 6, top: m.ly }
+                  : m.side === 't'
+                    ? { left: m.lx, bottom: size!.H - m.ly + 3 }
+                    : { left: m.lx, top: m.ly + 3 }
+            }
+          >
+            {m.label}
+          </span>
+        ))}
       </div>
-      {numbered && size && (
-        <ol className="ts-legend">
-          {order.map((m) => (
-            <li key={m.k}>
-              <i>{num.get(m.k)}</i>
-              {m.label}
-            </li>
-          ))}
-        </ol>
+    </div>
+  );
+}
+
+/**
+ * Phone: no room beside the picture, so one control at a time: the picture is dimmed but for that control, its
+ * words are under the picture, and arrows step to the previous and next control.
+ */
+function Spot({ shot }: { shot: GuideShot }) {
+  // reading order: top to bottom, then left to right
+  const mid = (m: Mark) => boxOf(m)[1] + boxOf(m)[3] / 2;
+  const order = shot.marks.slice().sort((a, b) => mid(a) - mid(b) || boxOf(a)[0] - boxOf(b)[0]);
+  const [at, setAt] = useState(0);
+  useEffect(() => setAt(0), [shot]);
+  const cur = order[at];
+  const go = (d: number) => setAt((at + d + order.length) % order.length);
+  const pad = 1.2; // % of the picture around the control
+  const [bx, by, bw, bh] = cur ? boxOf(cur) : [0, 0, 0, 0];
+  return (
+    <div className="tour-shot spot">
+      <div className="ts-frame">
+        <img src={shot.src} alt="" width={shot.w} height={shot.h} draggable={false} />
+        {cur && (
+          <span
+            className="ts-hole"
+            key={at}
+            style={{ left: `${bx * 100 - pad}%`, top: `calc(${by * 100}% - ${(pad * shot.w) / shot.h}%)`, width: `${bw * 100 + pad * 2}%`, height: `calc(${bh * 100}% + ${(pad * 2 * shot.w) / shot.h}%)` }}
+          />
+        )}
+      </div>
+      {cur && (
+        <div className="ts-say">
+          <button type="button" className="ts-arrow" aria-label="Previous" onClick={() => go(-1)}>
+            <Icon name="left" size={14} />
+          </button>
+          <p aria-live="polite">
+            {cur.label}
+            <small>
+              {at + 1} of {order.length}
+            </small>
+          </p>
+          <button type="button" className="ts-arrow" aria-label="Next" onClick={() => go(1)}>
+            <Icon name="right" size={14} />
+          </button>
+        </div>
       )}
     </div>
   );

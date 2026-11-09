@@ -1388,20 +1388,24 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .tour-shot { margin-top: 16px; padding: 18px 0; background: var(--soft); border-radius: 12px; }
 .tour.m .tour-shot { margin-top: 12px; padding: 12px 0 10px; }
 .ts-box { position: relative; display: flex; justify-content: center; }
-.ts-box img { display: block; width: auto; height: auto; max-width: 100%; max-height: min(560px, calc(100dvh - 410px)); border-radius: 8px; box-shadow: 0 0 0 1px var(--g85), 0 6px 18px rgba(0, 0, 0, 0.08); user-select: none; }
-.tour-shot.num .ts-box img { max-height: max(330px, calc(100dvh - 410px)); border-radius: 6px; }
+.ts-box img { display: block; width: auto; height: auto; max-width: 100%; max-height: min(560px, calc(100dvh - 440px)); border-radius: 8px; box-shadow: 0 0 0 1px var(--g85), 0 6px 18px rgba(0, 0, 0, 0.08); user-select: none; }
 .ts-lines { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
-.ts-halo { fill: none; stroke: #fff; stroke-width: 3; stroke-linejoin: round; opacity: 0.9; }
-.ts-line { fill: none; stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
-.ts-dot { fill: none; stroke: var(--ink); stroke-width: 1.6; }
-.ts-num { fill: #fff; stroke: var(--ink); stroke-width: 1.5; }
-.ts-numt { font: 750 11px/1 system-ui, sans-serif; fill: var(--ink); }
-.ts-label { position: absolute; transform: translateY(-50%); max-width: 160px; font-size: 13px; font-weight: 650; line-height: 1.25; color: var(--ink); }
+.ts-halo { fill: none; stroke: #fff; stroke-width: 3; stroke-linejoin: miter; opacity: 0.9; }
+.ts-line { fill: none; stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: miter; shape-rendering: crispEdges; }
+.ts-dot { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.ts-label { position: absolute; transform: translateY(-50%); width: max-content; max-width: 150px; font-size: 12.5px; font-weight: 600; line-height: 16px; color: var(--ink); }
 .ts-label.l { text-align: right; }
-.ts-label.t, .ts-label.b { transform: translate(-50%, -50%); white-space: nowrap; text-align: center; }
-.ts-legend { list-style: none; columns: 2; column-gap: 12px; margin: 10px 12px 0; }
-.ts-legend li { break-inside: avoid; display: flex; align-items: center; gap: 7px; padding: 3px 0; font-size: 12.5px; font-weight: 600; line-height: 1.25; color: var(--ink); }
-.ts-legend i { flex: none; display: inline-grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink); font: 750 10.5px/1 system-ui, sans-serif; font-style: normal; }
+.ts-label.t, .ts-label.b { transform: translateX(-50%); text-align: center; }
+/* phone: one control at a time */
+.tour-shot.spot { padding: 12px 0 0; }
+.ts-frame { position: relative; width: fit-content; margin: 0 auto; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px var(--g85); }
+.ts-frame img { display: block; width: auto; height: auto; max-width: 100%; max-height: max(330px, calc(100dvh - 400px)); user-select: none; }
+/* the control in focus: clear, ringed; the rest of the picture dimmed */
+.ts-hole { position: absolute; border-radius: 6px; box-shadow: 0 0 0 2px var(--ink), 0 0 0 9999px rgba(20, 24, 30, 0.42); pointer-events: none; animation: fade-in var(--t-fast) var(--ease); }
+.ts-say { display: flex; align-items: center; gap: 6px; padding: 8px 6px; }
+.ts-say p { flex: 1; text-align: center; font-size: 14px; font-weight: 650; line-height: 1.3; color: var(--ink); min-height: 3.2em; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.ts-say small { font-size: 11.5px; font-weight: 600; color: var(--mute); font-variant-numeric: tabular-nums; }
+.ts-arrow { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px var(--g85); }
 .tour-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 12px; font-size: 13px; color: var(--g40, #444); }
 .tour-keys span { display: inline-flex; align-items: center; gap: 4px; }
 .tour-keys kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 5px; background: #fff; box-shadow: inset 0 0 0 1px var(--g80), 0 1px 0 var(--g80); font: 700 11.5px/1 system-ui, sans-serif; color: var(--ink); }
