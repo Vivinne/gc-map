@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ERAS } from '../lib/model';
 import { load, save } from '../lib/storage';
@@ -9,7 +9,7 @@ import { Icon } from './Icons';
 /**
  * Page guides: the first time each page (Map, Quiz, Progress, Settings) is opened, a window in the middle of
  * the screen shows how it works, the rest of the screen dimmed. Up to 4 pages, each a picture of the real
- * controls with numbered marks and one line per number. Closed with the close button, Done or Esc; Settings
+ * controls with a short grey label beside each one. Closed with the close button, Done or Esc; Settings
  * opens any of them again.
  */
 export type TourId = 'map' | 'quiz' | 'progress' | 'settings';
@@ -32,24 +32,29 @@ interface Page {
   /** What this page of the site is for (first page) or what this picture shows */
   line: string;
   pic: React.ReactNode;
-  /** One line per number: the control's name (bold), then what it does */
-  items: [React.ReactNode, React.ReactNode][];
+  /** Short label per marked control, in the order of their numbers in the picture */
+  labels: string[];
 }
 
-/** A control in a picture and its number, placed outside it: above (t), below (b), right (r) or left (l) */
-function T({ n, at = 't', children, className = '' }: { n: number; at?: 't' | 'b' | 'r' | 'l'; children: React.ReactNode; className?: string }) {
+const Labels = createContext<string[]>([]);
+
+/** A control in a picture with its label placed outside it: above (t), below (b), right (r) or left (l) */
+function T({ n, at = 't', children, className = '' }: { n?: number; at?: 't' | 'b' | 'r' | 'l'; children: React.ReactNode; className?: string }) {
+  const label = useContext(Labels)[(n ?? 0) - 1];
   return (
     <span className={`tt ${at} ${className}`}>
       {children}
-      <mark className="tn">{n}</mark>
+      {label && <small className="tl">{label}</small>}
     </span>
   );
 }
-/** A row of a picture with its number in a column at the left */
+/** A row of a picture with its label in a column at the left */
 function R({ n, children }: { n?: number; children: React.ReactNode }) {
+  const label = useContext(Labels)[(n ?? 0) - 1];
+  if (!label) return <div className="tr-c">{children}</div>;
   return (
     <div className="tr">
-      <span className="tr-n">{n != null && <mark className="tn">{n}</mark>}</span>
+      <span className="tr-n">{label}</span>
       <div className="tr-c">{children}</div>
     </div>
   );
@@ -85,21 +90,9 @@ export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: bool
         <div className="tour-bd" key={i}>
           <h2>{p.title}</h2>
           <p className="tour-line">{p.line}</p>
-          <div className="tour-pic" aria-hidden="true">
-            {p.pic}
+          <div className="tour-pic">
+            <Labels.Provider value={p.labels}>{p.pic}</Labels.Provider>
           </div>
-          <ol className="tour-items">
-            {p.items.map(([term, text], k) => (
-              <li key={k}>
-                <mark className="tn">{k + 1}</mark>
-                <span>
-                  <b>{term}</b>
-                  <span className="tour-dash"> – </span>
-                  {text}
-                </span>
-              </li>
-            ))}
-          </ol>
         </div>
         {/* the page count sits between Back and Next, where the eye already is */}
         <div className="tour-f">
@@ -179,7 +172,7 @@ function MapPic({ mobile }: { mobile: boolean }) {
           </T>
         </span>
         <span className="tp-at" style={mobile ? { right: 8, top: 10 } : { right: 10, bottom: 10 }}>
-          <T n={6} at="l">
+          <T n={6} at={mobile ? 'l' : 't'} className={mobile ? '' : 'end'}>
             <span className="tp-ctrls">
               {!mobile && <Icon name="plus" size={11} />}
               {!mobile && <Icon name="minus" size={11} />}
@@ -266,9 +259,7 @@ function CardPic({ mobile }: { mobile: boolean }) {
       {mobile && (
         <span className="tp-g v">
           <b>↕</b>
-          <T n={9} at="b">
-            <small>Drag up / down</small>
-          </T>
+          <small>Drag</small>
         </span>
       )}
       <div className="tp-cardcol">
@@ -284,7 +275,7 @@ function CardPic({ mobile }: { mobile: boolean }) {
                 <Icon name="image" size={11} />
               </T>
               <span className="sp" />
-              <T n={3}>
+              <T n={3} className="hi">
                 <span>
                   <Icon name="left" size={10} />
                   <Icon name="right" size={10} />
@@ -293,7 +284,7 @@ function CardPic({ mobile }: { mobile: boolean }) {
               <T n={4}>
                 <Icon name="star" size={11} />
               </T>
-              <T n={5}>
+              <T n={5} className="hi">
                 <Icon name="close" size={10} />
               </T>
             </div>
@@ -326,9 +317,7 @@ function CardPic({ mobile }: { mobile: boolean }) {
         {mobile && (
           <span className="tp-g h">
             <b>↔</b>
-            <T n={10} at="r">
-              <small>Swipe sideways</small>
-            </T>
+            <small>Swipe</small>
           </span>
         )}
       </div>
@@ -452,7 +441,7 @@ function QuizStartPic({ mobile }: { mobile: boolean }) {
           </span>
         </div>
       </div>
-      <div className="tp-qcard side">
+      <div className="tp-qcard aside">
         <T n={5} at="r">
           <b>Mistakes</b>
         </T>
@@ -633,157 +622,86 @@ const PAGES: Record<TourId, (mobile: boolean) => Page[]> = {
   map: (m) => [
     {
       title: 'The map',
-      line: 'Every building of the course on one map: where it is, who designed it, its style.',
+      line: 'Every building of the course, on one map.',
       pic: <MapPic mobile={m} />,
-      items: [
-        ['Filters and list', 'styles, countries, exam buildings, your stars.'],
-        ['Search', 'buildings, architects and cities.'],
-        ['Pages', 'Map, Quiz, Progress, Settings.'],
-        ['City circle', 'a city or an area: tap it to list its buildings.'],
-        ['Numbered pin', 'one building: tap it to open its card.'],
-        [m ? 'Country and Full map' : 'Zoom, Country, Full map', m ? 'the whole country; back to all buildings.' : 'closer or farther; the whole country; back to all buildings.'],
-        ['Small map', 'shows where you are.'],
-      ],
+      labels: ['Filters', 'Search', 'Pages', 'Tap: city list', 'Tap: open', m ? 'Country · All' : 'Zoom · Country · All', 'You'],
     },
     {
-      title: 'Filters and the list',
-      line: 'Narrow the map to what you want to study; the list shows what is left.',
+      title: 'Filters',
+      line: 'Narrow the map; the list shows what is left.',
       pic: <FiltersPic />,
-      items: [
-        ['Styles', <>oldest to newest{m ? '' : <> (keys <K k="1" />…<K k="0" />)</>}; pick several to combine.</>],
-        ['Countries', 'one or more.'],
-        ['TEST-ARCHED and the star', 'buildings asked in past exams; your starred buildings.'],
-        ['List', 'tap a building to open it.'],
-        ['Active filters', 'under the map: remove one, or Clear all.'],
-      ],
+      labels: ['Styles', 'Countries', 'Exam · Starred', 'List', 'On now'],
     },
     {
       title: 'A building',
-      line: m ? 'Its card opens at the bottom; the map keeps the building in view above it.' : 'Its card opens at the left; the map keeps the building in view.',
+      line: m ? 'Drag the card to resize it; swipe for the next one.' : 'Its card opens at the left.',
       pic: <CardPic mobile={m} />,
-      items: [
-        ['Back', 'to the city or the list it came from.'],
-        ['Photos', 'of the building, in a new tab.'],
-        ['Previous / Next', <>the next building{m ? '' : <> (<K k="←" /> <K k="→" />)</>}.</>],
-        ['Star', <>keep it, or put it in a collection{m ? '' : <> (<K k="S" />)</>}.</>],
-        ['Close', 'back to the map.'],
-        ['Architect', 'tap to see their other buildings.'],
-        ['Features', 'what to look for, at a glance.'],
-        ['Style and country', 'tap one to show all of them on the map.'],
-        ...(m
-          ? ([
-              ['Drag up / down', 'anywhere on the card: full screen, half, or just its title.'],
-              ['Swipe sideways', 'the next or previous building slides in.'],
-            ] as [string, string][])
-          : []),
-      ],
+      labels: ['Back', 'Photos', 'Prev · Next', 'Star', 'Close', 'Other works', 'Features', 'Show on map'],
     },
     m
       ? {
-          title: 'Search and the map',
-          line: 'Type a name, or start from what you opened lately.',
+          title: 'Search',
+          line: 'Buildings, architects, cities.',
           pic: (
             <>
               <SearchPic />
               <GesturesPic />
             </>
           ),
-          items: [
-            ['Search', 'a building, an architect, a city.'],
-            ['Recently opened', 'back to what you were reading.'],
-            ['Try', 'examples that open at once.'],
-          ],
+          labels: [],
         }
       : {
           title: 'Search and keys',
-          line: 'Type a name, or start from what you opened lately. Most things have a key.',
+          line: 'Buildings, architects, cities.',
           pic: (
             <>
               <SearchPic />
               <KeysPic />
             </>
           ),
-          items: [
-            ['Search', <>(<K k="/" />) a building, an architect, a city.</>],
-            ['Recently opened', 'back to what you were reading.'],
-            ['Try', 'examples that open at once.'],
-          ],
+          labels: [],
         },
   ],
   quiz: (m) => [
     {
       title: 'Quiz',
-      line: 'Test yourself on where the buildings are, who designed them and their style.',
+      line: 'City, architect and style of each building.',
       pic: <QuizStartPic mobile={m} />,
-      items: [
-        ['Start (Custom quiz)', 'with the question type, range and number you set.'],
-        ['Settings', 'choose them.'],
-        ['Start (Quick quiz)', '5 questions on city, architect and style.'],
-        ['Practice again', 'the last kind of quiz, with new questions.'],
-        ['Mistakes', 'what you got wrong, to quiz again.'],
-      ],
+      labels: [],
     },
     {
       title: 'Answering',
-      line: 'One question at a time, four choices, one right.',
+      line: 'Four choices, one right.',
       pic: <QuizRunPic />,
-      items: [
-        ['Progress bar', 'answered, skipped, still to come.'],
-        ['End quiz', 'at any time; unanswered questions are listed as skipped.'],
-        ['Answer', <>tap one{m ? '' : <> (keys <K k="1" />…<K k="4" />)</>}.</>],
-        ['Back', 'to an earlier question.'],
-        ['Skip / Check / Next', 'Skip when unsure. With answers shown: Check, then Next.'],
-      ],
+      labels: ['Answered · to come'],
     },
     {
       title: 'The result',
-      line: 'Skipped questions change nothing; only answers count.',
+      line: 'Skipped questions do not count.',
       pic: <QuizResultPic />,
-      items: [
-        ['Accuracy', 'right out of answered.'],
-        ['Completion', 'answered, right, wrong and skipped.'],
-        ['Questions', 'tap one to open its building.'],
-        ['Mistakes', 'quiz the wrong ones again.'],
-        ['Retry these questions', 'the same ones again.'],
-        ['Practice again', 'new questions of the same kind.'],
-      ],
+      labels: ['Score', 'Count', 'Tap: open', '', 'Same', 'New'],
     },
   ],
   progress: (m) => [
     {
       title: 'Progress',
-      line: 'How well you know each building: its city, architect and style.',
+      line: 'Mastered = right on 2 different days.',
       pic: <ProgressPic mobile={m} />,
-      items: [
-        ['Accuracy', 'of your answers in the last 7 days.'],
-        ['Needs work', 'a fact answered wrong last time.'],
-        ['Learning', 'answered, nothing to fix, not all mastered yet.'],
-        ['Mastered', 'city, architect and style each right on 2 different days.'],
-        ['Not tested', 'never asked. Tap any state to list its buildings, then show them on the map or quiz them.'],
-      ],
+      labels: [],
     },
     {
       title: 'More in Progress',
-      line: 'Your answers and your own lists.',
+      line: 'Your answers and your lists.',
       pic: <ProgressTabsPic />,
-      items: [
-        ['Mistakes', 'each question you got wrong, with its answer.'],
-        ['Quiz history', 'every quiz and its score.'],
-        ['Collections', 'your starred buildings and your own lists.'],
-      ],
+      labels: [],
     },
   ],
   settings: () => [
     {
       title: 'Settings',
-      line: 'The guides, and your study progress on another device.',
+      line: 'Guides, and moving progress to another device.',
       pic: <SettingsPic />,
-      items: [
-        ['About', 'what the site is.'],
-        ['Guides', 'read any page’s guide again.'],
-        ['Save progress to file', 'stars, collections and quiz results.'],
-        ['Load file', 'on the other device.'],
-      ],
+      labels: [],
     },
   ],
 };
