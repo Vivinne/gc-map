@@ -457,9 +457,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         // Phone, held upright: the open building sits in the middle of the map left free above the card,
         // at the scale that shows its whole city
         if (m && city.length > 1 && compactRef.current && !sidewaysRef.current) {
-          const bb = boundsOf(city);
+          // the city mirrored around the building: a view centred on the building that holds all of it,
+          // below the locator (shown at this scale) and above the card
+          const both = [...city, ...city.map((x) => ({ ...x, id: `${x.id}~m`, lng: 2 * b.lng - x.lng, lat: 2 * b.lat - x.lat }))];
+          const bb = boundsOf(both);
           const p = padRef.current;
-          const z = bb ? Math.min(15, m.cameraForBounds(bb, { padding: { top: p.top + 24, right: p.right + 24, bottom: p.bottom + 24, left: p.left + 24 } })?.zoom ?? 13) : 13;
+          const top = Math.max(p.top, 8 + LOC.m.h + 8);
+          const z = bb ? Math.min(15, m.cameraForBounds(bb, { padding: { top: top + 16, right: p.right + 16, bottom: p.bottom + 16, left: Math.max(p.left, 16) } })?.zoom ?? 13) : 13;
           m.easeTo({ center: [b.lng, b.lat], zoom: z, offset: freeCentre(z, b.lat), duration: motion(MAP_MS), easing: EASE });
           return;
         }
