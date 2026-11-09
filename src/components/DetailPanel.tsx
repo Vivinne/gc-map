@@ -35,6 +35,9 @@ interface SheetProps {
  * expanded, the content scrolls and a pull down at its top shrinks the sheet. Sideways, the card follows the
  * finger and, past a quarter of its width, gives way to the previous / next building. Mouse: drag the top.
  */
+/** Space between the card and the neighbour's card beside it (phone, sideways swipe) */
+const PEEK_GAP = 8;
+
 function Sheet({ mobile, onClose, children, className, label, folded, onFold, expand, onStep }: SheetProps) {
   const [full, setFull] = useState(false);
   useEffect(() => {
@@ -102,6 +105,7 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
       el.style.maxHeight = '';
       el.style.transform = '';
       el.style.opacity = '';
+      delete el.dataset.swipe;
       requestAnimationFrame(() => requestAnimationFrame(() => (el.style.transition = '')));
     };
     const start = (e: TouchEvent) => {
@@ -135,8 +139,9 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
         el.style.maxHeight = '100%';
         el.style.height = `${h}px`;
       } else {
+        // the previous / next building's card (beside this one, see .c-peek) comes in with the finger
+        el.dataset.swipe = '';
         el.style.transform = `translateX(${dx}px)`;
-        el.style.opacity = `${1 - Math.min(0.5, Math.abs(dx) / t.W)}`;
       }
     };
     const end = (e: TouchEvent) => {
@@ -171,30 +176,19 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
       } else if (g.mode === 'h') {
         const dir = dx < 0 ? 1 : -1;
         if (Math.abs(dx) > Math.min(90, g.W * 0.25)) {
-          // out with the finger, then the next building comes in from the other side
-          el.style.transition = `transform 160ms ease-in, opacity 160ms ease-in`;
-          el.style.transform = `translateX(${-dir * g.W}px)`;
-          el.style.opacity = '0';
+          // on with the finger until the neighbour's card stands where this one was, then it becomes the card
+          el.style.transition = `transform 200ms ${EASE_OUT}`;
+          el.style.transform = `translateX(${-dir * (g.W + PEEK_GAP)}px)`;
           busy = window.setTimeout(() => {
             now.current.onStep?.(dir as -1 | 1);
-            el.style.transition = 'none';
-            el.style.transform = `translateX(${dir * g.W * 0.35}px)`;
-            requestAnimationFrame(() =>
-              requestAnimationFrame(() => {
-                el.style.transition = `transform ${MS}ms ${EASE_OUT}, opacity ${MS}ms ${EASE_OUT}`;
-                el.style.transform = 'translateX(0)';
-                el.style.opacity = '1';
-                busy = window.setTimeout(() => {
-                  busy = 0;
-                  clear();
-                }, MS);
-              }),
-            );
-          }, 160);
+            requestAnimationFrame(() => {
+              busy = 0;
+              clear();
+            });
+          }, 200);
         } else {
-          el.style.transition = `transform ${MS}ms ${EASE_OUT}, opacity ${MS}ms ${EASE_OUT}`;
+          el.style.transition = `transform ${MS}ms ${EASE_OUT}`;
           el.style.transform = 'translateX(0)';
-          el.style.opacity = '1';
           busy = window.setTimeout(() => {
             busy = 0;
             clear();
@@ -273,6 +267,26 @@ interface CardProps {
   detail: number;
   /** Map numbers in use: inside a city (no filter) or 1 to N over what the filters show */
   nums: ReadonlyMap<string, number>;
+  /** Phone: the previous and next buildings, shown beside the card while it is swiped sideways */
+  peek?: { prev: Building; next: Building };
+}
+
+/** Phone: the previous / next building's card, beside the open one, seen while the card is swiped sideways */
+function Peek({ b, side, no }: { b: Building; side: 'prev' | 'next'; no?: number }) {
+  return (
+    <div className={`c-peek ${side}`} aria-hidden="true">
+      <div className="c-top" style={{ background: ERAS[b.era].color }}>
+        <div className="c-bar" />
+        <h1>
+          {no != null && <span className="c-no">{no}</span>}
+          <span>{b.name.toUpperCase()}</span>
+        </h1>
+      </div>
+      <div className="c-body">
+        <Facts b={b} exam={false} onWho={() => {}} />
+      </div>
+    </div>
+  );
 }
 
 /** Buildings of a filter, city by city: a small city heading, then each building with its map number */
@@ -370,7 +384,7 @@ function Tags({ b, starred, collections, onTag }: { b: Building; starred: boolea
  * buildings of the city (or the two nearest landmarks) as a folded section, so they never outweigh the building.
  * Phone: a swipe down on the title folds the card to its title, a swipe up unfolds it.
  */
-export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, collections, onToggleCol, onCreateCol, onBack, onSelect, onHover, onTag, group, detail, nums }: CardProps) {
+export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onClose, onStar, collections, onToggleCol, onCreateCol, onBack, onSelect, onHover, onTag, group, detail, nums, peek }: CardProps) {
   const city = CITY_BUILDINGS.get(b.city) ?? [];
   const many = city.length > 1;
   const [folded, setFolded] = useState(false);
@@ -441,6 +455,12 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
           <span>{b.name.toUpperCase()}</span>
         </h1>
       </div>
+      {mobile && peek && (
+        <>
+          <Peek b={peek.prev} side="prev" no={nums.get(peek.prev.id)} />
+          <Peek b={peek.next} side="next" no={nums.get(peek.next.id)} />
+        </>
+      )}
       {menu && <CollectMenu b={b} starred={starred} collections={collections} onStar={onStar} onToggle={onToggleCol} onCreate={onCreateCol} onClose={() => setMenu(false)} />}
       {!folded && (
         <div className="c-scroll" ref={body}>

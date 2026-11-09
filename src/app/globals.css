@@ -1204,3 +1204,11 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 /* phone card: until it is expanded every vertical swipe sizes the card (the touch handlers in Sheet); expanded, the content scrolls */
 .is-mobile .side.sheet.card:not(.full) { touch-action: none; }
 .is-mobile .side.sheet.card.full .c-scroll { touch-action: pan-y; }
+/* Phone: the previous / next building's card waits beside the open one (8px apart) and comes in with a sideways swipe */
+.c-peek { visibility: hidden; position: absolute; top: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; overflow: hidden; pointer-events: none; border-radius: inherit; }
+.c-peek.prev { right: calc(100% + 8px); }
+.c-peek.next { left: calc(100% + 8px); }
+.c-peek > :first-child { border-top-left-radius: inherit; border-top-right-radius: inherit; }
+.c-peek .c-bar { height: 44px; }
+.c-peek .c-body { overflow: hidden; }
+.side[data-swipe] .c-peek { visibility: visible; }
