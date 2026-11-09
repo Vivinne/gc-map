@@ -688,7 +688,10 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .m-fbtn .badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; background: var(--ink); color: #fff; font-size: 10px; font-weight: 800; display: grid; place-items: center; box-shadow: 0 0 0 2px #fff; }
 .m-search span:nth-child(2) { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .m-seen { font-size: 12px; font-weight: 650; color: var(--ink); }
-.tabbar { grid-row: 3; display: flex; background: #fff; border-top: 1px solid var(--rule); padding-bottom: env(safe-area-inset-bottom); z-index: 6; }
+.tabbar { grid-row: 3; display: flex; background: #fff; border-top: 1px solid var(--rule); z-index: 6; }
+/* the home-indicator margin only when the site runs as an app from the home screen: in a browser its own bar
+   keeps that edge, and the margin showed as an empty band under the tabs */
+@media (display-mode: standalone) { .tabbar { padding-bottom: env(safe-area-inset-bottom); } }
 .is-mobile.mode-me .tabbar, .is-mobile.mode-settings .tabbar, .is-mobile.mode-quiz .tabbar { grid-row: 2; }
 .tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0 5px; font-size: 11.5px; font-weight: 650; color: var(--mute); text-align: center; }
 .tabbar button.on { color: var(--ink); box-shadow: inset 0 3px 0 var(--ink); }
@@ -1341,3 +1344,9 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .map-tiles.m { top: auto; bottom: calc(112px + env(safe-area-inset-bottom)); }
 /* a phone sheet open: the strip waits under it */
 .app.tabs-off .map-tiles.m { display: none; }
+/* Back to the map from another tab: it comes in as the other pages do (the phone's search bar with it) */
+.map-pane.on { animation: map-in var(--t-mid) var(--ease); }
+.is-mobile.mode-map .m-top { animation: top-in var(--t-mid) var(--ease); }
+@keyframes map-in { from { opacity: 0; transform: scale(0.992); } to { opacity: 1; transform: none; } }
+@keyframes top-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .map-pane.on, .is-mobile.mode-map .m-top { animation: none; } }
