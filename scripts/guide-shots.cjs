@@ -123,11 +123,14 @@ const SCENES = [
     id: 'map-search',
     async setup(p, phone) {
       await closeAll(p, phone);
+      // computer: the search window shown at the width of its list (its preview column left out), so the
+      // picture is the whole window with the dimmed page round every side
+      if (!phone) await p.addStyleTag({ content: '.pal{width:600px!important;max-width:600px!important}.pal-prev{display:none!important}' });
       await search(p, phone, '');
       await p.waitForSelector('.pal-in');
       await p.waitForTimeout(700);
     },
-    crop: async (p, phone) => (phone ? union(p, ['.pal-in', '.pal-body .hit'], 10, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.pal'], 12).then((r) => r && { ...r, width: 600 })),
+    crop: async (p, phone) => (phone ? union(p, ['.pal-in', '.pal-body .hit'], 10, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.pal'], 12)),
     marks: () => [
       { q: '.pal-in', label: 'Type a building, architect or city' },
       { q: nth('.pal .hit', 0), label: 'Reopens what you read lately' },
