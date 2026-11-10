@@ -87,7 +87,7 @@ const PHONE_PAGES: Record<TourId, Page[]> = {
     { title: 'Answering', line: 'Four choices, one right.', shot: 'quiz-run', marks: ['Pick one answer', 'Next, or skip if unsure', 'Ends the quiz at any time'] },
     { title: 'The result', line: 'Skipped questions do not count.', shot: 'quiz-result', marks: ['Right answers out of those answered', 'Quizzes only the wrong ones', 'New questions of the same kind'] },
   ],
-  progress: [{ title: 'Progress', line: 'Mastered: right on 2 different days.', shot: 'progress', marks: ['Your score over 7 days', 'Lists those buildings', 'Lists every wrong answer'] }],
+  progress: [{ title: 'Progress', line: 'Mastered: right on 2 different days.', shot: 'progress', marks: ['Lists those buildings', 'Lists every wrong answer'] }],
   settings: [{ title: 'Settings', line: 'Guides, and progress on another device.', shot: 'settings', marks: ['Opens a guide again', 'Saves your progress to a file', 'Loads it on another device'] }],
 };
 
@@ -366,7 +366,7 @@ const phoneLabel = (t: string) => ({ w: textW(t, `700 11px ${FONT_FAMILY()}`) + 
 
 const PAD = 3;
 
-type Tip = Rect & { k: number; side: Side; /** where the arrow touches the bubble, along its edge */ at: number };
+type Tip = Rect & { k: number; side: Side; /** where the arrow touches the bubble, along its edge */ at: number; /** a straight line from the arrow back towards the control, when the bubble had to sit further out */ stem: number };
 /** Arrow of a tip bubble: its length out of the bubble, and the least distance from the bubble's corners */
 const ARROW = 7;
 /** Room left between the arrow's tip and the ring round the control */
@@ -398,32 +398,36 @@ function place(marks: Mark[], W: number, H: number) {
     let bestCost = Infinity;
     const free = (r: Rect) =>
       r.x >= 4 && r.y >= 4 && r.x + r.w <= W - 4 && r.y + r.h <= H - 4 && !frames.some((o) => hit(r, o, TIP_GAP + 2)) && !tips.some((o) => hit(r, o, 6));
-    const tryAt = (r: Rect, side: Side, at: number, cost: number) => {
+    const tryAt = (r: Rect, side: Side, at: number, cost: number, stem: number) => {
       if (cost < bestCost && free(r)) {
         bestCost = cost;
-        best = { ...r, k, side, at };
+        best = { ...r, k, side, at, stem };
       }
     };
+    // nearest first; where nothing is free right beside the control, further out on a short straight stem
+    for (const stem of [0, 12, 24, 40, 60]) {
     // above / below: the arrow at the control's middle (or as near it as the bubble allows, still inside it)
     for (const side of ['b', 't'] as Side[]) {
-      const y = side === 'b' ? f.y + f.h + OUT : f.y - OUT - h;
+      const y = side === 'b' ? f.y + f.h + OUT + stem : f.y - OUT - stem - h;
       for (let x = Math.floor(cx - w + ARROW_IN); x <= cx - ARROW_IN; x += 2) {
         const ax = Math.max(x + ARROW_IN, Math.min(x + w - ARROW_IN, cx));
         if (ax < f.x + 3 || ax > f.x + f.w - 3) continue;
-        tryAt({ x, y, w, h }, side, ax - x, Math.abs(x + w / 2 - cx) / 3 + (side === 't' ? 1 : 0));
+        tryAt({ x, y, w, h }, side, ax - x, stem * 2 + Math.abs(x + w / 2 - cx) / 3 + (side === 't' ? 1 : 0), stem);
       }
     }
     for (const side of ['r', 'l'] as Side[]) {
-      const x = side === 'r' ? f.x + f.w + OUT : f.x - OUT - w;
+      const x = side === 'r' ? f.x + f.w + OUT + stem : f.x - OUT - stem - w;
       for (let y = Math.floor(cy - h + 8); y <= cy - 8; y += 2) {
         const ay = Math.max(y + 8, Math.min(y + h - 8, cy));
         if (ay < f.y + 2 || ay > f.y + f.h - 2) continue;
-        tryAt({ x, y, w, h }, side, ay - y, 8 + Math.abs(y + h / 2 - cy) / 3);
+        tryAt({ x, y, w, h }, side, ay - y, stem * 2 + 8 + Math.abs(y + h / 2 - cy) / 3, stem);
       }
+    }
+    if (best) break;
     }
     if (!best) {
       ok = false;
-      best = { x: Math.max(4, Math.min(W - 4 - w, cx - w / 2)), y: Math.min(H - 4 - h, f.y + f.h + OUT), w, h, k, side: 'b', at: w / 2 };
+      best = { x: Math.max(4, Math.min(W - 4 - w, cx - w / 2)), y: Math.min(H - 4 - h, f.y + f.h + OUT), w, h, k, side: 'b', at: w / 2, stem: 0 };
     }
     tips.push(best);
   }
@@ -454,7 +458,7 @@ function Spot({ shot, only }: { shot: GuideShot; only?: string[] }) {
   const labels = laid?.labels ?? [];
   const id = `spot-${shot.w}-${shot.h}-${marks.map((m) => m.label).join('|').length}`;
   return (
-    <div className="tour-shot spot">
+    <div className="tour-shot spot" data-crowded={laid && !laid.ok ? '' : undefined}>
       <div className="ts-frame">
         <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} />
         {size && (
@@ -471,6 +475,16 @@ function Spot({ shot, only }: { shot: GuideShot; only?: string[] }) {
             {frames.map((f, k) => (
               <rect key={k} x={f.x} y={f.y} width={f.w} height={f.h} rx={5} className="ts-ring" />
             ))}
+            {labels
+              .filter((l) => l.stem > 0)
+              .map((l) => {
+                // from the arrow's tip straight back to the room left round the control
+                const v = l.side === 't' || l.side === 'b';
+                const a = v ? l.x + l.at : l.y + l.at;
+                const from = l.side === 'b' ? l.y - ARROW : l.side === 't' ? l.y + l.h + ARROW : l.side === 'r' ? l.x - ARROW : l.x + l.w + ARROW;
+                const to = l.side === 'b' || l.side === 'r' ? from - l.stem : from + l.stem;
+                return v ? <line key={l.k} x1={a} x2={a} y1={from} y2={to} className="ts-stem" /> : <line key={l.k} y1={a} y2={a} x1={from} x2={to} className="ts-stem" />;
+              })}
           </svg>
         )}
         {labels.map((l) => (

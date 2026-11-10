@@ -83,14 +83,15 @@ const SCENES = [
       await p.locator('.index .styles button').nth(3).click();
       await p.waitForTimeout(400);
     },
-    crop: async (p, phone) => (phone ? union(p, ['.m-sheet .styles', '.m-sheet .sec', '.m-sheet .rows li:nth-child(-n+3) .row'], 8, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.index .styles', '.index .sec', '.index .rows li:nth-child(-n+5) .row'], 14)),
+    crop: async (p, phone) => (phone ? union(p, ['.m-sheet .styles', '.m-sheet .sec', '.m-sheet .rows li:nth-child(-n+4) .row'], 8, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.index .styles', '.index .sec', '.index .rows li:nth-child(-n+5) .row'], 14)),
     marks: () => [
       { q: '.index .styles button', label: 'Pick styles, oldest first', desk: true },
       { q: nth('.index .sec .chips button', 0), label: 'Pick countries', desk: true },
       { q: byText('.index .sec .chips button', 'TEST-ARCHED'), label: 'Buildings from past exams', desk: true },
       { q: '.index [aria-label^="Starred"]', label: 'Your starred buildings', side: 'r', desk: true },
       { q: ['.index .styles', '.index .sec .chips'], label: 'Tap tags to filter the map', phone: true },
-      { q: '.index .rows .row', label: 'Opens a building' },
+      { q: '.index .rows .row', label: 'Opens a building', desk: true },
+      { q: nth('.index .rows .row', 1), label: 'Opens a building', phone: true },
       { q: '.index .chip.clear', label: 'Removes every filter', desk: true },
     ],
   },

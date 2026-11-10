@@ -1409,6 +1409,7 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 /* the guide's own colour, used nowhere else in the pages, so the marks never look like part of the site */
 .ts-ring { fill: none; stroke: var(--gold); stroke-width: 2.5; }
 .ts-tip { position: absolute; box-sizing: border-box; white-space: nowrap; padding: 3px 7px; border-radius: 6px; background: var(--g25); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); font-size: 11px; font-weight: 700; line-height: 14px; color: #fff; text-align: center; pointer-events: none; }
+.ts-stem { stroke: var(--g25); stroke-width: 2; }
 .ts-tip i { position: absolute; width: 0; height: 0; border: 7px solid transparent; }
 .ts-tip.b i { top: -14px; margin-left: -7px; border-bottom-color: var(--g25); }
 .ts-tip.t i { bottom: -14px; margin-left: -7px; border-top-color: var(--g25); }
