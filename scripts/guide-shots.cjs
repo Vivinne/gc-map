@@ -85,12 +85,13 @@ const SCENES = [
     },
     crop: async (p, phone) => (phone ? union(p, ['.m-sheet .styles', '.m-sheet .sec', '.m-sheet .rows li:nth-child(-n+3) .row'], 8, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.index .styles', '.index .sec', '.index .rows li:nth-child(-n+5) .row'], 14)),
     marks: () => [
-      { q: '.index .styles button', label: 'Pick styles, oldest first' },
-      { q: nth('.index .sec .chips button', 0), label: 'Pick countries' },
-      { q: byText('.index .sec .chips button', 'TEST-ARCHED'), label: 'Only buildings from past exams' },
-      { q: '.index [aria-label^="Starred"]', label: 'Only your starred buildings', side: 'r' },
+      { q: '.index .styles button', label: 'Pick styles, oldest first', desk: true },
+      { q: nth('.index .sec .chips button', 0), label: 'Pick countries', desk: true },
+      { q: byText('.index .sec .chips button', 'TEST-ARCHED'), label: 'Buildings from past exams', desk: true },
+      { q: '.index [aria-label^="Starred"]', label: 'Your starred buildings', side: 'r', desk: true },
+      { q: ['.index .styles', '.index .sec .chips'], label: 'Tap tags to filter the map', phone: true },
       { q: '.index .rows .row', label: 'Opens a building' },
-      { q: '.index .chip.clear', label: 'Removes every filter' },
+      { q: '.index .chip.clear', label: 'Removes every filter', desk: true },
     ],
   },
   {
@@ -103,18 +104,18 @@ const SCENES = [
       await p.keyboard.press('Enter');
       await p.waitForTimeout(2500);
     },
-    crop: async (p, phone) => (phone ? union(p, ['.side .grab', '.side .c-top', '.side .c-body', '.side .others-h'], 4, 'w') : union(p, ['.side'], 10)),
+    crop: async (p, phone) => (phone ? union(p, ['.side .grab', '.side .c-top', '.side .c-body', '.side .others-h'], 4, 'w').then((r) => r && { ...r, height: Math.min(844 - r.y, r.height + 40) }) : union(p, ['.side'], 10)),
     marks: (phone) => [
       { q: '.c-back-t', label: 'Back to the city' },
       { q: '.c-photo svg', label: 'Opens photos of it', desk: true },
-      { q: '.c-bar [aria-label="Previous"] svg', label: 'Previous or next building', desk: true },
+      { q: '.c-bar [aria-label="Previous"] svg', label: 'Previous or next building' },
       { q: '.c-bar [aria-label="Collect"] svg', label: 'Stars it or adds it to a list' },
       { q: '.c-bar [aria-label="Close"] svg', label: 'Closes the card', desk: true },
-      { q: '.f-who, .f-who-t', label: 'Who designed it' },
-      { q: '.f-keys li', label: 'Features to look for', side: 'l' },
-      { q: '.c-tag', label: 'Shows every building of this style' },
+      { q: '.f-who, .f-who-t', label: 'Who designed it', desk: true },
+      { q: '.f-keys li', label: 'Features to look for', side: 'l', desk: true },
+      { q: '.c-tag', label: 'Shows all of this style', desk: true },
+      { q: '.c-tags', label: 'Shows all with this tag', phone: true },
       { q: '.others-h', label: 'Lists the others in this city' },
-      ...(phone ? [{ q: '.grab i', label: 'Drag to make it bigger or smaller', side: 't' }, { q: '.side h1', label: 'Swipe for the next building', side: 'r' }] : []),
     ],
   },
   {
@@ -232,11 +233,21 @@ async function home(p) {
 async function pointOf(p, m) {
   return p.evaluate(({ q, at }) => {
     const vis = (e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
-    let el = null;
-    if (q.startsWith('fn:')) el = new Function(q.slice(3))();
-    else el = [...document.querySelectorAll(q)].find(vis) || null;
-    if (!el) return null;
-    const r = el.getBoundingClientRect();
+    let r = null;
+    if (Array.isArray(q)) {
+      // several parts taken as one control: the box round all of them
+      const rs = q.flatMap((x) => [...document.querySelectorAll(x)]).filter(vis).map((e) => e.getBoundingClientRect());
+      if (!rs.length) return null;
+      const l = Math.min(...rs.map((b) => b.left)), t = Math.min(...rs.map((b) => b.top));
+      const rr = Math.max(...rs.map((b) => b.right)), bb = Math.max(...rs.map((b) => b.bottom));
+      r = { left: l, top: t, right: rr, bottom: bb, width: rr - l, height: bb - t };
+    } else {
+      let el = null;
+      if (q.startsWith('fn:')) el = new Function(q.slice(3))();
+      else el = [...document.querySelectorAll(q)].find(vis) || null;
+      if (!el) return null;
+      r = el.getBoundingClientRect();
+    }
     const x = at === 'l' ? r.left : at === 'r' ? r.right : r.left + r.width / 2;
     const y = at === 't' ? r.top : at === 'b' ? r.bottom : r.top + r.height / 2;
     return { x, y, box: [r.left, r.top, r.width, r.height] };
@@ -289,7 +300,7 @@ function emit() {
       const file = path.join(RAW, `${dev}-${s.id}.png`);
       await p.screenshot({ path: file, clip: crop });
       const marks = [];
-      for (const m of s.marks(d.phone).filter((m) => !(d.phone && m.desk))) {
+      for (const m of s.marks(d.phone).filter((m) => (d.phone ? !m.desk : !m.phone))) {
         const pt = await pointOf(p, m);
         if (!pt) { console.log(dev, s.id, 'missing', m.q); continue; }
         const f = (v, d) => +(v / d).toFixed(4);
@@ -300,7 +311,7 @@ function emit() {
       if (DEBUG) {
         await p.evaluate((ms) => {
           for (const m of ms) { const e = document.createElement('div'); e.className = 'gdbg'; e.style.cssText = `position:fixed;z-index:9999;left:${m.x - 5}px;top:${m.y - 5}px;width:10px;height:10px;border-radius:50%;background:red`; e.title = m.label; document.body.appendChild(e); }
-        }, await Promise.all(s.marks(d.phone).filter((m) => !(d.phone && m.desk)).map((m) => pointOf(p, m))).then((a) => a.filter(Boolean)));
+        }, await Promise.all(s.marks(d.phone).filter((m) => (d.phone ? !m.desk : !m.phone)).map((m) => pointOf(p, m))).then((a) => a.filter(Boolean)));
         await p.screenshot({ path: path.join(DEBUG, `${dev}-${s.id}.png`) });
         await p.evaluate(() => document.querySelectorAll('.gdbg').forEach((e) => e.remove()));
       }

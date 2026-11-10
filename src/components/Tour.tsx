@@ -36,44 +36,75 @@ export function markSeen(id: TourId): void {
 
 interface Page {
   title: string;
+  /** One line, never wrapping */
   line: string;
   /** Screenshot name in SHOTS, without the d- / m- prefix */
   shot: string;
+  /** Phone: the marked controls this page explains (by their words), at most 3; computer: all of the picture's */
+  marks?: string[];
   /** A line of keys under the picture (computer only) */
   keys?: [string[], string][];
 }
 
-const PAGES: Record<TourId, (mobile: boolean) => Page[]> = {
-  map: (m) => [
+const DESK_PAGES: Record<TourId, Page[]> = {
+  map: [
     { title: 'The map', line: 'Every building of the course, by place and style.', shot: 'map-main' },
     { title: 'Filters and list', line: 'Narrow the map; the list shows what is left.', shot: 'map-filters' },
-    { title: 'A building', line: m ? 'Drag the card up or down; swipe it sideways for the next building.' : 'Click a building on the map or in a list.', shot: 'map-card' },
+    { title: 'Architecture', line: 'Click a building on the map or in a list.', shot: 'map-card' },
     {
       title: 'Search',
       line: 'Type a name, or pick up where you left off.',
       shot: 'map-search',
-      keys: m
-        ? undefined
-        : [
-            [['/'], 'Search'],
-            [['F'], 'Filters'],
-            [['←', '→'], 'Previous / next'],
-            [['S'], 'Star'],
-            [['Esc'], 'Close'],
-          ],
+      keys: [
+        [['/'], 'Search'],
+        [['F'], 'Filters'],
+        [['←', '→'], 'Previous / next'],
+        [['S'], 'Star'],
+        [['Esc'], 'Close'],
+      ],
     },
   ],
-  quiz: () => [
+  quiz: [
     { title: 'Quiz', line: 'Questions on the city, architect and style of each building.', shot: 'quiz-home' },
     { title: 'Answering', line: 'Four choices, one right.', shot: 'quiz-run' },
     { title: 'The result', line: 'Skipped questions do not count.', shot: 'quiz-result' },
   ],
-  progress: () => [{ title: 'Progress', line: 'A building is mastered when its city, architect and style are each right on 2 different days.', shot: 'progress' }],
-  settings: () => [{ title: 'Settings', line: 'The guides again, and your progress on another device.', shot: 'settings' }],
+  progress: [{ title: 'Progress', line: 'A building is mastered when its city, architect and style are each right on 2 different days.', shot: 'progress' }],
+  settings: [{ title: 'Settings', line: 'The guides again, and your progress on another device.', shot: 'settings' }],
 };
 
+/** Phone: each page one picture with up to 3 controls marked, every page complete in itself (nothing to step through) */
+const PHONE_PAGES: Record<TourId, Page[]> = {
+  map: [
+    { title: 'The map', line: 'Every building of the course.', shot: 'map-main', marks: ['Opens filters and the list', 'Lists the buildings in a city', 'Opens a building'] },
+    { title: 'Map buttons', line: 'Back to a wider view.', shot: 'map-main', marks: ['Shows the whole country', 'Shows the whole map'] },
+    { title: 'Filters and list', line: 'Narrow the map to what you study.', shot: 'map-filters', marks: ['Tap tags to filter the map', 'Opens a building'] },
+    { title: 'Architecture', line: 'Swipe the card for the next one.', shot: 'map-card', marks: ['Back to the city', 'Previous or next building', 'Shows all with this tag'] },
+    { title: 'Architecture', line: 'Drag the card up for more.', shot: 'map-card', marks: ['Stars it or adds it to a list', 'Lists the others in this city'] },
+  ],
+  quiz: [
+    { title: 'Quiz', line: 'City, architect and style.', shot: 'quiz-home', marks: ['Starts your own quiz', 'Chooses what to ask', 'Starts 5 quick questions'] },
+    { title: 'Answering', line: 'Four choices, one right.', shot: 'quiz-run', marks: ['Pick one answer', 'Next, or skip if unsure', 'Ends the quiz at any time'] },
+    { title: 'The result', line: 'Skipped questions do not count.', shot: 'quiz-result', marks: ['Right answers out of those answered', 'Quizzes only the wrong ones', 'New questions of the same kind'] },
+  ],
+  progress: [{ title: 'Progress', line: 'Mastered: right on 2 different days.', shot: 'progress', marks: ['Your score over 7 days', 'Lists those buildings', 'Lists every wrong answer'] }],
+  settings: [{ title: 'Settings', line: 'Guides, and progress on another device.', shot: 'settings', marks: ['Opens a guide again', 'Saves your progress to a file', 'Loads it on another device'] }],
+};
+
+const PAGES = (id: TourId, mobile: boolean) => (mobile ? PHONE_PAGES : DESK_PAGES)[id];
+
+/** Width of a line of text in the given CSS font (measured, so labels can be sized never to wrap) */
+let ctx: CanvasRenderingContext2D | null = null;
+function textW(t: string, font: string): number {
+  if (typeof document !== 'undefined' && !ctx) ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) return t.length * 7;
+  ctx.font = font;
+  return Math.ceil(ctx.measureText(t).width);
+}
+const FONT_FAMILY = () => (typeof document !== 'undefined' ? getComputedStyle(document.body).fontFamily : 'system-ui, sans-serif');
+
 export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: boolean; onClose(): void }) {
-  const pages = PAGES[id](mobile);
+  const pages = PAGES(id, mobile);
   const [i, setI] = useState(0);
   const p = pages[i]!;
   const last = i === pages.length - 1;
@@ -101,7 +132,7 @@ export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: bool
         <div className="tour-bd" key={i}>
           <h2>{p.title}</h2>
           <p className="tour-line">{p.line}</p>
-          {shot && (mobile ? <Spot shot={shot} /> : <Shot shot={shot} />)}
+          {shot && (mobile ? <Spot shot={shot} only={p.marks} /> : <Shot shot={shot} />)}
           {p.keys && (
             <p className="tour-keys">
               {p.keys.map(([ks, what]) => (
@@ -181,13 +212,14 @@ function sides(marks: Mark[], w: number, h: number): Side[] {
 const RING = 4;
 const RING_GAP = 4;
 /** Label column beside the picture; band above and below it */
-const SIDE = 226;
+/** Room beside the picture for its widest one-line label: line out, gap, label, margin to the edge */
+const sideRoom = (labels: string[]) => Math.max(120, TO_LABEL + 6 + Math.max(0, ...labels.map(textWidth)) + 18);
 /** Where lines turn: between these distances from the picture's edge; labels start beyond */
 const TURN = [8, 34] as const;
 const TO_LABEL = 42;
-const LABEL_W = 150;
-const textWidth = (t: string) => Math.min(LABEL_W, t.length * 6.9 + 6);
-const textLines = (t: string) => Math.ceil((t.length * 6.9 + 6) / LABEL_W);
+/** Desktop labels: one line each, 12.5 px semibold */
+const textWidth = (t: string) => textW(t, `600 12.5px ${FONT_FAMILY()}`) + 2;
+const textLines = (_t: string) => 1;
 
 interface Placed {
   k: number;
@@ -291,7 +323,7 @@ function Shot({ shot }: { shot: GuideShot }) {
   const placed = size ? layout(shot.marks, size.x, size.y, size.w, size.h, size.W, size.H) : [];
   return (
     <div className="tour-shot">
-      <div className="ts-box" ref={box} style={{ padding: `${band('t')}px ${SIDE}px ${band('b')}px` }}>
+      <div className="ts-box" ref={box} style={{ padding: `${band('t')}px ${sideRoom(shot.marks.filter((_, k) => side[k] === 'l' || side[k] === 'r').map((m) => m.label))}px ${band('b')}px` }}>
         <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} style={{ maxHeight: `min(560px, calc(100dvh - ${355 + band('t') + band('b')}px))` }} />
         {size && (
           <svg className="ts-lines" width={size.W} height={size.H} aria-hidden="true">
@@ -329,12 +361,8 @@ function Shot({ shot }: { shot: GuideShot }) {
 /** Where a phone label may go, around its control */
 type Rect = { x: number; y: number; w: number; h: number };
 const hit = (a: Rect, b: Rect, m = 3) => a.x < b.x + b.w + m && b.x < a.x + a.w + m && a.y < b.y + b.h + m && b.y < a.y + a.h + m;
-const PHONE_LABEL_W = 128;
-/** Label box: text up to PHONE_LABEL_W wide, 14 px lines, plus its padding (5 px across, 3 px down) */
-const phoneLabel = (t: string) => {
-  const tw = t.length * 6.3 + 2;
-  return { w: Math.min(PHONE_LABEL_W, tw) + 10, h: Math.ceil(tw / PHONE_LABEL_W) * 14 + 6 };
-};
+/** Tip bubble: one line of 11 px bold text, 6 px padding across, 3 px down */
+const phoneLabel = (t: string) => ({ w: textW(t, `700 11px ${FONT_FAMILY()}`) + 18, h: 20 });
 
 const PAD = 3;
 
@@ -403,12 +431,11 @@ function place(marks: Mark[], W: number, H: number) {
 }
 
 /**
- * Phone: no room beside the picture, so a few controls at a time, as phone apps' coach marks do: the picture
- * only lightly veiled (it must stay readable), each control clear and ringed in the guide's own colour, and a
- * dark tip bubble pointing at it. As few steps as let every one get a bubble right beside it; the arrows
- * (or a tap on the picture) show the next few.
+ * Phone: a few controls per guide page (up to 3), as phone apps' coach marks do: the picture only lightly veiled
+ * (it must stay readable), each control clear and ringed in the guide's own colour, and a one-line dark tip
+ * bubble pointing at it. Nothing to step through inside a page.
  */
-function Spot({ shot }: { shot: GuideShot }) {
+function Spot({ shot, only }: { shot: GuideShot; only?: string[] }) {
   const img = useRef<HTMLImageElement>(null);
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
   const measure = useCallback(() => {
@@ -421,31 +448,14 @@ function Spot({ shot }: { shot: GuideShot }) {
     if (img.current) ro.observe(img.current);
     return () => ro.disconnect();
   }, [measure, shot]);
-  const [at, setAt] = useState(0);
-  useEffect(() => setAt(0), [shot]);
-
-  const plan = useMemo(() => {
-    if (!size) return null;
-    const mid = (m: Mark) => boxOf(m)[1] + boxOf(m)[3] / 2;
-    const all = shot.marks.slice().sort((a, b) => mid(a) - mid(b) || boxOf(a)[0] - boxOf(b)[0]);
-    // as few steps as can be: controls dealt out in turn (in reading order), so each step's few are far apart
-    // and their bubbles do not crowd; one step more until every control gets its bubble beside it
-    for (let n = Math.ceil(all.length / 4); n <= all.length; n++) {
-      const groups = Array.from({ length: n }, (_, g) => all.filter((_, i) => i % n === g));
-      const laid = groups.map((g) => ({ marks: g, ...place(g, size.w, size.h) }));
-      if (laid.every((l) => l.ok) || n === all.length) return laid;
-    }
-    return [];
-  }, [shot, size]);
-  const n = plan?.length ?? 0;
-  const cur = plan?.[Math.min(at, n - 1)];
-  const frames = cur?.frames ?? [];
-  const labels = cur?.labels ?? [];
-  const marks = cur?.marks ?? [];
-  const id = `spot-${shot.w}-${shot.h}-${shot.marks.length}-${at}`;
+  const marks = useMemo(() => (only ? only.map((t) => shot.marks.find((m) => m.label === t)).filter((m): m is Mark => !!m) : shot.marks), [shot, only]);
+  const laid = useMemo(() => (size ? place(marks, size.w, size.h) : null), [marks, size]);
+  const frames = laid?.frames ?? [];
+  const labels = laid?.labels ?? [];
+  const id = `spot-${shot.w}-${shot.h}-${marks.map((m) => m.label).join('|').length}`;
   return (
     <div className="tour-shot spot">
-      <div className="ts-frame" onClick={() => n > 1 && setAt((at + 1) % n)}>
+      <div className="ts-frame">
         <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} />
         {size && (
           <svg className="ts-dim" width={size.w} height={size.h} aria-hidden="true">
@@ -464,27 +474,12 @@ function Spot({ shot }: { shot: GuideShot }) {
           </svg>
         )}
         {labels.map((l) => (
-          <span key={l.k} className={`ts-tip ${l.side}`} style={{ left: l.x, top: l.y, width: l.w, minHeight: l.h }}>
+          <span key={l.k} className={`ts-tip ${l.side}`} style={{ left: l.x, top: l.y, width: l.w, height: l.h }}>
             {marks[l.k]!.label}
             <i style={l.side === 't' || l.side === 'b' ? { left: l.at } : { top: l.at }} />
           </span>
         ))}
       </div>
-      {n > 1 && (
-        <div className="ts-steps">
-          <button type="button" className="ts-arrow" aria-label="Previous controls" disabled={at === 0} onClick={() => setAt(at - 1)}>
-            <Icon name="left" size={13} />
-          </button>
-          <span aria-label={`${at + 1} of ${n}`}>
-            {plan!.map((_, g) => (
-              <i key={g} className={g === at ? 'on' : ''} />
-            ))}
-          </span>
-          <button type="button" className="ts-arrow" aria-label="Next controls" disabled={at === n - 1} onClick={() => setAt(at + 1)}>
-            <Icon name="right" size={13} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
