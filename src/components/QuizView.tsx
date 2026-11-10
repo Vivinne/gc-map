@@ -8,6 +8,7 @@ import { FIELDS, FIELD_LABEL, PAIRS, QUICK_COUNT, addSession, shuffle, buildQuic
 import { BUILDINGS as EVERY_BUILDING } from '../lib/model';
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
+import { PageHint } from './Tour';
 import Help from './Help';
 
 
@@ -59,6 +60,8 @@ export interface QuizRequest {
 }
 
 interface Props {
+  /** First visit: one line at the top of the page */
+  hint?: string;
   /** False while another tab is shown: the quiz keeps its state but ignores the keyboard */
   active: boolean;
   mobile: boolean;
@@ -294,7 +297,7 @@ function RangeMenu({ groups, picked, total, onTick }: { groups: { title: string;
 }
 
 /** Quiz: set-up with three drop-downs, the run (answers shown only at the end; Next always works), the result */
-export default function QuizView({ active, mobile, starred, collections, quiz, request, onQuiz, onOpen }: Props) {
+export default function QuizView({ hint, active, mobile, starred, collections, quiz, request, onQuiz, onOpen }: Props) {
   const [setup, setSetupRaw] = useState<Setup>(() => {
     const s = load<Partial<Setup> & { scope?: string }>('quiz-setup', {});
     const fields = (x: unknown) => (Array.isArray(x) ? x.filter((f): f is Field => (FIELDS as string[]).includes(f)) : []);
@@ -648,15 +651,22 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             </span>
           </div>
           <div className="bd">
-            {/* accuracy counts answered questions only; how much was answered and skipped is said beside it */}
+            {/* how much was answered stands as large as the accuracy beside it, so a score of few answers never reads
+                as a whole quiz done well; under half answered, the accuracy is greyed */}
             <div className="qv-res">
-              <b>{answered ? pct(right, answered) : '\u2014'}</b>
-              <span>Accuracy{answered ? ` \u00b7 ${answered} answered` : ''}</span>
+              <div>
+                <b>
+                  {answered}
+                  <small> / {n}</small>
+                </b>
+                <span>Answered</span>
+              </div>
+              <div className={answered * 2 < n ? 'low' : ''}>
+                <b>{answered ? pct(right, answered) : '\u2014'}</b>
+                <span>Accuracy</span>
+              </div>
             </div>
             <p className="qv-sum">
-              <span>
-                Completion <b>{answered} of {n}</b>
-              </span>
               <span>
                 Right <b>{right}</b>
               </span>
@@ -756,6 +766,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
   };
   return (
     <div className={`qv${mobile ? ' m' : ''}`}>
+      {hint && <PageHint text={hint} />}
       <div className={`qv-col${customOpen ? ' open' : ''}`}>
         {/* your own quiz first: the same card as the others, its current set-up said in one line, a Start of its own;
             the settings open under it */}
@@ -772,8 +783,9 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
               </p>
             </div>
             <div className="qq-go">
-              <button type="button" className="btn grey" disabled={!cap || !pairs.length} onClick={() => startSetup(setup)}>
-                Start
+              {/* secondary to the Quick quiz, but plainly a button that works: an ink outline, the count it starts */}
+              <button type="button" className="btn line" disabled={!cap || !pairs.length} onClick={() => startSetup(setup)}>
+                {cap && pairs.length ? `Start ${n} question${n === 1 ? '' : 's'}` : 'Start'}
                 <Icon name="right" size={12} />
               </button>
               <button type="button" className="btn qv-fold" aria-expanded={customOpen} onClick={() => setCustom(!customOpen)}>
@@ -844,7 +856,7 @@ export default function QuizView({ active, mobile, starred, collections, quiz, r
             </div>
             <div className="qq-go">
               <button type="button" className="btn dark" onClick={() => startQuick()}>
-                Start
+                Start {QUICK_COUNT} questions
                 <Icon name="right" size={12} />
               </button>
             </div>

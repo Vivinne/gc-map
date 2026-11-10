@@ -8,10 +8,13 @@ import { load, save } from '../lib/storage';
 import { BY_ID, type Building } from '../lib/model';
 import { QUIZ_BUILDINGS as BUILDINGS, splitPair, valueOf, type LogEntry, type Pair, type QuizStore, type Session } from '../lib/quiz';
 import { Icon } from './Icons';
+import { PageHint } from './Tour';
 import Help from './Help';
 import { pct, typeLabel, type QuizRequest } from './QuizView';
 
 export interface MeProps {
+  /** First visit: one line at the top of the page */
+  hint?: string;
   mobile: boolean;
   seen: ReadonlySet<string>;
   starred: ReadonlySet<string>;
@@ -70,6 +73,7 @@ export default function MeView(p: MeProps) {
         <Help topic="progress" />
       </nav>
       <div className="me-pg" key={part}>
+        {p.hint && <PageHint text={p.hint} />}
         {part === 'overview' && <Overview {...p} />}
         {part === 'mistakes' && <Mistakes quiz={quiz} onQuiz={p.onQuiz} />}
         {part === 'history' && <History quiz={quiz} />}

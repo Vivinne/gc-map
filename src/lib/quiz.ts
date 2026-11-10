@@ -96,6 +96,25 @@ function sharesName(b: Building): boolean {
   return SAME_NAME.has(plainName(b.name));
 }
 
+/**
+ * Buildings whose place line names something larger than a city (a US state, an English county, an Italian
+ * region, or a province where the building stands in a village of it). City questions use cities only, as the
+ * right answer and as the wrong ones, so these are never asked about or offered there. Their place lines:
+ * California, Ohio, Pennsylvania (US states), Kent (English county), Sicily, Puglia, Veneto (Italian regions),
+ * Treviso (the province: Tomba Brion stands in San Vito d'Altivole).
+ */
+const NOT_A_CITY = new Set([
+  'salk-institute',
+  'wexner-center',
+  'vanna-venturi-house',
+  'fallingwater-pennsylvania',
+  'red-house-kent',
+  'valle-dei-templi-agrigento',
+  'castel-del-monte-puglia',
+  'palladio-s-villas-veneto',
+  'tomba-brion',
+]);
+
 export function valueOf(b: Building, f: Field): string {
   if (f === 'name') {
     const n = b.name.replace(/\s+and\s+/g, ' & ');
@@ -113,7 +132,7 @@ export function valueOf(b: Building, f: Field): string {
     // a list of people ("A, B and C") becomes "A / B / C"; a firm name ("Shreve, Lamb & Harmon") stays
     return /\sand\s/.test(w) ? slashed(w) : w;
   }
-  return b.city;
+  return NOT_A_CITY.has(b.id) ? '' : b.city;
 }
 
 export function splitPair(p: Pair): [Field, Field] {

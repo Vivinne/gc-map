@@ -171,8 +171,8 @@ const SCENES = [
     },
     crop: async (p, phone) => (phone ? union(p, ['.qv-main'], 12, 'w').then((r) => r && { ...r, height: Math.min(844 - r.y, r.height + 60) }) : union(p, ['.qv-main', '.qv-side'], 16)),
     marks: (phone) => [
-      { q: '.qv-res', label: 'Right out of answered' },
-      { q: '.qv-sum', label: 'Skipped ones do not count' },
+      { q: '.qv-res > div:first-child', label: 'How many you answered', desk: true },
+      { q: '.qv-res > div:last-child', label: 'Right out of answered' },
       { q: nth('.qv-main .qv-rl, .qv-main li', 0), label: 'Opens the building', at: 'l' },
       { q: byText('.qv-res-act .btn', 'Quiz menu'), label: 'Back to the quiz menu', desk: true },
       { q: byText('.qv-res-act .btn', 'Mistakes'), label: 'Quizzes only the wrong ones' },
@@ -189,7 +189,7 @@ const SCENES = [
     },
     crop: async (p, phone) => (phone ? union(p, ['.qv-col'], 12, 'w') : union(p, ['.qv-col'], 16)),
     marks: (phone) => [
-      { q: '.qv-custom .btn.grey', label: 'Starts your own quiz', ...(phone ? {} : { side: 'r' }) },
+      { q: '.qv-custom .btn.line', label: 'Starts your own quiz', ...(phone ? {} : { side: 'r' }) },
       { q: '.qv-custom .qv-fold', label: 'Chooses what to ask', ...(phone ? {} : { side: 'r' }) },
       { q: '.qv-quick:not(.qv-custom):not(.qv-again) .btn', label: 'Starts 5 quick questions', ...(phone ? {} : { side: 'r' }) },
       { q: '.qv-again .btn', label: 'Repeats the last kind, new questions', ...(phone ? {} : { side: 'r' }) },

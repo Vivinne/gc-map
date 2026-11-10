@@ -9,7 +9,7 @@ import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import Guide, { GUIDE_KEY, GUIDE_LINE } from './Guide';
-import Tour, { markSeen, toursOn, toursSeen, type TourId } from './Tour';
+import Tour, { HINT, markSeen, toursOn, toursSeen, type TourId } from './Tour';
 import type { EraId } from '../lib/types';
 import { BuildingCard, CityPanel, ResultsPanel, cityOrder } from './DetailPanel';
 import { Icon } from './Icons';
@@ -163,6 +163,8 @@ export default function App() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   // Page guides: each page's guide opens the first time the page is opened (Settings opens them again)
   const [tour, setTour] = useState<TourId | null>(null);
+  // first visit to Quiz, Progress or Settings: the page's one-line hint, for this visit only
+  const [hint, setHint] = useState<TourId | null>(null);
   const closeTour = useCallback(() => {
     setTour((t) => {
       if (t) markSeen(t);
@@ -586,7 +588,17 @@ export default function App() {
     // the map's guide waits for the map (a map that cannot start shows its own word instead)
     if (id === 'map' && (mapDown || !mapReady)) return;
     // computer only for now: the phone keeps its getting-started card and help windows
-    if (toursOn(mobile) && !toursSeen().includes(id)) setTour(id);
+    if (!toursOn(mobile)) return;
+    if (id !== 'map') {
+      // these pages open on what they are for; the guide waits behind the page's ?
+      if (toursSeen().includes(id)) setHint(null);
+      else {
+        markSeen(id);
+        setHint(id);
+      }
+      return;
+    }
+    if (!toursSeen().includes(id)) setTour(id);
   }, [mode, mapReady, mapDown, mobile]);
 
   // Phone: the getting-started card takes room above the map; when it comes or goes, a map left at its opening
@@ -666,6 +678,15 @@ export default function App() {
     </div>
   );
 
+  // the name is the way home: the clean full map, as when the site opens (computer and phone alike)
+  const goHome = () => {
+    clearView();
+    setResultsOpen(false);
+    setPalette(null);
+    setMode('map');
+    afterPanel(() => mapRef.current?.home());
+  };
+
   return (
     <div className={`app mode-${mode}${mobile ? ' is-mobile' : ''}${tabsOff ? ' tabs-off' : ''}`}>
       {!mobile ? (
@@ -675,13 +696,7 @@ export default function App() {
             type="button"
             className="brand"
             title="Home"
-            onClick={() => {
-              clearView();
-              setResultsOpen(false);
-              setPalette(null);
-              setMode('map');
-              afterPanel(() => mapRef.current?.home());
-            }}
+            onClick={goHome}
           >
             GC Atlas
           </button>
@@ -714,6 +729,9 @@ export default function App() {
         mode === 'map' && (
           <header className="m-top">
             <div className="m-row">
+              <button type="button" className="brand m-brand" title="Home" onClick={goHome}>
+                GC Atlas
+              </button>
               <button type="button" className="m-search" onClick={() => setPalette('')}>
                 <Icon name="search" size={17} />
                 <span>{filters.q || SEARCH_HINT}</span>
@@ -909,6 +927,7 @@ export default function App() {
         {quizUsed && (
           <div className={`pane quizv${mode === 'quiz' ? ' on' : ''}`} hidden={mode !== 'quiz'}>
             <QuizView
+              hint={hint === 'quiz' ? HINT.quiz : undefined}
               active={mode === 'quiz'}
               mobile={mobile}
               starred={starred}
@@ -926,6 +945,7 @@ export default function App() {
         {mode === 'me' && (
           <div className="pane on">
             <MeView
+              hint={hint === 'progress' ? HINT.progress : undefined}
               mobile={mobile}
               seen={seen}
               starred={starred}
@@ -947,6 +967,7 @@ export default function App() {
         {mode === 'settings' && (
           <div className="pane on">
             <SettingsView
+              hint={hint === 'settings' ? HINT.settings : undefined}
               mobile={mobile}
               theme={theme}
               onTheme={changeTheme}
