@@ -104,6 +104,28 @@ function textW(t: string, font: string): number {
 }
 const FONT_FAMILY = () => (typeof document !== 'undefined' ? getComputedStyle(document.body).fontFamily : 'system-ui, sans-serif');
 
+/** One guide page's picture (and keys) */
+function PageBody({ p, mobile, fitH }: { p: Page; mobile: boolean; fitH?: number }) {
+  const shot = SHOTS[`${mobile ? 'm' : 'd'}-${p.shot}`];
+  return (
+    <>
+      {shot && (mobile ? <Spot shot={shot} only={p.marks} fitH={fitH} /> : <Shot shot={shot} fitH={fitH} />)}
+      {p.keys && (
+        <p className="tour-keys">
+          {p.keys.map(([ks, what]) => (
+            <span key={what}>
+              {ks.map((k) => (
+                <kbd key={k}>{k}</kbd>
+              ))}
+              {what}
+            </span>
+          ))}
+        </p>
+      )}
+    </>
+  );
+}
+
 /** How long the window takes to fade away when closed */
 const CLOSE_MS = 160;
 
@@ -141,7 +163,36 @@ export default function Tour({ id, mobile, onClose: close }: { id: TourId; mobil
     window.addEventListener('keydown', key, true);
     return () => window.removeEventListener('keydown', key, true);
   }, [i, last, onClose]);
-  const shot = SHOTS[`${mobile ? 'm' : 'd'}-${p.shot}`];
+  // every page's copy is laid out unseen: first at its own size, to find the shortest picture, which every
+  // page's picture is then held to (so none leaves an empty band); then the tallest page sets the window
+  const pgs = useRef<HTMLDivElement>(null);
+  const [fitH, setFitH] = useState(0);
+  const [pgH, setPgH] = useState(0);
+  useLayoutEffect(() => {
+    setFitH(0);
+    setPgH(0);
+  }, [id, mobile]);
+  useLayoutEffect(() => {
+    const box = pgs.current;
+    if (!box) return;
+    const measure = () => {
+      // (phone only: a computer has the room to show each picture at its own size)
+      if (mobile && !fitH) {
+        const ims = [...box.querySelectorAll<HTMLImageElement>('.tour-pg-m img')].map((e) => e.offsetHeight).filter(Boolean);
+        // held to the shortest, but never below a height that keeps the pictures readable
+        const floor = 330;
+        if (ims.length) setFitH(Math.max(Math.min(...ims), Math.min(Math.max(...ims), floor)));
+        return;
+      }
+      const hs = [...box.querySelectorAll<HTMLElement>('.tour-pg-m')].map((e) => e.offsetHeight);
+      const h = Math.max(0, ...hs);
+      if (h) setPgH(h);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    box.querySelectorAll('.tour-pg-m').forEach((e) => ro.observe(e));
+    return () => ro.disconnect();
+  }, [id, mobile, fitH]);
   return createPortal(
     <div className={`tour-bg${leaving ? ' out' : ''}`}>
       <div className={`tour${mobile ? ' m' : ''}`} role="dialog" aria-modal="true" aria-label={`${TOUR_LABEL[id]} guide`}>
@@ -155,20 +206,19 @@ export default function Tour({ id, mobile, onClose: close }: { id: TourId; mobil
         <div className="tour-bd">
           <h2>{p.title}</h2>
           <p className="tour-line">{p.line}</p>
-          <div className="tour-pg" key={i}>
-            {shot && (mobile ? <Spot shot={shot} only={p.marks} /> : <Shot shot={shot} />)}
-          {p.keys && (
-            <p className="tour-keys">
-              {p.keys.map(([ks, what]) => (
-                <span key={what}>
-                  {ks.map((k) => (
-                    <kbd key={k}>{k}</kbd>
-                  ))}
-                  {what}
-                </span>
+          {/* the picture area is as tall as the tallest page's (measured from hidden copies of every page), so the
+              window keeps one size from page to page and has no empty band */}
+          <div className="tour-pgs" ref={pgs} style={pgH ? { height: pgH } : undefined}>
+            <div className="tour-pg" key={i}>
+              <PageBody p={pages[i]!} mobile={mobile} fitH={fitH || undefined} />
+            </div>
+            <div className="tour-measure" aria-hidden="true">
+              {pages.map((pg, k) => (
+                <div className="tour-pg-m" key={k}>
+                  <PageBody p={pg} mobile={mobile} fitH={fitH || undefined} />
+                </div>
               ))}
-            </p>
-          )}
+            </div>
           </div>
         </div>
         <div className="tour-f">
@@ -337,7 +387,7 @@ function useBox(shot: GuideShot) {
 }
 
 /** Computer: a screenshot with a line from each marked control out to a few words beside or above / below it */
-function Shot({ shot }: { shot: GuideShot }) {
+function Shot({ shot, fitH }: { shot: GuideShot; fitH?: number }) {
   const { box, img, size, measure } = useBox(shot);
   const side = sides(shot.marks, size?.w ?? shot.w, size?.h ?? shot.h);
   // band above / below: the line out of the picture, then the tallest label there, then a margin
@@ -349,7 +399,7 @@ function Shot({ shot }: { shot: GuideShot }) {
   return (
     <div className="tour-shot">
       <div className="ts-box" ref={box} style={{ padding: `${band('t')}px ${sideRoom(shot.marks.filter((_, k) => side[k] === 'l' || side[k] === 'r').map((m) => m.label))}px ${band('b')}px` }}>
-        <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} style={{ maxHeight: `min(560px, calc(100dvh - ${355 + band('t') + band('b')}px))` }} />
+        <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} style={{ maxHeight: fitH ? fitH : `min(560px, calc(100dvh - ${355 + band('t') + band('b')}px))` }} />
         {size && (
           <svg className="ts-lines" width={size.W} height={size.H} aria-hidden="true">
             {placed.map((m) => (
@@ -462,7 +512,7 @@ function place(marks: Mark[], W: number, H: number) {
  * (it must stay readable), each control clear and ringed in the guide's own colour, and a one-line dark tip
  * bubble pointing at it. Nothing to step through inside a page.
  */
-function Spot({ shot, only }: { shot: GuideShot; only?: string[] }) {
+function Spot({ shot, only, fitH }: { shot: GuideShot; only?: string[]; fitH?: number }) {
   const img = useRef<HTMLImageElement>(null);
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
   const measure = useCallback(() => {
@@ -483,7 +533,7 @@ function Spot({ shot, only }: { shot: GuideShot; only?: string[] }) {
   return (
     <div className="tour-shot spot" data-crowded={laid && !laid.ok ? laid.failed.join(' / ') : undefined}>
       <div className="ts-frame">
-        <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} />
+        <img ref={img} src={shot.src} alt="" width={shot.w} height={shot.h} onLoad={measure} draggable={false} style={fitH ? { maxHeight: fitH } : undefined} />
         {size && (
           <svg className="ts-dim" width={size.w} height={size.h} aria-hidden="true">
             <defs>
