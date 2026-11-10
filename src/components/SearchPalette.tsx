@@ -121,7 +121,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
       const ys = h.items.map((b) => b.y0).filter((y): y is number => y != null);
       return (
         <button type="button" key={`a-${h.who}`} {...common}>
-          <span className="av">{initials(h.who)}</span>
+          <i className="sq none" />
           <span className="nm">{h.who}</span>
           <span className="loc">{ys.length ? `${Math.min(...ys)}\u2013${Math.max(...ys)}` : ''}</span>
           <span className="cnt-n">{h.items.length}</span>
@@ -131,9 +131,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
     if (h.kind === 'city') {
       return (
         <button type="button" key={`c-${h.city}`} {...common}>
-          <span className="av city">
-            <Icon name="map" size={14} />
-          </span>
+<i className="sq none" />
           <span className="nm">{h.city}</span>
           <span className="loc" />
           <span className="cnt-n">{h.items.length}</span>
@@ -195,15 +193,8 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
                   const k = recentShown.length + j;
                   return (
                     <button type="button" key={`x-${x.value}`} data-cur={cur === k} className={`hit${cur === k ? ' on' : ''}`} onMouseMove={() => setCur(k)} onClick={() => idleRun[k]?.()} role="option" aria-selected={cur === k}>
-                      {x.kind === 'architect' ? (
-                        <span className="av">{initials(x.label)}</span>
-                      ) : x.kind === 'city' ? (
-                        <span className="av city">
-                          <Icon name="map" size={14} />
-                        </span>
-                      ) : (
-                        <i className="sq" style={{ background: ERAS[x.value as EraId].color }} />
-                      )}
+                      {/* a style shows its colour; an architect or a city keeps the same room, so every name lines up */}
+                      <i className={`sq${x.kind === 'style' ? '' : ' none'}`} style={x.kind === 'style' ? { background: ERAS[x.value as EraId].color } : undefined} />
                       <span className="nm">{x.label}</span>
                       <span className="loc">{x.kind === 'architect' ? 'Architect' : x.kind === 'city' ? 'City' : 'Style'}</span>
                     </button>
@@ -249,11 +240,4 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
       </div>
     </div>
   );
-}
-
-function initials(name: string): string {
-  const parts = name.replace(/\(.*?\)/g, '').split(/[\s,&]+/).filter((w) => /^[A-Z]/.test(w));
-  const a = parts[0] ?? name;
-  const z = parts[parts.length - 1] ?? '';
-  return (parts.length > 1 ? (a[0] ?? '') + (z[0] ?? '') : a.slice(0, 2)).toUpperCase();
 }

@@ -83,7 +83,7 @@ const SCENES = [
       await p.locator('.index .styles button').nth(3).click();
       await p.waitForTimeout(400);
     },
-    crop: async (p, phone) => (phone ? union(p, ['.m-sheet .styles', '.m-sheet .sec', '.m-sheet .rows li:nth-child(-n+4) .row'], 8, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.index .styles', '.index .sec', '.index .rows li:nth-child(-n+5) .row'], 14)),
+    crop: async (p, phone) => (phone ? union(p, ['.m-sheet .styles', '.m-sheet .sec', '.m-sheet .rows li:nth-child(-n+4) .row'], 8, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.drawer-h', '.index .styles', '.index .sec', '.index .rows li:nth-child(-n+5) .row'], 14)),
     marks: () => [
       { q: '.index .styles button', label: 'Pick styles, oldest first', desk: true },
       { q: nth('.index .sec .chips button', 0), label: 'Pick countries', desk: true },
@@ -92,7 +92,7 @@ const SCENES = [
       { q: ['.index .styles', '.index .sec .chips'], label: 'Tap tags to filter the map', phone: true },
       { q: '.index .rows .row', label: 'Opens a building', desk: true },
       { q: nth('.index .rows .row', 1), label: 'Opens a building', phone: true },
-      { q: '.index .chip.clear', label: 'Removes every filter', desk: true },
+      { q: '.drawer-h .icon-btn', label: 'Removes every filter', desk: true, side: 'r' },
     ],
   },
   {
@@ -134,7 +134,7 @@ const SCENES = [
     marks: () => [
       { q: '.pal-in', label: 'Type a building, architect or city' },
       { q: nth('.pal .hit', 0), label: 'Reopens what you read lately' },
-      { q: byText('.pal .hit', 'LC'), label: 'Opens an example' },
+      { q: byText('.pal .hit', 'Le Corbusier'), label: 'Opens an example' },
     ],
   },
   {

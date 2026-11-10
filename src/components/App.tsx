@@ -550,6 +550,29 @@ export default function App() {
   }, []);
 
 
+  // Filters panel (computer): a click anywhere outside it closes it (a drag of the map does not)
+  useEffect(() => {
+    if (mobile || !filtersOpen || mode !== 'map') return;
+    let at: { x: number; y: number; t: EventTarget | null } | null = null;
+    const down = (e: PointerEvent) => {
+      at = { x: e.clientX, y: e.clientY, t: e.target };
+    };
+    const up = (e: PointerEvent) => {
+      const a = at;
+      at = null;
+      if (!a || Math.hypot(e.clientX - a.x, e.clientY - a.y) > 5) return;
+      const el = a.t instanceof Element ? a.t : null;
+      if (!el || el.closest('.drawer, .fbtn, .tour-bg')) return;
+      setFiltersOpen(false);
+    };
+    window.addEventListener('pointerdown', down, true);
+    window.addEventListener('pointerup', up, true);
+    return () => {
+      window.removeEventListener('pointerdown', down, true);
+      window.removeEventListener('pointerup', up, true);
+    };
+  }, [mobile, filtersOpen, mode]);
+
   // ---------- keyboard ----------
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -714,19 +737,13 @@ export default function App() {
             <span className="ph">{filters.q || SEARCH_HINT}</span>
           </button>
           <nav className="modes" aria-label="Views">
-            {modes.map(([m, label, icon, key]) =>
-              m === 'settings' ? (
-                // Settings: the gear alone, as wide as a tap; its name shows on pointing or keyboard focus
-                <button type="button" key={m} className={`ic tip${mode === m ? ' on' : ''}`} aria-current={mode === m} aria-label={label} data-tip={label} onClick={() => setMode(m)}>
-                  <Icon name={icon} size={18} />
-                </button>
-              ) : (
-                <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={key ? `${label} (${key})` : label}>
-                  <Icon name={icon} size={17} />
-                  {label}
-                </button>
-              ),
-            )}
+            {/* every page named beside its icon, Settings too */}
+            {modes.map(([m, label, icon, key]) => (
+              <button type="button" key={m} className={mode === m ? 'on' : ''} aria-current={mode === m} aria-label={label} onClick={() => setMode(m)} title={key ? `${label} (${key})` : label}>
+                <Icon name={icon} size={17} />
+                {label}
+              </button>
+            ))}
           </nav>
         </header>
       ) : (
@@ -757,7 +774,17 @@ export default function App() {
           <div className="drawer">
             <div className="drawer-h">
               <b>{results.length} buildings</b>
-              <button type="button" className="icon-btn" aria-label="Close filters" onClick={() => setFiltersOpen(false)}>
+              {/* the corner X takes every tag off (the panel itself closes with a click anywhere outside it);
+                  with no tag on there is nothing to take off, and it is not shown */}
+              <button
+                type="button"
+                className={`icon-btn${activeFilters ? '' : ' off'}`}
+                aria-label="Clear all filters"
+                title="Clear all"
+                tabIndex={activeFilters ? 0 : -1}
+                aria-hidden={!activeFilters}
+                onClick={clearAll}
+              >
                 <Icon name="close" size={13} />
               </button>
             </div>
@@ -779,6 +806,8 @@ export default function App() {
             compact={mobile}
             sideways={mobile && wide}
             onSelect={(id) => {
+              // a point on the map clicked: the filters have done their work and step aside
+              setFiltersOpen(false);
               // The open building's pin clicked again: the user wants a closer look at it
               // (the map shows it at the 50 km scale; desktop: the card also goes back to its top)
               if (id === selId) {

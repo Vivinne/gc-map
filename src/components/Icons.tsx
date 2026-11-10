@@ -63,7 +63,8 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
     case 'chart':
       return (<svg {...p}><path d="M2 2v12h12" {...s} strokeWidth={1.5} /><path d="M4.5 10.5 7.5 7l2.5 2 4-5" {...s} strokeWidth={1.6} strokeLinejoin="round" /></svg>);
     case 'image':
-      return (<svg {...p}><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="1.5" {...s} strokeWidth={1.5} /><circle cx="5.6" cy="6.4" r="1.2" {...s} strokeWidth={1.4} /><path d="M2.5 12l3.8-3.6 2.6 2.4 2-1.8 2.6 2.6" {...s} strokeWidth={1.5} strokeLinejoin="round" /></svg>);
+      // a picture with a magnifier over its corner: look for photos
+      return (<svg {...p}><path d="M9 2.6H3.3a1.5 1.5 0 0 0-1.5 1.5v7.6a1.5 1.5 0 0 0 1.5 1.5h5.2" {...s} strokeWidth={1.4} /><circle cx="5" cy="6" r="1" {...s} strokeWidth={1.3} /><path d="M2.4 11.4l3-2.8 2 1.8" {...s} strokeWidth={1.4} strokeLinejoin="round" /><circle cx="11.4" cy="6.6" r="2.7" {...s} strokeWidth={1.5} /><path d="M13.4 8.7l1.9 1.9" {...s} strokeWidth={1.6} /></svg>);
     case 'undo':
       return (<svg {...p}><path d="M5 3.5 2 6.5l3 3M2.5 6.5H10a4 4 0 0 1 0 8H7" {...s} strokeWidth={1.6} /></svg>);
   }

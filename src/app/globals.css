@@ -137,6 +137,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 @keyframes drawer-in { from { transform: translateX(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
 .drawer-h { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--rule); flex: none; }
 .drawer-h b { font-size: 16px; }
+.drawer-h .icon-btn.off { visibility: hidden; }
 .drawer .index { border: 0; flex: 1; min-height: 0; }
 
 /* ---------- index ---------- */
@@ -321,7 +322,9 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .hit .cnt-n { margin-left: auto; font-size: 12.5px; color: var(--mute); }
 .hit.on .cnt-n { color: var(--g84); }
 .pal-res hr { border: 0; border-top: 1px solid var(--rule); margin: 8px 0; }
-.hit .av + .nm + .loc { margin-left: 0; }
+.hit .av + .nm + .loc, .hit .sq.none + .nm + .loc { margin-left: 0; }
+/* an architect or a city: no mark, the room of one, so names line up with the buildings' */
+.hit .sq.none { background: none; }
 .hit.on { background: var(--ink); color: #fff; }
 .hit.on .loc, .hit.on .yr { color: var(--g84); }
 .hit.on .av.city { background: #fff; }

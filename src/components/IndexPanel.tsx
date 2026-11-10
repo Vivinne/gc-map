@@ -20,7 +20,7 @@ interface Props {
 }
 
 /** Filters and the list: cities by size, or the matching buildings once a filter is on */
-export default function IndexPanel({ filters: f, counts, results, collections, selectedId, onFilters, onClear, onCity, onSelect, onHoverCity }: Props) {
+export default function IndexPanel({ filters: f, counts, results, collections, selectedId, onFilters, onCity, onSelect, onHoverCity }: Props) {
   const toggle = <K extends 'styles' | 'countries' | 'examYears'>(key: K, v: Filters[K][number]) => {
     const arr = f[key] as unknown[];
     onFilters({ ...f, [key]: arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v] });
@@ -72,15 +72,10 @@ export default function IndexPanel({ filters: f, counts, results, collections, s
               );
             })}
           </div>
-          {(f.q || f.who || active) && (
+          {(f.q || f.who) && (
             <div className="pills">
               {f.who && <Pill text={f.who} onRemove={() => onFilters({ ...f, who: '' })} />}
               {f.q && <Pill text={f.q} onRemove={() => onFilters({ ...f, q: '' })} />}
-              {active && (
-                <button type="button" className="chip clear" onClick={onClear} aria-label="Clear all filters" title="Clear all">
-                  <Icon name="close" size={11} />
-                </button>
-              )}
             </div>
           )}
         </section>
