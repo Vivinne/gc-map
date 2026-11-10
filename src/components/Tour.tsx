@@ -103,11 +103,32 @@ function textW(t: string, font: string): number {
 }
 const FONT_FAMILY = () => (typeof document !== 'undefined' ? getComputedStyle(document.body).fontFamily : 'system-ui, sans-serif');
 
-export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: boolean; onClose(): void }) {
+/** How long the window takes to fade away when closed */
+const CLOSE_MS = 160;
+
+export default function Tour({ id, mobile, onClose: close }: { id: TourId; mobile: boolean; onClose(): void }) {
   const pages = PAGES(id, mobile);
   const [i, setI] = useState(0);
   const p = pages[i]!;
   const last = i === pages.length - 1;
+  // closing: the window fades out first, then goes
+  const [leaving, setLeaving] = useState(false);
+  const onClose = useCallback(() => {
+    if (leaving) return;
+    setLeaving(true);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.setTimeout(close, reduced ? 0 : CLOSE_MS);
+  }, [close, leaving]);
+  // every page's picture decoded up front, so turning a page never waits for one
+  useEffect(() => {
+    for (const pg of pages) {
+      const sh = SHOTS[`${mobile ? 'm' : 'd'}-${pg.shot}`];
+      if (!sh) continue;
+      const im = new Image();
+      im.src = sh.src;
+      im.decode?.().catch(() => {});
+    }
+  }, [pages, mobile]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -121,7 +142,7 @@ export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: bool
   }, [i, last, onClose]);
   const shot = SHOTS[`${mobile ? 'm' : 'd'}-${p.shot}`];
   return createPortal(
-    <div className="tour-bg">
+    <div className={`tour-bg${leaving ? ' out' : ''}`}>
       <div className={`tour${mobile ? ' m' : ''}`} role="dialog" aria-modal="true" aria-label={`${TOUR_LABEL[id]} guide`}>
         <div className="tour-h">
           <span className="tour-k">{TOUR_LABEL[id]} guide</span>
@@ -129,10 +150,12 @@ export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: bool
             <Icon name="close" size={14} />
           </button>
         </div>
-        <div className="tour-bd" key={i}>
+        {/* the window keeps one size for every page; only the page's words and picture change */}
+        <div className="tour-bd">
           <h2>{p.title}</h2>
           <p className="tour-line">{p.line}</p>
-          {shot && (mobile ? <Spot shot={shot} only={p.marks} /> : <Shot shot={shot} />)}
+          <div className="tour-pg" key={i}>
+            {shot && (mobile ? <Spot shot={shot} only={p.marks} /> : <Shot shot={shot} />)}
           {p.keys && (
             <p className="tour-keys">
               {p.keys.map(([ks, what]) => (
@@ -145,6 +168,7 @@ export default function Tour({ id, mobile, onClose }: { id: TourId; mobile: bool
               ))}
             </p>
           )}
+          </div>
         </div>
         <div className="tour-f">
           <button type="button" className="btn" disabled={i === 0} onClick={() => setI(i - 1)}>

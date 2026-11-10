@@ -1363,8 +1363,15 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 /* ---------- Page guides: a large window in the middle, the rest dimmed ---------- */
 .tour-bg { position: fixed; inset: 0; z-index: 60; background: rgba(14, 18, 24, 0.56); display: grid; place-items: center; padding: 24px; animation: fade-in var(--t-mid) var(--ease); }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-.tour { width: min(1180px, 100%); max-height: calc(100dvh - 48px); display: flex; flex-direction: column; background: #fff; border-radius: 14px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28); overflow: hidden; animation: page-in var(--t-mid) var(--ease); }
-.tour.m { max-height: calc(100dvh - 16px); }
+.tour { width: min(1180px, 100%); height: min(860px, calc(100dvh - 48px)); display: flex; flex-direction: column; background: #fff; border-radius: 14px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28); overflow: hidden; animation: tour-in var(--t-mid) var(--ease); }
+.tour.m { height: calc(100dvh - 16px); }
+/* closing: everything fades out together */
+.tour-bg.out { animation: fade-out 160ms var(--ease-in) forwards; }
+.tour-bg.out .tour { animation: tour-out 160ms var(--ease-in) forwards; }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes tour-out { to { opacity: 0; transform: scale(0.98); } }
+@keyframes tour-in { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .tour-bg, .tour, .tour-pg, .tour-bg.out, .tour-bg.out .tour { animation: none; } }
 .tour-bg:has(.tour.m) { padding: 8px; }
 /* phone: the page behind is blurred as well as dimmed, so it never looks like the guide's own sharp, dimmed picture */
 .tour-bg:has(.tour.m) { background: rgba(14, 18, 24, 0.5); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
@@ -1372,7 +1379,9 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .tour-k { font-size: 12px; font-weight: 750; letter-spacing: 0.04em; text-transform: uppercase; color: var(--mute); }
 .tour-x { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 10px; margin-left: auto; }
 .tour-x:hover { background: var(--soft); }
-.tour-bd { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 16px; overscroll-behavior: contain; animation: page-in var(--t-fast) var(--ease); }
+.tour-bd { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 16px; overscroll-behavior: contain; display: flex; flex-direction: column; }
+/* a new page's picture fades in where the last one was (nothing moves) */
+.tour-pg { flex: 1; display: flex; flex-direction: column; justify-content: center; animation: fade-in 180ms var(--ease); }
 .tour-bd h2 { white-space: nowrap; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
 .tour-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; font-size: 14.5px; line-height: 1.5; color: var(--g40, #444); }
 .tour.m .tour-bd { padding: 14px 14px 10px; }
