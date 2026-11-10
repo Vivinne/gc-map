@@ -21,7 +21,7 @@ const KEY = 'tours-seen';
  * Phones get the page guides only once they are approved; until then a phone keeps the getting-started card,
  * the step-by-step help windows and the earlier Settings. scripts/guide-shots.cjs and the previews switch it on.
  */
-export const PHONE_TOURS = false;
+export const PHONE_TOURS = true;
 /** Whether this screen gets the page guides */
 export const toursOn = (mobile: boolean) => !mobile || PHONE_TOURS;
 
@@ -341,6 +341,10 @@ const PAD = 3;
 type Tip = Rect & { k: number; side: Side; /** where the arrow touches the bubble, along its edge */ at: number };
 /** Arrow of a tip bubble: its length out of the bubble, and the least distance from the bubble's corners */
 const ARROW = 7;
+/** Room left between the arrow's tip and the ring round the control */
+const TIP_GAP = 5;
+/** Bubble's distance from the control's frame: arrow, then the room */
+const OUT = ARROW + TIP_GAP;
 const ARROW_IN = 12;
 
 /**
@@ -365,7 +369,7 @@ function place(marks: Mark[], W: number, H: number) {
     let best: Tip | null = null;
     let bestCost = Infinity;
     const free = (r: Rect) =>
-      r.x >= 4 && r.y >= 4 && r.x + r.w <= W - 4 && r.y + r.h <= H - 4 && !frames.some((o) => hit(r, o, 2)) && !tips.some((o) => hit(r, o, 4));
+      r.x >= 4 && r.y >= 4 && r.x + r.w <= W - 4 && r.y + r.h <= H - 4 && !frames.some((o) => hit(r, o, TIP_GAP + 2)) && !tips.some((o) => hit(r, o, 6));
     const tryAt = (r: Rect, side: Side, at: number, cost: number) => {
       if (cost < bestCost && free(r)) {
         bestCost = cost;
@@ -374,7 +378,7 @@ function place(marks: Mark[], W: number, H: number) {
     };
     // above / below: the arrow at the control's middle (or as near it as the bubble allows, still inside it)
     for (const side of ['b', 't'] as Side[]) {
-      const y = side === 'b' ? f.y + f.h + ARROW : f.y - ARROW - h;
+      const y = side === 'b' ? f.y + f.h + OUT : f.y - OUT - h;
       for (let x = Math.floor(cx - w + ARROW_IN); x <= cx - ARROW_IN; x += 2) {
         const ax = Math.max(x + ARROW_IN, Math.min(x + w - ARROW_IN, cx));
         if (ax < f.x + 3 || ax > f.x + f.w - 3) continue;
@@ -382,7 +386,7 @@ function place(marks: Mark[], W: number, H: number) {
       }
     }
     for (const side of ['r', 'l'] as Side[]) {
-      const x = side === 'r' ? f.x + f.w + ARROW : f.x - ARROW - w;
+      const x = side === 'r' ? f.x + f.w + OUT : f.x - OUT - w;
       for (let y = Math.floor(cy - h + 8); y <= cy - 8; y += 2) {
         const ay = Math.max(y + 8, Math.min(y + h - 8, cy));
         if (ay < f.y + 2 || ay > f.y + f.h - 2) continue;
@@ -391,7 +395,7 @@ function place(marks: Mark[], W: number, H: number) {
     }
     if (!best) {
       ok = false;
-      best = { x: Math.max(4, Math.min(W - 4 - w, cx - w / 2)), y: Math.min(H - 4 - h, f.y + f.h + ARROW), w, h, k, side: 'b', at: w / 2 };
+      best = { x: Math.max(4, Math.min(W - 4 - w, cx - w / 2)), y: Math.min(H - 4 - h, f.y + f.h + OUT), w, h, k, side: 'b', at: w / 2 };
     }
     tips.push(best);
   }
