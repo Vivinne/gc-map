@@ -1153,9 +1153,15 @@ function Donut({ items, r }: { items: Building[]; r: number }) {
 
 type Act = React.SVGProps<SVGGElement>;
 
+/** A label's touch area: the whole box round its words with some room, not only the strokes of the letters */
+function LabelHit({ x, y, w }: { x: number; y: number; w: number }) {
+  return <rect className="lbl-hit" x={x - 6} y={y - 17} width={w + 12} height={25} />;
+}
+
 function CityLabel({ x, y, text, act }: { x: number; y: number; text: string; act?: Act }) {
   return (
     <g className={`city-lbl${act ? ' mk' : ''}`} {...act}>
+      {act && <LabelHit x={x} y={y} w={textWidth(text, 'city')} />}
       <text x={x} y={y} className="halo">
         {text}
       </text>
@@ -1223,6 +1229,7 @@ function PlaceLabel({ x, y, w, text, strong, act }: { x: number; y: number; w: n
   }
   return (
     <g className="place-lbl soft mk" {...act}>
+      <LabelHit x={x} y={y} w={w} />
       <text x={x} y={y} className="halo">
         {text}
       </text>

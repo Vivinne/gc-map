@@ -210,6 +210,7 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .city-lbl text { font-size: 12.5px; font-weight: 650; }
 .halo { stroke: rgba(255, 255, 255, 0.85); stroke-width: 4px; stroke-linejoin: round; }
 .place-lbl.strong rect { fill: var(--ink); }
+.lbl-hit { fill: transparent; }
 .place-lbl.strong text { fill: #fff; font-size: 13.5px; font-weight: 750; }
 .place-lbl.soft text { font-size: 11px; font-weight: 500; fill: var(--g51); }
 .map-tip { position: absolute; z-index: 3; background: var(--ink); color: #fff; padding: 8px; display: flex; flex-direction: column; gap: 2px; font-size: 13px; pointer-events: none; max-width: 260px; }
