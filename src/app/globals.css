@@ -886,10 +886,9 @@ label.btn:active { filter: brightness(0.86); }
 .me:not(.m) .k { grid-column: span 4; }
 .me.m .k:nth-child(3) { grid-column: 1 / -1; }
 /* help: one "?" per page; a window in the middle of the screen, steps with small pictures of the controls */
-.help-tip { white-space: nowrap; padding: 5px 9px; border-radius: 6px; background: var(--g25); color: #fff; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); pointer-events: none; animation: fade-in var(--t-mid) var(--ease); }
+.help-tip { box-sizing: border-box; height: 26px; white-space: nowrap; padding: 5px 9px; border-radius: 6px; background: var(--g25); color: #fff; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); pointer-events: none; animation: fade-in var(--t-mid) var(--ease); }
 .help-tip i { position: absolute; z-index: -1; width: 10px; height: 10px; background: var(--g25); transform: rotate(45deg); }
 .help-tip { position: fixed; z-index: 40; }
-.help-tip.r { transform: translateY(-50%); }
 .help-tip.r i { left: -4px; top: 50%; margin-top: -5px; }
 .help-tip.b i { top: -4px; right: 9px; }
 .help-q { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px var(--g66); color: var(--mute); font-weight: 800; font-size: 14px; text-align: center; position: relative; }

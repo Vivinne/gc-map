@@ -21,9 +21,18 @@ export default function Help({ topic, hint = false, className = "" }: { topic: "
     if (!note) return;
     const place = () => btn.current && setAt(btn.current.getBoundingClientRect());
     place();
+    // the page may still be moving in: the note follows the button for as long as it shows
+    let raf = 0;
+    const follow = () => {
+      const r = btn.current?.getBoundingClientRect();
+      if (r) setAt((o) => (o && o.top === r.top && o.left === r.left && o.width === r.width ? o : r));
+      raf = requestAnimationFrame(follow);
+    };
+    raf = requestAnimationFrame(follow);
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, true);
     return () => {
+      cancelAnimationFrame(raf);
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
     };
@@ -53,7 +62,7 @@ export default function Help({ topic, hint = false, className = "" }: { topic: "
           <span
             className={`help-tip ${topic === "quiz" ? "r" : "b"}`}
             aria-hidden="true"
-            style={topic === "quiz" ? { left: at.right + 10, top: at.top + at.height / 2 } : { right: window.innerWidth - at.right, top: at.bottom + 10 }}
+            style={topic === "quiz" ? { left: at.right + 10, top: at.top + (at.height - 26) / 2 } : { right: window.innerWidth - at.right, top: at.bottom + 10 }}
           >
             {title}
             <i />
