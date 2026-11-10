@@ -18,17 +18,6 @@ export const TOUR_LABEL: Record<TourId, string> = { map: 'Map', quiz: 'Quiz', pr
 export const TOURS: TourId[] = ['map', 'quiz', 'progress', 'settings'];
 const KEY = 'tours-seen';
 
-/** First visit to Quiz, Progress or Settings: one line at the top of the page instead of the guide over it */
-export const HINT: Partial<Record<TourId, string>> = {
-  quiz: 'First time here: tap [?] for how a quiz works.',
-  progress: 'First time here: tap [?] for how progress is counted.',
-  settings: "Every page's guide is under About & guides.",
-};
-export function PageHint({ text }: { text: string }) {
-  // "[?]" stands for the page's ? button, drawn the same way
-  const [a, b] = text.split('[?]');
-  return <p className="page-hint">{b === undefined ? text : <>{a}<b className="ph-q">?</b>{b}</>}</p>;
-}
 /**
  * Phones get the page guides only once they are approved; until then a phone keeps the getting-started card,
  * the step-by-step help windows and the earlier Settings. scripts/guide-shots.cjs and the previews switch it on.

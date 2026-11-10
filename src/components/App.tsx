@@ -9,7 +9,7 @@ import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import Guide, { GUIDE_KEY, GUIDE_LINE } from './Guide';
-import Tour, { HINT, markSeen, toursOn, toursSeen, type TourId } from './Tour';
+import Tour, { markSeen, toursOn, toursSeen, type TourId } from './Tour';
 import type { EraId } from '../lib/types';
 import { BuildingCard, CityPanel, ResultsPanel, cityOrder } from './DetailPanel';
 import { Icon } from './Icons';
@@ -163,7 +163,7 @@ export default function App() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   // Page guides: each page's guide opens the first time the page is opened (Settings opens them again)
   const [tour, setTour] = useState<TourId | null>(null);
-  // first visit to Quiz, Progress or Settings: the page's one-line hint, for this visit only
+  // first visit to Quiz or Progress: a small note at the page's ? for this visit (Settings holds the guides)
   const [hint, setHint] = useState<TourId | null>(null);
   const closeTour = useCallback(() => {
     setTour((t) => {
@@ -927,7 +927,7 @@ export default function App() {
         {quizUsed && (
           <div className={`pane quizv${mode === 'quiz' ? ' on' : ''}`} hidden={mode !== 'quiz'}>
             <QuizView
-              hint={hint === 'quiz' ? HINT.quiz : undefined}
+              hint={hint === 'quiz'}
               active={mode === 'quiz'}
               mobile={mobile}
               starred={starred}
@@ -945,7 +945,7 @@ export default function App() {
         {mode === 'me' && (
           <div className="pane on">
             <MeView
-              hint={hint === 'progress' ? HINT.progress : undefined}
+              hint={hint === 'progress'}
               mobile={mobile}
               seen={seen}
               starred={starred}
@@ -967,7 +967,6 @@ export default function App() {
         {mode === 'settings' && (
           <div className="pane on">
             <SettingsView
-              hint={hint === 'settings' ? HINT.settings : undefined}
               mobile={mobile}
               theme={theme}
               onTheme={changeTheme}

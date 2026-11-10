@@ -169,7 +169,7 @@ const SCENES = [
       }
       await p.waitForTimeout(800);
     },
-    crop: async (p, phone) => (phone ? union(p, ['.qv-main'], 12, 'w').then((r) => r && { ...r, height: Math.min(844 - r.y, r.height + 60) }) : union(p, ['.qv-main', '.qv-side'], 16)),
+    crop: async (p, phone) => (phone ? union(p, ['.qv-main'], 12, 'w').then((r) => r && { ...r, height: Math.min(844 - r.y, r.height + 80) }) : union(p, ['.qv-main', '.qv-side'], 16)),
     marks: (phone) => [
       { q: '.qv-res > div:first-child', label: 'How many you answered', desk: true },
       { q: '.qv-res > div:last-child', label: 'Right out of answered' },

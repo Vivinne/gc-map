@@ -682,11 +682,9 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .is-mobile .main { grid-column: 1; grid-row: 2; }
 .is-mobile.mode-me .main, .is-mobile.mode-settings .main, .is-mobile.mode-quiz .main { grid-row: 1; }
 .m-top { grid-row: 1; min-width: 0; background: #fff; z-index: 5; display: flex; flex-direction: column; gap: 6px; padding: calc(6px + env(safe-area-inset-top)) 12px 8px; border-bottom: 1px solid var(--rule); }
-.m-row { display: flex; gap: 8px; }
+.m-row { display: flex; align-items: center; gap: 8px; }
 /* phone: the site's name left of the search, the same way home as on a computer */
-.m-brand { color: #fff !important; height: 40px; padding: 0 10px; font-size: 13px; border-radius: var(--r-s); white-space: nowrap; }
-.m-brand { font-size: 13px; line-height: 18px; color: var(--g40, #555); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.m-brand b { color: var(--ink); font-weight: 800; }
+.m-row button.m-brand { flex: none; box-sizing: border-box; height: 40px; padding: 0 11px; color: #fff; font-size: 13px; line-height: 1; border-radius: var(--r-s); white-space: nowrap; }
 .m-search { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; background: var(--soft); color: var(--mute); font-size: 15px; }
 .m-fbtn { position: relative; flex: none; width: 40px; height: 40px; display: grid; place-items: center; background: var(--soft); }
 .m-fbtn.on { background: var(--ink); color: #fff; }
@@ -888,8 +886,12 @@ label.btn:active { filter: brightness(0.86); }
 .me:not(.m) .k { grid-column: span 4; }
 .me.m .k:nth-child(3) { grid-column: 1 / -1; }
 /* help: one "?" per page; a window in the middle of the screen, steps with small pictures of the controls */
-.page-hint { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--g89); border-radius: var(--r-s); font-size: 13.5px; font-weight: 600; color: var(--g37); }
-.ph-q { flex: none; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--g66); color: var(--mute); font-size: 12px; font-weight: 800; }
+.help-tip { white-space: nowrap; padding: 5px 9px; border-radius: 6px; background: var(--g25); color: #fff; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); pointer-events: none; animation: fade-in var(--t-mid) var(--ease); }
+.help-tip i { position: absolute; z-index: -1; width: 10px; height: 10px; background: var(--g25); transform: rotate(45deg); }
+.help-tip { position: fixed; z-index: 40; }
+.help-tip.r { transform: translateY(-50%); }
+.help-tip.r i { left: -4px; top: 50%; margin-top: -5px; }
+.help-tip.b i { top: -4px; right: 9px; }
 .help-q { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px var(--g66); color: var(--mute); font-weight: 800; font-size: 14px; text-align: center; position: relative; }
 .help-q::before { content: ''; position: absolute; inset: -8px; }
 .help-q:hover { box-shadow: inset 0 0 0 1.5px var(--ink); color: var(--ink); }
@@ -1288,6 +1290,10 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .qv-sum { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .qv-sum b { color: var(--ink); font-weight: 750; }
 .qv-res-act { justify-content: flex-end; }
+/* phone: the result's buttons on an even grid, the main one across the full width */
+.qv.m .qv-res-act { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qv.m .qv-res-act .btn { width: 100%; }
+.qv.m .qv-res-act .btn.dark, .qv.m .qv-res-act .btn:not(.dark):nth-last-child(2):nth-child(odd) { grid-column: 1 / -1; }
 /* Desktop Settings: the gear alone, 48 px wide; its name in a tip on pointing or keyboard focus */
 .modes button.ic.tip { width: 48px; padding: 0; justify-content: center; position: relative; }
 .tip[data-tip]::after { content: attr(data-tip); position: absolute; top: calc(100% + 6px); right: 4px; z-index: 30; padding: 5px 8px; border-radius: 6px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 600; white-space: nowrap; pointer-events: none; opacity: 0; transform: translateY(-2px); transition: opacity var(--t-fast), transform var(--t-fast); }
@@ -1419,7 +1425,7 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .tour-shot.spot { padding: 16px 0 10px; }
 /* the guide's picture: a white edge round it, like a screen held up, set apart from the page behind */
 .ts-frame { position: relative; width: fit-content; margin: 0 auto; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--g80), 0 10px 24px rgba(0, 0, 0, 0.22); }
-.ts-frame img { display: block; width: auto; height: auto; max-width: 100%; max-height: max(300px, calc(100dvh - 345px)); user-select: none; }
+.ts-frame img { display: block; width: auto; height: auto; max-width: 100%; max-height: max(300px, calc(100dvh - 300px)); user-select: none; }
 /* phone: the picture dimmed but for the controls; their words in the dimmed part next to them */
 .ts-dim { position: absolute; left: 0; top: 0; pointer-events: none; }
 .ts-shade { fill: rgba(16, 19, 24, 0.26); }

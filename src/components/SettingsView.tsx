@@ -3,11 +3,9 @@
 import { type ThemeId } from '../lib/theme';
 import { Icon } from './Icons';
 import Guide, { GUIDE_LINE, GUIDE_NOTE } from './Guide';
-import { PageHint, TOURS, TOUR_LABEL, toursOn, type TourId } from './Tour';
+import { TOURS, TOUR_LABEL, toursOn, type TourId } from './Tour';
 
 interface Props {
-  /** First visit: one line at the top of the page */
-  hint?: string;
   mobile: boolean;
   theme: ThemeId;
   onTheme(id: ThemeId): void;
@@ -27,7 +25,6 @@ export default function SettingsView(p: Props) {
   return (
     <div className={p.mobile ? 'me m set' : 'me set'}>
       <div className="me-pg">
-        {p.hint && <PageHint text={p.hint} />}
         {!toursOn(p.mobile) ? (
           <section className="card" aria-labelledby="set-about">
             <div className="hd">

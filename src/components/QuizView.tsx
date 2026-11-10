@@ -8,7 +8,6 @@ import { FIELDS, FIELD_LABEL, PAIRS, QUICK_COUNT, addSession, shuffle, buildQuic
 import { BUILDINGS as EVERY_BUILDING } from '../lib/model';
 import { load, save } from '../lib/storage';
 import { Icon } from './Icons';
-import { PageHint } from './Tour';
 import Help from './Help';
 
 
@@ -60,8 +59,8 @@ export interface QuizRequest {
 }
 
 interface Props {
-  /** First visit: one line at the top of the page */
-  hint?: string;
+  /** First visit: a note at the page's ? */
+  hint?: boolean;
   /** False while another tab is shown: the quiz keeps its state but ignores the keyboard */
   active: boolean;
   mobile: boolean;
@@ -766,16 +765,33 @@ export default function QuizView({ hint, active, mobile, starred, collections, q
   };
   return (
     <div className={`qv${mobile ? ' m' : ''}`}>
-      {hint && <PageHint text={hint} />}
       <div className={`qv-col${customOpen ? ' open' : ''}`}>
-        {/* your own quiz first: the same card as the others, its current set-up said in one line, a Start of its own;
+        {/* the first step: one button, five questions from the building to its city, architect and style */}
+        <section className="card qv-quick" aria-label="Quick quiz">
+          <div className="qq-row">
+            <div className="qq-t">
+              <h2>Quick quiz</h2>
+              <p>
+                {QUICK_COUNT} questions {'\u00b7'} City, architect &amp; style
+                <Info label="Which buildings are asked" text={IN_QUIZ_NOTE} />
+              </p>
+            </div>
+            <div className="qq-go">
+              <button type="button" className="btn dark" onClick={() => startQuick()}>
+                Start {QUICK_COUNT} questions
+                <Icon name="right" size={12} />
+              </button>
+            </div>
+          </div>
+        </section>
+        {/* your own quiz, under the quick one: the same card as the others, its current set-up said in one line, a Start of its own;
             the settings open under it */}
         <section className={`card qv-quick qv-custom qz2${customOpen ? ' open' : ''}`} aria-label="Custom quiz">
           <div className="qq-row">
             <div className="qq-t">
               <h2>
                 Custom quiz
-                <Help topic="quiz" />
+                <Help topic="quiz" hint={hint} />
               </h2>
               <p>Choose the question type, the range and how many.</p>
               <p className="qq-now">
@@ -843,24 +859,6 @@ export default function QuizView({ hint, active, mobile, starred, collections, q
               {short && <p className="qz2-why">Only {cap} building{cap === 1 ? '' : 's'} in this range {cap === 1 ? 'has' : 'have'} the facts these questions need.</p>}
             </div>
           )}
-        </section>
-        {/* the first step: one button, five questions from the building to its city, architect and style */}
-        <section className="card qv-quick" aria-label="Quick quiz">
-          <div className="qq-row">
-            <div className="qq-t">
-              <h2>Quick quiz</h2>
-              <p>
-                {QUICK_COUNT} questions {'\u00b7'} City, architect &amp; style
-                <Info label="Which buildings are asked" text={IN_QUIZ_NOTE} />
-              </p>
-            </div>
-            <div className="qq-go">
-              <button type="button" className="btn dark" onClick={() => startQuick()}>
-                Start {QUICK_COUNT} questions
-                <Icon name="right" size={12} />
-              </button>
-            </div>
-          </div>
         </section>
         {last && (
           <section className="card qv-quick qv-again" aria-label="Practice again">
