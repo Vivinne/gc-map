@@ -1408,13 +1408,13 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .ts-shade { fill: rgba(16, 19, 24, 0.26); }
 /* the guide's own colour, used nowhere else in the pages, so the marks never look like part of the site */
 .ts-ring { fill: none; stroke: var(--gold); stroke-width: 2.5; }
-.ts-tip { position: absolute; box-sizing: border-box; white-space: nowrap; padding: 3px 7px; border-radius: 6px; background: var(--g25); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); font-size: 11px; font-weight: 700; line-height: 14px; color: #fff; text-align: center; pointer-events: none; }
-.ts-stem { stroke: var(--g25); stroke-width: 2; }
-.ts-tip i { position: absolute; width: 0; height: 0; border: 7px solid transparent; }
-.ts-tip.b i { top: -14px; margin-left: -7px; border-bottom-color: var(--g25); }
-.ts-tip.t i { bottom: -14px; margin-left: -7px; border-top-color: var(--g25); }
-.ts-tip.r i { left: -14px; margin-top: -7px; border-right-color: var(--g25); }
-.ts-tip.l i { right: -14px; margin-top: -7px; border-left-color: var(--g25); }
+.ts-tip { position: absolute; box-sizing: border-box; white-space: nowrap; padding: 3px 7px; border-radius: 6px; background: var(--g25); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); font-size: 11px; font-weight: 700; line-height: 14px; color: #fff; text-align: center; pointer-events: none; z-index: 1; }
+.ts-tip i { position: absolute; z-index: -1; width: 10px; height: 10px; background: var(--g25); transform: rotate(45deg); }
+/* a turned square half inside the bubble: no seam where it meets the bubble's edge */
+.ts-tip.b i { top: -4px; margin-left: -5px; }
+.ts-tip.t i { bottom: -4px; margin-left: -5px; }
+.ts-tip.r i { left: -4px; margin-top: -5px; }
+.ts-tip.l i { right: -4px; margin-top: -5px; }
 .ts-steps { display: flex; align-items: center; justify-content: center; gap: 14px; padding-top: 8px; }
 .ts-steps span { display: flex; gap: 6px; }
 .ts-steps i { width: 7px; height: 7px; border-radius: 50%; background: var(--g85); }

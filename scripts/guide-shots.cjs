@@ -169,9 +169,9 @@ const SCENES = [
       }
       await p.waitForTimeout(800);
     },
-    crop: async (p, phone) => (phone ? union(p, ['.qv-main'], 12, 'w') : union(p, ['.qv-main', '.qv-side'], 16)),
+    crop: async (p, phone) => (phone ? union(p, ['.qv-main'], 12, 'w').then((r) => r && { ...r, height: Math.min(844 - r.y, r.height + 60) }) : union(p, ['.qv-main', '.qv-side'], 16)),
     marks: (phone) => [
-      { q: '.qv-res', label: 'Right answers out of those answered' },
+      { q: '.qv-res', label: 'Right out of answered' },
       { q: '.qv-sum', label: 'Skipped ones do not count' },
       { q: nth('.qv-main .qv-rl, .qv-main li', 0), label: 'Opens the building', at: 'l' },
       { q: byText('.qv-res-act .btn', 'Quiz menu'), label: 'Back to the quiz menu', desk: true },
@@ -216,7 +216,7 @@ const SCENES = [
       await p.locator(phone ? tab(phone, 'Settings') : '.modes button[aria-label="Settings"], .top button[aria-label="Settings"]').first().click();
       await p.waitForTimeout(600);
     },
-    crop: async (p, phone) => union(p, ['.me-pg .card'], phone ? 10 : 16, phone ? 'w' : ''),
+    crop: async (p, phone) => union(p, ['.me-pg .card'], phone ? 10 : 16, phone ? 'w' : '').then((r) => (phone ? r && { ...r, height: Math.min(844 - r.y, r.height + 60) } : r)),
     marks: () => [
       { q: '.set-btns .btn', label: 'Opens a guide again' },
       { q: nth('.set-dev .btn', 0), label: 'Saves your progress to a file' },
