@@ -72,7 +72,7 @@ const DESK_PAGES: Record<TourId, Page[]> = {
     { title: 'The result', line: 'Skipped questions do not count.', shot: 'quiz-result' },
   ],
   progress: [{ title: 'Progress', line: 'A building is mastered when its city, architect and style are each right on 2 different days.', shot: 'progress' }],
-  settings: [{ title: 'Settings', line: 'The guides again, and your progress on another device.', shot: 'settings' }],
+  settings: [{ title: 'Settings', line: 'The guides again, and a backup of your stars and collections.', shot: 'settings' }],
 };
 
 /** Phone: each page one picture with up to 3 controls marked, every page complete in itself (nothing to step through) */
@@ -90,7 +90,7 @@ const PHONE_PAGES: Record<TourId, Page[]> = {
     { title: 'The result', line: 'Skipped questions do not count.', shot: 'quiz-result', marks: ['Right out of answered', 'Quizzes only the wrong ones', 'New questions of the same kind'] },
   ],
   progress: [{ title: 'Progress', line: 'Mastered: right on 2 different days.', shot: 'progress', marks: ['Lists those buildings', 'Lists every wrong answer'] }],
-  settings: [{ title: 'Settings', line: 'Guides, and progress on another device.', shot: 'settings', marks: ['Opens a guide again', 'Saves your progress to a file', 'Loads it on another device'] }],
+  settings: [{ title: 'Settings', line: 'Guides, and a backup of your stars and lists.', shot: 'settings', marks: ['Opens a guide again', 'Saves them to a file', 'Adds a file to what is here'] }],
 };
 
 const PAGES = (id: TourId, mobile: boolean) => (mobile ? PHONE_PAGES : DESK_PAGES)[id];

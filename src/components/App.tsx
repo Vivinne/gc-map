@@ -509,7 +509,8 @@ export default function App() {
         }
         return out;
       });
-      if (p.quiz) setQuiz(cleanQuiz(p.quiz, new Set(BY_ID.keys())));
+      // quiz results come in only while the quiz is on (off, the ones kept here are left as they are)
+      if (STUDY_ON && p.quiz) setQuiz(cleanQuiz(p.quiz, new Set(BY_ID.keys())));
       setToast({ id: Date.now(), text: `Imported: ${p.collections.length} collections, ${p.starred.length} starred` });
     } catch {
       setToast({ id: Date.now(), text: 'Not a GC Atlas file' });

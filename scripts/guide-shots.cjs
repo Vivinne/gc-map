@@ -223,8 +223,8 @@ const SCENES = [
     crop: async (p, phone) => union(p, ['.me-pg .card'], phone ? 10 : 16, phone ? 'w' : '').then((r) => (phone ? r && { ...r, height: Math.min(844 - r.y, r.height + 60) } : r)),
     marks: () => [
       { q: '.set-btns .btn', label: 'Opens a guide again' },
-      { q: nth('.set-dev .btn', 0), label: 'Saves your progress to a file' },
-      { q: nth('.set-dev .btn', 1), label: 'Loads it on another device' },
+      { q: nth('.set-dev .btn', 0), label: 'Saves them to a file' },
+      { q: nth('.set-dev .btn', 1), label: 'Adds a file to what is here' },
     ],
   },
 ];

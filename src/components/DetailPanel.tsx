@@ -286,6 +286,7 @@ function Peek({ b, side, no, back, kept, starred, collections, others }: { b: Bu
           )}
           <span className="c-ic c-photo">
             <Icon name="image" size={14} />
+            <span className="c-ext">{'\u2197'}</span>
           </span>
           <span className="c-sp" />
           <span className="c-ic">
@@ -470,6 +471,10 @@ export function BuildingCard({ b, starred, mobile, canStep, onPrev, onNext, onCl
             title="Photos (new tab)"
           >
             <Icon name="image" size={14} />
+            {/* the arrow: this opens another site */}
+            <span className="c-ext" aria-hidden="true">
+              {'\u2197'}
+            </span>
           </a>
           <span className="c-sp" />
           {canStep && (

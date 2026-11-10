@@ -21,7 +21,7 @@ interface Props {
   onShowGuide(): void;
 }
 
-/** Settings: what the site is for, and moving study progress to another device. */
+/** Settings: what the site is for, its guides, and a backup of stars and collections to move to another device. */
 export default function SettingsView(p: Props) {
   return (
     <div className={p.mobile ? 'me m set' : 'me set'}>
@@ -62,18 +62,21 @@ export default function SettingsView(p: Props) {
         )}
         <section className="card" aria-labelledby="set-device">
           <div className="hd">
-            <h2 id="set-device">Another device</h2>
+            <h2 id="set-device">Backup &amp; transfer</h2>
           </div>
           <div className="bd set-dev">
-            <p className="note">{STUDY_ON ? 'Stars, collections and quiz results.' : 'Stars and collections.'} Save them to a file here, then load the file on the other device.</p>
+            {/* what the buttons move, and what an import does to what is here, said before either is used */}
+            <p className="note">
+              {STUDY_ON ? 'Stars, collections and quiz results' : 'Stars and collections'} to a file, and back on any device. An import adds to what is here: nothing is removed, collections with the same name are joined.
+            </p>
             <div className="set-btns">
               <button type="button" className="btn" onClick={p.onExport}>
                 <Icon name="download" size={14} />
-                Save progress to file
+                {STUDY_ON ? 'Export stars, collections & quizzes' : 'Export stars & collections'}
               </button>
               <label className="btn">
                 <Icon name="upload" size={14} />
-                Load file
+                Import file
                 <input
                   type="file"
                   accept=".json,application/json"
