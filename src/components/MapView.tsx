@@ -639,9 +639,28 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       hits.push(<circle key={`h-${key}`} className="mk hit" cx={x} cy={y} r={20} onPointerDown={onDown} onClick={(e) => isClick(e) && onSelect(id)} />);
     };
     const labels: React.ReactNode[] = [];
+    // A name answers the pointer exactly as its circle or pin does: the same hover, the same click
+    const cityAct = (c: Cluster) => ({
+      onPointerDown: onDown,
+      onPointerEnter: () => setTip(c),
+      onPointerLeave: () => setTip((t) => (t === c ? null : t)),
+      onClick: (e: React.MouseEvent) => {
+        if (!isClick(e)) return;
+        setTip(null);
+        // One click opens the city the circle is named after (the largest one of a merged circle), with
+        // the buildings the circle counts in its other cities
+        onCity(c.name, c.items.filter((b) => b.city !== c.name));
+      },
+    });
+    const pinAct = (id: string) => ({
+      onPointerDown: onDown,
+      onPointerEnter: () => setPinHover(id),
+      onPointerLeave: () => setPinHover((h) => (h === id ? '' : h)),
+      onClick: (e: React.MouseEvent) => isClick(e) && onSelect(id),
+    });
 
     if (!detail) {
-      const cityLabels: { key: string; x: number; y: number; r: number; text: string; hot: boolean }[] = [];
+      const cityLabels: { key: string; x: number; y: number; r: number; text: string; hot: boolean; c: Cluster }[] = [];
       for (const c of clusters) {
         if (c.items.length < MIN_DONUT) {
           for (const b of c.items) {
@@ -661,21 +680,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const r = donutRadius(c.items.length);
         const isHot = hoverCity === c.name || tip === c;
         marks.push(
-          <g
-            key={c.key}
-            className="mk donut"
-            transform={`translate(${x.toFixed(1)},${y.toFixed(1)})`}
-            onPointerDown={onDown}
-            onPointerEnter={() => setTip(c)}
-            onPointerLeave={() => setTip((t) => (t === c ? null : t))}
-            onClick={(e) => {
-              if (!isClick(e)) return;
-              setTip(null);
-              // One click opens the city the circle is named after (the largest one of a merged circle), with
-              // the buildings the circle counts in its other cities
-              onCity(c.name, c.items.filter((b) => b.city !== c.name));
-            }}
-          >
+          <g key={c.key} className="mk donut" transform={`translate(${x.toFixed(1)},${y.toFixed(1)})`} {...cityAct(c)}>
             {isHot && <circle r={r + 6} className="donut-hot" />}
             <Donut items={c.items} r={r} />
             <text className="donut-n" y={4.3} textAnchor="middle">
@@ -683,7 +688,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             </text>
           </g>,
         );
-        if (c.items.length >= 5 || isHot) cityLabels.push({ key: c.key, x, y, r, text: clusterName(c), hot: isHot });
+        if (c.items.length >= 5 || isHot) cityLabels.push({ key: c.key, x, y, r, text: clusterName(c), hot: isHot, c });
       }
       // City names: right of the circle first, then left, below, above; never over another circle or name
       const occupied: Box[] = [...blocked];
@@ -706,7 +711,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           const b = { x1: tx - 2, x2: tx + tw + 2, y1: ty - 12, y2: ty + 3 };
           if (occupied.some((o) => !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2))) continue;
           occupied.push(b);
-          labels.push(<CityLabel key={`l-${l.key}`} x={tx} y={ty} text={l.text} />);
+          labels.push(<CityLabel key={`l-${l.key}`} x={tx} y={ty} text={l.text} act={cityAct(l.c)} />);
           break;
         }
       }
@@ -777,7 +782,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         if (!strong && !isFocus(p)) continue;
         // the open building always gets its name, even where the city is crowded
         const pos = placeLabel(p.x, p.y, p.b.name, strong ? 'strong' : 'soft', placed, area, 15) ?? (rank(p) === 0 ? forceLabel(p.x, p.y, p.b.name, area, placed) : null);
-        if (pos) labels.push(<PlaceLabel key={`t-${p.b.id}`} {...pos} text={p.b.name} strong={strong} />);
+        if (pos) labels.push(<PlaceLabel key={`t-${p.b.id}`} {...pos} text={p.b.name} strong={strong} act={pinAct(p.b.id)} />);
       }
       // Buildings of another city shown as plain dots: that city's name once beside them (e.g. Vatican next to Rome)
       const others = new Map<string, Pin[]>();
@@ -792,7 +797,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const cy = ps.reduce((n, p) => n + p.y, 0) / ps.length;
         const r = Math.max(...ps.map((p) => Math.hypot(p.x - cx, p.y - cy))) + 8;
         const pos = placeLabel(cx, cy, name, 'city', placed, area, r);
-        if (pos) labels.push(<CityLabel key={`oc-${name}`} x={pos.x} y={pos.y} text={name} />);
+        if (pos)
+          labels.push(
+            <CityLabel
+              key={`oc-${name}`}
+              x={pos.x}
+              y={pos.y}
+              text={name}
+              act={{ onPointerDown: onDown, onClick: (e: React.MouseEvent) => isClick(e) && onCity(name, []) }}
+            />,
+          );
       }
       // A pin moved off its spot (shared spot or crowding) keeps a thin line to the true position
       for (const p of pins) {
@@ -1137,9 +1151,11 @@ function Donut({ items, r }: { items: Building[]; r: number }) {
   );
 }
 
-function CityLabel({ x, y, text }: { x: number; y: number; text: string }) {
+type Act = React.SVGProps<SVGGElement>;
+
+function CityLabel({ x, y, text, act }: { x: number; y: number; text: string; act?: Act }) {
   return (
-    <g className="city-lbl">
+    <g className={`city-lbl${act ? ' mk' : ''}`} {...act}>
       <text x={x} y={y} className="halo">
         {text}
       </text>
@@ -1194,10 +1210,10 @@ function forceLabel(x: number, y: number, text: string, area: Box, placed: Box[]
   return { x: x1, y: y + 4, w: tw };
 }
 
-function PlaceLabel({ x, y, w, text, strong }: { x: number; y: number; w: number; text: string; strong: boolean }) {
+function PlaceLabel({ x, y, w, text, strong, act }: { x: number; y: number; w: number; text: string; strong: boolean; act?: Act }) {
   if (strong) {
     return (
-      <g className="place-lbl strong">
+      <g className="place-lbl strong mk" {...act}>
         <rect x={x - 6} y={y - 15} width={w + 12} height={21} />
         <text x={x} y={y}>
           {text}
@@ -1206,7 +1222,7 @@ function PlaceLabel({ x, y, w, text, strong }: { x: number; y: number; w: number
     );
   }
   return (
-    <g className="place-lbl soft">
+    <g className="place-lbl soft mk" {...act}>
       <text x={x} y={y} className="halo">
         {text}
       </text>

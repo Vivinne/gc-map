@@ -8,6 +8,7 @@ import { BUILDINGS, BY_ID, CITY_BUILDINGS, CITY_NO, COUNTRIES, ERAS, ERA_ORDER, 
 import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
+import { STUDY_ON } from '../lib/features';
 import Guide, { GUIDE_KEY, GUIDE_LINE } from './Guide';
 import Tour, { markSeen, toursOn, toursSeen, type TourId } from './Tour';
 import type { EraId } from '../lib/types';
@@ -121,7 +122,10 @@ export default function App() {
   // A reload is a reset: the page always opens on the full map with nothing selected and no filters.
   // Personal data (seen, stars, collections, quiz results) stays.
   const initial = useMemo(() => readAddress(), []);
-  const [mode, setMode] = useState<Mode>(initial.mode);
+  // with Quiz and Progress off, any way to them (address, key, button) lands on the map instead
+  const open = (m: Mode): Mode => (STUDY_ON || (m !== 'quiz' && m !== 'me') ? m : 'map');
+  const [mode, setModeRaw] = useState<Mode>(() => open(initial.mode));
+  const setMode = useCallback((m: Mode) => setModeRaw(open(m)), []);
   const [theme, setTheme] = useState<ThemeId>(savedTheme);
   const changeTheme = useCallback((id: ThemeId) => {
     applyTheme(id);
@@ -629,7 +633,7 @@ export default function App() {
     ['quiz', 'Quiz', 'cards', 'Q'],
     ['me', 'Progress', 'chart', 'U'],
     ['settings', 'Settings', 'gear', ''],
-  ];
+  ].filter(([m]) => STUDY_ON || (m !== 'quiz' && m !== 'me')) as [Mode, string, 'map' | 'cards' | 'chart' | 'gear', string][];
 
   const index = (
     <IndexPanel
@@ -803,16 +807,20 @@ export default function App() {
               <div className="map-down">
                 <section className="map-down-h" aria-label="Map unavailable">
                   <h2>The map can't be shown in this browser.</h2>
-                  <p>{GUIDE_LINE} You can still browse the buildings or take a quiz.</p>
+                  <p>
+                    {GUIDE_LINE} You can still browse the buildings{STUDY_ON ? ' or take a quiz' : ''}.
+                  </p>
                   <div className="guide-b">
                     <button type="button" className="btn dark" onClick={() => downList.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
                       <Icon name="list" size={14} />
                       Browse buildings
                     </button>
-                    <button type="button" className="btn" onClick={quickQuiz}>
-                      <Icon name="cards" size={14} />
-                      Quick quiz
-                    </button>
+                    {STUDY_ON && (
+                      <button type="button" className="btn" onClick={quickQuiz}>
+                        <Icon name="cards" size={14} />
+                        Quick quiz
+                      </button>
+                    )}
                   </div>
                   <details className="map-down-d">
                     <summary>Details</summary>
@@ -924,7 +932,7 @@ export default function App() {
           </Leave>
         </div>
         {/* The quiz stays mounted while another tab is open, so a quiz in progress is still there on return */}
-        {quizUsed && (
+        {STUDY_ON && quizUsed && (
           <div className={`pane quizv${mode === 'quiz' ? ' on' : ''}`} hidden={mode !== 'quiz'}>
             <QuizView
               hint={hint === 'quiz'}
@@ -942,7 +950,7 @@ export default function App() {
             />
           </div>
         )}
-        {mode === 'me' && (
+        {STUDY_ON && mode === 'me' && (
           <div className="pane on">
             <MeView
               hint={hint === 'progress'}

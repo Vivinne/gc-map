@@ -216,6 +216,7 @@ const SCENES = [
   {
     id: 'settings',
     async setup(p, phone) {
+      await closeAll(p, phone);
       await p.locator(phone ? tab(phone, 'Settings') : '.modes button[aria-label="Settings"], .top button[aria-label="Settings"]').first().click();
       await p.waitForTimeout(600);
     },
@@ -298,6 +299,8 @@ function emit() {
     p.on('pageerror', (e) => console.log(dev, 'pageerror', e.message));
     for (const s of SCENES) {
       if (only && s.id !== only) continue;
+      // SCENES=a,b: only these (e.g. with Quiz and Progress off, their scenes cannot be reached)
+      if (process.env.SCENES && !process.env.SCENES.split(',').includes(s.id)) continue;
       await s.setup(p, d.phone);
       await p.waitForTimeout(500);
       // never a picture taken mid-way through a panel's opening: every running animation finished first
@@ -326,6 +329,9 @@ function emit() {
     await c.close();
   }
   await b.close();
-  fs.writeFileSync(path.join(RAW, `marks-${process.env.DEV || 'all'}.json`), JSON.stringify(out, null, 1));
+  const file = path.join(RAW, `marks-${process.env.DEV || 'all'}.json`);
+  // a run of some scenes keeps the marks of the others
+  const before = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+  fs.writeFileSync(file, JSON.stringify({ ...before, ...out }, null, 1));
   console.log(JSON.stringify(out));
 })();

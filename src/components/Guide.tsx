@@ -1,9 +1,10 @@
 'use client';
 
 import { Icon } from './Icons';
+import { STUDY_ON } from '../lib/features';
 
 /** What the site is for, in one line: the first thing a new visitor reads */
-export const GUIDE_LINE = 'Explore key buildings by location, architect and style. Test what you know.';
+export const GUIDE_LINE = STUDY_ON ? 'Explore key buildings by location, architect and style. Test what you know.' : 'Explore key buildings by location, architect and style.';
 /** Said once where the site is described: what it is for, and that it is not the school's own */
 export const GUIDE_NOTE = 'A study aid for the Polimi ARCHED General Culture test. Not an official Politecnico di Milano product.';
 /** Stored once the guide is hidden (kept for this visit only when the browser cannot store it) */

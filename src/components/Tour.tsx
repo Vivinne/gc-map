@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { createPortal } from 'react-dom';
 import { SHOTS, type GuideShot } from '../data/guide-shots';
 import { load, save } from '../lib/storage';
+import { STUDY_ON } from '../lib/features';
 import { Icon } from './Icons';
 
 /**
@@ -15,7 +16,7 @@ import { Icon } from './Icons';
  */
 export type TourId = 'map' | 'quiz' | 'progress' | 'settings';
 export const TOUR_LABEL: Record<TourId, string> = { map: 'Map', quiz: 'Quiz', progress: 'Progress', settings: 'Settings' };
-export const TOURS: TourId[] = ['map', 'quiz', 'progress', 'settings'];
+export const TOURS: TourId[] = (['map', 'quiz', 'progress', 'settings'] as TourId[]).filter((t) => STUDY_ON || (t !== 'quiz' && t !== 'progress'));
 const KEY = 'tours-seen';
 
 /**

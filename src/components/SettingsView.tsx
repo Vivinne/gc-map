@@ -2,6 +2,7 @@
 
 import { type ThemeId } from '../lib/theme';
 import { Icon } from './Icons';
+import { STUDY_ON } from '../lib/features';
 import Guide, { GUIDE_LINE, GUIDE_NOTE } from './Guide';
 import { TOURS, TOUR_LABEL, toursOn, type TourId } from './Tour';
 
@@ -64,7 +65,7 @@ export default function SettingsView(p: Props) {
             <h2 id="set-device">Another device</h2>
           </div>
           <div className="bd set-dev">
-            <p className="note">Stars, collections and quiz results. Save them to a file here, then load the file on the other device.</p>
+            <p className="note">{STUDY_ON ? 'Stars, collections and quiz results.' : 'Stars and collections.'} Save them to a file here, then load the file on the other device.</p>
             <div className="set-btns">
               <button type="button" className="btn" onClick={p.onExport}>
                 <Icon name="download" size={14} />
