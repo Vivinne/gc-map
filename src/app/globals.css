@@ -322,9 +322,10 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .hit .cnt-n { margin-left: auto; font-size: 12.5px; color: var(--mute); }
 .hit.on .cnt-n { color: var(--g84); }
 .pal-res hr { border: 0; border-top: 1px solid var(--rule); margin: 8px 0; }
-.hit .av + .nm + .loc, .hit .sq.none + .nm + .loc { margin-left: 0; }
-/* an architect or a city: no mark, the room of one, so names line up with the buildings' */
-.hit .sq.none { background: none; }
+.hit .av + .nm + .loc, .hit .kd + .nm + .loc { margin-left: 0; }
+/* an architect's or a city's mark: an icon in the room of a style's square, so every name lines up */
+.hit .kd { flex: none; width: 12px; height: 14px; display: grid; place-items: center; overflow: visible; color: var(--g51); }
+.hit.on .kd { color: #fff; }
 .hit.on { background: var(--ink); color: #fff; }
 .hit.on .loc, .hit.on .yr { color: var(--g84); }
 .hit.on .av.city { background: #fff; }

@@ -121,7 +121,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
       const ys = h.items.map((b) => b.y0).filter((y): y is number => y != null);
       return (
         <button type="button" key={`a-${h.who}`} {...common}>
-          <i className="sq none" />
+          <span className="kd" aria-hidden="true"><Icon name="person" size={14} /></span>
           <span className="nm">{h.who}</span>
           <span className="loc">{ys.length ? `${Math.min(...ys)}\u2013${Math.max(...ys)}` : ''}</span>
           <span className="cnt-n">{h.items.length}</span>
@@ -131,7 +131,7 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
     if (h.kind === 'city') {
       return (
         <button type="button" key={`c-${h.city}`} {...common}>
-<i className="sq none" />
+<span className="kd" aria-hidden="true"><Icon name="pin" size={14} /></span>
           <span className="nm">{h.city}</span>
           <span className="loc" />
           <span className="cnt-n">{h.items.length}</span>
@@ -193,8 +193,14 @@ export default function SearchPalette({ initial, mobile, onClose, onOpen, onArch
                   const k = recentShown.length + j;
                   return (
                     <button type="button" key={`x-${x.value}`} data-cur={cur === k} className={`hit${cur === k ? ' on' : ''}`} onMouseMove={() => setCur(k)} onClick={() => idleRun[k]?.()} role="option" aria-selected={cur === k}>
-                      {/* a style shows its colour; an architect or a city keeps the same room, so every name lines up */}
-                      <i className={`sq${x.kind === 'style' ? '' : ' none'}`} style={x.kind === 'style' ? { background: ERAS[x.value as EraId].color } : undefined} />
+                      {/* a style shows its colour, an architect a person, a city a pin: all in the same room, so names line up */}
+                      {x.kind === 'style' ? (
+                        <i className="sq" style={{ background: ERAS[x.value as EraId].color }} />
+                      ) : (
+                        <span className="kd" aria-hidden="true">
+                          <Icon name={x.kind === 'architect' ? 'person' : 'pin'} size={14} />
+                        </span>
+                      )}
                       <span className="nm">{x.label}</span>
                       <span className="loc">{x.kind === 'architect' ? 'Architect' : x.kind === 'city' ? 'City' : 'Style'}</span>
                     </button>

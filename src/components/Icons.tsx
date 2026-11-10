@@ -1,4 +1,4 @@
-export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me' | 'chart' | 'image' | 'gear' | 'list' | 'info';
+export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me' | 'chart' | 'image' | 'gear' | 'list' | 'info' | 'person' | 'pin';
 
 /** Line icons drawn on a 16 px grid; colour follows the text colour */
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
@@ -63,8 +63,14 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
     case 'chart':
       return (<svg {...p}><path d="M2 2v12h12" {...s} strokeWidth={1.5} /><path d="M4.5 10.5 7.5 7l2.5 2 4-5" {...s} strokeWidth={1.6} strokeLinejoin="round" /></svg>);
     case 'image':
-      // a picture with a magnifier over its corner: look for photos
-      return (<svg {...p}><path d="M9 2.6H3.3a1.5 1.5 0 0 0-1.5 1.5v7.6a1.5 1.5 0 0 0 1.5 1.5h5.2" {...s} strokeWidth={1.4} /><circle cx="5" cy="6" r="1" {...s} strokeWidth={1.3} /><path d="M2.4 11.4l3-2.8 2 1.8" {...s} strokeWidth={1.4} strokeLinejoin="round" /><circle cx="11.4" cy="6.6" r="2.7" {...s} strokeWidth={1.5} /><path d="M13.4 8.7l1.9 1.9" {...s} strokeWidth={1.6} /></svg>);
+      // a picture (hill and sun) with a magnifier over its lower right corner: look for photos
+      return (<svg {...p}><path d="M8.6 12.6H2.6a1 1 0 0 1-1-1V3.4a1 1 0 0 1 1-1h10.8a1 1 0 0 1 1 1v4" {...s} strokeWidth={1.5} strokeLinejoin="round" /><path d="M2.3 11.6 5.6 6.8l2.6 3.4" fill="currentColor" /><circle cx="10.6" cy="5" r="1.1" fill="currentColor" /><circle cx="11.2" cy="10.6" r="2.6" {...s} strokeWidth={1.6} /><path d="M13.1 12.5l2 2" {...s} strokeWidth={1.9} strokeLinecap="round" /></svg>);
+    case 'person':
+      // head and shoulders, in outline: an architect
+      return (<svg {...p}><circle cx="8" cy="5" r="3.2" {...s} strokeWidth={1.6} /><path d="M2.4 15c0-3.6 2.5-6.2 5.6-6.2s5.6 2.6 5.6 6.2" {...s} strokeWidth={1.6} strokeLinecap="round" /></svg>);
+    case 'pin':
+      // a map pin: a city
+      return (<svg {...p}><path fillRule="evenodd" fill="currentColor" d="M8 15.4C5.3 11.9 3 9.2 3 6.2a5 5 0 0 1 10 0c0 3-2.3 5.7-5 9.2ZM8 8.3a2.1 2.1 0 1 0 0-4.2 2.1 2.1 0 0 0 0 4.2Z" /></svg>);
     case 'undo':
       return (<svg {...p}><path d="M5 3.5 2 6.5l3 3M2.5 6.5H10a4 4 0 0 1 0 8H7" {...s} strokeWidth={1.6} /></svg>);
   }
