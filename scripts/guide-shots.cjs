@@ -62,13 +62,14 @@ const SCENES = [
     async setup(p) {
       await home(p);
     },
-    crop: async () => null,
+    // phone: the top of the screen, where the controls are (the page tabs below need no guide)
+    crop: async (p, phone) => (phone ? { x: 0, y: 0, width: 390, height: 520 } : null),
     marks: (phone) => [
       { q: phone ? '.m-fbtn' : '.fbtn', label: 'Opens filters and the list' },
       { q: phone ? '.m-search' : '.top .search', label: 'Finds buildings, architects, cities' },
-      { q: phone ? '.tabbar' : '.modes', label: 'Switches page', at: phone ? 't' : 'c' },
-      { q: "fn:const v=[...document.querySelectorAll('.overlay .donut')].map((e)=>[e,e.getBoundingClientRect()]).filter(([,r])=>r.width>0&&r.top>innerHeight*0.3&&r.top<innerHeight*0.8);v.sort((a,b)=>a[1].x-b[1].x);return v[0]?v[0][0]:null", label: 'Lists the buildings in a city', side: 'l' },
-      { q: "fn:const c=[innerWidth/2,innerHeight/2];const v=[...document.querySelectorAll('.overlay .dot')].map((e)=>[e,e.getBoundingClientRect()]).filter(([,r])=>r.width>0&&r.top>innerHeight*0.3&&r.top<innerHeight*0.8);v.sort((a,b)=>a[1].x-b[1].x);return v[0]?v[0][0]:null", label: 'Opens a building', side: 'l' },
+      { q: '.modes', label: 'Switches page', desk: true },
+      { q: "fn:const v=[...document.querySelectorAll('.overlay .donut')].map((e)=>[e,e.getBoundingClientRect()]).filter(([,r])=>r.width>0&&r.top>innerHeight*0.3&&r.top<innerHeight*(innerWidth<900?0.52:0.8));v.sort((a,b)=>a[1].x-b[1].x);return v[0]?v[0][0]:null", label: 'Lists the buildings in a city', side: 'l' },
+      { q: "fn:const c=[innerWidth/2,innerHeight/2];const v=[...document.querySelectorAll('.overlay .dot')].map((e)=>[e,e.getBoundingClientRect()]).filter(([,r])=>r.width>0&&r.top>innerHeight*0.3&&r.top<innerHeight*(innerWidth<900?0.52:0.8));v.sort((a,b)=>a[1].x-b[1].x);return v[0]?v[0][0]:null", label: 'Opens a building', side: 'l' },
       ...(phone ? [] : [{ q: '.ctrls button[aria-label="Zoom in"]', label: 'Zooms in or out' }]),
       { q: '.ctrls button[aria-label="Country"]', label: 'Shows the whole country' },
       { q: '.ctrls button[aria-label="Full map"]', label: 'Shows the whole map' },
@@ -272,7 +273,7 @@ function emit() {
     if (process.env.DEV && process.env.DEV !== dev) continue;
     const c = await b.newContext({ viewport: { width: d.width, height: d.height }, isMobile: d.phone, hasTouch: d.phone, deviceScaleFactor: 2 });
     await c.addInitScript(() => {
-      try { localStorage.setItem('gc-atlas:tours-seen', JSON.stringify(['map', 'quiz', 'progress', 'settings'])); } catch {}
+      try { localStorage.setItem('gc-atlas:tours-seen', JSON.stringify(['map', 'quiz', 'progress', 'settings'])); localStorage.setItem('gc-atlas:guide-hidden', 'true'); } catch {}
       const s = document.createElement('style');
       s.textContent = '.map-tiles,.toast{display:none!important} *{caret-color:transparent!important}';
       document.addEventListener('DOMContentLoaded', () => document.head.appendChild(s));

@@ -1366,6 +1366,8 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .tour { width: min(1180px, 100%); max-height: calc(100dvh - 48px); display: flex; flex-direction: column; background: #fff; border-radius: 14px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28); overflow: hidden; animation: page-in var(--t-mid) var(--ease); }
 .tour.m { max-height: calc(100dvh - 16px); }
 .tour-bg:has(.tour.m) { padding: 8px; }
+/* phone: the page behind is blurred as well as dimmed, so it never looks like the guide's own sharp, dimmed picture */
+.tour-bg:has(.tour.m) { background: rgba(14, 18, 24, 0.5); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .tour-h { flex: none; display: flex; align-items: center; height: 48px; padding: 0 4px 0 20px; border-bottom: 1px solid var(--g96); }
 .tour-k { font-size: 12px; font-weight: 750; letter-spacing: 0.04em; text-transform: uppercase; color: var(--mute); }
 .tour-x { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 10px; margin-left: auto; }
@@ -1397,21 +1399,27 @@ th, .me .k span, .ct, .cf-sub, .note { font-size: 12px !important; }
 .ts-label.l { text-align: right; }
 .ts-label.t, .ts-label.b { transform: translateX(-50%); text-align: center; }
 /* phone: one control at a time */
-.tour-shot.spot { padding: 12px 0 10px; }
-.ts-frame { position: relative; width: fit-content; margin: 0 auto; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px var(--g85); }
-.ts-frame img { display: block; width: auto; height: auto; max-width: 100%; max-height: max(330px, calc(100dvh - 400px)); user-select: none; }
+.tour-shot.spot { padding: 16px 0 10px; }
+/* the guide's picture: a white edge round it, like a screen held up, set apart from the page behind */
+.ts-frame { position: relative; width: fit-content; margin: 0 auto; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--g80), 0 10px 24px rgba(0, 0, 0, 0.22); }
+.ts-frame img { display: block; width: auto; height: auto; max-width: 100%; max-height: max(300px, calc(100dvh - 345px)); user-select: none; }
 /* phone: the picture dimmed but for the controls; their words in the dimmed part next to them */
 .ts-dim { position: absolute; left: 0; top: 0; pointer-events: none; }
-.ts-shade { fill: rgba(16, 19, 24, 0.7); }
-.ts-ring { fill: none; stroke: #fff; stroke-width: 1.75; }
-.ts-note { position: absolute; box-sizing: border-box; padding: 3px 5px; border-radius: 4px; background: rgba(16, 19, 24, 0.94); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22); font-size: 11px; font-weight: 700; line-height: 14px; color: #fff; text-align: center; pointer-events: none; }
+.ts-shade { fill: rgba(16, 19, 24, 0.26); }
+/* the guide's own colour, used nowhere else in the pages, so the marks never look like part of the site */
+.ts-ring { fill: none; stroke: var(--gold); stroke-width: 2.5; }
+.ts-tip { position: absolute; box-sizing: border-box; padding: 3px 6px; border-radius: 6px; background: var(--g25); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); font-size: 11px; font-weight: 700; line-height: 14px; color: #fff; text-align: center; pointer-events: none; }
+.ts-tip i { position: absolute; width: 0; height: 0; border: 7px solid transparent; }
+.ts-tip.b i { top: -14px; margin-left: -7px; border-bottom-color: var(--g25); }
+.ts-tip.t i { bottom: -14px; margin-left: -7px; border-top-color: var(--g25); }
+.ts-tip.r i { left: -14px; margin-top: -7px; border-right-color: var(--g25); }
+.ts-tip.l i { right: -14px; margin-top: -7px; border-left-color: var(--g25); }
 .ts-steps { display: flex; align-items: center; justify-content: center; gap: 14px; padding-top: 8px; }
 .ts-steps span { display: flex; gap: 6px; }
 .ts-steps i { width: 7px; height: 7px; border-radius: 50%; background: var(--g85); }
 .ts-steps i.on { background: var(--ink); }
 .ts-arrow { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px var(--g85); }
 .ts-arrow:disabled { opacity: 0.35; }
-.ts-tie { fill: none; stroke: #fff; stroke-width: 1.25; }
 .tour-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 12px; font-size: 13px; color: var(--g40, #444); }
 .tour-keys span { display: inline-flex; align-items: center; gap: 4px; }
 .tour-keys kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 5px; background: #fff; box-shadow: inset 0 0 0 1px var(--g80), 0 1px 0 var(--g80); font: 700 11.5px/1 system-ui, sans-serif; color: var(--ink); }

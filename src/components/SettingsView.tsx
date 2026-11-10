@@ -3,7 +3,7 @@
 import { type ThemeId } from '../lib/theme';
 import { Icon } from './Icons';
 import Guide, { GUIDE_LINE, GUIDE_NOTE } from './Guide';
-import { TOURS, TOUR_LABEL, type TourId } from './Tour';
+import { TOURS, TOUR_LABEL, toursOn, type TourId } from './Tour';
 
 interface Props {
   mobile: boolean;
@@ -25,7 +25,7 @@ export default function SettingsView(p: Props) {
   return (
     <div className={p.mobile ? 'me m set' : 'me set'}>
       <div className="me-pg">
-        {p.mobile ? (
+        {!toursOn(p.mobile) ? (
           <section className="card" aria-labelledby="set-about">
             <div className="hd">
               <h2 id="set-about">About &amp; getting started</h2>

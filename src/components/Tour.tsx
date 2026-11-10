@@ -17,6 +17,13 @@ export type TourId = 'map' | 'quiz' | 'progress' | 'settings';
 export const TOUR_LABEL: Record<TourId, string> = { map: 'Map', quiz: 'Quiz', progress: 'Progress', settings: 'Settings' };
 export const TOURS: TourId[] = ['map', 'quiz', 'progress', 'settings'];
 const KEY = 'tours-seen';
+/**
+ * Phones get the page guides only once they are approved; until then a phone keeps the getting-started card,
+ * the step-by-step help windows and the earlier Settings. scripts/guide-shots.cjs and the previews switch it on.
+ */
+export const PHONE_TOURS = false;
+/** Whether this screen gets the page guides */
+export const toursOn = (mobile: boolean) => !mobile || PHONE_TOURS;
 
 export function toursSeen(): TourId[] {
   const v = load<unknown>(KEY, []);
@@ -330,51 +337,72 @@ const phoneLabel = (t: string) => {
 };
 
 const PAD = 3;
-const GAP = 5;
-/** How far words may sit from their control before fewer controls are shown at a time */
-const NEAR = 30;
 
-/** Frames round the controls and the nearest free place for each one's words; ok when all are near */
+type Tip = Rect & { k: number; side: Side; /** where the arrow touches the bubble, along its edge */ at: number };
+/** Arrow of a tip bubble: its length out of the bubble, and the least distance from the bubble's corners */
+const ARROW = 7;
+const ARROW_IN = 12;
+
+/**
+ * A tip bubble for each control, touching it with its arrow: below, above, right or left of it, slid along that
+ * side so the arrow still points into the control, covering no other control or bubble. Nearest the middle wins;
+ * below and above before beside. ok when every control got one.
+ */
 function place(marks: Mark[], W: number, H: number) {
   const frames: Rect[] = marks.map((m) => {
     const [bx, by, bw, bh] = boxOf(m);
     return { x: bx * W - PAD, y: by * H - PAD, w: bw * W + PAD * 2, h: bh * H + PAD * 2 };
   });
-  const labels: (Rect & { k: number })[] = [];
+  const tips: Tip[] = [];
   let ok = true;
   // smaller controls first: they have the fewest good places
   const order = frames.map((_, k) => k).sort((a, b) => frames[a]!.w * frames[a]!.h - frames[b]!.w * frames[b]!.h);
   for (const k of order) {
     const f = frames[k]!;
     const { w, h } = phoneLabel(marks[k]!.label);
-    const gapTo = (r: Rect) => {
-      const dx = Math.max(0, f.x - (r.x + r.w), r.x - (f.x + f.w));
-      const dy = Math.max(0, f.y - (r.y + r.h), r.y - (f.y + f.h));
-      // straight below / above / beside reads best: a little extra for places off to a corner
-      return Math.hypot(dx, dy) + (dx > 0 && dy > 0 ? 12 : 0);
-    };
-    let best: Rect | null = null;
+    const cx = f.x + f.w / 2;
+    const cy = f.y + f.h / 2;
+    let best: Tip | null = null;
     let bestCost = Infinity;
-    for (let y = 4; y <= H - 4 - h; y += 3) {
-      for (let x = 4; x <= W - 4 - w; x += 3) {
-        const r = { x, y, w, h };
-        const g = gapTo(r);
-        if (g < GAP || g >= bestCost) continue;
-        if (frames.some((o) => hit(r, o)) || labels.some((o) => hit(r, o, 4))) continue;
-        bestCost = g;
-        best = r;
+    const free = (r: Rect) =>
+      r.x >= 4 && r.y >= 4 && r.x + r.w <= W - 4 && r.y + r.h <= H - 4 && !frames.some((o) => hit(r, o, 2)) && !tips.some((o) => hit(r, o, 4));
+    const tryAt = (r: Rect, side: Side, at: number, cost: number) => {
+      if (cost < bestCost && free(r)) {
+        bestCost = cost;
+        best = { ...r, k, side, at };
+      }
+    };
+    // above / below: the arrow at the control's middle (or as near it as the bubble allows, still inside it)
+    for (const side of ['b', 't'] as Side[]) {
+      const y = side === 'b' ? f.y + f.h + ARROW : f.y - ARROW - h;
+      for (let x = Math.floor(cx - w + ARROW_IN); x <= cx - ARROW_IN; x += 2) {
+        const ax = Math.max(x + ARROW_IN, Math.min(x + w - ARROW_IN, cx));
+        if (ax < f.x + 3 || ax > f.x + f.w - 3) continue;
+        tryAt({ x, y, w, h }, side, ax - x, Math.abs(x + w / 2 - cx) / 3 + (side === 't' ? 1 : 0));
       }
     }
-    if (!best || bestCost > NEAR) ok = false;
-    labels.push({ ...(best ?? { x: Math.max(4, Math.min(W - 4 - w, f.x)), y: Math.min(H - 4 - h, f.y + f.h + GAP), w, h }), k });
+    for (const side of ['r', 'l'] as Side[]) {
+      const x = side === 'r' ? f.x + f.w + ARROW : f.x - ARROW - w;
+      for (let y = Math.floor(cy - h + 8); y <= cy - 8; y += 2) {
+        const ay = Math.max(y + 8, Math.min(y + h - 8, cy));
+        if (ay < f.y + 2 || ay > f.y + f.h - 2) continue;
+        tryAt({ x, y, w, h }, side, ay - y, 8 + Math.abs(y + h / 2 - cy) / 3);
+      }
+    }
+    if (!best) {
+      ok = false;
+      best = { x: Math.max(4, Math.min(W - 4 - w, cx - w / 2)), y: Math.min(H - 4 - h, f.y + f.h + ARROW), w, h, k, side: 'b', at: w / 2 };
+    }
+    tips.push(best);
   }
-  return { frames, labels, ok };
+  return { frames, labels: tips, ok };
 }
 
 /**
- * Phone: no room beside the picture, so a few controls at a time: the picture dimmed but for them, each framed,
- * its words written in the dimmed part right next to it. As many at a time (up to 3) as leave every one's words
- * close by; the arrows (or a tap on the picture) show the next few.
+ * Phone: no room beside the picture, so a few controls at a time, as phone apps' coach marks do: the picture
+ * only lightly veiled (it must stay readable), each control clear and ringed in the guide's own colour, and a
+ * dark tip bubble pointing at it. As few steps as let every one get a bubble right beside it; the arrows
+ * (or a tap on the picture) show the next few.
  */
 function Spot({ shot }: { shot: GuideShot }) {
   const img = useRef<HTMLImageElement>(null);
@@ -396,14 +424,14 @@ function Spot({ shot }: { shot: GuideShot }) {
     if (!size) return null;
     const mid = (m: Mark) => boxOf(m)[1] + boxOf(m)[3] / 2;
     const all = shot.marks.slice().sort((a, b) => mid(a) - mid(b) || boxOf(a)[0] - boxOf(b)[0]);
-    // in reading order, each control joins the current few if all their words still fit close by
-    const groups: Mark[][] = [];
-    for (const m of all) {
-      const g = groups[groups.length - 1];
-      if (g && g.length < 3 && place([...g, m], size.w, size.h).ok) g.push(m);
-      else groups.push([m]);
+    // as few steps as can be: controls dealt out in turn (in reading order), so each step's few are far apart
+    // and their bubbles do not crowd; one step more until every control gets its bubble beside it
+    for (let n = Math.ceil(all.length / 4); n <= all.length; n++) {
+      const groups = Array.from({ length: n }, (_, g) => all.filter((_, i) => i % n === g));
+      const laid = groups.map((g) => ({ marks: g, ...place(g, size.w, size.h) }));
+      if (laid.every((l) => l.ok) || n === all.length) return laid;
     }
-    return groups.map((g) => ({ marks: g, ...place(g, size.w, size.h) }));
+    return [];
   }, [shot, size]);
   const n = plan?.length ?? 0;
   const cur = plan?.[Math.min(at, n - 1)];
@@ -429,36 +457,12 @@ function Spot({ shot }: { shot: GuideShot }) {
             {frames.map((f, k) => (
               <rect key={k} x={f.x} y={f.y} width={f.w} height={f.h} rx={5} className="ts-ring" />
             ))}
-            {labels.map((l) => {
-              // where the words sit away from their control, a line of straight runs joins them
-              const f = frames[l.k]!;
-              const ox = [Math.max(f.x, l.x + 4), Math.min(f.x + f.w, l.x + l.w - 4)] as const;
-              const oy = [Math.max(f.y, l.y + 3), Math.min(f.y + f.h, l.y + l.h - 3)] as const;
-              const below = l.y >= f.y + f.h;
-              const above = l.y + l.h <= f.y;
-              const right = l.x >= f.x + f.w;
-              const gap = Math.max(below ? l.y - f.y - f.h : above ? f.y - l.y - l.h : 0, right ? l.x - f.x - f.w : l.x + l.w <= f.x ? f.x - l.x - l.w : 0);
-              if (gap <= GAP + 4) return null;
-              let pts: number[][];
-              if (ox[0] <= ox[1] && (below || above)) {
-                const x = (ox[0] + ox[1]) / 2;
-                pts = [[x, below ? f.y + f.h : f.y], [x, below ? l.y : l.y + l.h]];
-              } else if (oy[0] <= oy[1]) {
-                const y = (oy[0] + oy[1]) / 2;
-                pts = [[right ? f.x + f.w : f.x, y], [right ? l.x : l.x + l.w, y]];
-              } else {
-                // off to a corner: down (or up) out of the control, then across to the words
-                const x = f.x + f.w / 2;
-                const y = l.y + l.h / 2;
-                pts = [[x, below ? f.y + f.h : f.y], [x, y], [right ? l.x : l.x + l.w, y]];
-              }
-              return <polyline key={l.k} points={pts.map((q) => q.join(',')).join(' ')} className="ts-tie" />;
-            })}
           </svg>
         )}
         {labels.map((l) => (
-          <span key={l.k} className="ts-note" style={{ left: l.x, top: l.y, width: l.w, minHeight: l.h }}>
+          <span key={l.k} className={`ts-tip ${l.side}`} style={{ left: l.x, top: l.y, width: l.w, minHeight: l.h }}>
             {marks[l.k]!.label}
+            <i style={l.side === 't' || l.side === 'b' ? { left: l.at } : { top: l.at }} />
           </span>
         ))}
       </div>

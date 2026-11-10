@@ -9,7 +9,7 @@ import * as Col from '../lib/collections';
 import { cleanQuiz, EMPTY_QUIZ, type QuizStore } from '../lib/quiz';
 import { load, save } from '../lib/storage';
 import Guide, { GUIDE_KEY, GUIDE_LINE } from './Guide';
-import Tour, { markSeen, toursSeen, type TourId } from './Tour';
+import Tour, { markSeen, toursOn, toursSeen, type TourId } from './Tour';
 import type { EraId } from '../lib/types';
 import { BuildingCard, CityPanel, ResultsPanel, cityOrder } from './DetailPanel';
 import { Icon } from './Icons';
@@ -586,13 +586,13 @@ export default function App() {
     // the map's guide waits for the map (a map that cannot start shows its own word instead)
     if (id === 'map' && (mapDown || !mapReady)) return;
     // computer only for now: the phone keeps its getting-started card and help windows
-    if (!mobile && !toursSeen().includes(id)) setTour(id);
+    if (toursOn(mobile) && !toursSeen().includes(id)) setTour(id);
   }, [mode, mapReady, mapDown, mobile]);
 
   // Phone: the getting-started card takes room above the map; when it comes or goes, a map left at its opening
   // view is framed again in the room it now has
   useEffect(() => {
-    if (!mobile || !mapReady || mode !== 'map' || panelOpen || !isEmpty(filters)) return;
+    if (!mobile || toursOn(mobile) || !mapReady || mode !== 'map' || panelOpen || !isEmpty(filters)) return;
     afterPanel(() => mapRef.current?.home());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guideHidden, mapReady]);
@@ -724,7 +724,7 @@ export default function App() {
               </button>
             </div>
             {/* first visit: under the search, before the map (which moves down for it and back when it is hidden) */}
-            {!guideHidden && !mapDown && !panelOpen && <Guide className="m" onBrowse={browse} onQuick={quickQuiz} onHide={hideGuide} />}
+            {!toursOn(true) && !guideHidden && !mapDown && !panelOpen && <Guide className="m" onBrowse={browse} onQuick={quickQuiz} onHide={hideGuide} />}
           </header>
         )
       )}
