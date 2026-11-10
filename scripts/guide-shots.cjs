@@ -127,7 +127,7 @@ const SCENES = [
       await p.waitForSelector('.pal-in');
       await p.waitForTimeout(700);
     },
-    crop: async (p, phone) => (phone ? union(p, ['.pal-in', '.pal-body .hit'], 10, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.pal'], 12).then((r) => r && { ...r, width: 820 })),
+    crop: async (p, phone) => (phone ? union(p, ['.pal-in', '.pal-body .hit'], 10, 'w').then((r) => r && { ...r, y: 0, height: r.y + r.height }) : union(p, ['.pal'], 12).then((r) => r && { ...r, width: 600 })),
     marks: () => [
       { q: '.pal-in', label: 'Type a building, architect or city' },
       { q: nth('.pal .hit', 0), label: 'Reopens what you read lately' },
@@ -297,6 +297,9 @@ function emit() {
       if (only && s.id !== only) continue;
       await s.setup(p, d.phone);
       await p.waitForTimeout(500);
+      // never a picture taken mid-way through a panel's opening: every running animation finished first
+      await p.evaluate(() => Promise.all(document.getAnimations().filter((x) => x.effect && x.effect.getTiming().iterations !== Infinity).map((x) => x.finished.catch(() => {}))));
+      await p.waitForTimeout(150);
       const crop = (await s.crop(p, d.phone)) || { x: 0, y: 0, width: d.width, height: d.height };
       const file = path.join(RAW, `${dev}-${s.id}.png`);
       await p.screenshot({ path: file, clip: crop });

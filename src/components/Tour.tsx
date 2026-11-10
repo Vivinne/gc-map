@@ -163,36 +163,53 @@ export default function Tour({ id, mobile, onClose: close }: { id: TourId; mobil
     window.addEventListener('keydown', key, true);
     return () => window.removeEventListener('keydown', key, true);
   }, [i, last, onClose]);
-  // every page's copy is laid out unseen: first at its own size, to find the shortest picture, which every
-  // page's picture is then held to (so none leaves an empty band); then the tallest page sets the window
+  // Every page's copy is laid out unseen with its picture as large as the width allows. Each page is then its
+  // picture plus the rest (title room, labels above and below, keys). All pages get one height: the smallest
+  // that every page can reach, within the screen; each picture is sized to fill it, so no page has an empty band
+  // and the window keeps one size from page to page.
   const pgs = useRef<HTMLDivElement>(null);
-  const [fitH, setFitH] = useState(0);
+  const [imgH, setImgH] = useState<number[] | null>(null);
   const [pgH, setPgH] = useState(0);
+  const [, setTick] = useState(0);
   useLayoutEffect(() => {
-    setFitH(0);
+    setImgH(null);
     setPgH(0);
+    const again = () => {
+      setImgH(null);
+      setPgH(0);
+    };
+    window.addEventListener('resize', again);
+    return () => window.removeEventListener('resize', again);
   }, [id, mobile]);
   useLayoutEffect(() => {
+    if (imgH) {
+      // labels need their room: a page whose labels made it taller than planned sets the window instead
+      const box = pgs.current;
+      if (!box) return;
+      const h = Math.max(...[...box.querySelectorAll<HTMLElement>('.tour-pg-m')].map((e) => e.offsetHeight));
+      if (h > pgH + 1) setPgH(h);
+      return;
+    }
     const box = pgs.current;
-    if (!box) return;
-    const measure = () => {
-      // (phone only: a computer has the room to show each picture at its own size)
-      if (mobile && !fitH) {
-        const ims = [...box.querySelectorAll<HTMLImageElement>('.tour-pg-m img')].map((e) => e.offsetHeight).filter(Boolean);
-        // held to the shortest, but never below a height that keeps the pictures readable
-        const floor = 330;
-        if (ims.length) setFitH(Math.max(Math.min(...ims), Math.min(Math.max(...ims), floor)));
-        return;
-      }
-      const hs = [...box.querySelectorAll<HTMLElement>('.tour-pg-m')].map((e) => e.offsetHeight);
-      const h = Math.max(0, ...hs);
-      if (h) setPgH(h);
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    box.querySelectorAll('.tour-pg-m').forEach((e) => ro.observe(e));
-    return () => ro.disconnect();
-  }, [id, mobile, fitH]);
+    const win = box?.closest<HTMLElement>('.tour');
+    if (!box || !win) return;
+    const copies = [...box.querySelectorAll<HTMLElement>('.tour-pg-m')];
+    const ims = copies.map((c) => c.querySelector('img')?.offsetHeight ?? 0);
+    // pictures not laid out yet: look again next frame
+    if (!ims.every((h) => h > 0) || !copies.length) {
+      const f = requestAnimationFrame(() => setTick((t) => t + 1));
+      return () => cancelAnimationFrame(f);
+    }
+    const rest = copies.map((c, k) => c.offsetHeight - ims[k]!);
+    // everything in the window but the picture area: its top and foot, the title, the line, the gaps
+    const bd = box.closest<HTMLElement>('.tour-bd')!;
+    const chrome = win.offsetHeight - bd.clientHeight + (box.getBoundingClientRect().top - bd.getBoundingClientRect().top + bd.scrollTop) + parseFloat(getComputedStyle(bd).paddingBottom);
+    const room = window.innerHeight - (mobile ? 16 : 48) - chrome;
+    const t = Math.min(room, ...copies.map((_, k) => rest[k]! + ims[k]!));
+    setImgH(rest.map((r) => Math.max(120, t - r)));
+    setPgH(t);
+  });
+  const fit = (k: number) => (imgH ? imgH[k] : 4000);
   return createPortal(
     <div className={`tour-bg${leaving ? ' out' : ''}`}>
       <div className={`tour${mobile ? ' m' : ''}`} role="dialog" aria-modal="true" aria-label={`${TOUR_LABEL[id]} guide`}>
@@ -210,12 +227,12 @@ export default function Tour({ id, mobile, onClose: close }: { id: TourId; mobil
               window keeps one size from page to page and has no empty band */}
           <div className="tour-pgs" ref={pgs} style={pgH ? { height: pgH } : undefined}>
             <div className="tour-pg" key={i}>
-              <PageBody p={pages[i]!} mobile={mobile} fitH={fitH || undefined} />
+              <PageBody p={pages[i]!} mobile={mobile} fitH={fit(i)} />
             </div>
             <div className="tour-measure" aria-hidden="true">
               {pages.map((pg, k) => (
                 <div className="tour-pg-m" key={k}>
-                  <PageBody p={pg} mobile={mobile} fitH={fitH || undefined} />
+                  <PageBody p={pg} mobile={mobile} fitH={fit(k)} />
                 </div>
               ))}
             </div>
