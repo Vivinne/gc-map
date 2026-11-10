@@ -31,7 +31,8 @@ interface SheetProps {
 /**
  * Desktop: a panel in the left column of the map. Phone: a bottom sheet.
  * Touch, anywhere on the sheet: the sheet follows the finger up and down and, on release, rests where it was
- * left: full when pulled well up, folded (card) or closed (list) when pushed well down, otherwise normal; once
+ * left: full when pulled well up, folded to its title when pushed well down (a phone list as the card: only
+ * its X closes it), otherwise normal; once
  * expanded, the content scrolls and a pull down at its top shrinks the sheet. Sideways, the card follows the
  * finger and, past a third of its width, gives way to the previous / next building. Mouse: drag the top.
  */
@@ -111,7 +112,7 @@ function Sheet({ mobile, onClose, children, className, label, folded, onFold, ex
     const start = (e: TouchEvent) => {
       if (busy || e.touches.length !== 1 || (e.target as Element).closest('input, textarea')) return (t = null);
       // lists (city, results) keep their own scrolling: only their top moves the sheet; the card answers anywhere
-      if (!now.current.onFold && !(e.target as Element).closest('.grab, .c-top, .cp-top')) return (t = null);
+      if (!el.classList.contains('card') && !(e.target as Element).closest('.grab, .c-top, .cp-top')) return (t = null);
       const p = e.touches[0]!;
       const r = el.getBoundingClientRect();
       const H = el.parentElement?.getBoundingClientRect().height ?? window.innerHeight;
@@ -374,10 +375,22 @@ interface ResultsProps {
 }
 
 /** List of what the filters show (like the city list): the card's back button returns here */
+/**
+ * Phone: a list swiped down folds to its title (the map stays as it is); only its X closes it. A tap on the
+ * folded title, or a swipe up, opens it again; another city or list opens unfolded.
+ */
+function useListFold(key: string) {
+  const [folded, setFolded] = useState(false);
+  useEffect(() => setFolded(false), [key]);
+  const unfold = (e: React.MouseEvent) => folded && !(e.target as Element).closest('button') && setFolded(false);
+  return { folded, setFolded, unfold };
+}
+
 export function ResultsPanel({ label, nums, list, mobile, selectedId, onSelect, onClose, onWhole, onHover }: ResultsProps) {
+  const { folded, setFolded, unfold } = useListFold(label);
   return (
-    <Sheet mobile={mobile} onClose={onClose} className="citypanel" label={label}>
-      <div className="cp-top">
+    <Sheet mobile={mobile} onClose={onClose} className={`citypanel${folded ? ' folded' : ''}`} label={label} folded={mobile ? folded : undefined} onFold={mobile ? setFolded : undefined}>
+      <div className="cp-top" onClick={unfold}>
         <h2>
           <b className="cp-t">{label}</b>
           <span>{list.length}</span>
@@ -389,9 +402,11 @@ export function ResultsPanel({ label, nums, list, mobile, selectedId, onSelect, 
           <Icon name="close" size={12} />
         </button>
       </div>
-      <div className="cp-list">
-        <GroupedList list={list} selectedId={selectedId} label={label} nums={nums} onSelect={onSelect} onHover={onHover} />
-      </div>
+      {!folded && (
+        <div className="cp-list">
+          <GroupedList list={list} selectedId={selectedId} label={label} nums={nums} onSelect={onSelect} onHover={onHover} />
+        </div>
+      )}
     </Sheet>
   );
 }
@@ -608,9 +623,10 @@ interface CityProps {
 export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole, onHover, list, nums, nearby }: CityProps) {
   const items = list ?? CITY_BUILDINGS.get(city) ?? [];
   const total = items.length;
+  const { folded, setFolded, unfold } = useListFold(city);
   return (
-    <Sheet mobile={mobile} onClose={onClose} className="citypanel" label={city}>
-      <div className="cp-top">
+    <Sheet mobile={mobile} onClose={onClose} className={`citypanel${folded ? ' folded' : ''}`} label={city} folded={mobile ? folded : undefined} onFold={mobile ? setFolded : undefined}>
+      <div className="cp-top" onClick={unfold}>
         <h2>
           {city}
           <span>{total}</span>
@@ -622,36 +638,38 @@ export function CityPanel({ city, mobile, selectedId, onSelect, onClose, onWhole
           <Icon name="close" size={12} />
         </button>
       </div>
-      <ol className="others cp-list" onPointerLeave={() => onHover('')}>
-        {items.map((b) => (
-          <li key={b.id}>
-            <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
-              <span className="no" style={{ background: ERAS[b.era].color }}>
-                {nums.get(b.id)}
-              </span>
-              <span className="nm">{b.name}</span>
-            </button>
-          </li>
-        ))}
-        {nearby && nearby.length > 0 && (
-          <>
-            <li className="o-city o-near">Nearest</li>
-            {nearby.map((b, i) => (
-              <Fragment key={b.id}>
-                {/* city by city, the closest first */}
-                {(i === 0 || nearby[i - 1]!.city !== b.city) && <li className="o-city o-sub">{b.city}</li>}
-                <li>
-                  <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
-                    {/* no number: these pins are numbered in their own city, not in this list */}
-                    <span className="no no-n" style={{ background: ERAS[b.era].color }} />
-                    <span className="nm">{b.name}</span>
-                  </button>
-                </li>
-              </Fragment>
-            ))}
-          </>
-        )}
-      </ol>
+      {!folded && (
+        <ol className="others cp-list" onPointerLeave={() => onHover('')}>
+          {items.map((b) => (
+            <li key={b.id}>
+              <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
+                <span className="no" style={{ background: ERAS[b.era].color }}>
+                  {nums.get(b.id)}
+                </span>
+                <span className="nm">{b.name}</span>
+              </button>
+            </li>
+          ))}
+          {nearby && nearby.length > 0 && (
+            <>
+              <li className="o-city o-near">Nearest</li>
+              {nearby.map((b, i) => (
+                <Fragment key={b.id}>
+                  {/* city by city, the closest first */}
+                  {(i === 0 || nearby[i - 1]!.city !== b.city) && <li className="o-city o-sub">{b.city}</li>}
+                  <li>
+                    <button type="button" className={`o-row${b.id === selectedId ? ' sel' : ''}`} onClick={() => onSelect(b.id)} onPointerEnter={() => onHover(b.id)} onFocus={() => onHover(b.id)}>
+                      {/* no number: these pins are numbered in their own city, not in this list */}
+                      <span className="no no-n" style={{ background: ERAS[b.era].color }} />
+                      <span className="nm">{b.name}</span>
+                    </button>
+                  </li>
+                </Fragment>
+              ))}
+            </>
+          )}
+        </ol>
+      )}
     </Sheet>
   );
 }

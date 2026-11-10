@@ -705,6 +705,9 @@ kbd { font-family: inherit; font-size: 11px; font-weight: 600; color: var(--mute
 .tabbar button.on { color: var(--ink); box-shadow: inset 0 3px 0 var(--ink); }
 .is-mobile .side.sheet { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 52%; box-shadow: 0 -1px 0 var(--rule); animation: sheet-in var(--t-mid) var(--ease); transition: max-height var(--t-mid), transform var(--t-mid); }
 .is-mobile .side.citypanel.sheet { height: 52%; }
+/* a list folded to its title: only its top shows, the map keeps its place */
+.is-mobile .side.citypanel.sheet.folded { height: auto; }
+.citypanel.folded .cp-top { cursor: pointer; }
 .is-mobile .side.sheet.full { max-height: 100%; height: 100%; }
 @keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 .is-mobile .c-top { padding-top: 18px; }
