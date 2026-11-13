@@ -10,6 +10,8 @@ interface Props {
   /** × shows while there is text or anything open */
   showClear: boolean;
   categoryOpen: boolean;
+  /** After Enter (results on screen) the magnifier turns into ＜, which goes back to the previous screen */
+  onBack?: () => void;
   onFocus(): void;
   onChange(text: string): void;
   onSubmit(): void;
@@ -17,8 +19,8 @@ interface Props {
   onCategory(): void;
 }
 
-/** Search box (magnifier on the left, × on the right) and the Category button beside it, top left of the page */
-const SearchBox = forwardRef<HTMLInputElement, Props>(function SearchBox({ value, showClear, categoryOpen, onFocus, onChange, onSubmit, onClear, onCategory }, ref) {
+/** Search box (magnifier, or ＜ after Enter, on the left; × on the right) and the Category button beside it, top left of the page */
+const SearchBox = forwardRef<HTMLInputElement, Props>(function SearchBox({ value, showClear, categoryOpen, onBack, onFocus, onChange, onSubmit, onClear, onCategory }, ref) {
   return (
     <div className="topbar">
       <form
@@ -29,7 +31,13 @@ const SearchBox = forwardRef<HTMLInputElement, Props>(function SearchBox({ value
           onSubmit();
         }}
       >
-        <Icon name="search" size={16} />
+        {onBack ? (
+          <button type="button" className="s-back" aria-label="Back" title="Back" onClick={onBack}>
+            <Icon name="left" size={14} />
+          </button>
+        ) : (
+          <Icon name="search" size={16} />
+        )}
         <input
           ref={ref}
           type="search"

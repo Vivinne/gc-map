@@ -14,6 +14,14 @@ import ScaleBar, { scaleFor } from './ScaleBar';
 /** Camera moves: one length and one curve, the same as the panels (fast start, soft landing) */
 const MAP_MS = 420;
 const EASE = (t: number) => 1 - (1 - t) ** 4;
+/**
+ * Long camera moves (a jump of several zoom levels: card focus, ＜, framing results) take longer and start
+ * and end softly, so the eye can follow where the map goes. Short moves keep the panel timing.
+ */
+const EASE_LONG = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
+const LONG_FROM = 1.5;
+const camMs = (dz: number) => Math.min(1600, MAP_MS + 150 * Math.abs(dz));
+const camEase = (dz: number) => (Math.abs(dz) >= LONG_FROM ? EASE_LONG : EASE);
 const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]];
 /** Without a submitted search, markers show from this scale bar length down (metres) */
 export const MARKER_SCALE = 100000;
@@ -204,12 +212,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const b = boundsOf(list);
         if (!map || !b) return;
         const p = padRef.current;
-        map.fitBounds(b, {
-          padding: { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME },
-          maxZoom: 15,
-          duration: motion(MAP_MS),
-          easing: EASE,
-        });
+        const padding = { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME };
+        const cam = map.cameraForBounds(b, { padding, maxZoom: 15 });
+        const dz = cam?.zoom != null ? cam.zoom - map.getZoom() : 0;
+        map.fitBounds(b, { padding, maxZoom: 15, duration: motion(camMs(dz)), easing: camEase(dz) });
       },
       reveal: (b) => {
         const map = mapRef.current;
@@ -240,12 +246,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           center: [b.lng, b.lat],
           zoom: to,
           offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
-          duration: motion(MAP_MS),
-          easing: EASE,
+          duration: motion(camMs(to - zoom)),
+          easing: camEase(to - zoom),
         });
       },
       moveTo: (v) => {
-        mapRef.current?.easeTo({ center: [v.lng, v.lat], zoom: v.zoom, duration: motion(MAP_MS), easing: EASE });
+        const map = mapRef.current;
+        if (!map) return;
+        const dz = v.zoom - map.getZoom();
+        map.easeTo({ center: [v.lng, v.lat], zoom: v.zoom, duration: motion(camMs(dz)), easing: camEase(dz) });
       },
       view: () => {
         const m = mapRef.current;

@@ -16,8 +16,8 @@ ul, ol { list-style: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* press feedback: every control darkens at once and moves down 1 px */
-.chip, .btn, .row, .h-ic, .s-x, .cat-btn, .ctrls button, .c-who { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
-.chip:active, .btn:active, .row:active, .h-ic:active, .s-x:active, .cat-btn:active, .ctrls button:active { transform: translateY(1px); }
+.chip, .btn, .row, .h-ic, .s-x, .s-back, .cat-btn, .ctrls button, .c-who { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.chip:active, .btn:active, .row:active, .h-ic:active, .s-x:active, .s-back:active, .cat-btn:active, .ctrls button:active { transform: translateY(1px); }
 
 /* ---------- page ---------- */
 .app { position: relative; height: 100vh; height: 100dvh; overflow: hidden; }
@@ -30,6 +30,8 @@ ul, ol { list-style: none; }
 .sbox input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--ink); font-size: 14px; }
 .sbox input::placeholder { color: var(--g66); }
 .sbox input::-webkit-search-cancel-button { display: none; }
+.s-back { flex: none; width: 32px; height: 32px; margin: 0 -8px; display: grid; place-items: center; color: var(--ink); }
+.s-back:hover { background: var(--soft); }
 .s-x { width: 32px; height: 32px; display: grid; place-items: center; color: var(--ink); }
 .s-x:hover { background: var(--soft); }
 .cat-btn { flex: none; width: 40px; height: 40px; display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 1px var(--rule), 0 6px 20px rgba(0, 0, 0, 0.08); }
@@ -139,7 +141,7 @@ ul, ol { list-style: none; }
 
 /* ---------- shape (kept from v1) ----------
    Corners: 6px on controls, 10px on panels, cards and the zoom buttons, pills for chips. */
-.sbox, .cat-btn, .s-x, .h-ic, .btn, .c-who { border-radius: var(--r-s); }
+.sbox, .cat-btn, .s-x, .s-back, .h-ic, .btn, .c-who { border-radius: var(--r-s); }
 .ctrls { border-radius: var(--r-m); overflow: hidden; }
 .ctrls button { border-radius: 0; }
 .panel { border-radius: var(--r-m); overflow: hidden; }

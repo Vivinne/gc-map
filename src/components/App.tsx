@@ -20,6 +20,8 @@ const MOBILE_QUERY = '(max-width: 900px)';
 const PANEL_WAIT = 60;
 /** How many rows the search preview lists while typing */
 const PREVIEW_MAX = 30;
+/** Width the zoom buttons take from the right edge (32 px buttons + 16 px inset) */
+const ZOOM_W = 48;
 const NO_PAD: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
 
 function useMedia(q: string): boolean {
@@ -164,13 +166,14 @@ export default function App() {
       const el = panelRef.current;
       const p = el ? { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight } : null;
       if (!app) return;
-      const next = { ...NO_PAD, top: bar ? bar.bottom - app.top : 0 };
+      // Desktop: the zoom buttons sit along the right edge, so framed buildings stay clear of them
+      const next = { ...NO_PAD, top: bar ? bar.bottom - app.top : 0, right: mobile ? 0 : ZOOM_W };
       if (p && p.width && p.height) {
         if (!mobile) next.left = p.left + p.width;
         else if (p.top > app.height / 3) next.bottom = app.height - p.top;
         else next.top = Math.max(next.top, p.top + p.height);
       }
-      setPadding((o) => (o.top === next.top && o.left === next.left && o.bottom === next.bottom ? o : next));
+      setPadding((o) => (o.top === next.top && o.left === next.left && o.bottom === next.bottom && o.right === next.right ? o : next));
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -278,6 +281,7 @@ export default function App() {
           value={boxText}
           showClear={anything}
           categoryOpen={top.list === 'category' && !top.b}
+          onBack={top.list === 'results' && !top.b && back ? goBack : undefined}
           onFocus={openPreview}
           onChange={(t) => {
             if (!editing) openPreview();
