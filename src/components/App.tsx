@@ -214,13 +214,13 @@ export default function App() {
     );
   } else if (top.list === 'category') {
     panel = (
-      <Panel ref={panelRef} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={<i>Category</i>} />}>
+      <Panel ref={panelRef} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title="Category" />}>
         <CategoryList onPick={submit} />
       </Panel>
     );
   } else if (top.list === 'group' && group.length) {
     panel = (
-      <Panel ref={panelRef} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={<i>{`${group.length} Architectures`}</i>} />}>
+      <Panel ref={panelRef} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={`${group.length} Architectures`} />}>
         <Rows list={group} onOpen={openCard} onHover={setHoverId} />
       </Panel>
     );

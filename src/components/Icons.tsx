@@ -16,7 +16,7 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
     case 'down':
       return (<svg {...p}><path d="M3 6l5 5 5-5" {...s} /></svg>);
     case 'grid':
-      return (<svg {...p}><rect x="2" y="2" width="5" height="5" {...s} strokeWidth={1.7} /><rect x="9" y="2" width="5" height="5" {...s} strokeWidth={1.7} /><rect x="2" y="9" width="5" height="5" {...s} strokeWidth={1.7} /><rect x="9" y="9" width="5" height="5" {...s} strokeWidth={1.7} /></svg>);
+      return (<svg {...p}><rect x="1.5" y="1.5" width="4.5" height="4.5" {...s} strokeWidth={1.6} /><rect x="10" y="1.5" width="4.5" height="4.5" {...s} strokeWidth={1.6} /><rect x="1.5" y="10" width="4.5" height="4.5" {...s} strokeWidth={1.6} /><rect x="10" y="10" width="4.5" height="4.5" {...s} strokeWidth={1.6} /></svg>);
     case 'clock':
       return (<svg {...p}><circle cx="8" cy="8" r="6" {...s} strokeWidth={1.6} /><path d="M8 4.5V8l2.5 1.6" {...s} strokeWidth={1.6} /></svg>);
     case 'search':
