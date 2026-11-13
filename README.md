@@ -74,5 +74,5 @@ npm test        # data rules
 ## Not verified
 
 - Street tiles from OpenFreeMap: the authoring environment cannot reach the tile server, so all checks ran on the offline basemap only.
-- Not published yet. Planned at https://vivinne.github.io/gc-map/ (build with `BASE_PATH=/gc-map npm run build`); `/gc-map/atlas/` will redirect there.
+- Published at https://vivinne.github.io/gc-map/ (build with `BASE_PATH=/gc-map npm run build`, replace the gh-pages branch with `out/` plus `atlas/index.html`, a redirect to `../`). v1 build kept on branch `v1-legacy-pages`.
 - Coordinates other than the five checked on Google Maps by the project owner are "to be verified".

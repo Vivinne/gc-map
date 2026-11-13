@@ -1,7 +1,7 @@
 # SPEC.md — GC map redesign (v2)
 
 Source: Project doc "網頁修改 的副本" (2026-11-13) and the user's answers of 2026-11-13. KEEP.md lists what stays from v1.
-Status: approved 2026-11-13; built on branch `redesign` (steps 3–5). Not published.
+Status: approved 2026-11-13; published 2026-11-13 at https://vivinne.github.io/gc-map/ (gh-pages 955bbae, from `redesign`); `/gc-map/atlas/` redirects there.
 
 ## 1. Screen
 - Map only, no top bar, no tabs. Default view: Europe (v1 Full map).
