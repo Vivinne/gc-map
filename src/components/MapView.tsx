@@ -26,7 +26,7 @@ const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]
 /** Space kept round the buildings when the map frames them */
 const FRAME = 40;
 const MAX_ZOOM = 18;
-/** With no search, names show when the scale bar reads this length (metres) or less */
+/** With no search, every name shows when the scale bar reads this length (metres) or less; wider, only exam buildings */
 const NAME_SCALE = 100000;
 /** Map name labels: longest name shown in full, and the width a character takes at 12 px */
 const LABEL_MAX = 24;
@@ -273,10 +273,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
   const map = mapRef.current;
   const scale = map ? scaleFor(map.getCenter().lat, map.getZoom()) : null;
-  // Markers show at every scale (with or without a search). With no search, names show from 100 km down on
-  // the scale bar (wider views keep every marker but only the open card's name).
+  // Markers show at every scale (with or without a search). With no search, a view wider than 100 km on the
+  // scale bar names only the buildings set in past TEST-ARCHED papers (and the open card's); every name shows
+  // from 100 km down.
   const markersOn = true;
   const namesOn = searched || (!!scale && scale.metres <= NAME_SCALE);
+  const named = (b: Building) => namesOn || b.exams.length > 0 || b.id === selected?.id;
   // Buildings drawn as markers at this moment (focus() checks whether the open one is merged)
   const markersShown = useRef<Building[]>([]);
   markersShown.current = markersOn ? buildings : [];
@@ -347,7 +349,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
       // The open building's name first, then the rows on screen in the list, then the rest in list order
       const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
-      for (const { b, x, y } of [...singles].filter((d) => namesOn || d.b.id === selected?.id).sort((p, q) => rank(p.b) - rank(q.b))) {
+      for (const { b, x, y } of [...singles].filter((d) => named(d.b)).sort((p, q) => rank(p.b) - rank(q.b))) {
         const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
         const w = text.length * LABEL_CHAR;
         // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
