@@ -19,6 +19,7 @@ const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]
 export const MARKER_SCALE = 100000;
 /** Space kept round the buildings when the map frames them */
 const FRAME = 40;
+const MAX_ZOOM = 18;
 
 export interface Padding {
   top: number;
@@ -32,6 +33,11 @@ export interface MapHandle {
   fitTo(list: Building[]): void;
   /** Move the map only as far as needed to show a point (a building, a number point) in the free part; the zoom stays */
   reveal(at: { lng: number; lat: number }): void;
+  /**
+   * Show the building of an open card. If it is merged into a number point, zoom in just enough for it to
+   * stand alone and bring it into the free part of the map; otherwise as `reveal` (the zoom stays).
+   */
+  focus(b: Building): void;
   view(): View | null;
 }
 
@@ -121,7 +127,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         ...(start ? { center: [start.lng, start.lat] as [number, number], zoom: start.zoom } : { bounds: EUROPE, fitBoundsOptions: { padding: 20 } }),
         attributionControl: false,
         renderWorldCopies: true,
-        maxZoom: 18,
+        maxZoom: MAX_ZOOM,
         minZoom: 0.8,
         dragRotate: false,
         pitchWithRotate: false,
@@ -173,6 +179,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /** Move the map only as far as needed to show a point in the free part; the zoom stays */
+  const reveal = (map: MlMap, b: { lng: number; lat: number }) => {
+    const p = padRef.current;
+    const { clientWidth: W, clientHeight: H } = map.getContainer();
+    const pt = map.project([b.lng, b.lat]);
+    const x1 = p.left + FRAME;
+    const x2 = W - p.right - FRAME;
+    const y1 = p.top + FRAME;
+    const y2 = H - p.bottom - FRAME;
+    const dx = pt.x < x1 ? pt.x - x1 : pt.x > x2 ? pt.x - x2 : 0;
+    const dy = pt.y < y1 ? pt.y - y1 : pt.y > y2 ? pt.y - y2 : 0;
+    if (!dx && !dy) return;
+    map.panBy([dx, dy], { duration: motion(MAP_MS), easing: EASE });
+  };
+
   useImperativeHandle(
     ref,
     () => ({
@@ -190,18 +211,35 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       },
       reveal: (b) => {
         const map = mapRef.current;
+        if (map) reveal(map, b);
+      },
+      focus: (b) => {
+        const map = mapRef.current;
         if (!map) return;
+        const zoom = map.getZoom();
+        const shown = markersShown.current;
+        const here = map.project([b.lng, b.lat]);
+        let near = Infinity;
+        for (const o of shown) {
+          if (o.id === b.id) continue;
+          const q = map.project([o.lng, o.lat]);
+          near = Math.min(near, Math.hypot(q.x - here.x, q.y - here.y));
+        }
+        // Far enough for the selection ring (r 18) to clear a neighbouring dot or small number point
+        const need = 32;
+        if (!shown.length || near >= need) {
+          reveal(map, b);
+          return;
+        }
+        const to = Math.min(MAX_ZOOM, zoom + (near > 0 ? Math.log2(need / near) + 0.15 : MAX_ZOOM));
         const p = padRef.current;
-        const { clientWidth: W, clientHeight: H } = map.getContainer();
-        const pt = map.project([b.lng, b.lat]);
-        const x1 = p.left + FRAME;
-        const x2 = W - p.right - FRAME;
-        const y1 = p.top + FRAME;
-        const y2 = H - p.bottom - FRAME;
-        const dx = pt.x < x1 ? pt.x - x1 : pt.x > x2 ? pt.x - x2 : 0;
-        const dy = pt.y < y1 ? pt.y - y1 : pt.y > y2 ? pt.y - y2 : 0;
-        if (!dx && !dy) return;
-        map.panBy([dx, dy], { duration: motion(MAP_MS), easing: EASE });
+        map.easeTo({
+          center: [b.lng, b.lat],
+          zoom: to,
+          padding: { top: p.top, right: p.right, bottom: p.bottom, left: p.left },
+          duration: motion(MAP_MS),
+          easing: EASE,
+        });
       },
       view: () => {
         const m = mapRef.current;
@@ -216,6 +254,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const map = mapRef.current;
   const scale = map ? scaleFor(map.getCenter().lat, map.getZoom()) : null;
   const markersOn = always || (!!scale && scale.metres <= MARKER_SCALE);
+  // Buildings drawn as markers at this moment (focus() checks whether the open one is merged)
+  const markersShown = useRef<Building[]>([]);
+  markersShown.current = markersOn ? buildings : [];
 
   // A tap moves a finger a little: allow more on phones before it counts as a drag
   const down = useRef<[number, number] | null>(null);

@@ -115,7 +115,7 @@ export default function App() {
     inputRef.current?.blur();
     setRecentB(addRecentBuilding(id));
     push({ ...top, b: id });
-    afterPanel(() => mapRef.current?.reveal(b));
+    afterPanel(() => mapRef.current?.focus(b));
   };
 
   const openGroup = (ids: string[]) => {
@@ -152,13 +152,15 @@ export default function App() {
     const measure = () => {
       const app = appRef.current?.getBoundingClientRect();
       const bar = appRef.current?.querySelector('.topbar')?.getBoundingClientRect();
-      const p = panelRef.current?.getBoundingClientRect();
+      // Offsets, not the drawn box: a panel still sliding in (or being dragged) is measured where it comes to rest
+      const el = panelRef.current;
+      const p = el ? { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight } : null;
       if (!app) return;
       const next = { ...NO_PAD, top: bar ? bar.bottom - app.top : 0 };
       if (p && p.width && p.height) {
-        if (!mobile) next.left = p.right - app.left;
-        else if (p.top > app.top + app.height / 3) next.bottom = app.bottom - p.top;
-        else next.top = Math.max(next.top, p.bottom - app.top);
+        if (!mobile) next.left = p.left + p.width;
+        else if (p.top > app.height / 3) next.bottom = app.height - p.top;
+        else next.top = Math.max(next.top, p.top + p.height);
       }
       setPadding((o) => (o.top === next.top && o.left === next.left && o.bottom === next.bottom ? o : next));
     };
@@ -183,7 +185,7 @@ export default function App() {
   let panel: React.ReactNode = null;
   if (selected) {
     panel = <BuildingCard ref={panelRef} key="card" b={selected} mobile={mobile} canBack={back} onBack={goBack} onClose={closeAll} onArchitect={submit} />;
-  } else if (top.list === 'preview') {
+  } else if (top.list === 'preview' && (draft.trim() || recentT.length > 0 || recentB.some((id) => BY_ID.has(id)))) {
     const recentList = recentB.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
     panel = (
       <Panel ref={panelRef} key="preview" mobile={mobile} place="top" fill label="Search" className="preview" resetKey="preview" head={null}>
