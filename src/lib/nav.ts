@@ -12,6 +12,8 @@ export interface Screen {
   group: string[];
   /** Open building card ('' = none) */
   b: string;
+  /** Map view when the next screen opened: ＜ brings the map back to it */
+  view?: View;
 }
 
 export const EMPTY_SCREEN: Screen = { q: '', list: '', group: [], b: '' };

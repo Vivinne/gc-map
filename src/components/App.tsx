@@ -73,14 +73,22 @@ export default function App() {
   /** Run after the panels have their new size */
   const afterPanel = (f: () => void) => window.setTimeout(f, PANEL_WAIT);
 
-  const push = (s: Screen) => setStack((st) => [...st, s]);
+  /** Open a new screen; the screen it leaves keeps the map view, so ＜ can bring the map back to it */
+  const push = (s: Screen) => {
+    const view = mapRef.current?.view() ?? undefined;
+    setStack((st) => [...st.slice(0, -1), { ...st[st.length - 1]!, view }, s]);
+  };
 
+  /** ＜: the previous screen comes back with its lists, its search and the map as it was then */
   const goBack = () => {
     if (stack.length < 2) return;
     const prev = stack[stack.length - 2]!;
     setStack((st) => st.slice(0, -1));
     setDraft(prev.q);
-    if (prev.q && prev.q !== top.q) afterPanel(() => mapRef.current?.fitTo(search(prev.q)));
+    if (prev.view) {
+      const v = prev.view;
+      afterPanel(() => mapRef.current?.moveTo(v));
+    } else if (prev.q && prev.q !== top.q) afterPanel(() => mapRef.current?.fitTo(search(prev.q)));
   };
 
   /** × and Esc: everything closes, the text and results go; the map stays where it is */

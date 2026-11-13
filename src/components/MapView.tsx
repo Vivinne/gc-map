@@ -38,6 +38,8 @@ export interface MapHandle {
    * stand alone and bring it into the free part of the map; otherwise as `reveal` (the zoom stays).
    */
   focus(b: Building): void;
+  /** Go back to a view saved earlier (＜) */
+  moveTo(v: View): void;
   view(): View | null;
 }
 
@@ -233,13 +235,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         }
         const to = Math.min(MAX_ZOOM, zoom + (near > 0 ? Math.log2(need / near) + 0.15 : MAX_ZOOM));
         const p = padRef.current;
+        // offset, not padding: map padding would stay on the map and shift every saved centre after it
         map.easeTo({
           center: [b.lng, b.lat],
           zoom: to,
-          padding: { top: p.top, right: p.right, bottom: p.bottom, left: p.left },
+          offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
           duration: motion(MAP_MS),
           easing: EASE,
         });
+      },
+      moveTo: (v) => {
+        mapRef.current?.easeTo({ center: [v.lng, v.lat], zoom: v.zoom, duration: motion(MAP_MS), easing: EASE });
       },
       view: () => {
         const m = mapRef.current;
