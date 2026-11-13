@@ -6,7 +6,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'GC Atlas',
-  description: 'General Culture buildings: map, quiz and collections',
+  description: 'General Culture buildings on a map',
   robots: { index: false, follow: false },
 };
 

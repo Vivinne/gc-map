@@ -6,8 +6,8 @@ Everything below survives the redesign unchanged. Anything not listed here is fr
 ## Tokens (single source)
 | What | Where |
 |---|---|
-| Style colours, 10 categories, palette "Earth to sky" (`b3`) | `src/styles/tokens.ts` → `THEMES.b3.eras` |
-| Basemap colours (sea, land, road, building) | `src/styles/tokens.ts` → `THEMES.b3.map` |
+| Style colours, 10 categories, palette "Earth to sky" | `src/styles/tokens.ts` → `ERA_COLORS` |
+| Basemap colours (sea, land, road, building) | `src/styles/tokens.ts` → `MAP_COLORS` |
 | Ink, greys `--gNN`, rule, mute, soft | `src/styles/tokens.css` |
 | Motion: `--ease`, `--ease-in`, `--t-fast` 120 ms, `--t-mid` 220 ms, `--t-slow` 420 ms, `--leave` 160 ms | `src/styles/tokens.css` |
 | Corners `--r-s` 6 px, `--r-m` 10 px | `src/styles/tokens.css` |
@@ -23,9 +23,10 @@ Category colours in order: Ancient `#D58774`, Medieval `#C38C53`, Renaissance `#
 | Press feedback | `globals.css` (`:active` → `translateY(1px)`, background darkens over `--t-fast`) | Every clickable thing |
 | Panel entry / exit | `globals.css` keyframes `drawer-in`, `slide-in-l`, `sheet-in`, `out-l`, `out-d`; `src/components/Leave.tsx` | Panels slide and fade in, slide away on close; nothing else moves |
 | Style colour on the card title (rows 1–2 of the building card) | `.c-top` background = category colour | As now |
-| Style tags layout in the Category list | `.styles` grid (2 columns, 4 px gap), `.chip` 32 px with swatch | Same size as the style tags in the v1 filters panel |
+| Style tags layout in the Category list | `.styles` grid (2 columns, 4 px gap), `.chip` 32 px with swatch and count | Same size as the style tags in the v1 filters panel |
 | List ↔ map hover highlight | `onHover` in lists, `hoverId` in `MapView` | Kept as visual feedback |
-| Map failure screen | `MapView` `fallback` (WebGL off): message, Details, building list | As now; the list uses the new list row format |
+| Map failure screen | `MapView` `fallback` (WebGL off): message, Details, building list | As v1; the list uses the new row format |
+| Number point look | `NumberPoint` in `MapView.tsx` (v1 city circle: category ring, count) | |
 | Basemap | `src/lib/basemap.ts`, `src/data/basemap.json`, OpenFreeMap street tiles | As now |
 | Default view | Europe, as v1 Full map | As now |
 

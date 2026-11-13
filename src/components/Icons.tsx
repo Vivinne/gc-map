@@ -1,4 +1,4 @@
-export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me' | 'chart' | 'image' | 'gear' | 'list' | 'info' | 'person' | 'pin';
+export type IconName = 'globe' | 'flag' | 'collapse' | 'expand' | 'down' | 'search' | 'plus' | 'minus' | 'fit' | 'close' | 'left' | 'right' | 'star' | 'starOn' | 'check' | 'filter' | 'map' | 'cards' | 'undo' | 'up' | 'edit' | 'trash' | 'download' | 'upload' | 'me' | 'chart' | 'image' | 'gear' | 'list' | 'info' | 'person' | 'pin' | 'grid' | 'clock';
 
 /** Line icons drawn on a 16 px grid; colour follows the text colour */
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
@@ -15,6 +15,10 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
       return (<svg {...p}><rect x="3" y="3" width="10" height="10" {...s} strokeWidth={1.8} /></svg>);
     case 'down':
       return (<svg {...p}><path d="M3 6l5 5 5-5" {...s} /></svg>);
+    case 'grid':
+      return (<svg {...p}><rect x="2" y="2" width="5" height="5" {...s} strokeWidth={1.7} /><rect x="9" y="2" width="5" height="5" {...s} strokeWidth={1.7} /><rect x="2" y="9" width="5" height="5" {...s} strokeWidth={1.7} /><rect x="9" y="9" width="5" height="5" {...s} strokeWidth={1.7} /></svg>);
+    case 'clock':
+      return (<svg {...p}><circle cx="8" cy="8" r="6" {...s} strokeWidth={1.6} /><path d="M8 4.5V8l2.5 1.6" {...s} strokeWidth={1.6} /></svg>);
     case 'search':
       return (<svg {...p}><circle cx="6.8" cy="6.8" r="4.8" {...s} /><path d="M10.4 10.4 14.5 14.5" {...s} strokeWidth={2.1} /></svg>);
     case 'plus':

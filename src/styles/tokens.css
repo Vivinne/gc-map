@@ -37,39 +37,6 @@
   --ok-bg: #e4f5eb;
   --gold: #c5953b;
 }
-:root[data-theme='d2'] {
-  --ink: #2e333c;
-  --ink-hover: #424852;
-  --ink-press: #4d535d;
-  --g18: #0e1115;
-  --g25: #1f2327;
-  --g29: #272b2f;
-  --g30: #2b2f33;
-  --g37: #3b3f43;
-  --g51: #63686c;
-  --g66: #8d9297;
-  --g71: #9ea2a8;
-  --g74: #a8adb2;
-  --g80: #b8bdc2;
-  --g84: #c6cace;
-  --g85: #cbd0d4;
-  --g86: #cfd3d7;
-  --g89: #d7dbe0;
-  --g92: #e1e5ea;
-  --g93: #e3e7ec;
-  --g94: #e6eaef;
-  --g96: #edf1f6;
-  --sea: #edf1f6;
-  --land: #d7dbe0;
-  --rule: #e1e5ea;
-  --mute: #63686c;
-  --soft: #f1f5fa;
-  --wrong: #a8545d;
-  --wrong-bg: #ffeaeb;
-  --ok: #328173;
-  --ok-bg: #e1f5f1;
-  --gold: #cd9a50;
-}
 :root {
   /* motion: three lengths and one curve (fast start, soft landing); things that leave speed up instead */
   --ease: cubic-bezier(0.2, 0, 0, 1);

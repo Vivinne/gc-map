@@ -1,7 +1,7 @@
 # SPEC.md — GC map redesign (v2)
 
 Source: Project doc "網頁修改 的副本" (2026-11-13) and the user's answers of 2026-11-13. KEEP.md lists what stays from v1.
-Status: draft. Open items are marked **OPEN** and are not built until the user answers.
+Status: approved 2026-11-13; built on branch `redesign` (steps 3–5). Not published.
 
 ## 1. Screen
 - Map only, no top bar, no tabs. Default view: Europe (v1 Full map).
@@ -27,6 +27,7 @@ Status: draft. Open items are marked **OPEN** and are not built until the user a
 - Markers show only when a search is submitted, or when the scale bar reads 100 km or less (`scale.metres <= 100000`). At the default Europe view with no search the map has no markers.
 - Markers that overlap on screen merge into a number point (count); zooming in splits them.
 - Click a marker → building card. Click a number point → number point list → click a row → building card.
+- Opening a number point list moves the map only as far as needed to keep the point in sight.
 - Map move or zoom → markers update to the view (and to the submitted search, if any).
 - Opening a card moves the map only as far as needed to show the building; the zoom does not change.
 
@@ -43,7 +44,7 @@ Status: draft. Open items are marked **OPEN** and are not built until the user a
 
 ## 5. Search
 - Placeholder: `Search architecture, architect, style…`
-- Before Enter: magnifier left, × right. After Enter: × only. **OPEN:** does the magnifier stay on the left after Enter?
+- Magnifier always on the left; × on the right while there is text or anything open. No ＜ in the search box.
 - Click Search: preview list shows Recent: up to 5 texts and up to 5 buildings, each newest first. Texts from Category and architect clicks count.
 - Typing without Enter: preview list. Enter: submit. Empty text: nothing happens. No match: Enter does not submit, the list shows `No Results`.
 - Clicking a preview row opens its card; ＜ returns to the preview with the text kept.
@@ -59,7 +60,8 @@ All result rows (preview, results, number point list) share one row:
 - Line 3: architect · style.
 - Thin grey rule between rows. Click → card.
 
-Number point list: ＜ top left, title `XX Architectures`, × top right.
+Number point list: ＜ top left, title `XX Architectures`, × top right. Results list and search preview have no title row (phone sheets keep a drag handle).
+＜ shows on lists and the card whenever there is an earlier screen; a card opened from the plain map shows only ×.
 Category list: ＜ top left, `Category` beside it, × top right; the 10 style tags laid out as in v1 (KEEP.md).
 
 ## 7. Building card
@@ -68,8 +70,8 @@ Category list: ＜ top left, `Category` beside it, × top right; the 10 style ta
 - Row 3: built span · city. The span follows the year rules (start–completion), not completion only.
 - Row 4: architect · style. Architect is a link → text search [architect]. Style: finer style if any (e.g. Brutalism), else the category name. No architect: `-`.
 - Row 5: summary (Chinese).
-- Keywords: one italic line at the bottom, plain text (no tag boxes); struck keywords stay struck. **OPEN:** label `Keywords:` (English, as the rule that on-screen labels are English) or `關鍵字：`.
-- After keywords, small grey italic: exam years (`2016 TEST-ARCHED`).
+- Keywords: one italic line at the bottom, plain text (no tag boxes), label `關鍵字：` (an approved exception to the English-only interface rule; written as escapes in code); struck keywords stay struck.
+- After keywords, small grey italic: exam years, as v1 (`TEST-ARCHED 2016 / 2018`).
 
 ## 8. Summary text (content task, step 6)
 - Chinese prose. Names of people, buildings and styles in the original language, in full (e.g. Piazza della Scala, not "Scala 廣場"). Terms and programmes: Chinese with the original or English in brackets (clerestory, Trompe l'oeil, La Tendenza).
@@ -91,12 +93,12 @@ One page; the state is in the query string so a link opens the same screen.
 |---|---|---|
 | `q` | submitted search text | `?q=Baroque` |
 | `b` | open building card | `?b=pantheon-rome` |
-| `g` | open number point list: its point | `?g=12.4823,41.8955` |
+| `g` | open number point list: its buildings (ids joined by `~`) | `?g=pantheon-rome~trevi-fountain-rome` |
 | `p` | open list that is not a result: `search` (preview), `category` | `?p=category` |
-| `v` | map view: lng, lat, zoom | `?v=12.49,41.89,13.2` |
+| `m` | map view: lng, lat, zoom (`v` is taken by the fresh-copy reload) | `?m=12.49,41.89,13.2` |
 
 The history behind ＜ is kept in `sessionStorage` (same tab, survives reload). A shared link opens its top state with no history (＜ hidden).
-**OPEN:** publish path. Proposal: the new site at `https://vivinne.github.io/gc-map/`; `/gc-map/atlas/` redirects there.
+Publish path (approved): the new site at `https://vivinne.github.io/gc-map/`; `/gc-map/atlas/` redirects there.
 
 ## 12. Code rules
 - React + Next.js (static export) + TypeScript. All code, comments, UI strings, scripts and docs in English; study content keeps its original wording.
