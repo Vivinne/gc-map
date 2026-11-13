@@ -1,0 +1,93 @@
+/* Design tokens: colours, greys, motion, corners, sizes and type of the site.
+   Kept from GC Atlas v1 (see KEEP.md). Style colours live in tokens.ts (they are read by the map and the lists).
+   Change a value here, not in the component styles. */
+:root {
+  --brand: #000;
+  --brand-press: #3a3a3a;
+  --ink: #2d343b;
+  --ink-hover: #414950;
+  --ink-press: #4c535b;
+  --paper: #fff;
+  --g18: #0d1217;
+  --g25: #1e2328;
+  --g29: #252b30;
+  --g30: #2a2f35;
+  --g37: #3a3f45;
+  --g51: #62686e;
+  --g66: #8b9299;
+  --g71: #9ca3aa;
+  --g74: #a6adb4;
+  --g80: #b6bdc4;
+  --g84: #c5cad0;
+  --g85: #cad0d6;
+  --g86: #cdd3d9;
+  --g89: #d5dbe1;
+  --g92: #e0e5eb;
+  --g93: #e1e7ed;
+  --g94: #e4eaf0;
+  --g96: #ecf1f8;
+  --sea: #ecf1f8;
+  --land: #d5dbe1;
+  --rule: #e0e5eb;
+  --mute: #62686e;
+  --soft: #f0f6fc;
+  --wrong: #a8564a;
+  --wrong-bg: #ffebe7;
+  --ok: #3b825f;
+  --ok-bg: #e4f5eb;
+  --gold: #c5953b;
+}
+:root[data-theme='d2'] {
+  --ink: #2e333c;
+  --ink-hover: #424852;
+  --ink-press: #4d535d;
+  --g18: #0e1115;
+  --g25: #1f2327;
+  --g29: #272b2f;
+  --g30: #2b2f33;
+  --g37: #3b3f43;
+  --g51: #63686c;
+  --g66: #8d9297;
+  --g71: #9ea2a8;
+  --g74: #a8adb2;
+  --g80: #b8bdc2;
+  --g84: #c6cace;
+  --g85: #cbd0d4;
+  --g86: #cfd3d7;
+  --g89: #d7dbe0;
+  --g92: #e1e5ea;
+  --g93: #e3e7ec;
+  --g94: #e6eaef;
+  --g96: #edf1f6;
+  --sea: #edf1f6;
+  --land: #d7dbe0;
+  --rule: #e1e5ea;
+  --mute: #63686c;
+  --soft: #f1f5fa;
+  --wrong: #a8545d;
+  --wrong-bg: #ffeaeb;
+  --ok: #328173;
+  --ok-bg: #e1f5f1;
+  --gold: #cd9a50;
+}
+:root {
+  /* motion: three lengths and one curve (fast start, soft landing); things that leave speed up instead */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --t-fast: 120ms;
+  --t-mid: 220ms;
+  --t-slow: 420ms;
+  --leave: 160ms;
+  /* corners: controls, then cards and panels; chips and tags are pills */
+  --r-s: 6px;
+  --r-m: 10px;
+  --top-h: 48px;
+  --index-w: 320px;
+  --detail-w: 340px;
+  color-scheme: light;
+  font-family: 'Archivo Variable', Archivo, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}

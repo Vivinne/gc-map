@@ -9,6 +9,7 @@ import { MIN_DONUT, boundsOf, clusterAt, donutRadius, nearest, regionOf, type Cl
 import { BUILDINGS, CITY_BUILDINGS, CITY_NO, ERAS, ERA_ORDER, nationName, type Building } from '../lib/model';
 import { geoMercator, geoPath } from 'd3-geo';
 import { Icon } from './Icons';
+import ScaleBar, { scaleFor, type Scale } from './ScaleBar';
 import { THEMES, type Theme, type ThemeId } from '../lib/theme';
 
 export const DETAIL_ZOOM = 11.5;
@@ -989,14 +990,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   }
 
   // Scale bar: the longest round length that fits in 110 px
-  let scale: { label: string; px: number } | null = null;
-  if (map) {
-    const lat = map.getCenter().lat;
-    const mpp = (40075016.686 * Math.cos((lat * Math.PI) / 180)) / (512 * 2 ** zoom);
-    const nice = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000];
-    const m = [...nice].reverse().find((n) => n / mpp <= 110) ?? 5;
-    scale = { label: m >= 1000 ? `${m / 1000} km` : `${m} m`, px: m / mpp };
-  }
+  const scale: Scale | null = map ? scaleFor(map.getCenter().lat, zoom) : null;
 
   // Locator, always shown: where the view (and the open building) sits on the map of Europe, or of the
   // world when the view is outside Europe
@@ -1067,20 +1061,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         <>
           {scale && (
             // fixed in the lower left corner: an open sheet covers it, it never moves
-            <div className="scale" style={{ left: 16, bottom: 24 + tabInset }}>
-              {scale.label}
-              <i style={{ width: scale.px }} />
-            </div>
+            <ScaleBar scale={scale} style={{ left: 16, bottom: 24 + tabInset }} />
           )}
           {foot && <div className="foot m">{foot}</div>}
         </>
       ) : (
         <div className="foot" style={{ left: 16, right: 56 + LOC.d.w + 16 }}>
           {scale && (
-            <div className="scale">
-              {scale.label}
-              <i style={{ width: scale.px }} />
-            </div>
+            <ScaleBar scale={scale} />
           )}
           {foot}
         </div>
