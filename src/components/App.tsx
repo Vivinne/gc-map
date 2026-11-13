@@ -46,6 +46,8 @@ export default function App() {
   // Text in the search box while the preview is open (typed, not yet submitted)
   const [draft, setDraft] = useState(top.q);
   const [hoverId, setHoverId] = useState('');
+  // Phone: buildings of the list rows on screen; the map marks them and dims the rest
+  const [seenIds, setSeenIds] = useState<string[]>([]);
   const [recentT, setRecentT] = useState<string[]>(() => recentTexts());
   const [recentB, setRecentB] = useState<string[]>(() => recentBuildings());
   const [mapDown, setMapDown] = useState(false);
@@ -234,13 +236,13 @@ export default function App() {
   } else if (top.list === 'group' && group.length) {
     panel = (
       <Panel ref={panelRef} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={`${group.length} Architectures`} />}>
-        <Rows list={group} onOpen={openCard} onHover={setHoverId} />
+        <Rows list={group} onOpen={openCard} onHover={setHoverId} onVisible={mobile ? setSeenIds : undefined} />
       </Panel>
     );
   } else if (top.list === 'results' && results.length) {
     panel = (
       <Panel ref={panelRef} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={null}>
-        <Rows list={results} onOpen={openCard} onHover={setHoverId} />
+        <Rows list={results} onOpen={openCard} onHover={setHoverId} onVisible={mobile ? setSeenIds : undefined} />
       </Panel>
     );
   }
@@ -254,6 +256,7 @@ export default function App() {
           always={!!top.q}
           selected={selected}
           hoverId={hoverId}
+          seenIds={mobile && !selected && (top.list === 'results' || top.list === 'group') ? seenIds : null}
           padding={padding}
           reducedMotion={reducedMotion}
           compact={mobile}

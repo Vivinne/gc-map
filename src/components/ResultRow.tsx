@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { ERAS, type Building } from '../lib/model';
 import { architectOf, builtOf, shownStyle } from '../lib/style';
 
@@ -12,7 +13,7 @@ export const joinDot = (...parts: string[]): string => parts.filter(Boolean).joi
  */
 export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(id: string): void; onHover(id: string): void }) {
   return (
-    <li>
+    <li data-id={b.id}>
       <button
         type="button"
         className="row"
@@ -33,9 +34,40 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
   );
 }
 
-export function Rows({ list, onOpen, onHover }: { list: Building[]; onOpen(id: string): void; onHover(id: string): void }) {
+/**
+ * A list of buildings. `onVisible` (phone) reports the rows that are on screen in the list, top to bottom,
+ * whenever the list scrolls, so the map can mark those buildings.
+ */
+export function Rows({ list, onOpen, onHover, onVisible }: { list: Building[]; onOpen(id: string): void; onHover(id: string): void; onVisible?(ids: string[]): void }) {
+  const ul = useRef<HTMLUListElement>(null);
+  const report = useRef(onVisible);
+  report.current = onVisible;
+  const on = !!onVisible;
+  useEffect(() => {
+    const el = ul.current;
+    if (!on || !el) return undefined;
+    const root = el.closest('.p-body');
+    const seen = new Set<string>();
+    const send = () => report.current?.([...el.querySelectorAll<HTMLElement>('li[data-id]')].map((li) => li.dataset.id!).filter((id) => seen.has(id)));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const id = (e.target as HTMLElement).dataset.id!;
+          if (e.isIntersecting) seen.add(id);
+          else seen.delete(id);
+        }
+        send();
+      },
+      { root, threshold: 0.6 },
+    );
+    el.querySelectorAll('li[data-id]').forEach((li) => io.observe(li));
+    return () => {
+      io.disconnect();
+      report.current?.([]);
+    };
+  }, [on, list]);
   return (
-    <ul className="rows">
+    <ul className="rows" ref={ul}>
       {list.map((b) => (
         <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />
       ))}
