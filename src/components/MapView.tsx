@@ -26,6 +26,8 @@ const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]
 /** Space kept round the buildings when the map frames them */
 const FRAME = 40;
 const MAX_ZOOM = 18;
+/** With no search, names show when the scale bar reads this length (metres) or less */
+const NAME_SCALE = 100000;
 /** Map name labels: longest name shown in full, and the width a character takes at 12 px */
 const LABEL_MAX = 24;
 const LABEL_CHAR = 6.6;
@@ -55,6 +57,8 @@ export interface MapHandle {
 interface Props {
   /** Buildings the map may show: the search results, or every building */
   buildings: Building[];
+  /** A search is submitted: its results are named at every scale */
+  searched: boolean;
   selected: Building | null;
   /** Building pointed at in a list */
   hoverId: string;
@@ -113,7 +117,7 @@ function styleSpec(): StyleSpecification {
 const size = (n: number) => (n > 1 ? pointRadius(n) : DOT_R);
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, fallback } = props;
+  const { buildings, searched, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, fallback } = props;
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const tilesOk = useRef(false);
@@ -269,8 +273,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
   const map = mapRef.current;
   const scale = map ? scaleFor(map.getCenter().lat, map.getZoom()) : null;
-  // Markers show at every scale (with or without a search)
+  // Markers show at every scale (with or without a search). With no search, names show from 100 km down on
+  // the scale bar (wider views keep every marker but only the open card's name).
   const markersOn = true;
+  const namesOn = searched || (!!scale && scale.metres <= NAME_SCALE);
   // Buildings drawn as markers at this moment (focus() checks whether the open one is merged)
   const markersShown = useRef<Building[]>([]);
   markersShown.current = markersOn ? buildings : [];
@@ -341,7 +347,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
       // The open building's name first, then the rows on screen in the list, then the rest in list order
       const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
-      for (const { b, x, y } of [...singles].sort((p, q) => rank(p.b) - rank(q.b))) {
+      for (const { b, x, y } of [...singles].filter((d) => namesOn || d.b.id === selected?.id).sort((p, q) => rank(p.b) - rank(q.b))) {
         const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
         const w = text.length * LABEL_CHAR;
         // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
