@@ -57,10 +57,10 @@ const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, m
         {b.summary && <p className="c-sum sum">{b.summary}</p>}
         {keys.length > 0 && (
           <p className="c-keys sum">
-            {'關鍵字：'}
+            {'\u95dc\u9375\u5b57\uff1a'}
             {keys.map((k, i) => (
               <span key={k.text}>
-                {i > 0 && '、'}
+                {i > 0 && '\u3001'}
                 {k.struck ? <s>{k.text}</s> : k.text}
               </span>
             ))}
