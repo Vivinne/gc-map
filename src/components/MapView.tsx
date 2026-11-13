@@ -28,6 +28,9 @@ export const MARKER_SCALE = 100000;
 /** Space kept round the buildings when the map frames them */
 const FRAME = 40;
 const MAX_ZOOM = 18;
+/** Map name labels: longest name shown in full, and the width a character takes at 12 px */
+const LABEL_MAX = 24;
+const LABEL_CHAR = 6.6;
 
 export interface Padding {
   top: number;
@@ -302,6 +305,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     };
     const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
     const marks: React.ReactNode[] = [];
+    // Phone list open: names beside the single markers whose rows are on screen in the list
+    const labels: React.ReactNode[] = [];
+    const taken: [number, number, number, number][] = [];
     const hits: React.ReactNode[] = [];
     if (markersOn) {
       const groups = groupOnScreen(
@@ -319,6 +325,23 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             </circle>,
           );
           if (compact) hits.push(<circle key={`h-${b.id}`} className="mk hit" cx={g.x} cy={g.y} r={20} {...act(b.id, () => onSelect(b.id))} />);
+          if (seen?.has(b.id)) {
+            const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
+            const w = text.length * LABEL_CHAR;
+            // right of the dot, else left; a label that would cover another or leave the map is skipped
+            for (const side of [1, -1] as const) {
+              const x0 = side > 0 ? g.x + DOT_R + 4 : g.x - DOT_R - 4 - w;
+              const box: [number, number, number, number] = [x0, g.y - 9, x0 + w, g.y + 9];
+              if (box[0] < 4 || box[2] > W - 4 || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
+              taken.push(box);
+              labels.push(
+                <text key={`l-${b.id}`} className="mk-label" x={side > 0 ? box[0] : box[2]} y={g.y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
+                  {text}
+                </text>,
+              );
+              break;
+            }
+          }
           continue;
         }
         const key = g.items.map((b) => b.id).join('~');
@@ -347,6 +370,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     overlay = createPortal(
       <svg className="overlay" width={W} height={H}>
         {marks}
+        {labels}
         {hits}
       </svg>,
       layer,
