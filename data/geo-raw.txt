@@ -117,7 +117,7 @@ Fallingwater |  | en:Fallingwater | 39.90626°N 79.46783°W |
 Guggenheim Museum New York |  | en:Solomon_R._Guggenheim_Museum | 40.78306°N 73.95889°W | 
 Müller House |  | en:Villa_Müller | 50.09250°N 14.37833°E | 
 Lloyd's Building |  | en:Lloyd's_building | 51.51306°N 0.082361°W | 
-Grand Court |  | en:Queen_Elizabeth_II_Great_Court | 51.51944°N 0.12694°W | Inside the British Museum
+Queen Elizabeth II Great Court |  | en:Queen_Elizabeth_II_Great_Court | 51.51944°N 0.12694°W | Inside the British Museum
 Reichstag (Glass Dome) |  | en:Reichstag_building | 52.51861°N 13.37611°E | 
 Jewish Museum Berlin |  | en:Jewish_Museum_Berlin | 52.502°N 13.395°E | 
 Guggenheim Museum Bilbao |  | en:Guggenheim_Museum_Bilbao | 43.26861°N 2.93389°W | 

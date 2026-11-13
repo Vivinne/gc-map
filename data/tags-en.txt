@@ -182,7 +182,7 @@ philharmonie-de-paris-paris | Philharmonie de Paris | Aluminium panels · Perfor
 lloyd-s-building-london | Lloyd's Building | Exposed services
 the-gherkin-london | The Gherkin | Gherkin shape
 london-city-hall-london | London City Hall | Glass sphere
-grand-court-london | Grand Court | Glass canopy
+grand-court-london | Queen Elizabeth II Great Court | Glass canopy
 reichstag-glass-dome-berlin | Reichstag (Glass Dome) | Glass dome · Spiral ramp · Democratic transparency
 jewish-museum-berlin-berlin | Jewish Museum Berlin | 
 dancing-house-prague | Dancing House | Curved twin towers

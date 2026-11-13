@@ -182,7 +182,7 @@ philharmonie-de-paris-paris | Philharmonie de Paris | 鋁板・孔洞
 lloyd-s-building-london | Lloyd's Building | 設備外露
 the-gherkin-london | The Gherkin | 小黃瓜
 london-city-hall-london | London City Hall | 透明球體
-grand-court-london | Grand Court | 玻璃天幕結構
+grand-court-london | Queen Elizabeth II Great Court | 玻璃天幕結構
 reichstag-glass-dome-berlin | Reichstag (Glass Dome) | 玻璃穹頂・螺旋坡道・民主透明
 jewish-museum-berlin-berlin | Jewish Museum Berlin | 
 dancing-house-prague | Dancing House | 曲面雙塔

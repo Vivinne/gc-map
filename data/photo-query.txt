@@ -22,7 +22,7 @@ gallaratese-quarter-milan | Gallaratese Quarter | Gallaratese Aldo Rossi
 palazzo-dell-arte-triennale-milan | Palazzo dell'Arte | Palazzo della Triennale
 polimi-campus-nord-milan | Polimi Campus Nord | Politecnico Bovisa campus
 bibliotheque-nationale-de-france-paris | Bibliothèque nationale de France | BnF François Mitterrand Perrault towers
-grand-court-london | Grand Court | Great Court British Museum
+grand-court-london | Queen Elizabeth II Great Court | Great Court British Museum
 jewish-museum-berlin-berlin | Jewish Museum Berlin | Jewish Museum Berlin Libeskind
 wexner-center | Wexner Center | Wexner Center for the Arts
 metropolitan-museum-of-art-new-york | Metropolitan Museum of Art | Metropolitan Museum of Art facade

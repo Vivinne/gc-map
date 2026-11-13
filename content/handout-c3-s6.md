@@ -254,7 +254,7 @@
 | Lloyd's Building<br><span class="loc">London</span> | 1986 | Richard Rogers | Bowellism |
 | The Gherkin<br><span class="loc">London</span> | 2004 | Norman Foster | Diagrid |
 | London City Hall<br><span class="loc">London</span> | 2002 | Norman Foster | 透明球體 |
-| Grand Court<br><span class="loc">London</span> | 2000 | Norman Foster | 結構玻璃天幕 |
+| Queen Elizabeth II Great Court<br><span class="loc">London</span> | 2000 | Norman Foster | 結構玻璃天幕 |
 | Reichstag (Glass Dome)<br><span class="loc">Berlin</span> | 1999 | Norman Foster | 民主透明 |
 | Jewish Museum Berlin<br><span class="loc">Berlin</span> | 1999 | Daniel Libeskind | 解構 |
 | Dancing House<br><span class="loc">Prague</span> | 1996 | Frank Gehry | — |
