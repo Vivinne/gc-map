@@ -41,7 +41,7 @@ export interface Padding {
 
 export interface MapHandle {
   /** Frame a set of buildings in the free part of the map */
-  fitTo(list: Building[]): void;
+  fitTo(list: Building[], maxZoom?: number): void;
   /** Move the map only as far as needed to show a point (a building, a number point) in the free part; the zoom stays */
   reveal(at: { lng: number; lat: number }): void;
   /**
@@ -212,15 +212,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   useImperativeHandle(
     ref,
     () => ({
-      fitTo: (list) => {
+      fitTo: (list, maxZoom = 15) => {
         const map = mapRef.current;
         const b = boundsOf(list);
         if (!map || !b) return;
         const p = padRef.current;
         const padding = { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME };
-        const cam = map.cameraForBounds(b, { padding, maxZoom: 15 });
+        const cam = map.cameraForBounds(b, { padding, maxZoom });
         const dz = cam?.zoom != null ? cam.zoom - map.getZoom() : 0;
-        map.fitBounds(b, { padding, maxZoom: 15, duration: motion(camMs(dz)), easing: camEase(dz) });
+        map.fitBounds(b, { padding, maxZoom, duration: motion(camMs(dz)), easing: camEase(dz) });
       },
       reveal: (b) => {
         const map = mapRef.current;
@@ -305,8 +305,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     };
     const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
     const marks: React.ReactNode[] = [];
-    // List open: names beside the single markers whose rows are on screen in the list
+    // Names beside every single marker (placed after all markers, see below)
     const labels: React.ReactNode[] = [];
+    const singles: { b: Building; x: number; y: number }[] = [];
+    // Screen boxes no name may cover: every marker and number point, then each name placed
     const taken: [number, number, number, number][] = [];
     const hits: React.ReactNode[] = [];
     if (markersOn) {
@@ -325,25 +327,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             </circle>,
           );
           if (compact) hits.push(<circle key={`h-${b.id}`} className="mk hit" cx={g.x} cy={g.y} r={20} {...act(b.id, () => onSelect(b.id))} />);
-          if (seen?.has(b.id)) {
-            const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
-            const w = text.length * LABEL_CHAR;
-            // right of the dot, else left; a label that would cover another, run under a panel or leave the map is skipped
-            for (const side of [1, -1] as const) {
-              const x0 = side > 0 ? g.x + DOT_R + 4 : g.x - DOT_R - 4 - w;
-              const box: [number, number, number, number] = [x0, g.y - 9, x0 + w, g.y + 9];
-              if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
-              taken.push(box);
-              labels.push(
-                <text key={`l-${b.id}`} className="mk-label" x={side > 0 ? box[0] : box[2]} y={g.y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
-                  {text}
-                </text>,
-              );
-              break;
-            }
-          }
+          singles.push({ b, x: g.x, y: g.y });
           continue;
         }
+        const gr = size(g.items.length) + 6;
+        taken.push([g.x - gr, g.y - gr, g.x + gr, g.y + gr]);
         const key = g.items.map((b) => b.id).join('~');
         const isHot = hot === key || g.items.some((b) => b.id === hoverId);
         marks.push(
@@ -352,6 +340,28 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             <title>{`${g.items.length} Architectures`}</title>
           </g>,
         );
+      }
+      for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
+      // The open building's name first, then the rows on screen in the list, then the rest in list order
+      const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
+      for (const { b, x, y } of [...singles].sort((p, q) => rank(p.b) - rank(q.b))) {
+        const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
+        const w = text.length * LABEL_CHAR;
+        // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
+        // the open building's selection ring is wider than a dot
+        const gap = selected?.id === b.id ? 21 : DOT_R + 4;
+        for (const side of [1, -1] as const) {
+          const x0 = side > 0 ? x + gap : x - gap - w;
+          const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
+          if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
+          taken.push(box);
+          labels.push(
+            <text key={`l-${b.id}`} className={`mk-label${seen && !seen.has(b.id) ? ' dim' : ''}`} x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
+              {text}
+            </text>,
+          );
+          break;
+        }
       }
     }
     // The open building is always marked, markers on or off
