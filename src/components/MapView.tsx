@@ -23,8 +23,6 @@ const LONG_FROM = 1.5;
 const camMs = (dz: number) => Math.min(1600, MAP_MS + 150 * Math.abs(dz));
 const camEase = (dz: number) => (Math.abs(dz) >= LONG_FROM ? EASE_LONG : EASE);
 const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]];
-/** Without a submitted search, markers show from this scale bar length down (metres) */
-export const MARKER_SCALE = 100000;
 /** Space kept round the buildings when the map frames them */
 const FRAME = 40;
 const MAX_ZOOM = 18;
@@ -57,8 +55,6 @@ export interface MapHandle {
 interface Props {
   /** Buildings the map may show: the search results, or every building */
   buildings: Building[];
-  /** A search is submitted: its results show at every scale */
-  always: boolean;
   selected: Building | null;
   /** Building pointed at in a list */
   hoverId: string;
@@ -117,7 +113,7 @@ function styleSpec(): StyleSpecification {
 const size = (n: number) => (n > 1 ? pointRadius(n) : DOT_R);
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, always, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, fallback } = props;
+  const { buildings, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, fallback } = props;
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const tilesOk = useRef(false);
@@ -273,7 +269,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
   const map = mapRef.current;
   const scale = map ? scaleFor(map.getCenter().lat, map.getZoom()) : null;
-  const markersOn = always || (!!scale && scale.metres <= MARKER_SCALE);
+  // Markers show at every scale (with or without a search)
+  const markersOn = true;
   // Buildings drawn as markers at this moment (focus() checks whether the open one is merged)
   const markersShown = useRef<Building[]>([]);
   markersShown.current = markersOn ? buildings : [];

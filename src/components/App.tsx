@@ -254,7 +254,6 @@ export default function App() {
         <MapView
           ref={mapRef}
           buildings={top.q ? results : BUILDINGS}
-          always={!!top.q}
           selected={selected}
           hoverId={hoverId}
           seenIds={!selected && (top.list === 'results' || top.list === 'group') ? seenIds : null}
