@@ -62,7 +62,7 @@ interface Props {
   selected: Building | null;
   /** Building pointed at in a list */
   hoverId: string;
-  /** Phone: buildings whose rows are on screen in the open list (marked; the other markers dim); null = off */
+  /** Buildings whose rows are on screen in the open list (named on the map; the other markers dim); null = off */
   seenIds: string[] | null;
   /** Part of the map covered by panels */
   padding: Padding;
@@ -305,7 +305,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     };
     const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
     const marks: React.ReactNode[] = [];
-    // Phone list open: names beside the single markers whose rows are on screen in the list
+    // List open: names beside the single markers whose rows are on screen in the list
     const labels: React.ReactNode[] = [];
     const taken: [number, number, number, number][] = [];
     const hits: React.ReactNode[] = [];
@@ -328,11 +328,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           if (seen?.has(b.id)) {
             const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
             const w = text.length * LABEL_CHAR;
-            // right of the dot, else left; a label that would cover another or leave the map is skipped
+            // right of the dot, else left; a label that would cover another, run under a panel or leave the map is skipped
             for (const side of [1, -1] as const) {
               const x0 = side > 0 ? g.x + DOT_R + 4 : g.x - DOT_R - 4 - w;
               const box: [number, number, number, number] = [x0, g.y - 9, x0 + w, g.y + 9];
-              if (box[0] < 4 || box[2] > W - 4 || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
+              if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
               taken.push(box);
               labels.push(
                 <text key={`l-${b.id}`} className="mk-label" x={side > 0 ? box[0] : box[2]} y={g.y + 4} textAnchor={side > 0 ? 'start' : 'end'}>

@@ -35,7 +35,7 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
 }
 
 /**
- * A list of buildings. `onVisible` (phone) reports the rows that are on screen in the list, top to bottom,
+ * A list of buildings. `onVisible` reports the rows that are on screen in the list, top to bottom,
  * whenever the list scrolls, so the map can mark those buildings.
  */
 export function Rows({ list, onOpen, onHover, onVisible }: { list: Building[]; onOpen(id: string): void; onHover(id: string): void; onVisible?(ids: string[]): void }) {

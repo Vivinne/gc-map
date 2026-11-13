@@ -101,7 +101,7 @@ ul, ol { list-style: none; }
 .overlay .num:hover .num-hot, .overlay .num.hot .num-hot { stroke: var(--ink); }
 .num-n { font-weight: 750; font-size: 12px; fill: var(--ink); pointer-events: none; }
 .sel-mark { pointer-events: none; }
-/* phone: markers of the list rows on screen get an ink ring, the others step back */
+/* list open: markers of the list rows on screen get an ink ring and their names, the others step back */
 .overlay .mk { transition: opacity var(--t-mid) var(--ease); }
 .overlay .mk.dim { opacity: 0.3; }
 .overlay .dot.seen { stroke: var(--ink); stroke-width: 3; }
