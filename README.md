@@ -1,31 +1,10 @@
-# GC Atlas
+# GC map
 
-General Culture buildings (handout C3 §6.1–6.15, 204 rows) as a map and a personal area (quiz, results, collections).
-All 204 buildings are located; every coordinate has a source (see "Data flow").
+Map of the General Culture buildings: search (text, Category, architect), results on the map, number points where markers crowd, and a card per building. Specification: `SPEC.md`; kept from GC Atlas v1: `KEEP.md`.
 
 ## Views
 
-The map fills the window under a 48 px top bar (filters, search, Map / Quiz / Me, seen count). Every floating part sits 16 px from the map edges; controls are 32 px high, list rows 40 px. On-screen help text is left out; buttons carry tooltips and keyboard shortcuts.
-
-| View | Key | What it does |
-|---|---|---|
-| Map | `M` | Buttons at the lower right: zoom in, zoom out, **Country** (the whole country of the open building, else of the building nearest the centre: the Natural Earth outline of the nation its coordinate lies in, main landmass plus the building's own island, at most 60 degrees wide, so Russia shows its European part) and **Full map** (back to the plain map: nothing selected, no filters, Europe). Zooming out by hand (wheel, pinch, zoom button) until the scale bar reads 500 km or more clears the view the same way, without moving the map; the site's own camera moves (Country, opening a city) do not count. **Previous / Next** keep the order the building was opened in, so Next then Previous always comes back. City circles (ring segments = share of each style, number = buildings) at country scale. Click a circle: the city opens with its list (the largest city of a merged circle). From city scale, numbered pins: the number is the building's place in its city, 1 = oldest. Numbers are shown for one city at a time; other cities' buildings are plain dots. Entries at one spot fan out. Buildings of the open city that are off screen or under a panel sit on the edge of the visible area as numbered markers pointing at them. |
-| Quiz | `Q` | Same grid and cards as Me. Set-up: three drop-downs (Question type, Buildings, Questions 5 / 10 / 20 / 30) and Start; the Missed card lists missed questions with Quiz these. The run: question, four choices (`1`-`4`, a second press clears), Back and Next (`Enter`, arrows); Next always works, a question left blank counts as skipped. Answers are shown only at the end. The side card lists the questions (answered / skipped, click to go back); Restart, Finish. The result lists every question (yours struck through when wrong, the right answer, skipped), with New quiz, Missed only, Again. A quiz in progress stays as it is while another tab is open. |
-| Me | `U` | Personal centre on one 12-column grid with fixed card heights (choosing something never moves the layout). Tiles: seen, tested, mastered (of 204), share correct in the last 7 days. **Mastery**: one bar per group, split into mastered (last two answers right), learning, weak (last answer wrong) and not tested; groups by style, TEST-ARCHED (all and per year), country, collections, or type (share right per pair). Clicking a row selects it; the bar under the card then shows it with **Map** (that group as a filter) and **Quiz** (starts a quiz on it). **Practise next**: buildings whose last answer was wrong, most misses first, with the field that was missed, and **Quiz these**. **Correct per day** (last 14 days with answers), **Recent quizzes**, **Collections** (Starred and named collections: select, rename, delete with a second click, map, quiz; new collection). **Another device**: save progress to a file and load it in another browser (seen, stars, collections, quiz results; loading adds to what is there). On a phone Me is split into four parts under a sticky bar (Overview: tiles and practise next; Mastery; History: per day and recent quizzes; Collections and another device), each about one screen high. |
-
-Any building is two clicks away: a city circle (or a period block, or a city in the filters), then a pin or a list row.
-
-- **City list** (right): the city's name and count, every building with its map number. Close or `Esc`.
-- **Building card** (340 px, right): a strip of controls above the card (back to the city list, previous / next, star, fold, close; the star opens a menu with Starred, every collection and a field for a new one; `S` still toggles Starred), kept apart so they never move the content. The card folds to its title. Content: number and NAME; three English data lines with no field labels (built span and place, person, style); the summary; supplementary notes last in small grey italic (sub-buildings, `[TEST-ARCHED 2007 / 2012 / 2016]` in full-width brackets). At the end, a folded section with the other buildings of the city (number, name, an arrow pointing at each; at most 240 px tall when open). Opening a building fits its whole city on the map; while zoomed in, an inset (top left) shows the whole city and the current view.
-- **Period band**: a 28 px strip over the bottom of the map, one block per style, width by number of buildings, the number inside; click a block to show only that period, again to undo. The name shows as a tooltip.
-- **Filters** (button or `F`): style, country, TEST-ARCHED (with year tags 2007–2019), starred, collections, and the cities by size (or the matching buildings once a filter is on). Inside one group tags are a union; across groups they intersect; tag numbers are what you would get if you added the tag.
-- **Search** (`/` or `Ctrl/Cmd+K`): buildings, architects, cities and note text. `Up/Down`, `Enter` opens, `Tab` keeps the text as a filter.
-
-Data lines in English: built spans with Chinese wording are replaced for display by `data/years-display.txt`; styles show the English part of the handout heading; architects keep full names, rulers their short names (`data/architects.txt`).
-
-Phone (up to 900 px wide): one row on top (search, filters button), the period band floating over the bottom of the map (hidden while a sheet is open), no zoom buttons (pinch), the tab bar, filters and cities in a sheet, the city list and the building card as bottom sheets.
-
-Reloading the page is a reset: full map, nothing selected, no filters; an old view address (`#...`) is cleared and ignored. Seen buildings, stars, collections and quiz results (every answer, last 3000) are kept in the browser (localStorage; the page works without it).
+See `SPEC.md` (screen, rules, paths, addresses).
 
 ## Run
 
@@ -74,31 +53,26 @@ Priority: `geo-manual.csv` > `geo-raw.txt` > `geo-estimate.csv`.
 
 | Path | Purpose |
 |---|---|
-| `src/lib/model.ts` | Building model: start year, list year, city key, search text |
-| `src/lib/filter.ts` | Filters, tag counts |
-| `src/lib/band.ts` | Period band geometry (blocks, ticks, year at a position) |
-| `src/lib/geo.ts` | Distances, screen-space city circles, same-spot groups, regions |
-| `src/lib/search.ts` | Grouped search |
-| `src/lib/quiz.ts` | Cross quiz: pairs, questions, scores |
-| `src/lib/mastery.ts` | Mastery per building, groups, per-day share, practise next |
-| `src/lib/collections.ts` | Collections, export / import file |
-| `src/lib/hash.ts`, `storage.ts` | View state, browser storage |
-| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), index, band, building panel, search, quiz, me |
+| `src/styles/tokens.ts`, `tokens.css` | Colours, greys, motion, corners, spacing (the only place for these values) |
+| `src/lib/model.ts` | Building model: start year, city key, categories |
+| `src/lib/style.ts` | Shown style, architect, built span, keywords |
+| `src/lib/search.ts` | Plain text search over name, architect, style, city, country, keywords, summary |
+| `src/lib/nav.ts` | Screen state, history behind the back button, page address |
+| `src/lib/recent.ts`, `storage.ts` | Recent searches and buildings, browser storage |
+| `src/lib/geo.ts` | Bounds, screen grouping into number points |
+| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), search box, Category, lists, card, panel, scale bar |
 
-All code, comments and UI text are English; the study notes in `content/` and the data files keep their original wording.
+All code, comments and UI text are English (one approved exception: the keyword label of the card); the study notes in `content/` and the data files keep their original wording.
 
 ## Checks
 
 ```bash
 npm run typecheck
-npm test        # unit tests: years, filters, tag counts, address state, band scale, quiz, collections, search, circle overlap, data rules, no Chinese characters in code
-npm run site && npm run e2e   # Chromium flows on site/index.html (desktop and phone), screenshots in .e2e/
+npm test        # data rules
 ```
-
-`npm run e2e` needs Playwright's Chromium (`npx playwright install chromium`), or set `CHROMIUM_PATH` to an installed Chromium.
 
 ## Not verified
 
 - Street tiles from OpenFreeMap: the authoring environment cannot reach the tile server, so all checks ran on the offline basemap only.
-- Published on GitHub Pages at https://vivinne.github.io/gc-map/atlas/ (build with `BASE_PATH=/gc-map/atlas npm run build`, then replace `atlas/` on the gh-pages branch with `out/`).
+- Not published yet. Planned at https://vivinne.github.io/gc-map/ (build with `BASE_PATH=/gc-map npm run build`); `/gc-map/atlas/` will redirect there.
 - Coordinates other than the five checked on Google Maps by the project owner are "to be verified".
