@@ -62,6 +62,7 @@ export default function App() {
   // A search's main matches first; its other matches join below (list and map) after Other Possible Outcomes (Polish 13)
   const found = useMemo(() => (top.q ? searchSplit(top.q) : { main: [], more: [] }), [top.q]);
   const [moreOpen, setMoreOpen] = useState('');
+  const moreView = useRef<View | null>(null);
   const hasMain = found.main.length > 0;
   const moreList = hasMain ? found.more : [];
   const results = useMemo(
@@ -283,8 +284,16 @@ export default function App() {
             list: moreList,
             open: moreOpen === top.q,
             onOpen: () => {
+              // the map as it was before, so folding the other outcomes away can bring it back
+              moreView.current = mapRef.current?.view() ?? null;
               setMoreOpen(top.q);
               afterPanel(() => mapRef.current?.fitTo([...found.main, ...found.more]));
+            },
+            onClose: () => {
+              setMoreOpen('');
+              const v = moreView.current;
+              moreView.current = null;
+              if (v) afterPanel(() => mapRef.current?.moveTo(v));
             },
           }}
         />

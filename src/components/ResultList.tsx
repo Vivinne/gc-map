@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { BY_COUNTRY_MIN, byCountry } from '../lib/country';
 import type { Building } from '../lib/model';
+import { Icon } from './Icons';
 import ResultRow from './ResultRow';
 
 interface RowsProps {
@@ -14,7 +15,7 @@ interface RowsProps {
   /** Split the list by country under headings; clicking a heading frames that country's buildings */
   onCountry?(items: Building[]): void;
   /** The search's other matches (Polish 13): an "Other Possible Outcomes" button at the end of the list shows them below */
-  more?: { list: Building[]; open: boolean; onOpen(): void };
+  more?: { list: Building[]; open: boolean; onOpen(): void; onClose(): void };
   /** Whether the map already shows these buildings framed: their line is then not clickable */
   framed?(items: Building[]): boolean;
 }
@@ -26,7 +27,7 @@ interface RowsProps {
 export default function ResultList({ list, onOpen, onHover, onVisible, onCountry, more, framed }: RowsProps) {
   // A line that frames a group on the map (a country, the other possible outcomes): clickable only while the map
   // does not already show that group framed (moved away, zoomed out, or never framed)
-  const groupLine = (key: string, label: string, items: Building[], extra = '') => {
+  const groupLine = (key: string, label: string, items: Building[], extra = '', tail?: ReactNode) => {
     const off = !onCountry || (framed?.(items) ?? false);
     const ids = items.map((b) => b.id).join('~');
     return (
@@ -42,6 +43,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
           <span>{label}</span>
           <span className="n">{items.length}</span>
         </button>
+        {tail}
       </li>
     );
   };
@@ -78,7 +80,15 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
     more && more.list.length > 0
       ? more.open
         ? [
-            groupLine('more-line', 'Other Possible Outcomes', more.list, ' more-line'),
+            groupLine(
+              'more-line',
+              'Other Possible Outcomes',
+              more.list,
+              ' more-line',
+              <button type="button" className="fold" aria-label="Fold away" title="Fold away" onClick={more.onClose}>
+                <Icon name="up" size={13} />
+              </button>,
+            ),
             ...more.list.map((b) => <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />),
           ]
         : [
