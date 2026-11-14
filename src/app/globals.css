@@ -29,6 +29,8 @@ ul, ol { list-style: none; }
 .sbox:hover, .sbox:focus-within { box-shadow: 0 0 0 1.5px var(--ink), 0 6px 20px rgba(0, 0, 0, 0.08); }
 .sbox input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--ink); font-size: 14px; }
 .sbox input::placeholder { color: var(--g66); }
+/* touch screens: iOS Safari (and in-app browsers built on it) zooms the whole page into a text box under 16 px */
+@media (pointer: coarse) { .sbox input { font-size: 16px; text-overflow: ellipsis; } }
 .sbox input::-webkit-search-cancel-button { display: none; }
 .s-back { flex: none; width: 32px; height: 32px; margin: 0 -8px; display: grid; place-items: center; color: var(--ink); }
 .s-back:hover { background: var(--soft); }
