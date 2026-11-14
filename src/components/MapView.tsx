@@ -361,10 +361,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
           if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
           taken.push(box);
+          // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
           labels.push(
-            <text key={`l-${b.id}`} className={`mk-label${seen && !seen.has(b.id) ? ' dim' : ''}`} x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
-              {text}
-            </text>,
+            <g key={`l-${b.id}`} className={`mk name${b.id === hot ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
+              <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
+              <text className="mk-label" x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
+                {text}
+              </text>
+            </g>,
           );
           break;
         }
