@@ -10,7 +10,7 @@ const RELOADED = 'gc-atlas:reloaded';
 
 /**
  * Last line of defence: an error anywhere in the app shows a short message with a reload button
- * instead of a blank page. Saved progress (seen, stars, collections, quiz) lives in localStorage and is kept.
+ * instead of a blank page. Data saved in the browser (localStorage) is kept.
  * A script that fails to load (an open page that still points at the files of an older deploy)
  * reloads the page once by itself to fetch the new files.
  */

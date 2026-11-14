@@ -1,6 +1,6 @@
 # internal name (as in content/handout-c3-s6.md) | display name | display location | display architect / person
 # Synced from the user's Claude Doc 'GC Buildings: Names, Locations, Architects' (2026-11-02). Display only: ids, geo keys, countries and city grouping keep using the handout names and locations.
-# An empty field means no override. Applied by scripts/build-data.mjs after the rows are assembled.
+# An empty field means no override. Applied by scripts/build-data.ts after the rows are assembled.
 Valle dei Templi |  | Sicily | 
 Parthenon |  | Athens | 
 Erechtheion |  | Athens | 

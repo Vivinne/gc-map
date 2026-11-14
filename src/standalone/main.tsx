@@ -1,4 +1,4 @@
-// Entry for the single-file build (scripts/build-standalone.mjs): same App, no Next.js
+// Entry for the single-file build (scripts/build-standalone.ts): the same App, bundled by esbuild into one HTML file
 import '@fontsource-variable/archivo/wdth.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../app/globals.css';

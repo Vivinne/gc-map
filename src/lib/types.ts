@@ -10,17 +10,13 @@ export interface Era {
 }
 
 export interface Point {
-  id: string;
   /** Sub-item name for a compound row (e.g. Gaudí works); empty string for a single point */
   sub: string;
   lat: number;
   lng: number;
-  precision: Precision;
-  note: string;
-  sourceUrl: string;
-  status: string;
 }
 
+/** One building as the site reads it (src/data/places.json, written by scripts/build-data.ts) */
 export interface Place {
   id: string;
   name: string;
@@ -33,12 +29,10 @@ export interface Place {
   built: string;
   who: string;
   note: string;
-  /** One- or two-sentence summary shown in the detail panel (data/entries.txt) */
+  /** One- or two-sentence summary shown on the card (data/entries.txt) */
   summary: string;
-  /** Nation the first coordinate lies in (Natural Earth names, e.g. "Spain"); used to frame a country on the map */
+  /** Nation the first coordinate lies in (Natural Earth names, e.g. "Spain"); the results list is split by it */
   nation: string;
-  /** [west, south, east, north] of that nation's main landmass plus the building's own island; null without a coordinate */
-  nationBox: [number, number, number, number] | null;
   /** Country tag (data/countries.txt); empty when the handout gives no location */
   country: string;
   /** Past-exam years in which this building was a topic (data/exams.txt) */
@@ -51,34 +45,14 @@ export interface Place {
   tagsEn: string[];
   /** Style shown on the card in place of Modernism (data/style-card.txt); empty = none */
   styleCard: string;
-  /** Photo link search words (data/photo-query.txt); empty = name and city */
-  photoQuery: string;
-  /** Style the architect is quizzed under (user's list); empty when not stated */
-  whoStyle: string;
-  styleId: string;
   era: EraId;
   /** Every style tag the building counts under: its own era plus any extras (data/extra-styles.txt) */
   eras: EraId[];
   points: Point[];
 }
 
-export interface Dataset {
-  eras: Era[];
-  styles: { id: string; name: string }[];
+/** Contents of src/data/places.json */
+export interface SiteData {
+  eras: { id: EraId; label: string }[];
   places: Place[];
-}
-
-export interface Unlocated {
-  id: string;
-  name: string;
-  loc: string;
-  kind: 'no-location' | 'not-found' | 'partial';
-  sub?: string;
-  reason: string;
-}
-
-export interface Filters {
-  /** Checked tag ids (see tags.ts); a building must match every one (intersection) */
-  tags: ReadonlySet<string>;
-  q: string;
 }

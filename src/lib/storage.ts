@@ -1,5 +1,5 @@
 /**
- * Per-browser study progress (seen buildings, stars, collections, quiz results).
+ * Per-browser settings kept between visits (recent searches and buildings), under the gc-atlas: prefix.
  * Browser storage can be missing or throw (private mode, sandboxed frames), so every access is guarded
  * and the app keeps working from memory.
  */

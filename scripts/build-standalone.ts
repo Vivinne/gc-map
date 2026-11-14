@@ -1,36 +1,37 @@
 // Single-file build: bundles the same React app (src/standalone/main.tsx) with MapLibre, the data,
 // the offline basemap, the CSS and the Archivo font into self-contained HTML files in site/:
-//   index.html     keeps the view in the address (#m=...&b=...), for disk, GitHub Pages or any static host
-//   artifact.html  same page without address state, for hosts that only pass a plain #name (claude.ai artifacts)
+//   index.html     keeps the screen in the address, for disk or any static host
+//   artifact.html  same page, for hosts that only pass a plain #name (claude.ai artifacts)
+// The published site is the Next.js export (npm run build); this build is only for single-file copies.
 // Street tiles load only where the network allows; the offline basemap always draws.
-import { build } from 'esbuild';
+// Run: npm run site
+import { build, type BuildResult } from 'esbuild';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
 const out = new URL('../site/', import.meta.url);
 mkdirSync(out, { recursive: true });
 
-function bundle(hashState) {
+function bundle(): Promise<BuildResult<{ write: false }>> {
   return build({
     entryPoints: [new URL('../src/standalone/main.tsx', import.meta.url).pathname],
     bundle: true,
     write: false,
-    minify: process.env.NO_MINIFY !== "1",
+    minify: process.env.NO_MINIFY !== '1',
     format: 'iife',
     target: ['es2020', 'safari15'],
     jsx: 'automatic',
     outdir: 'bundle',
     loader: { '.woff2': 'dataurl', '.woff': 'dataurl' },
-    define: { 'process.env.NODE_ENV': '"production"', 'process.env.GC_HASH': JSON.stringify(hashState) },
+    define: { 'process.env.NODE_ENV': '"production"' },
     legalComments: 'none',
     logLevel: 'warning',
   });
 }
 
-function page(result) {
-  const js = result.outputFiles.find((f) => f.path.endsWith('.js')).text;
-  const css = result.outputFiles.find((f) => f.path.endsWith('.css')).text;
+function page(result: BuildResult<{ write: false }>): string {
+  const file = (ext: string) => result.outputFiles.find((f) => f.path.endsWith(ext))?.text ?? '';
   // Keep "</script" out of the inline script
-  const safeJs = js.replace(/<\/script/gi, '<\\/script');
+  const js = file('.js').replace(/<\/script/gi, '<\\/script');
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -39,18 +40,20 @@ function page(result) {
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#000000">
 <title>GC Atlas</title>
-<style>${css}</style>
+<style>${file('.css')}</style>
 </head>
 <body>
 <div id="root"></div>
-<script>${safeJs}</script>
+<script>${js}</script>
 </body>
 </html>
 `;
 }
 
-for (const [name, hashState] of [['index.html', 'on'], ['artifact.html', 'off']]) {
-  const html = page(await bundle(hashState));
-  writeFileSync(new URL(name, out), html);
-  console.log(`site/${name} written (${(html.length / 1024 / 1024).toFixed(2)} MB)`);
-}
+void bundle().then((result) => {
+  const html = page(result);
+  for (const name of ['index.html', 'artifact.html']) {
+    writeFileSync(new URL(name, out), html);
+    console.log(`site/${name} written (${(html.length / 1024 / 1024).toFixed(2)} MB)`);
+  }
+});

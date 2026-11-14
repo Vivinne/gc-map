@@ -2,10 +2,9 @@
 
 import { forwardRef } from 'react';
 import { ERAS, examNote, type Building } from '../lib/model';
-import { architectOf, builtOf, keywordsOf, shownStyle } from '../lib/style';
+import { architectOf, builtOf, joinDot, keywordsOf, shownStyle } from '../lib/style';
 import Panel from './Panel';
 import { HeadBar } from './HeadBar';
-import { joinDot } from './ResultRow';
 
 interface Props {
   b: Building;

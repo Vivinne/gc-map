@@ -12,7 +12,7 @@ import { Icon } from './Icons';
 import Leave from './Leave';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import Panel from './Panel';
-import { Rows } from './ResultRow';
+import ResultList from './ResultList';
 import SearchBox from './SearchBox';
 
 const MOBILE_QUERY = '(max-width: 900px)';
@@ -228,7 +228,7 @@ export default function App() {
       <Panel ref={panelRef} key="preview" mobile={mobile} place="top" fill label="Search" className="preview" resetKey="preview" head={null}>
         {draft.trim() ? (
           preview.length ? (
-            <Rows list={preview.slice(0, PREVIEW_MAX)} onOpen={openCard} onHover={setHoverId} />
+            <ResultList list={preview.slice(0, PREVIEW_MAX)} onOpen={openCard} onHover={setHoverId} />
           ) : (
             <p className="none">No Results</p>
           )
@@ -246,7 +246,7 @@ export default function App() {
                 ))}
               </ul>
             )}
-            {recentList.length > 0 && <Rows list={recentList} onOpen={openCard} onHover={setHoverId} />}
+            {recentList.length > 0 && <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} />}
           </>
         )}
       </Panel>
@@ -260,13 +260,13 @@ export default function App() {
   } else if (top.list === 'group' && group.length) {
     panel = (
       <Panel ref={panelRef} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={`${group.length} Architectures`} />}>
-        <Rows list={group} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} />
+        <ResultList list={group} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} />
       </Panel>
     );
   } else if (top.list === 'results' && results.length) {
     panel = (
       <Panel ref={panelRef} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={null}>
-        <Rows
+        <ResultList
           list={hasMain ? found.main : found.more}
           onOpen={openCard}
           onHover={setHoverId}
@@ -313,7 +313,7 @@ export default function App() {
                 <summary>Details</summary>
                 <p>The map draws with WebGL (3D graphics in the browser), which is turned off or blocked here. Turning on hardware acceleration in the browser settings, or another browser, usually brings it back.</p>
               </details>
-              <Rows list={top.q ? results : BUILDINGS} onOpen={openCard} onHover={setHoverId} />
+              <ResultList list={top.q ? results : BUILDINGS} onOpen={openCard} onHover={setHoverId} />
             </div>
           }
         />

@@ -1,5 +1,8 @@
 import { ERAS, ascii, styleName, whoOf, type Building } from './model';
 
+/** Two values joined by a middle dot, leaving out an empty one */
+export const joinDot = (...parts: string[]): string => parts.filter(Boolean).join(' · ');
+
 /** One short name per style group (the source writes some groups as lists) */
 const SHORT_STYLE: Record<string, string> = {
   'Postwar / Contemporary': 'Modernism',

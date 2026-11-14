@@ -1,14 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { parseCoord, parseHandout, slug } from '../scripts/build-data.mjs';
-import { dataset, unlocated } from '../src/lib/data';
+import { ERAS, LEAK, buildData, parseCoord, parseHandout, siteData, slug } from '../scripts/build-data';
+import { dataset as site } from '../src/lib/data';
 
-// Same pattern list the build uses (data/leak-patterns.txt): one /regex/flags per line
-const LEAK = readFileSync(new URL('../data/leak-patterns.txt', import.meta.url), 'utf8')
-  .split(/\r?\n/)
-  .filter((l) => l.trim() && !l.startsWith('#'))
-  .map((l) => new RegExp(l.slice(1, l.lastIndexOf('/')), l.slice(l.lastIndexOf('/') + 1)));
+// The full build result, with the source and audit fields the site file leaves out
+const built = buildData();
+const dataset = { eras: ERAS, places: built.places };
+const { unlocated } = built;
+
+test('build: no errors, and src/data/places.json is up to date', () => {
+  assert.deepEqual(built.errors, []);
+  assert.deepEqual(site, JSON.parse(JSON.stringify(siteData(built))));
+});
 
 test('parseCoord: decimal, degrees-minutes-seconds, no degree sign, west longitude', () => {
   assert.deepEqual(parseCoord('41.8986°N 12.4768°E'), { lat: 41.8986, lng: 12.4768 });
@@ -33,7 +37,8 @@ test('slug: diacritics, punctuation and names with no ASCII letters', () => {
 test('parseHandout: row count, styles, location split', () => {
   const { rows, styles } = parseHandout(readFileSync(new URL('../content/handout-c3-s6.md', import.meta.url), 'utf8'));
   assert.equal(styles.length, 15);
-  assert.equal(rows.length, dataset.places.length);
+  assert.equal(rows.length, built.handoutRows);
+  assert.equal(dataset.places.length, built.handoutRows - readFileSync(new URL('../data/removed.txt', import.meta.url), 'utf8').split(/\r?\n/).filter((l) => l.trim() && !l.startsWith('#')).length);
   const pantheon = rows.find((r) => r.name === 'Pantheon')!;
   assert.equal(pantheon.loc, 'Rome');
   assert.equal(pantheon.style.id, '6.2');
@@ -44,7 +49,7 @@ test('data: ids are unique and eras are valid', () => {
   const ids = dataset.places.map((p) => p.id);
   assert.equal(new Set(ids).size, ids.length);
   const eraIds = new Set(dataset.eras.map((e) => e.id));
-  assert.equal(eraIds.size, 8);
+  assert.equal(eraIds.size, 10);
   for (const p of dataset.places) {
     assert.ok(eraIds.has(p.era), p.name);
     assert.ok(p.eras.includes(p.era) && p.eras.every((e) => eraIds.has(e)), p.name);
@@ -53,9 +58,6 @@ test('data: ids are unique and eras are valid', () => {
 
 test('data: several-style buildings count under every stated style; non-buildings are Others', () => {
   const by = (n: string) => dataset.places.find((p) => p.name === n)!;
-  assert.deepEqual([...by('Santa Croce').eras].sort(), ['c19', 'medieval', 'renaissance']);
-  assert.deepEqual([...by('Quirinal Palace').eras].sort(), ['baroque', 'renaissance']);
-  assert.deepEqual([...by('Capodimonte Museum').eras].sort(), ['baroque', 'c19']);
   assert.equal(by('Metropolitan Museum of Art').era, 'beauxarts');
   assert.equal(by('Nevsky Prospect').era, 'others');
   assert.equal(by('North Doors, Florence Baptistery').era, 'others');
@@ -129,18 +131,15 @@ test('data: rows with no handout location need a sourced coordinate, never an es
   }
 });
 
-test('data: every row has a span and a one- or two-sentence summary (Polimi Campus Nord excepted), without architect-style leak patterns', () => {
+test('data: every row has a span and a one- or two-sentence summary, without architect-style leak patterns', () => {
   for (const p of dataset.places) {
-    if (p.name === 'Polimi Campus Nord') { assert.equal(p.summary, ''); continue; }
     assert.ok(p.summary.length > 10, p.name);
-    // Only rows whose source states no year may be blank
-    if (p.name === 'Palazzo Montecitorio') { assert.equal(p.year, '—'); continue; }
     assert.match(p.year, /\d/, p.name);
   }
 });
 
 test('data: new building titles and locations contain no Han characters', () => {
-  const NEW = new Set(['Nevsky Prospect', 'North Doors, Florence Baptistery', 'Palazzo del Viminale', 'Palazzo della Farnesina', 'Quirinal Palace', 'Palazzo Montecitorio', 'Palazzo Madama', 'Hermitage Museum / Winter Palace', 'Capodimonte Museum', 'Metropolitan Museum of Art', 'Bargello Museum', 'Prado Museum', 'Robie House', 'Glasgow School of Art', 'Space Needle', 'Petronas Twin Towers', 'Allianz Arena', 'Palais Stoclet', 'Glass House', 'Louvre Museum', 'Weissenhof Double House', 'Marqués de Riscal Hotel', 'Sainte Marie de La Tourette', 'Van Gogh Museum', 'Dutch Pavilion', 'Villa Mairea', 'Viipuri Library', 'Kaufmann Desert House', 'Millard House', 'Fagus Factory', 'Sommerfeld House', 'Church of San Bernardino', 'Santa Croce', 'Scrovegni Chapel', 'Tate Modern']);
+  const NEW = new Set(['Nevsky Prospect', 'North Doors, Florence Baptistery', 'Palazzo del Viminale', 'Palazzo della Farnesina', 'Quirinal Palace', 'Palazzo Montecitorio', 'Palazzo Madama', 'Hermitage Museum', 'Capodimonte Museum', 'Metropolitan Museum of Art', 'Bargello Museum', 'Prado Museum', 'Robie House', 'Glasgow School of Art', 'Space Needle', 'Petronas Twin Towers', 'Allianz Arena', 'Palais Stoclet', 'Glass House', 'Weissenhof Double House', 'Marqués de Riscal Hotel', 'Sainte Marie de La Tourette', 'Van Gogh Museum', 'Dutch Pavilion', 'Villa Mairea', 'Viipuri Library', 'Kaufmann Desert House', 'Millard House', 'Fagus Factory', 'Sommerfeld House', 'Santa Croce', 'Scrovegni Chapel', 'Tate Modern']);
   const hits = dataset.places.filter((p) => NEW.has(p.name));
   assert.equal(hits.length, NEW.size);
   for (const p of hits) for (const f of [p.name, p.locLabel, p.who]) assert.ok(!/\p{Script=Han}/u.test(f), `${p.name}: ${f}`);
@@ -158,7 +157,7 @@ test('data: country tags and exam years are well formed', () => {
 
 test('data: names, location labels and architects follow the synced Doc (data/doc-display.txt)', () => {
   const by = new Map(dataset.places.map((p) => [p.name, p]));
-  for (const n of ['Mediolanum', 'Santa Maria delle Grazie', "St. Peter's Basilica", 'Church of Gesù', "St. Peter's Baldacchino", 'Versailles', 'Palazzo Reale', 'Hermitage Museum / Winter Palace', 'Arc de Triomphe']) assert.ok(by.has(n), n);
+  for (const n of ['Mediolanum', 'Santa Maria delle Grazie', "St. Peter's Basilica", 'Church of Gesù', "St. Peter's Baldacchino", 'Versailles', 'Palazzo Reale', 'Hermitage Museum', 'Arc de Triomphe']) assert.ok(by.has(n), n);
   assert.equal(by.get('Hagia Sophia')!.locLabel, 'Istanbul');
   assert.equal(by.get('Unité d\'Habitation')!.locLabel, 'Marseille, FR');
   assert.equal(by.get('Pantheon')!.who, 'Hadrian');

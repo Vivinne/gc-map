@@ -31,4 +31,4 @@ Category colours in order: Ancient `#D58774`, Medieval `#C38C53`, Renaissance `#
 | Default view | Europe, as v1 Full map | As now |
 
 ## Data kept
-All of `data/`, `content/`, `scripts/build-data.mjs` and the data rules (years, architects, styles, coordinates). Browser data under `gc-atlas:` keys is left untouched.
+All of `data/`, `content/`, `scripts/build-data.ts` and the data rules (years, architects, styles, coordinates). Browser data under `gc-atlas:` keys is left untouched.

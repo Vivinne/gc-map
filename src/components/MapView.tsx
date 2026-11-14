@@ -4,11 +4,12 @@ import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre
 import { createPortal, flushSync } from 'react-dom';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { basemap } from '../lib/basemap';
-import { DOT_R, boundsOf, groupOnScreen, pointRadius, type Group } from '../lib/geo';
-import { ERAS, ERA_ORDER, type Building } from '../lib/model';
+import { DOT_R, boundsOf, groupOnScreen, pointRadius } from '../lib/geo';
+import { ERAS, type Building } from '../lib/model';
 import type { View } from '../lib/nav';
-import { MAP_COLORS } from '../styles/tokens';
+import { INSET, MAP_COLORS } from '../styles/tokens';
 import { Icon } from './Icons';
+import NumberPoint from './NumberPoint';
 import ScaleBar, { scaleFor } from './ScaleBar';
 
 /** Camera moves: one length and one curve, the same as the panels (fast start, soft landing) */
@@ -44,11 +45,10 @@ export interface Padding {
 export interface MapHandle {
   /** Frame a set of buildings in the free part of the map, zooming in no further than needed for each to stand alone */
   fitTo(list: Building[]): void;
-  /** Move the map only as far as needed to show a point (a building, a number point) in the free part; the zoom stays */
-  reveal(at: { lng: number; lat: number }): void;
   /**
    * Show the building of an open card. If it is merged into a number point, zoom in just enough for it to
-   * stand alone and bring it into the free part of the map; otherwise as `reveal` (the zoom stays).
+   * stand alone and bring it into the free part of the map; otherwise the map only moves as far as needed
+   * to show it in the free part (the zoom stays).
    */
   focus(b: Building): void;
   /**
@@ -246,10 +246,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           easing: camEase(dz),
         });
       },
-      reveal: (b) => {
-        const map = mapRef.current;
-        if (map) reveal(map, b);
-      },
       focus: (b) => {
         const map = mapRef.current;
         if (!map) return;
@@ -325,12 +321,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   // Markers show at every scale (with or without a search). With no search, a view wider than 100 km on the
   // scale bar names only the buildings set in past TEST-ARCHED papers (and the open card's); every name shows
   // from 100 km down.
-  const markersOn = true;
   const namesOn = searched || (!!scale && scale.metres <= NAME_SCALE);
   const named = (b: Building) => namesOn || b.exams.length > 0 || b.id === selected?.id;
   // Buildings drawn as markers at this moment (focus() checks whether the open one is merged)
   const markersShown = useRef<Building[]>([]);
-  markersShown.current = markersOn ? buildings : [];
+  markersShown.current = buildings;
 
   // A tap moves a finger a little: allow more on phones before it counts as a drag
   const down = useRef<[number, number] | null>(null);
@@ -368,64 +363,62 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // Screen boxes no name may cover: every marker and number point, then each name placed
     const taken: [number, number, number, number][] = [];
     const hits: React.ReactNode[] = [];
-    if (markersOn) {
-      const groups = groupOnScreen(
-        buildings.map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
-        size,
-      );
-      for (const g of groups) {
-        if (!inView(g.x, g.y)) continue;
-        if (g.items.length === 1) {
-          const b = g.items[0]!;
-          const on = selected?.id === b.id;
-          marks.push(
-            <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
-              <title>{b.name}</title>
-            </circle>,
-          );
-          if (compact) hits.push(<circle key={`h-${b.id}`} className="mk hit" cx={g.x} cy={g.y} r={20} {...act(b.id, () => onSelect(b.id))} />);
-          singles.push({ b, x: g.x, y: g.y });
-          continue;
-        }
-        const gr = size(g.items.length) + 6;
-        taken.push([g.x - gr, g.y - gr, g.x + gr, g.y + gr]);
-        const key = g.items.map((b) => b.id).join('~');
-        const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
+    const groups = groupOnScreen(
+      buildings.map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
+      size,
+    );
+    for (const g of groups) {
+      if (!inView(g.x, g.y)) continue;
+      if (g.items.length === 1) {
+        const b = g.items[0]!;
+        const on = selected?.id === b.id;
         marks.push(
-          <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
-            <NumberPoint group={g} />
-            <title>{`${g.items.length} Architectures`}</title>
+          <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
+            <title>{b.name}</title>
+          </circle>,
+        );
+        if (compact) hits.push(<circle key={`h-${b.id}`} className="mk hit" cx={g.x} cy={g.y} r={20} {...act(b.id, () => onSelect(b.id))} />);
+        singles.push({ b, x: g.x, y: g.y });
+        continue;
+      }
+      const gr = size(g.items.length) + 6;
+      taken.push([g.x - gr, g.y - gr, g.x + gr, g.y + gr]);
+      const key = g.items.map((b) => b.id).join('~');
+      const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
+      marks.push(
+        <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
+          <NumberPoint group={g} />
+          <title>{`${g.items.length} Architectures`}</title>
+        </g>,
+      );
+    }
+    for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
+    // The open building's name first, then the rows on screen in the list, then the rest in list order
+    const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
+    for (const { b, x, y } of [...singles].filter((d) => named(d.b)).sort((p, q) => rank(p.b) - rank(q.b))) {
+      const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
+      const w = text.length * LABEL_CHAR;
+      // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
+      // the open building's selection ring is wider than a dot
+      const gap = selected?.id === b.id ? 21 : DOT_R + 4;
+      for (const side of [1, -1] as const) {
+        const x0 = side > 0 ? x + gap : x - gap - w;
+        const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
+        if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
+        taken.push(box);
+        // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
+        labels.push(
+          <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
+            <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
+            <text className="mk-label" x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
+              {text}
+            </text>
           </g>,
         );
-      }
-      for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
-      // The open building's name first, then the rows on screen in the list, then the rest in list order
-      const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
-      for (const { b, x, y } of [...singles].filter((d) => named(d.b)).sort((p, q) => rank(p.b) - rank(q.b))) {
-        const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
-        const w = text.length * LABEL_CHAR;
-        // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
-        // the open building's selection ring is wider than a dot
-        const gap = selected?.id === b.id ? 21 : DOT_R + 4;
-        for (const side of [1, -1] as const) {
-          const x0 = side > 0 ? x + gap : x - gap - w;
-          const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
-          if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
-          taken.push(box);
-          // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
-          labels.push(
-            <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
-              <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
-              <text className="mk-label" x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
-                {text}
-              </text>
-            </g>,
-          );
-          break;
-        }
+        break;
       }
     }
-    // The open building is always marked, markers on or off
+    // The open building is always marked
     if (selected) {
       const { x, y } = proj(selected.lng, selected.lat);
       if (inView(x, y)) {
@@ -471,7 +464,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         </div>
       )}
       {overlay}
-      {scale && !noMap && <ScaleBar scale={scale} style={{ left: 16, bottom: 16 }} />}
+      {scale && !noMap && <ScaleBar scale={scale} style={{ left: INSET, bottom: INSET }} />}
       {!noMap && !compact && (
         <div className="ctrls">
           <button type="button" aria-label="Zoom in" onClick={() => zoomBy(1)}>
@@ -488,34 +481,3 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 });
 
 export default MapView;
-
-/** Number point: a ring split by category colour, the count in the middle (the v1 city circle) */
-function NumberPoint({ group }: { group: Group<Building> }) {
-  const items = group.items;
-  const r = pointRadius(items.length);
-  const ring = 6;
-  const parts = ERA_ORDER.map((e) => [e, items.filter((b) => b.era === e).length] as const).filter(([, n]) => n > 0);
-  let a0 = -Math.PI / 2;
-  const P = (a: number, rr: number) => `${(Math.cos(a) * rr).toFixed(2)},${(Math.sin(a) * rr).toFixed(2)}`;
-  return (
-    <>
-      {/* ink ring sits flush on the outer edge (3 px line centred 1.5 px outside) */}
-      <circle r={r + 1.5} className="num-hot" />
-      {parts.length === 1 ? (
-        <circle r={r - ring / 2} fill="none" stroke={ERAS[parts[0]![0]].color} strokeWidth={ring} />
-      ) : (
-        parts.map(([e, n]) => {
-          const a1 = a0 + (n / items.length) * Math.PI * 2;
-          const large = a1 - a0 > Math.PI ? 1 : 0;
-          const d = `M${P(a0, r)} A${r},${r} 0 ${large} 1 ${P(a1, r)} L${P(a1, r - ring)} A${r - ring},${r - ring} 0 ${large} 0 ${P(a0, r - ring)} Z`;
-          a0 = a1;
-          return <path key={e} d={d} fill={ERAS[e].color} stroke="#fff" strokeWidth={1} />;
-        })
-      )}
-      <circle r={r - ring} fill="#fff" />
-      <text className="num-n" y={4.3} textAnchor="middle">
-        {items.length}
-      </text>
-    </>
-  );
-}
