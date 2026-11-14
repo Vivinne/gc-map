@@ -14,6 +14,8 @@ export interface Screen {
   b: string;
   /** Map view when the next screen opened: ＜ brings the map back to it */
   view?: View;
+  /** Search preview: the text typed (not submitted) when the next screen opened; ＜ puts it back */
+  draft?: string;
 }
 
 export const EMPTY_SCREEN: Screen = { q: '', list: '', group: [], b: '' };

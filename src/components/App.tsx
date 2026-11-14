@@ -80,7 +80,10 @@ export default function App() {
   /** Open a new screen; the screen it leaves keeps the map view, so ＜ can bring the map back to it */
   const push = (s: Screen) => {
     const view = mapRef.current?.view() ?? undefined;
-    setStack((st) => [...st.slice(0, -1), { ...st[st.length - 1]!, view }, s]);
+    setStack((st) => {
+      const cur = st[st.length - 1]!;
+      return [...st.slice(0, -1), { ...cur, view, ...(cur.list === 'preview' ? { draft } : {}) }, s];
+    });
   };
 
   /** ＜: the previous screen comes back with its lists, its search and the map as it was then */
@@ -88,7 +91,7 @@ export default function App() {
     if (stack.length < 2) return;
     const prev = stack[stack.length - 2]!;
     setStack((st) => st.slice(0, -1));
-    setDraft(prev.q);
+    setDraft(prev.draft ?? prev.q);
     if (prev.view) {
       const v = prev.view;
       afterPanel(() => mapRef.current?.moveTo(v));
@@ -117,7 +120,11 @@ export default function App() {
     inputRef.current?.blur();
     setDraft(t);
     setRecentT(addRecentText(t));
-    push({ q: t, list: 'results', group: [], b: '' });
+    const next: Screen = { q: t, list: 'results', group: [], b: '' };
+    // The search preview is only the typing step: the submitted search takes its place in the history,
+    // so ＜ goes back to the screen before the typing (e.g. the previous search's results), not to the half-typed text
+    if (top.list === 'preview' && !top.b) setStack((st) => [...st.slice(0, -1), next]);
+    else push(next);
     afterPanel(() => mapRef.current?.fitTo(found));
   };
 
@@ -190,7 +197,8 @@ export default function App() {
   }, []);
 
   const editing = top.list === 'preview' && !top.b;
-  const boxText = editing ? draft : top.q;
+  // the typed text stays in the box while a card opened from the preview is on top of it
+  const boxText = top.list === 'preview' ? draft : top.q;
   const anything = !isEmptyScreen(top) || !!boxText;
 
   // The panel on screen: the card over everything, else the open list (one at a time)
