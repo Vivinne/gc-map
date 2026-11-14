@@ -448,7 +448,8 @@ function NumberPoint({ group }: { group: Group<Building> }) {
   const P = (a: number, rr: number) => `${(Math.cos(a) * rr).toFixed(2)},${(Math.sin(a) * rr).toFixed(2)}`;
   return (
     <>
-      <circle r={r + 5} className="num-hot" />
+      {/* ink ring sits flush on the outer edge (3 px line centred 1.5 px outside) */}
+      <circle r={r + 1.5} className="num-hot" />
       {parts.length === 1 ? (
         <circle r={r - ring / 2} fill="none" stroke={ERAS[parts[0]![0]].color} strokeWidth={ring} />
       ) : (
