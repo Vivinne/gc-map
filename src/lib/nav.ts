@@ -16,6 +16,8 @@ export interface Screen {
   view?: View;
   /** Search preview: the text typed (not submitted) when the next screen opened; ＜ puts it back */
   draft?: string;
+  /** How far its list or card was scrolled when the next screen opened; ＜ scrolls back there */
+  scroll?: number;
 }
 
 export const EMPTY_SCREEN: Screen = { q: '', list: '', group: [], b: '' };

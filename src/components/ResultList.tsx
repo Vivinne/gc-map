@@ -13,7 +13,7 @@ interface RowsProps {
   onVisible?(ids: string[]): void;
   /** Split the list by country under headings; clicking a heading frames that country's buildings */
   onCountry?(items: Building[]): void;
-  /** The search's other matches (Polish 13): a "More Results" button at the end of the list shows them below */
+  /** The search's other matches (Polish 13): an "Other Possible Outcomes" button at the end of the list shows them below */
   more?: { list: Building[]; open: boolean; onOpen(): void };
 }
 
@@ -57,7 +57,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
         ? [
             <li key="more-line" className="country">
               <span className="c-head more-line">
-                More Results <span className="n">{more.list.length}</span>
+                Other Possible Outcomes <span className="n">{more.list.length}</span>
               </span>
             </li>,
             ...more.list.map((b) => <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />),
@@ -65,7 +65,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
         : [
             <li key="more-btn" className="more">
               <button type="button" className="more-btn" onClick={more.onOpen}>
-                More Results
+                Other Possible Outcomes
               </button>
             </li>,
           ]

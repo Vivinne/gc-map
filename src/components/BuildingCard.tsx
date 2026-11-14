@@ -8,6 +8,8 @@ import { HeadBar } from './HeadBar';
 
 interface Props {
   b: Building;
+  /** Where the card was scrolled when it was left (＜ brings it back) */
+  scroll?: number;
   mobile: boolean;
   canBack: boolean;
   onBack(): void;
@@ -21,7 +23,7 @@ interface Props {
  * architect · style (the architect searches the site), the summary, the keywords in italics, and last,
  * in small grey italics, the TEST-ARCHED years.
  */
-const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, mobile, canBack, onBack, onClose, onArchitect }, ref) {
+const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, scroll, mobile, canBack, onBack, onClose, onArchitect }, ref) {
   const who = architectOf(b);
   const keys = keywordsOf(b);
   const exam = examNote(b);
@@ -33,6 +35,7 @@ const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, m
       label={b.name}
       className="card"
       resetKey={b.id}
+      scroll={scroll}
       head={
         <div className="c-top" style={{ background: ERAS[b.era].color }}>
           <HeadBar canBack={canBack} onBack={onBack} onClose={onClose} />

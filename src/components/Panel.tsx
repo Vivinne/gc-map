@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useEffect, useRef, useState, type ReactNode } from 'react';
+import { forwardRef, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 /** Phone sheet heights: title only, half the screen, or up to the search box */
 export type SheetState = 'fold' | 'half' | 'full';
@@ -20,6 +20,8 @@ interface Props {
   head: ReactNode;
   /** Changes when new content opens: a phone sheet goes back to half height */
   resetKey: string;
+  /** Where the content was scrolled when this screen was left (＜ brings it back); none = the top */
+  scroll?: number;
   children: ReactNode;
 }
 
@@ -30,14 +32,15 @@ const DRAG = 40;
  * Dragged down: from half to the title only, from full to half. Dragged up: from the title to half, and from
  * half to full when the content is longer than half the screen.
  */
-const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fill, label, className = '', head, resetKey, children }, ref) {
+const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fill, label, className = '', head, resetKey, scroll, children }, ref) {
   const [state, setState] = useState<SheetState>('half');
   const [dy, setDy] = useState(0);
   const drag = useRef<{ y: number; id: number } | null>(null);
   const body = useRef<HTMLDivElement>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     setState('half');
-    body.current?.scrollTo({ top: 0 });
+    body.current?.scrollTo({ top: scroll ?? 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
 
   const sheet = mobile && place === 'sheet';

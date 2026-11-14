@@ -58,7 +58,7 @@ export default function App() {
   const panelRef = useRef<HTMLElement>(null);
   const viewRef = useRef<View | null>(START.view);
 
-  // A search's main matches first; its other matches join below (list and map) after More Results (Polish 13)
+  // A search's main matches first; its other matches join below (list and map) after Other Possible Outcomes (Polish 13)
   const found = useMemo(() => (top.q ? searchSplit(top.q) : { main: [], more: [] }), [top.q]);
   const [moreOpen, setMoreOpen] = useState('');
   const hasMain = found.main.length > 0;
@@ -88,9 +88,10 @@ export default function App() {
   /** Open a new screen; the screen it leaves keeps the map view, so ＜ can bring the map back to it */
   const push = (s: Screen) => {
     const view = mapRef.current?.view() ?? undefined;
+    const scroll = panelRef.current?.querySelector('.p-body')?.scrollTop ?? undefined;
     setStack((st) => {
       const cur = st[st.length - 1]!;
-      return [...st.slice(0, -1), { ...cur, view, ...(cur.list === 'preview' ? { draft } : {}) }, s];
+      return [...st.slice(0, -1), { ...cur, view, scroll, ...(cur.list === 'preview' ? { draft } : {}) }, s];
     });
   };
 
@@ -221,11 +222,11 @@ export default function App() {
   // The panel on screen: the card over everything, else the open list (one at a time)
   let panel: React.ReactNode = null;
   if (selected) {
-    panel = <BuildingCard ref={panelRef} key="card" b={selected} mobile={mobile} canBack={back} onBack={goBack} onClose={closeAll} onArchitect={submit} />;
+    panel = <BuildingCard ref={panelRef} key="card" scroll={top.scroll} b={selected} mobile={mobile} canBack={back} onBack={goBack} onClose={closeAll} onArchitect={submit} />;
   } else if (top.list === 'preview' && (draft.trim() || recentT.length > 0 || recentB.some((id) => BY_ID.has(id)))) {
     const recentList = recentB.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
     panel = (
-      <Panel ref={panelRef} key="preview" mobile={mobile} place="top" fill label="Search" className="preview" resetKey="preview" head={null}>
+      <Panel ref={panelRef} scroll={top.scroll} key="preview" mobile={mobile} place="top" fill label="Search" className="preview" resetKey="preview" head={null}>
         {draft.trim() ? (
           preview.length ? (
             <ResultList list={preview.slice(0, PREVIEW_MAX)} onOpen={openCard} onHover={setHoverId} />
@@ -253,19 +254,19 @@ export default function App() {
     );
   } else if (top.list === 'category') {
     panel = (
-      <Panel ref={panelRef} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title="Category" />}>
+      <Panel ref={panelRef} scroll={top.scroll} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title="Category" />}>
         <CategoryList onPick={submit} />
       </Panel>
     );
   } else if (top.list === 'group' && group.length) {
     panel = (
-      <Panel ref={panelRef} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={`${group.length} Architectures`} />}>
+      <Panel ref={panelRef} scroll={top.scroll} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={`${group.length} Architectures`} />}>
         <ResultList list={group} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} />
       </Panel>
     );
   } else if (top.list === 'results' && results.length) {
     panel = (
-      <Panel ref={panelRef} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={null}>
+      <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={null}>
         <ResultList
           list={hasMain ? found.main : found.more}
           onOpen={openCard}
