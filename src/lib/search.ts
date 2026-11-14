@@ -40,7 +40,8 @@ const INDEX: Indexed[] = BUILDINGS.map((b) => ({
  * Order: exact name, then a name (or a word of it) starting with the text, then a name containing it,
  * then a match in the data fields, then a match found only in the summary; same rank oldest first.
  * A category name is the exception: that category's buildings oldest first, then the other matches.
- * Matches found only inside another word come after all of these, in the same order.
+ * Matches found only inside another word come after all of these, in the same order; with two or more
+ * words in the text, such matches are left out.
  */
 /** Whether a word of the text begins at a word start in the field (not only inside another word) */
 function atWordStart(hay: string, w: string): boolean {
@@ -61,8 +62,10 @@ export function search(text: string, list: readonly Indexed[] = INDEX): Building
   for (const x of list) {
     if (!terms.every((w) => x.name.includes(w) || x.fields.includes(w) || x.summary.includes(w))) continue;
     const inData = terms.every((w) => x.name.includes(w) || x.fields.includes(w));
-    // a word found only inside another word ("tate" in "United States") ranks after every whole-word match
+    // a word found only inside another word ("tate" in "United States") ranks after every whole-word match;
+    // with two or more words every word must start a word ("le cor" finds Le Corbusier, not "capsule … core")
     const inside = !terms.every((w) => atWordStart(x.name, w) || atWordStart(x.fields, w) || atWordStart(x.summary, w));
+    if (inside && terms.length > 1) continue;
     const r = era
       ? x.b.eras.includes(era)
         ? 0
