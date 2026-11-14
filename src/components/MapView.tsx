@@ -42,8 +42,8 @@ export interface Padding {
 }
 
 export interface MapHandle {
-  /** Frame a set of buildings in the free part of the map */
-  fitTo(list: Building[], maxZoom?: number): void;
+  /** Frame a set of buildings in the free part of the map, zooming in no further than needed for each to stand alone */
+  fitTo(list: Building[]): void;
   /** Move the map only as far as needed to show a point (a building, a number point) in the free part; the zoom stays */
   reveal(at: { lng: number; lat: number }): void;
   /**
@@ -220,15 +220,31 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   useImperativeHandle(
     ref,
     () => ({
-      fitTo: (list, maxZoom = 15) => {
+      fitTo: (list) => {
         const map = mapRef.current;
         const b = boundsOf(list);
         if (!map || !b) return;
         const p = padRef.current;
         const padding = { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME };
-        const cam = map.cameraForBounds(b, { padding, maxZoom });
-        const dz = cam?.zoom != null ? cam.zoom - map.getZoom() : 0;
-        map.fitBounds(b, { padding, maxZoom, duration: motion(camMs(dz)), easing: camEase(dz) });
+        const zoom = map.getZoom();
+        // closest view that holds them all
+        const fitZ = Math.min(map.cameraForBounds(b, { padding })?.zoom ?? zoom, MAX_ZOOM);
+        // zoom at which every one of them stands alone (no number point among them); one building has no limit
+        const pts = list.map((x) => map.project([x.lng, x.lat]));
+        let near = Infinity;
+        for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) near = Math.min(near, Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y));
+        const splitAt = Number.isFinite(near) ? (near > 0 ? zoom + Math.log2((2 * DOT_R + 2) / near) + 0.1 : SPLIT_MAX) : -Infinity;
+        // Frame them, but zoom in no further than needed for every one to stand alone: when they already stand
+        // alone at the present zoom it does not grow (the map only moves, or zooms out to take them all in)
+        const to = Math.min(fitZ, Math.max(splitAt, Math.min(zoom, fitZ)));
+        const dz = to - zoom;
+        map.easeTo({
+          center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2],
+          zoom: to,
+          offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
+          duration: motion(camMs(dz)),
+          easing: camEase(dz),
+        });
       },
       reveal: (b) => {
         const map = mapRef.current;
