@@ -67,9 +67,9 @@ ul, ol { list-style: none; }
 /* long results: split by country; the heading stays at the top while its rows scroll, a click frames the country */
 .rows .country { position: sticky; top: 0; z-index: 1; border-top: 0 !important; }
 .rows .country + li { border-top: 0 !important; }
-.c-head { width: 100%; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: var(--soft); font-size: 13px; font-weight: 700; color: var(--ink); box-shadow: 0 1px 0 var(--rule); }
-.c-head:hover { background: var(--g93); }
-.c-head .n { font-weight: 500; color: var(--mute); font-size: 12px; }
+.c-head { width: 100%; height: 36px; display: flex; align-items: flex-end; gap: 6px; padding: 0 16px 6px; background: #fff; font-size: 11.5px; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); box-shadow: inset 0 -1.5px 0 var(--ink); }
+.c-head:hover { background: var(--soft); }
+.c-head .n { font-weight: 500; letter-spacing: 0; color: var(--mute); }
 .none { padding: 14px 16px; color: var(--mute); font-weight: 600; }
 
 /* ---------- Category: the 10 style tags as in the v1 filters panel ---------- */

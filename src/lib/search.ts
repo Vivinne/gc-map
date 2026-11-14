@@ -39,16 +39,32 @@ const INDEX: Indexed[] = BUILDINGS.map((b) => ({
  * Plain text search. Every word of the text must appear in the building's name, data fields or summary.
  * Order: exact name, then a name (or a word of it) starting with the text, then a name containing it,
  * then a match in the data fields, then a match found only in the summary; same rank oldest first.
+ * A category name is the exception: that category's buildings oldest first, then the other matches.
  */
 export function search(text: string, list: readonly Indexed[] = INDEX): Building[] {
   const t = norm(text.trim());
   if (!t) return [];
+  // The text is a category name (from the Category list, or typed): the buildings of that category in
+  // year order, then any other match in year order. The same text always gives the same order.
+  const era = (Object.keys(ERAS) as (keyof typeof ERAS)[]).find((e) => norm(ERAS[e].label) === t);
   const terms = t.split(/\s+/).filter(Boolean);
   const ranked: { b: Building; r: number }[] = [];
   for (const x of list) {
     if (!terms.every((w) => x.name.includes(w) || x.fields.includes(w) || x.summary.includes(w))) continue;
     const inData = terms.every((w) => x.name.includes(w) || x.fields.includes(w));
-    const r = x.name === t ? 0 : x.name.startsWith(t) || x.words.some((w) => w.startsWith(t)) ? 1 : x.name.includes(t) ? 2 : inData ? 3 : 4;
+    const r = era
+      ? x.b.eras.includes(era)
+        ? 0
+        : 1
+      : x.name === t
+        ? 0
+        : x.name.startsWith(t) || x.words.some((w) => w.startsWith(t))
+          ? 1
+          : x.name.includes(t)
+            ? 2
+            : inData
+              ? 3
+              : 4;
     ranked.push({ b: x.b, r });
   }
   return ranked.sort((p, q) => p.r - q.r || byYear(p.b, q.b)).map((x) => x.b);
