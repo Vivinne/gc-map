@@ -16,6 +16,10 @@ import ResultList from './ResultList';
 import SearchBox from './SearchBox';
 
 const MOBILE_QUERY = '(max-width: 900px)';
+/** One key for a group of buildings */
+const idsOf = (list: Building[]) => list.map((b) => b.id).join('~');
+/** Two map views are the same place and zoom (a move of the map makes them differ) */
+const sameView = (a: View, b: View) => Math.abs(a.zoom - b.zoom) < 0.01 && Math.abs(a.lng - b.lng) < 1e-5 && Math.abs(a.lat - b.lat) < 1e-5;
 /** Wait for a panel to take its size before the map frames what it shows */
 const PANEL_WAIT = 60;
 /** How many rows the search preview lists while typing */
@@ -47,6 +51,8 @@ export default function App() {
   const [draft, setDraft] = useState(top.q);
   const [hoverId, setHoverId] = useState('');
   const [, setViewTick] = useState(0);
+  /** The last group line clicked (country, other outcomes) and the map view its framing came to rest at */
+  const frameClick = useRef<{ ids: string; view: View | null } | null>(null);
   // Buildings of the list rows on screen; the map names them and dims the rest
   const [seenIds, setSeenIds] = useState<string[]>([]);
   const [recentT, setRecentT] = useState<string[]>(() => recentTexts());
@@ -278,8 +284,17 @@ export default function App() {
           onOpen={openCard}
           onHover={setHoverId}
           onVisible={setSeenIds}
-          onCountry={(items) => mapRef.current?.fitTo(items)}
-          framed={(items) => mapRef.current?.framed(items) ?? false}
+          onCountry={(items) => {
+            // the view this click leads to is noted when the map stops: while the map stays there, the line is off
+            frameClick.current = { ids: idsOf(items), view: null };
+            mapRef.current?.fitTo(items);
+          }}
+          framed={(items) => {
+            const f = frameClick.current;
+            const v = viewRef.current;
+            if (f && f.view && v && f.ids === idsOf(items) && sameView(f.view, v)) return true;
+            return mapRef.current?.framed(items) ?? false;
+          }}
           more={{
             list: moreList,
             open: moreOpen === top.q,
@@ -320,6 +335,8 @@ export default function App() {
           onView={(v) => {
             viewRef.current = v;
             writeAddress(top);
+            // the map stopped after a group line's click: that is the group's framed view
+            if (frameClick.current && !frameClick.current.view) frameClick.current.view = v;
             // lines that frame groups on the map are clickable or not by what the map now shows
             setViewTick((n) => n + 1);
           }}

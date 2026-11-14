@@ -82,9 +82,8 @@ ul, ol { list-style: none; }
 .rows li.country .c-head.more-line { flex: 1; min-width: 0; }
 .fold { flex: none; width: 28px; height: 24px; margin: 0 8px 0 0; display: grid; place-items: center; color: var(--mute); border-radius: var(--r-s); }
 .fold:hover { color: var(--ink); background: var(--soft); }
-/* a group line whose buildings the map already shows framed: not clickable, no hover colour, no press */
-.c-head.off { cursor: default; }
-.c-head.off:hover { color: var(--mute); }
+/* a group line whose buildings the map already shows framed: lighter grey, not clickable, no hover colour, no press */
+.c-head.off, .c-head.off:hover { cursor: default; color: var(--g74); }
 .c-head.off:active { transform: none; }
 .none { padding: 14px 16px; color: var(--mute); font-weight: 600; }
 
