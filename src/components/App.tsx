@@ -215,6 +215,10 @@ export default function App() {
   }, []);
 
   const editing = top.list === 'preview' && !top.b;
+  // ＜ in the search box: on submitted results, and while the box is opened again over text already in it
+  // (it goes back to the screen from before the box was clicked)
+  const prevScreen = stack.length > 1 ? stack[stack.length - 2]! : null;
+  const boxBack = back && !top.b && (top.list === 'results' || (editing && !!prevScreen?.q));
   // the typed text stays in the box while a card opened from the preview is on top of it
   const boxText = top.list === 'preview' ? draft : top.q;
   const anything = !isEmptyScreen(top) || !!boxText;
@@ -323,7 +327,7 @@ export default function App() {
           value={boxText}
           showClear={anything}
           categoryOpen={top.list === 'category' && !top.b}
-          onBack={top.list === 'results' && !top.b && back ? goBack : undefined}
+          onBack={boxBack ? () => (inputRef.current?.blur(), goBack()) : undefined}
           onFocus={openPreview}
           onChange={(t) => {
             if (!editing) openPreview();
