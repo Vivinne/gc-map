@@ -19,11 +19,10 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
         className="row"
         onClick={() => onOpen(b.id)}
         onPointerEnter={(e) => e.pointerType === 'mouse' && onHover(b.id)}
-        onPointerLeave={() => onHover('')}
-        // a finger on the row (its light blue press colour) rings the building on the map until it lifts or scrolls
+        onPointerLeave={(e) => e.pointerType === 'mouse' && onHover('')}
+        // A finger on a row turns it light blue, and the phone keeps that colour on the last row touched (also while
+        // the list scrolls) until something else is touched: the map rings that building for as long (cleared in App)
         onPointerDown={(e) => e.pointerType !== 'mouse' && onHover(b.id)}
-        onPointerUp={(e) => e.pointerType !== 'mouse' && onHover('')}
-        onPointerCancel={() => onHover('')}
         onFocus={(e) => e.currentTarget.matches(':focus-visible') && onHover(b.id)}
         onBlur={() => onHover('')}
       >

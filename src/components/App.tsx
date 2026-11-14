@@ -158,6 +158,15 @@ export default function App() {
     else push({ q: top.q, list: 'category', group: [], b: '' });
   };
 
+  // A finger rings the last list row it touched (that row keeps its light blue); touching anything else ends it
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse' && !(e.target as Element | null)?.closest?.('.row')) setHoverId('');
+    };
+    window.addEventListener('pointerdown', onDown, true);
+    return () => window.removeEventListener('pointerdown', onDown, true);
+  }, []);
+
   // Keys: "/" opens the search, Esc closes everything
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
