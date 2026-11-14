@@ -57,6 +57,11 @@ export interface MapHandle {
    * view that still shows them all.
    */
   split(list: Building[]): void;
+  /**
+   * Whether the map already shows a set of buildings as framing would: every one inside the free part of the
+   * map and standing alone (no two merged). A list line that frames them is then not clickable.
+   */
+  framed(list: Building[]): boolean;
   /** Go back to a view saved earlier (＜) */
   moveTo(v: View): void;
   view(): View | null;
@@ -299,6 +304,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           duration: motion(camMs(dz)),
           easing: camEase(dz),
         });
+      },
+      framed: (list) => {
+        const map = mapRef.current;
+        if (!map || !list.length) return false;
+        const p = padRef.current;
+        const { clientWidth: W, clientHeight: H } = map.getContainer();
+        const pts = list.map((x) => map.project([x.lng, x.lat]));
+        if (pts.some((q) => q.x < p.left || q.x > W - p.right || q.y < p.top || q.y > H - p.bottom)) return false;
+        for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) if (Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y) < 2 * DOT_R + 2) return false;
+        return true;
       },
       moveTo: (v) => {
         const map = mapRef.current;

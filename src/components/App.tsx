@@ -46,6 +46,7 @@ export default function App() {
   // Text in the search box while the preview is open (typed, not yet submitted)
   const [draft, setDraft] = useState(top.q);
   const [hoverId, setHoverId] = useState('');
+  const [, setViewTick] = useState(0);
   // Buildings of the list rows on screen; the map names them and dims the rest
   const [seenIds, setSeenIds] = useState<string[]>([]);
   const [recentT, setRecentT] = useState<string[]>(() => recentTexts());
@@ -277,6 +278,7 @@ export default function App() {
           onHover={setHoverId}
           onVisible={setSeenIds}
           onCountry={(items) => mapRef.current?.fitTo(items)}
+          framed={(items) => mapRef.current?.framed(items) ?? false}
           more={{
             list: moreList,
             open: moreOpen === top.q,
@@ -309,6 +311,8 @@ export default function App() {
           onView={(v) => {
             viewRef.current = v;
             writeAddress(top);
+            // lines that frame groups on the map are clickable or not by what the map now shows
+            setViewTick((n) => n + 1);
           }}
           onFail={() => setMapDown(true)}
           fallback={

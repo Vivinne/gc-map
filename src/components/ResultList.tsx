@@ -15,13 +15,36 @@ interface RowsProps {
   onCountry?(items: Building[]): void;
   /** The search's other matches (Polish 13): an "Other Possible Outcomes" button at the end of the list shows them below */
   more?: { list: Building[]; open: boolean; onOpen(): void };
+  /** Whether the map already shows these buildings framed: their line is then not clickable */
+  framed?(items: Building[]): boolean;
 }
 
 /**
  * A list of buildings, split by country when `onCountry` is given and the list is long. `onVisible` reports
  * the rows that are on screen in the list, top to bottom, whenever the list scrolls, so the map can mark them.
  */
-export default function ResultList({ list, onOpen, onHover, onVisible, onCountry, more }: RowsProps) {
+export default function ResultList({ list, onOpen, onHover, onVisible, onCountry, more, framed }: RowsProps) {
+  // A line that frames a group on the map (a country, the other possible outcomes): clickable only while the map
+  // does not already show that group framed (moved away, zoomed out, or never framed)
+  const groupLine = (key: string, label: string, items: Building[], extra = '') => {
+    const off = !onCountry || (framed?.(items) ?? false);
+    const ids = items.map((b) => b.id).join('~');
+    return (
+      <li key={key} className="country">
+        <button
+          type="button"
+          className={`c-head${off ? ' off' : ''}${extra}`}
+          aria-disabled={off}
+          onClick={() => !off && onCountry?.(items)}
+          onPointerEnter={(e) => e.pointerType === 'mouse' && onHover(ids)}
+          onPointerLeave={() => onHover('')}
+        >
+          <span>{label}</span>
+          <span className="n">{items.length}</span>
+        </button>
+      </li>
+    );
+  };
   const ul = useRef<HTMLUListElement>(null);
   const report = useRef(onVisible);
   report.current = onVisible;
@@ -55,11 +78,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
     more && more.list.length > 0
       ? more.open
         ? [
-            <li key="more-line" className="country">
-              <span className="c-head more-line">
-                Other Possible Outcomes <span className="n">{more.list.length}</span>
-              </span>
-            </li>,
+            groupLine('more-line', 'Other Possible Outcomes', more.list, ' more-line'),
             ...more.list.map((b) => <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />),
           ]
         : [
@@ -83,20 +102,8 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
   return (
     <ul className="rows by-country" ref={ul}>
       {byCountry(list).map(({ country, items }) => {
-        const ids = items.map((b) => b.id).join('~');
         return [
-          <li key={`c-${country}`} className="country">
-            <button
-              type="button"
-              className="c-head"
-              onClick={() => onCountry!(items)}
-              onPointerEnter={(e) => e.pointerType === 'mouse' && onHover(ids)}
-              onPointerLeave={() => onHover('')}
-            >
-              <span>{country}</span>
-              <span className="n">{items.length}</span>
-            </button>
-          </li>,
+          groupLine(`c-${country}`, country, items),
           ...items.map((b) => <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />),
         ];
       })}

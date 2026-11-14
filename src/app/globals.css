@@ -77,8 +77,10 @@ ul, ol { list-style: none; }
 .rows .more { display: flex; justify-content: center; padding: 10px 16px 12px; }
 .more-btn { padding: 2px 4px; font-size: 13px; font-weight: 600; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; border-radius: var(--r-s); }
 .more-btn:hover { color: var(--ink); background: var(--soft); }
-.c-head.more-line { cursor: default; }
-.c-head.more-line:hover { color: var(--mute); }
+/* a group line whose buildings the map already shows framed: not clickable, no hover colour, no press */
+.c-head.off { cursor: default; }
+.c-head.off:hover { color: var(--mute); }
+.c-head.off:active { transform: none; }
 .none { padding: 14px 16px; color: var(--mute); font-weight: 600; }
 
 /* ---------- Category: the 10 style tags as in the v1 filters panel ---------- */
