@@ -18,9 +18,9 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
         type="button"
         className="row"
         onClick={() => onOpen(b.id)}
-        onPointerEnter={() => onHover(b.id)}
+        onPointerEnter={(e) => e.pointerType === 'mouse' && onHover(b.id)}
         onPointerLeave={() => onHover('')}
-        onFocus={() => onHover(b.id)}
+        onFocus={(e) => e.currentTarget.matches(':focus-visible') && onHover(b.id)}
         onBlur={() => onHover('')}
       >
         <i className="strip" style={{ background: ERAS[b.era].color }} />

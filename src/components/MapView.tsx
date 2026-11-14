@@ -291,10 +291,11 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
   const hot = hoverId || pinHover;
   const seen = seenIds && seenIds.length ? new Set(seenIds) : null;
-  const seenCls = (ids: string[]) => (seen ? (ids.some((id) => seen.has(id)) ? ' seen' : ' dim') : '');
+  const seenCls = (ids: string[]) => (seen && !ids.some((id) => seen.has(id)) ? ' dim' : '');
   const act = (key: string, click: () => void) => ({
     onPointerDown: onDown,
-    onPointerEnter: () => setPinHover(key),
+    // the ink ring follows a mouse only: a finger's tap would leave it stuck on
+    onPointerEnter: (e: React.PointerEvent) => e.pointerType === 'mouse' && setPinHover(key),
     onPointerLeave: () => setPinHover((h) => (h === key ? '' : h)),
     onClick: (e: React.MouseEvent) => isClick(e) && click(),
   });
