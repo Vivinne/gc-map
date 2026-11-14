@@ -64,12 +64,11 @@ ul, ol { list-style: none; }
 .row.text { align-items: center; padding: 0 16px; height: 40px; color: var(--mute); gap: 10px; }
 .row.text span { color: var(--ink); font-size: 14px; }
 .rows.recent + .rows { border-top: 1px solid var(--rule); }
-/* long results: split by country; the heading stays at the top while its rows scroll, a click frames the country */
-.rows .country { position: sticky; top: 0; z-index: 1; border-top: 0 !important; }
+/* long results: a small grey country line among the rows (part of the same list); a click frames the country */
 .rows .country + li { border-top: 0 !important; }
-.c-head { width: 100%; height: 36px; display: flex; align-items: flex-end; gap: 6px; padding: 0 16px 6px; background: #fff; font-size: 11.5px; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); box-shadow: inset 0 -1.5px 0 var(--ink); }
-.c-head:hover { background: var(--soft); }
-.c-head .n { font-weight: 500; letter-spacing: 0; color: var(--mute); }
+.c-head { width: 100%; display: flex; align-items: baseline; gap: 6px; padding: 10px 16px 2px; font-size: 12px; font-weight: 600; color: var(--mute); }
+.c-head:hover { color: var(--ink); }
+.c-head .n { font-weight: 500; }
 .none { padding: 14px 16px; color: var(--mute); font-weight: 600; }
 
 /* ---------- Category: the 10 style tags as in the v1 filters panel ---------- */

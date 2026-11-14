@@ -40,7 +40,16 @@ const INDEX: Indexed[] = BUILDINGS.map((b) => ({
  * Order: exact name, then a name (or a word of it) starting with the text, then a name containing it,
  * then a match in the data fields, then a match found only in the summary; same rank oldest first.
  * A category name is the exception: that category's buildings oldest first, then the other matches.
+ * Matches found only inside another word come after all of these, in the same order.
  */
+/** Whether a word of the text begins at a word start in the field (not only inside another word) */
+function atWordStart(hay: string, w: string): boolean {
+  for (let i = hay.indexOf(w); i >= 0; i = hay.indexOf(w, i + 1)) {
+    if (i === 0 || !/[\p{L}\p{N}]/u.test(hay[i - 1]!)) return true;
+  }
+  return false;
+}
+
 export function search(text: string, list: readonly Indexed[] = INDEX): Building[] {
   const t = norm(text.trim());
   if (!t) return [];
@@ -52,6 +61,8 @@ export function search(text: string, list: readonly Indexed[] = INDEX): Building
   for (const x of list) {
     if (!terms.every((w) => x.name.includes(w) || x.fields.includes(w) || x.summary.includes(w))) continue;
     const inData = terms.every((w) => x.name.includes(w) || x.fields.includes(w));
+    // a word found only inside another word ("tate" in "United States") ranks after every whole-word match
+    const inside = !terms.every((w) => atWordStart(x.name, w) || atWordStart(x.fields, w) || atWordStart(x.summary, w));
     const r = era
       ? x.b.eras.includes(era)
         ? 0
@@ -65,7 +76,7 @@ export function search(text: string, list: readonly Indexed[] = INDEX): Building
             : inData
               ? 3
               : 4;
-    ranked.push({ b: x.b, r });
+    ranked.push({ b: x.b, r: inside ? r + 10 : r });
   }
   return ranked.sort((p, q) => p.r - q.r || byYear(p.b, q.b)).map((x) => x.b);
 }
