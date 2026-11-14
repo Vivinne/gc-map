@@ -222,30 +222,38 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     map.panBy([dx, dy], { duration: motion(MAP_MS), easing: EASE });
   };
 
+  /**
+   * Where framing a set of buildings takes the map: their centre, at the closest zoom holding them all but no
+   * closer than needed for every one to stand alone; when they already stand alone at the present zoom the zoom
+   * does not grow (the map only moves, or zooms out to take them all in)
+   */
+  const frameTarget = (map: MlMap, list: Building[]): { center: [number, number]; zoom: number } | null => {
+    const b = boundsOf(list);
+    if (!b) return null;
+    const p = padRef.current;
+    const padding = { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME };
+    const zoom = map.getZoom();
+    const fitZ = Math.min(map.cameraForBounds(b, { padding })?.zoom ?? zoom, MAX_ZOOM);
+    // zoom at which every one of them stands alone (no number point among them); one building has no limit
+    const pts = list.map((x) => map.project([x.lng, x.lat]));
+    let near = Infinity;
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) near = Math.min(near, Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y));
+    const splitAt = Number.isFinite(near) ? (near > 0 ? zoom + Math.log2((2 * DOT_R + 2) / near) + 0.1 : SPLIT_MAX) : -Infinity;
+    return { center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2], zoom: Math.min(fitZ, Math.max(splitAt, Math.min(zoom, fitZ))) };
+  };
+
   useImperativeHandle(
     ref,
     () => ({
       fitTo: (list) => {
         const map = mapRef.current;
-        const b = boundsOf(list);
-        if (!map || !b) return;
+        const t = map && frameTarget(map, list);
+        if (!map || !t) return;
         const p = padRef.current;
-        const padding = { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME };
-        const zoom = map.getZoom();
-        // closest view that holds them all
-        const fitZ = Math.min(map.cameraForBounds(b, { padding })?.zoom ?? zoom, MAX_ZOOM);
-        // zoom at which every one of them stands alone (no number point among them); one building has no limit
-        const pts = list.map((x) => map.project([x.lng, x.lat]));
-        let near = Infinity;
-        for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) near = Math.min(near, Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y));
-        const splitAt = Number.isFinite(near) ? (near > 0 ? zoom + Math.log2((2 * DOT_R + 2) / near) + 0.1 : SPLIT_MAX) : -Infinity;
-        // Frame them, but zoom in no further than needed for every one to stand alone: when they already stand
-        // alone at the present zoom it does not grow (the map only moves, or zooms out to take them all in)
-        const to = Math.min(fitZ, Math.max(splitAt, Math.min(zoom, fitZ)));
-        const dz = to - zoom;
+        const dz = t.zoom - map.getZoom();
         map.easeTo({
-          center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2],
-          zoom: to,
+          center: t.center,
+          zoom: t.zoom,
           offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
           duration: motion(camMs(dz)),
           easing: camEase(dz),
@@ -305,15 +313,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           easing: camEase(dz),
         });
       },
+      // Framed: every one of them is in the free part of the map, and framing would not zoom in any further
+      // (it would only move the map a little, or zoom out). Number points that framing cannot split may stay.
       framed: (list) => {
         const map = mapRef.current;
-        if (!map || !list.length) return false;
+        const t = map && frameTarget(map, list);
+        if (!map || !t) return false;
         const p = padRef.current;
         const { clientWidth: W, clientHeight: H } = map.getContainer();
         const pts = list.map((x) => map.project([x.lng, x.lat]));
         if (pts.some((q) => q.x < p.left || q.x > W - p.right || q.y < p.top || q.y > H - p.bottom)) return false;
-        for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) if (Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y) < 2 * DOT_R + 2) return false;
-        return true;
+        return map.getZoom() >= t.zoom - 0.05;
       },
       moveTo: (v) => {
         const map = mapRef.current;
