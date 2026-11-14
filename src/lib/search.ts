@@ -97,6 +97,14 @@ function wholeIn(hay: string, w: string): boolean {
   return false;
 }
 
+/**
+ * A word of the name is the search word with at most two more letters: the same word in another language or
+ * form ("sant" → Santa, "chapel" → Sainte-Chapelle, "cathedral" → Cathédrale, "arch" → Grande Arche)
+ */
+function nameVariant(name: string, w: string): boolean {
+  return name.split(/[^\p{L}\p{N}]+/u).some((n) => n.startsWith(w) && n.length - w.length <= 2);
+}
+
 /** Matches of a search, split in two (Polish 13) */
 export interface Found {
   /** The buildings the text is about: each word stands whole in the name or a data field (architect, style,
@@ -117,7 +125,7 @@ export function searchSplit(text: string): Found {
     if (era) return b.eras.includes(era);
     const x = byId.get(b.id)!;
     const data = `${x.name} | ${x.fields}`;
-    return terms.every((w) => wholeIn(data, w) || (!WORDS.has(w) && atWordStart(data, w)));
+    return terms.every((w) => wholeIn(data, w) || nameVariant(x.name, w) || (!WORDS.has(w) && atWordStart(data, w)));
   };
   const main: Building[] = [];
   const more: Building[] = [];
