@@ -26,6 +26,8 @@ const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]
 /** Space kept round the buildings when the map frames them */
 const FRAME = 40;
 const MAX_ZOOM = 18;
+/** Closest zoom when a number point is opened (buildings at the same spot never split) */
+const SPLIT_MAX = 17;
 /** With no search, every name shows when the scale bar reads this length (metres) or less; wider, only exam buildings */
 const NAME_SCALE = 100000;
 /** Map name labels: longest name shown in full, and the width a character takes at 12 px */
@@ -49,6 +51,12 @@ export interface MapHandle {
    * stand alone and bring it into the free part of the map; otherwise as `reveal` (the zoom stays).
    */
   focus(b: Building): void;
+  /**
+   * A number point opened: zoom in only as far as needed for each of its buildings to stand alone as a single
+   * marker (no number point left among them), centred on them in the free part of the map; never past the
+   * view that still shows them all.
+   */
+  split(list: Building[]): void;
   /** Go back to a view saved earlier (＜) */
   moveTo(v: View): void;
   view(): View | null;
@@ -253,6 +261,31 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
           duration: motion(camMs(to - zoom)),
           easing: camEase(to - zoom),
+        });
+      },
+      split: (list) => {
+        const map = mapRef.current;
+        const b = boundsOf(list);
+        if (!map || !b || !list.length) return;
+        const zoom = map.getZoom();
+        // closest pair on screen now: two dots stand apart once their centres are two radii and the gap apart
+        const pts = list.map((x) => map.project([x.lng, x.lat]));
+        let near = Infinity;
+        for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) near = Math.min(near, Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y));
+        const need = 2 * DOT_R + 2;
+        const splitAt = near > 0 && Number.isFinite(near) ? zoom + Math.max(0, Math.log2(need / near)) + 0.1 : SPLIT_MAX;
+        // never closer than the view that still holds all of them: buildings that cannot split there stay in a
+        // smaller number point, which splits on its own click
+        const p = padRef.current;
+        const fit = map.cameraForBounds(b, { padding: { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME } });
+        const to = Math.min(splitAt, fit?.zoom ?? SPLIT_MAX, SPLIT_MAX);
+        const dz = to - zoom;
+        map.easeTo({
+          center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2],
+          zoom: to,
+          offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
+          duration: motion(camMs(dz)),
+          easing: camEase(dz),
         });
       },
       moveTo: (v) => {

@@ -22,8 +22,6 @@ const PANEL_WAIT = 60;
 const PREVIEW_MAX = 30;
 /** Width the zoom buttons take from the right edge (32 px buttons + 16 px inset) */
 const ZOOM_W = 48;
-/** Closest zoom when a number point is opened (its buildings may stand a few metres apart) */
-const GROUP_ZOOM = 17;
 const NO_PAD: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
 
 function useMedia(q: string): boolean {
@@ -136,8 +134,8 @@ export default function App() {
     const items = ids.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
     if (!items.length) return;
     push({ q: top.q, list: 'group', group: ids, b: '' });
-    // the map zooms into the number point's area beside the list it opened, close enough for the names to show
-    afterPanel(() => mapRef.current?.fitTo(items, GROUP_ZOOM));
+    // the map zooms in beside the list it opened, just far enough for each of its buildings to stand alone
+    afterPanel(() => mapRef.current?.split(items));
   };
 
   const toggleCategory = () => {
