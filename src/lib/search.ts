@@ -51,7 +51,7 @@ function atWordStart(hay: string, w: string): boolean {
   return false;
 }
 
-export function search(text: string, list: readonly Indexed[] = INDEX): Building[] {
+function rankAll(text: string, list: readonly Indexed[] = INDEX): Building[] {
   const t = norm(text.trim());
   if (!t) return [];
   // The text is a category name (from the Category list, or typed): the buildings of that category in
@@ -82,4 +82,51 @@ export function search(text: string, list: readonly Indexed[] = INDEX): Building
     ranked.push({ b: x.b, r: inside ? r + 10 : r });
   }
   return ranked.sort((p, q) => p.r - q.r || byYear(p.b, q.b)).map((x) => x.b);
+}
+
+/** Every whole word in the data and summaries: a search word that is one of these is a finished word, not a partial one */
+const WORDS = new Set(INDEX.flatMap((x) => `${x.name} ${x.fields} ${x.summary}`.split(/[^\p{L}\p{N}]+/u).filter(Boolean)));
+
+/** The word stands whole in the text (or as its plural: "villa" in "villas", "tower" in "towers") */
+function wholeIn(hay: string, w: string): boolean {
+  for (let i = hay.indexOf(w); i >= 0; i = hay.indexOf(w, i + 1)) {
+    if (i > 0 && /[\p{L}\p{N}]/u.test(hay[i - 1]!)) continue;
+    const rest = hay.slice(i + w.length);
+    if (!/^[\p{L}\p{N}]/u.test(rest) || /^(s|es)(?![\p{L}\p{N}])/u.test(rest)) return true;
+  }
+  return false;
+}
+
+/** Matches of a search, split in two (Polish 13) */
+export interface Found {
+  /** The buildings the text is about: each word stands whole in the name or a data field (architect, style,
+   *  place, keywords), or begins a word there while it is still being typed (not a finished word) */
+  main: Building[];
+  /** The rest: a finished word that only begins a longer word ("villa" in "village"), a word found only in the
+   *  summary, or a word found inside another word ("art" in "Parthenon") */
+  more: Building[];
+}
+
+export function searchSplit(text: string): Found {
+  const all = rankAll(text);
+  const t = norm(text.trim());
+  const terms = t.split(/\s+/).filter(Boolean);
+  const era = (Object.keys(ERAS) as (keyof typeof ERAS)[]).find((e) => norm(ERAS[e].label) === t);
+  const byId = new Map(INDEX.map((x) => [x.b.id, x]));
+  const isMain = (b: Building): boolean => {
+    if (era) return b.eras.includes(era);
+    const x = byId.get(b.id)!;
+    const data = `${x.name} | ${x.fields}`;
+    return terms.every((w) => wholeIn(data, w) || (!WORDS.has(w) && atWordStart(data, w)));
+  };
+  const main: Building[] = [];
+  const more: Building[] = [];
+  for (const b of all) (isMain(b) ? main : more).push(b);
+  return { main, more };
+}
+
+/** What a search shows first: its main matches, or, when it has none, the rest */
+export function search(text: string): Building[] {
+  const f = searchSplit(text);
+  return f.main.length ? f.main : f.more;
 }

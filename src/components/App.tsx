@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { BUILDINGS, BY_ID, type Building } from '../lib/model';
 import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
-import { search } from '../lib/search';
+import { search, searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
 import CategoryList from './CategoryList';
 import { HeadBar } from './HeadBar';
@@ -58,7 +58,15 @@ export default function App() {
   const panelRef = useRef<HTMLElement>(null);
   const viewRef = useRef<View | null>(START.view);
 
-  const results = useMemo(() => (top.q ? search(top.q) : []), [top.q]);
+  // A search's main matches first; its other matches join below (list and map) after More Results (Polish 13)
+  const found = useMemo(() => (top.q ? searchSplit(top.q) : { main: [], more: [] }), [top.q]);
+  const [moreOpen, setMoreOpen] = useState('');
+  const hasMain = found.main.length > 0;
+  const moreList = hasMain ? found.more : [];
+  const results = useMemo(
+    () => (hasMain ? (moreOpen === top.q ? [...found.main, ...found.more] : found.main) : found.more),
+    [found, hasMain, moreOpen, top.q],
+  );
   const preview = useMemo(() => (draft.trim() ? search(draft) : []), [draft]);
   const selected = top.b ? (BY_ID.get(top.b) ?? null) : null;
   const group = useMemo(() => top.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b), [top.group]);
@@ -249,7 +257,21 @@ export default function App() {
   } else if (top.list === 'results' && results.length) {
     panel = (
       <Panel ref={panelRef} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={null}>
-        <Rows list={results} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} onCountry={(items) => mapRef.current?.fitTo(items)} />
+        <Rows
+          list={hasMain ? found.main : found.more}
+          onOpen={openCard}
+          onHover={setHoverId}
+          onVisible={setSeenIds}
+          onCountry={(items) => mapRef.current?.fitTo(items)}
+          more={{
+            list: moreList,
+            open: moreOpen === top.q,
+            onOpen: () => {
+              setMoreOpen(top.q);
+              afterPanel(() => mapRef.current?.fitTo([...found.main, ...found.more]));
+            },
+          }}
+        />
       </Panel>
     );
   }

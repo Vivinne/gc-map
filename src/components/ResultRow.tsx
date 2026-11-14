@@ -56,13 +56,15 @@ interface RowsProps {
   onVisible?(ids: string[]): void;
   /** Split the list by country under headings; clicking a heading frames that country's buildings */
   onCountry?(items: Building[]): void;
+  /** The search's other matches (Polish 13): a "More Results" button at the end of the list shows them below */
+  more?: { list: Building[]; open: boolean; onOpen(): void };
 }
 
 /**
  * A list of buildings, split by country when `onCountry` is given and the list is long. `onVisible` reports
  * the rows that are on screen in the list, top to bottom, whenever the list scrolls, so the map can mark them.
  */
-export function Rows({ list, onOpen, onHover, onVisible, onCountry }: RowsProps) {
+export function Rows({ list, onOpen, onHover, onVisible, onCountry, more }: RowsProps) {
   const ul = useRef<HTMLUListElement>(null);
   const report = useRef(onVisible);
   report.current = onVisible;
@@ -90,13 +92,34 @@ export function Rows({ list, onOpen, onHover, onVisible, onCountry }: RowsProps)
       io.disconnect();
       report.current?.([]);
     };
-  }, [on, list, split]);
+  }, [on, list, split, more?.open]);
+  // the other matches: first a button, then (once pressed) a grey line and their rows, in search order
+  const tail =
+    more && more.list.length > 0
+      ? more.open
+        ? [
+            <li key="more-line" className="country">
+              <span className="c-head more-line">
+                More Results <span className="n">{more.list.length}</span>
+              </span>
+            </li>,
+            ...more.list.map((b) => <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />),
+          ]
+        : [
+            <li key="more-btn" className="more">
+              <button type="button" className="more-btn" onClick={more.onOpen}>
+                More Results <span className="n">{more.list.length}</span>
+              </button>
+            </li>,
+          ]
+      : [];
   if (!split) {
     return (
       <ul className="rows" ref={ul}>
         {list.map((b) => (
           <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />
         ))}
+        {tail}
       </ul>
     );
   }
@@ -120,6 +143,7 @@ export function Rows({ list, onOpen, onHover, onVisible, onCountry }: RowsProps)
           ...items.map((b) => <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />),
         ];
       })}
+      {tail}
     </ul>
   );
 }

@@ -16,8 +16,8 @@ ul, ol { list-style: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* press feedback: every control darkens at once and moves down 1 px */
-.chip, .btn, .row, .c-head, .h-ic, .s-x, .s-back, .cat-btn, .ctrls button, .c-who { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
-.chip:active, .btn:active, .row:active, .c-head:active, .h-ic:active, .s-x:active, .s-back:active, .cat-btn:active, .ctrls button:active { transform: translateY(1px); }
+.chip, .btn, .row, .c-head, .more-btn, .h-ic, .s-x, .s-back, .cat-btn, .ctrls button, .c-who { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.chip:active, .btn:active, .row:active, .c-head:active, .more-btn:active, .h-ic:active, .s-x:active, .s-back:active, .cat-btn:active, .ctrls button:active { transform: translateY(1px); }
 
 /* ---------- page ---------- */
 .app { position: relative; height: 100vh; height: 100dvh; overflow: hidden; }
@@ -69,6 +69,13 @@ ul, ol { list-style: none; }
 .c-head { width: 100%; display: flex; align-items: baseline; gap: 6px; padding: 10px 16px 2px; font-size: 12px; font-weight: 600; color: var(--mute); }
 .c-head:hover { color: var(--ink); }
 .c-head .n { font-weight: 500; }
+/* the search's other matches: a quiet button at the end of the list; once pressed, a grey line above them */
+.rows .more { border-top: 1px solid var(--rule); }
+.more-btn { width: 100%; display: flex; align-items: baseline; gap: 6px; padding: 12px 16px; font-size: 13px; font-weight: 650; color: var(--ink); }
+.more-btn:hover { background: var(--soft); }
+.more-btn .n { font-weight: 500; font-size: 12px; color: var(--mute); }
+.c-head.more-line { cursor: default; }
+.c-head.more-line:hover { color: var(--mute); }
 .none { padding: 14px 16px; color: var(--mute); font-weight: 600; }
 
 /* ---------- Category: the 10 style tags as in the v1 filters panel ---------- */
