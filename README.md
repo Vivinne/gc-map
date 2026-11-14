@@ -20,6 +20,10 @@ npm run site                     # single-file pages in site/ (index.html, artif
 
 `site/index.html` opens straight from disk; `site/artifact.html` is the same page under the name claude.ai artifacts expect. The published site is the Next.js export, not these files.
 
+## Publish
+
+Every push to `main` builds the site from the source and publishes it to https://vivinne.github.io/gc-map/ (`.github/workflows/deploy.yml`). The built files are not stored in any branch.
+
 ## Basemap
 
 The map draws its own basemap from `src/data/basemap.json` (Natural Earth, public domain), so it works offline and inside sandboxed hosts. From zoom 6 it also requests street-level vector tiles from OpenFreeMap (water, rivers, roads from zoom 10, building footprints from zoom 14), restyled in the same flat colours; where those tiles cannot load, the map keeps the offline layers. No map labels are drawn from tiles: building and city names come from the site's own overlay.
