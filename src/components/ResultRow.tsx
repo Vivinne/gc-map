@@ -108,7 +108,7 @@ export function Rows({ list, onOpen, onHover, onVisible, onCountry, more }: Rows
         : [
             <li key="more-btn" className="more">
               <button type="button" className="more-btn" onClick={more.onOpen}>
-                More Results <span className="n">{more.list.length}</span>
+                More Results
               </button>
             </li>,
           ]
