@@ -58,7 +58,9 @@ ul, ol { list-style: none; }
 /* ---------- rows: colour strip, name, built · city, architect · style; thin grey rules between ---------- */
 .rows > li + li { border-top: 1px solid var(--rule); }
 .row { width: 100%; display: flex; align-items: stretch; gap: 12px; padding: 10px 16px 10px 0; }
-.row:hover, .row:focus-visible { background: var(--soft); }
+/* light blue under a mouse, a keyboard focus or a finger while it presses (no colour left behind after a tap) */
+.row:focus-visible, .row:active { background: var(--soft); }
+@media (hover: hover) { .row:hover { background: var(--soft); } }
 .row .strip { flex: none; width: 4px; }
 .row-t { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .row-t b { font-size: 14px; font-weight: 700; line-height: 1.3; }
