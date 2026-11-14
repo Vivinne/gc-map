@@ -70,18 +70,19 @@ ul, ol { list-style: none; }
 /* long results: a small grey country line among the rows (part of the same list); a click frames the country */
 .rows .country + li { border-top: 0 !important; }
 .c-head { width: 100%; display: flex; align-items: baseline; gap: 6px; padding: 10px 16px 2px; font-size: 12px; font-weight: 600; color: var(--mute); }
-.c-head:hover { color: var(--ink); }
+/* the grey lines and their buttons darken under a mouse only: a finger leaves no hover colour behind on them */
+@media (hover: hover) { .c-head:hover { color: var(--ink); } }
 .c-head .n { font-weight: 500; }
 /* the search's other matches: a quiet button at the end of the list; once pressed, a grey line above them */
 .rows .more { border-top: 1px solid var(--rule); }
 .rows .more { display: flex; justify-content: center; padding: 10px 16px 12px; }
 .more-btn { padding: 2px 4px; font-size: 13px; font-weight: 600; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; border-radius: var(--r-s); }
-.more-btn:hover { color: var(--ink); background: var(--soft); }
+@media (hover: hover) { .more-btn:hover { color: var(--ink); background: var(--soft); } }
 /* the other outcomes' line: ∧ at the far right folds them away again */
 .rows .country.more-row, .rows li.country:has(.fold) { display: flex; align-items: flex-end; }
 .rows li.country .c-head.more-line { flex: 1; min-width: 0; }
 .fold { flex: none; width: 28px; height: 24px; margin: 0 8px 0 0; display: grid; place-items: center; color: var(--mute); border-radius: var(--r-s); }
-.fold:hover { color: var(--ink); background: var(--soft); }
+@media (hover: hover) { .fold:hover { color: var(--ink); background: var(--soft); } }
 /* a group line whose buildings the map already shows framed: lighter grey, not clickable, no hover colour, no press */
 .c-head.off, .c-head.off:hover { cursor: default; color: var(--g74); }
 .c-head.off:active { transform: none; }
