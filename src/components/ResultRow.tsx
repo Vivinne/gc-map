@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { ERAS, type Building } from '../lib/model';
+import { ERAS, nationName, type Building } from '../lib/model';
 import { architectOf, builtOf, shownStyle } from '../lib/style';
 
 /** Two values joined by a middle dot, leaving out an empty one */
@@ -34,15 +34,40 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
   );
 }
 
+/** Lists this long are split by country */
+export const BY_COUNTRY_MIN = 10;
+
+/** Buildings split by country: the country with most buildings first; inside, the list order is kept */
+export function byCountry(list: Building[]): { country: string; items: Building[] }[] {
+  const map = new Map<string, Building[]>();
+  for (const b of list) {
+    const c = nationName(b) || '-';
+    if (!map.has(c)) map.set(c, []);
+    map.get(c)!.push(b);
+  }
+  return [...map].map(([country, items]) => ({ country, items })).sort((a, b) => b.items.length - a.items.length || a.country.localeCompare(b.country));
+}
+
+interface RowsProps {
+  list: Building[];
+  onOpen(id: string): void;
+  /** Building(s) pointed at: an id, several joined by "~", or '' */
+  onHover(ids: string): void;
+  onVisible?(ids: string[]): void;
+  /** Split the list by country under headings; clicking a heading frames that country's buildings */
+  onCountry?(items: Building[]): void;
+}
+
 /**
- * A list of buildings. `onVisible` reports the rows that are on screen in the list, top to bottom,
- * whenever the list scrolls, so the map can mark those buildings.
+ * A list of buildings, split by country when `onCountry` is given and the list is long. `onVisible` reports
+ * the rows that are on screen in the list, top to bottom, whenever the list scrolls, so the map can mark them.
  */
-export function Rows({ list, onOpen, onHover, onVisible }: { list: Building[]; onOpen(id: string): void; onHover(id: string): void; onVisible?(ids: string[]): void }) {
+export function Rows({ list, onOpen, onHover, onVisible, onCountry }: RowsProps) {
   const ul = useRef<HTMLUListElement>(null);
   const report = useRef(onVisible);
   report.current = onVisible;
   const on = !!onVisible;
+  const split = !!onCountry && list.length >= BY_COUNTRY_MIN;
   useEffect(() => {
     const el = ul.current;
     if (!on || !el) return undefined;
@@ -65,12 +90,36 @@ export function Rows({ list, onOpen, onHover, onVisible }: { list: Building[]; o
       io.disconnect();
       report.current?.([]);
     };
-  }, [on, list]);
+  }, [on, list, split]);
+  if (!split) {
+    return (
+      <ul className="rows" ref={ul}>
+        {list.map((b) => (
+          <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />
+        ))}
+      </ul>
+    );
+  }
   return (
-    <ul className="rows" ref={ul}>
-      {list.map((b) => (
-        <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />
-      ))}
+    <ul className="rows by-country" ref={ul}>
+      {byCountry(list).map(({ country, items }) => {
+        const ids = items.map((b) => b.id).join('~');
+        return [
+          <li key={`c-${country}`} className="country">
+            <button
+              type="button"
+              className="c-head"
+              onClick={() => onCountry!(items)}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && onHover(ids)}
+              onPointerLeave={() => onHover('')}
+            >
+              <span>{country}</span>
+              <span className="n">{items.length}</span>
+            </button>
+          </li>,
+          ...items.map((b) => <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />),
+        ];
+      })}
     </ul>
   );
 }

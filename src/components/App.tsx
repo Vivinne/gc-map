@@ -243,7 +243,7 @@ export default function App() {
   } else if (top.list === 'results' && results.length) {
     panel = (
       <Panel ref={panelRef} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={null}>
-        <Rows list={results} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} />
+        <Rows list={results} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} onCountry={(items) => mapRef.current?.fitTo(items)} />
       </Panel>
     );
   }

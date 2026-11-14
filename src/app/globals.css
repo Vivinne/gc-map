@@ -16,8 +16,8 @@ ul, ol { list-style: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* press feedback: every control darkens at once and moves down 1 px */
-.chip, .btn, .row, .h-ic, .s-x, .s-back, .cat-btn, .ctrls button, .c-who { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
-.chip:active, .btn:active, .row:active, .h-ic:active, .s-x:active, .s-back:active, .cat-btn:active, .ctrls button:active { transform: translateY(1px); }
+.chip, .btn, .row, .c-head, .h-ic, .s-x, .s-back, .cat-btn, .ctrls button, .c-who { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.chip:active, .btn:active, .row:active, .c-head:active, .h-ic:active, .s-x:active, .s-back:active, .cat-btn:active, .ctrls button:active { transform: translateY(1px); }
 
 /* ---------- page ---------- */
 .app { position: relative; height: 100vh; height: 100dvh; overflow: hidden; }
@@ -64,6 +64,12 @@ ul, ol { list-style: none; }
 .row.text { align-items: center; padding: 0 16px; height: 40px; color: var(--mute); gap: 10px; }
 .row.text span { color: var(--ink); font-size: 14px; }
 .rows.recent + .rows { border-top: 1px solid var(--rule); }
+/* long results: split by country; the heading stays at the top while its rows scroll, a click frames the country */
+.rows .country { position: sticky; top: 0; z-index: 1; border-top: 0 !important; }
+.rows .country + li { border-top: 0 !important; }
+.c-head { width: 100%; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: var(--soft); font-size: 13px; font-weight: 700; color: var(--ink); box-shadow: 0 1px 0 var(--rule); }
+.c-head:hover { background: var(--g93); }
+.c-head .n { font-weight: 500; color: var(--mute); font-size: 12px; }
 .none { padding: 14px 16px; color: var(--mute); font-weight: 600; }
 
 /* ---------- Category: the 10 style tags as in the v1 filters panel ---------- */

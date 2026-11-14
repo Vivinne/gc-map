@@ -60,7 +60,7 @@ interface Props {
   /** A search is submitted: its results are named at every scale */
   searched: boolean;
   selected: Building | null;
-  /** Building pointed at in a list */
+  /** Building(s) pointed at in a list (ids joined by "~") */
   hoverId: string;
   /** Buildings whose rows are on screen in the open list (named on the map; the other markers dim); null = off */
   seenIds: string[] | null;
@@ -289,7 +289,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     down.current = [e.clientX, e.clientY];
   };
   const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
+  // Buildings pointed at: one id, or several joined by "~" (a number point, a country heading in a list)
   const hot = hoverId || pinHover;
+  const hotSet = new Set(hot ? hot.split('~') : []);
   const seen = seenIds && seenIds.length ? new Set(seenIds) : null;
   const seenCls = (ids: string[]) => (seen && !ids.some((id) => seen.has(id)) ? ' dim' : '');
   const act = (key: string, click: () => void) => ({
@@ -328,7 +330,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           const b = g.items[0]!;
           const on = selected?.id === b.id;
           marks.push(
-            <circle key={b.id} className={`mk dot${b.id === hot ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
+            <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
               <title>{b.name}</title>
             </circle>,
           );
@@ -339,7 +341,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const gr = size(g.items.length) + 6;
         taken.push([g.x - gr, g.y - gr, g.x + gr, g.y + gr]);
         const key = g.items.map((b) => b.id).join('~');
-        const isHot = hot === key || g.items.some((b) => b.id === hoverId);
+        const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
         marks.push(
           <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
             <NumberPoint group={g} />
@@ -363,7 +365,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           taken.push(box);
           // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
           labels.push(
-            <g key={`l-${b.id}`} className={`mk name${b.id === hot ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
+            <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
               <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
               <text className="mk-label" x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
                 {text}
