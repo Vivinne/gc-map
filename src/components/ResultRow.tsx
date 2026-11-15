@@ -26,7 +26,7 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
         <span className="row-t">
           <b>{b.name}</b>
           <span>{joinDot(builtOf(b), b.city)}</span>
-          <span>{joinDot(architectOf(b), shownStyle(b))}</span>
+          <span>{joinDot(architectOf(b) === '-' ? '' : architectOf(b), shownStyle(b))}</span>
         </span>
       </button>
     </li>

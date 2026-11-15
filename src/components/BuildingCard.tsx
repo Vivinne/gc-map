@@ -46,14 +46,14 @@ const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, s
       <div className="c-body">
         <p className="c-line">{joinDot(builtOf(b), b.city)}</p>
         <p className="c-line">
-          {who === '-' ? (
-            who
-          ) : (
-            <button type="button" className="c-who" onClick={() => onArchitect(who)}>
-              {who}
-            </button>
+          {who !== '-' && (
+            <>
+              <button type="button" className="c-who" onClick={() => onArchitect(who)}>
+                {who}
+              </button>
+              {' · '}
+            </>
           )}
-          {' · '}
           {shownStyle(b)}
         </p>
         {b.summary && <p className="c-sum sum">{b.summary}</p>}
