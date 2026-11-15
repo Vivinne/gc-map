@@ -398,7 +398,28 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // buildings at its own place (they may overlap), and the open building's mark is drawn over them.
     // Those neighbours carry no name and block no name: the open building's name goes beside its mark.
     const opened = new Set<string>();
-    if (selected) {
+    // PREVIEW modes for the open building in a number point: A = the point itself marked open, B = pulled out
+    const mode = process.env.NEXT_PUBLIC_SEL_MODE ?? '1';
+    let selGroup: (typeof groups)[number] | null = null;
+    if (selected && mode === 'A') selGroup = groups.find((g) => g.items.length > 1 && g.items.some((b) => b.id === selected.id)) ?? null;
+    if (selected && mode === 'B' && buildings.some((b) => b.id === selected.id)) {
+      const sp = proj(selected.lng, selected.lat);
+      groups = groupOnScreen(
+        buildings.filter((b) => b.id !== selected.id).map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
+        size,
+      );
+      // anything the open building's mark (r 24) would cover moves out beside it
+      groups = groups.map((g) => {
+        const rad = g.items.length > 1 ? size(g.items.length) : DOT_R;
+        const need = 24 + rad + 3;
+        const dx = g.x - sp.x, dy = g.y - sp.y, d = Math.hypot(dx, dy);
+        if (d >= need) return g;
+        const ux = d > 1 ? dx / d : 1, uy = d > 1 ? dy / d : 0;
+        return { ...g, x: sp.x + ux * need, y: sp.y + uy * need };
+      });
+      groups.push({ ...sp, items: [selected] } as (typeof groups)[number]);
+    }
+    if (selected && mode === '1') {
       groups = groups.flatMap((g) => {
         if (g.items.length < 2 || !g.items.some((b) => b.id === selected.id)) return [g];
         for (const b of g.items) if (b.id !== selected.id) opened.add(b.id);
@@ -461,8 +482,29 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         break;
       }
     }
+    if (selected && selGroup) {
+      const rad = size(selGroup.items.length);
+      marks.unshift(<circle key="sel-halo" className="sel-mark" cx={selGroup.x} cy={selGroup.y} r={rad + 12} fill={ERAS[selected.era].color} opacity={0.22} />);
+      marks.push(<circle key="sel-ring" className="sel-mark" cx={selGroup.x} cy={selGroup.y} r={rad + 2.5} fill="none" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />);
+      const text = selected.name.length > LABEL_MAX ? `${selected.name.slice(0, LABEL_MAX - 1)}\u2026` : selected.name;
+      const w = text.length * LABEL_CHAR * SEL_SCALE;
+      const gap = rad + 14;
+      for (const side of [1, -1, 2, -2] as const) {
+        const { x, y } = selGroup;
+        const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
+        const yc = side === 2 ? y + gap + 6 : side === -2 ? y - gap - 6 : y;
+        const box: [number, number, number, number] = [x0, yc - 10, x0 + w, yc + 10];
+        if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
+        labels.unshift(
+          <text key="sel-label" className="mk-label sel" x={side === 1 ? box[0] : side === -1 ? box[2] : x} y={yc + 5} textAnchor={side === 1 ? 'start' : side === -1 ? 'end' : 'middle'}>
+            {text}
+          </text>,
+        );
+        break;
+      }
+    }
     // The open building is always marked
-    if (selected) {
+    if (selected && !selGroup) {
       const { x, y } = proj(selected.lng, selected.lat);
       if (inView(x, y)) {
         marks.push(
