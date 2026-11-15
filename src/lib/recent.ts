@@ -1,6 +1,6 @@
 import { load, save } from './storage';
 
-const MAX = 5;
+const MAX = 3;
 const TEXT_KEY = 'recent-text';
 const BUILDING_KEY = 'recent-building';
 
@@ -10,10 +10,10 @@ function push(key: string, value: string): string[] {
   return list;
 }
 
-/** Recent search texts (typed, Category, architect), newest first, at most 5 */
+/** Recent search texts (typed, Category, architect), newest first, at most 3 */
 export const recentTexts = (): string[] => load<string[]>(TEXT_KEY, []).slice(0, MAX);
 export const addRecentText = (text: string): string[] => push(TEXT_KEY, text);
 
-/** Recent buildings whose card was opened, newest first, at most 5 (ids) */
+/** Recent buildings whose card was opened, newest first, at most 3 (ids) */
 export const recentBuildings = (): string[] => load<string[]>(BUILDING_KEY, []).slice(0, MAX);
 export const addRecentBuilding = (id: string): string[] => push(BUILDING_KEY, id);
