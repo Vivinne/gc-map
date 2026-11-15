@@ -87,7 +87,7 @@ ul, ol { list-style: none; }
 /* the search's other matches: a quiet button at the end of the list; once pressed, a grey line above them */
 .rows .more { border-top: 1px solid var(--rule); }
 .rows .more { display: flex; justify-content: center; padding: 10px 16px 12px; }
-.more-btn { padding: 2px 4px; font-size: 13px; font-weight: 600; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; border-radius: var(--r-s); }
+.more-btn { padding: 6px 8px; margin: -4px -4px; font-size: 13px; font-weight: 600; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; border-radius: var(--r-s); }
 @media (hover: hover) { .more-btn:hover { color: var(--ink); background: var(--soft); } }
 /* the other outcomes' line: ∧ at the far right folds them away again */
 .rows .country.more-row, .rows li.country:has(.fold-btn) { display: flex; align-items: flex-end; }
@@ -115,7 +115,8 @@ ul, ol { list-style: none; }
 .c-top h1 { font-stretch: 112%; font-weight: 800; font-size: 22px; line-height: 1.15; overflow-wrap: anywhere; padding-right: 12px; }
 .c-body { padding: 16px; display: flex; flex-direction: column; gap: 4px; }
 .c-line { font-size: 14px; line-height: 1.6; }
-.c-who { font-weight: 700; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+/* a finger-sized target (24 px) that keeps the line where it was */
+.c-who { padding: 4px 2px; margin: -4px -2px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
 .c-who:hover { background: var(--soft); }
 .c-sum { margin-top: 12px; font-size: 15px; line-height: 1.75; }
 .c-keys { margin-top: 12px; font-size: 13.5px; font-style: italic; color: var(--g37); }
@@ -169,7 +170,7 @@ ul, ol { list-style: none; }
 .panel.m.top { top: calc(64px + env(safe-area-inset-top)); left: 12px; right: 12px; max-height: calc(100% - 64px - 12px - env(safe-area-inset-top)); animation: drop-in var(--t-mid) var(--ease); }
 .panel.m.sheet { left: 0; right: 0; bottom: 0; max-height: 50%; padding-bottom: env(safe-area-inset-bottom); animation: sheet-in var(--t-mid) var(--ease); transition: max-height var(--t-mid) var(--ease), transform var(--t-mid) var(--ease); }
 .panel.m.sheet.full { max-height: calc(100% - 64px - env(safe-area-inset-top)); height: calc(100% - 64px - env(safe-area-inset-top)); }
-.panel.m.sheet .p-head.drag { position: relative; touch-action: none; cursor: grab; padding-top: 14px; }
+.panel.m.sheet .p-head.drag { position: relative; touch-action: none; cursor: grab; padding-top: 14px; user-select: none; -webkit-user-select: none; }
 .panel.m.sheet .grab { position: absolute; top: 5px; left: 50%; width: 40px; height: 4px; margin-left: -20px; background: var(--g84); }
 /* folded to the title: a list without a title keeps a strip a finger can hit (tap or drag up opens it) */
 .panel.m.sheet.fold .p-head { min-height: 32px; }

@@ -32,7 +32,14 @@ const DRAG = 40;
  */
 const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, label, className = '', head, resetKey, scroll, children }, ref) {
   const [state, setState] = useState<SheetState>('half');
-  const [dy, setDy] = useState(0);
+  const [dy, setDyState] = useState(0);
+  // the latest drag distance, read on release (a release can arrive before React has re-rendered the last move)
+  const dyRef = useRef(0);
+  const dragged = useRef(false);
+  const setDy = (v: number) => {
+    dyRef.current = v;
+    setDyState(v);
+  };
   /** The pointer being dragged, and which ways the sheet can go from where it is (it only follows those) */
   const drag = useRef<{ y: number; id: number; up: boolean; down: boolean } | null>(null);
   const body = useRef<HTMLDivElement>(null);
@@ -62,6 +69,8 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
   };
   const onDown = (e: React.PointerEvent) => {
     if (!sheet || (e.target as Element).closest('button, a, input')) return;
+    // a mouse drag would otherwise select text, and dragging that selection cancels the next drag
+    if (e.pointerType === 'mouse') e.preventDefault();
     drag.current = { y: e.clientY, id: e.pointerId, up: canGrow(), down: state !== 'fold' };
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
@@ -73,8 +82,10 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
   const onUp = (e: React.PointerEvent) => {
     if (drag.current?.id !== e.pointerId) return;
     drag.current = null;
-    const d = dy;
+    const d = dyRef.current;
     setDy(0);
+    // a mouse release after a drag also fires a click: that click must not reopen the sheet it just folded
+    dragged.current = Math.abs(d) > 4;
     if (d > DRAG) setState((s) => (s === 'full' ? 'half' : 'fold'));
     else if (d < -DRAG) {
       setState((s) => (s === 'fold' ? 'half' : canGrow() ? 'full' : s));
@@ -96,7 +107,14 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={() => ((drag.current = null), setDy(0))}
-        onClick={sheet && state === 'fold' ? (e) => !(e.target as Element).closest('button') && setState('half') : undefined}
+        onClick={
+          sheet && state === 'fold'
+            ? (e) => {
+                if (dragged.current) return void (dragged.current = false);
+                if (!(e.target as Element).closest('button')) setState('half');
+              }
+            : () => void (dragged.current = false)
+        }
       >
         {sheet && <span className="grab" aria-hidden="true" />}
         {head}
