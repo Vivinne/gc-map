@@ -59,12 +59,11 @@ ul, ol { list-style: none; }
 
 /* ---------- rows: colour strip, name, built · city, architect · style; thin grey rules between ---------- */
 .rows > li + li { border-top: 1px solid var(--rule); }
-/* the category strip runs the row's full height: the vertical padding sits on the text, not the row */
-.row { width: 100%; display: flex; align-items: stretch; gap: 12px; padding: 0 16px 0 0; }
+.row { width: 100%; display: flex; align-items: stretch; gap: 12px; padding: 10px 16px 10px 0; }
 /* light blue under a mouse, a keyboard focus or a finger (a phone keeps it on the last row touched) */
 .row:hover, .row:focus-visible, .row:active { background: var(--soft); }
 .row .strip { flex: none; width: 4px; }
-.row-t { padding: 10px 0; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.row-t { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .row-t b { font-size: 14px; font-weight: 700; line-height: 1.3; }
 .row-t span { font-size: 12.5px; color: var(--mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-who { font-weight: 600; text-decoration: none; }
@@ -73,7 +72,7 @@ ul, ol { list-style: none; }
 .rows.recent + .rows { border-top: 1px solid var(--rule); }
 .rows.recent + .recent-b { border-top: 1px solid var(--rule); }
 /* recent buildings in the search preview: name with built span · city on the first line, architect · style below */
-.recent-b .row-t { padding: 8px 0; }
+.recent-b .row { padding: 8px 16px 8px 0; }
 .recent-b .row-t { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 1px; }
 .recent-b .row-t b { flex: none; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recent-b .row-t span:nth-of-type(1) { flex: 1; min-width: 0; }
