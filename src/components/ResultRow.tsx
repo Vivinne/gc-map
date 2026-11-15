@@ -5,9 +5,11 @@ import { architectOf, builtOf, joinDot, shownStyle } from '../lib/style';
 
 /**
  * One building in a list (preview, results, number point): a strip in its category colour, the name in bold,
- * built span · city, architect · style. Rows are split by thin grey rules (see .rows in globals.css).
+ * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in globals.css).
  */
 export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(id: string): void; onHover(id: string): void }) {
+  // the architect is underlined, as on the card (no architect: the style only)
+  const who = architectOf(b) === '-' ? '' : architectOf(b);
   return (
     <li data-id={b.id}>
       <button
@@ -26,7 +28,15 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
         <span className="row-t">
           <b>{b.name}</b>
           <span>{joinDot(builtOf(b), b.city)}</span>
-          <span>{joinDot(architectOf(b) === '-' ? '' : architectOf(b), shownStyle(b))}</span>
+          <span>
+            {who && (
+              <>
+                <u className="row-who">{who}</u>
+                {' · '}
+              </>
+            )}
+            {shownStyle(b)}
+          </span>
         </span>
       </button>
     </li>
