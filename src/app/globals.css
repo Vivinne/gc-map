@@ -158,7 +158,6 @@ ul, ol { list-style: none; }
 /* ---------- phone ---------- */
 .is-mobile .topbar { top: calc(12px + env(safe-area-inset-top)); left: 12px; right: 12px; width: auto; max-width: none; }
 .panel.m.top { top: calc(64px + env(safe-area-inset-top)); left: 12px; right: 12px; max-height: calc(100% - 64px - 12px - env(safe-area-inset-top)); animation: drop-in var(--t-mid) var(--ease); }
-.panel.m.top.fill { left: 0; right: 0; bottom: 0; max-height: none; box-shadow: 0 -1px 0 var(--rule); }
 .panel.m.sheet { left: 0; right: 0; bottom: 0; max-height: 50%; padding-bottom: env(safe-area-inset-bottom); animation: sheet-in var(--t-mid) var(--ease); transition: max-height var(--t-mid) var(--ease), transform var(--t-mid) var(--ease); }
 .panel.m.sheet.full { max-height: calc(100% - 64px - env(safe-area-inset-top)); height: calc(100% - 64px - env(safe-area-inset-top)); }
 .panel.m.sheet .p-head.drag { position: relative; touch-action: none; cursor: grab; padding-top: 14px; }
@@ -179,7 +178,6 @@ ul, ol { list-style: none; }
 .ctrls button { border-radius: 0; }
 .panel { border-radius: var(--r-m); overflow: hidden; }
 .panel.m.sheet { border-radius: var(--r-m) var(--r-m) 0 0; }
-.panel.m.top.fill { border-radius: 0; }
 .chip { border-radius: 999px; }
 
 @media (prefers-reduced-motion: reduce) {

@@ -12,8 +12,6 @@ interface Props {
    * Phone: 'top' = under the search box (preview, category); 'sheet' = from the bottom (other lists, card).
    */
   place: 'top' | 'sheet';
-  /** Phone 'top' panel at full screen height (search preview) */
-  fill?: boolean;
   label: string;
   className?: string;
   /** Title area (the part a phone sheet is dragged by) */
@@ -32,7 +30,7 @@ const DRAG = 40;
  * Dragged down: from half to the title only, from full to half. Dragged up: from the title to half, and from
  * half to full when the content is longer than half the screen. A sheet that cannot go a way does not move that way.
  */
-const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fill, label, className = '', head, resetKey, scroll, children }, ref) {
+const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, label, className = '', head, resetKey, scroll, children }, ref) {
   const [state, setState] = useState<SheetState>('half');
   const [dy, setDy] = useState(0);
   /** The pointer being dragged, and which ways the sheet can go from where it is (it only follows those) */
@@ -83,7 +81,7 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fil
     }
   };
 
-  const cls = ['panel', className, mobile ? `m ${place}` : 'd', sheet ? state : '', mobile && fill ? 'fill' : ''].filter(Boolean).join(' ');
+  const cls = ['panel', className, mobile ? `m ${place}` : 'd', sheet ? state : ''].filter(Boolean).join(' ');
   return (
     <section
       ref={(el) => {

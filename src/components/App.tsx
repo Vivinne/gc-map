@@ -253,7 +253,7 @@ export default function App() {
   } else if (top.list === 'preview' && (draft.trim() || recentT.length > 0 || recentB.some((id) => BY_ID.has(id)))) {
     const recentList = recentB.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
     panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key="preview" mobile={mobile} place="top" fill label="Search" className="preview" resetKey="preview" head={null}>
+      <Panel ref={panelRef} scroll={top.scroll} key="preview" mobile={mobile} place="top" label="Search" className="preview" resetKey="preview" head={null}>
         {draft.trim() ? (
           preview.length ? (
             <ResultList list={preview.slice(0, PREVIEW_MAX)} onOpen={openCard} onHover={setHoverId} />
