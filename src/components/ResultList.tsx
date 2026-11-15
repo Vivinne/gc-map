@@ -85,7 +85,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
               'Other Possible Outcomes',
               more.list,
               ' more-line',
-              <button type="button" className="fold" aria-label="Fold away" title="Fold away" onClick={more.onClose}>
+              <button type="button" className="fold-btn" aria-label="Fold away" title="Fold away" onClick={more.onClose}>
                 <Icon name="up" size={13} />
               </button>,
             ),

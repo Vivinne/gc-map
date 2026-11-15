@@ -45,6 +45,17 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fil
   }, [resetKey]);
 
   const sheet = mobile && place === 'sheet';
+  // A folded sheet sits on the bottom edge: the scale bar moves up above it (--sheet-fold, see globals.css)
+  const self = useRef<HTMLElement | null>(null);
+  const folded = sheet && state === 'fold';
+  useLayoutEffect(() => {
+    if (!folded || !self.current) return;
+    const root = document.documentElement.style;
+    root.setProperty('--sheet-fold', `${self.current.offsetHeight}px`);
+    return () => {
+      root.removeProperty('--sheet-fold');
+    };
+  }, [folded]);
   /** The sheet can grow: from the title only, or when the content is longer than the sheet shows */
   const canGrow = () => {
     if (state === 'fold') return true;
@@ -74,7 +85,13 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fil
 
   const cls = ['panel', className, mobile ? `m ${place}` : 'd', sheet ? state : '', mobile && fill ? 'fill' : ''].filter(Boolean).join(' ');
   return (
-    <section ref={ref} className={cls} aria-label={label} style={sheet && dy ? { transform: `translateY(${Math.max(dy, -40)}px)`, transition: 'none' } : undefined}>
+    <section
+      ref={(el) => {
+        self.current = el;
+        if (typeof ref === 'function') ref(el);
+        else if (ref) ref.current = el;
+      }}
+      className={cls} aria-label={label} style={sheet && dy ? { transform: `translateY(${Math.max(dy, -40)}px)`, transition: 'none' } : undefined}>
       <div
         className={`p-head${sheet ? ' drag' : ''}`}
         onPointerDown={onDown}
