@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BUILDINGS, BY_ID, type Building } from '../lib/model';
+import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
 import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
 import { search, searchSplit } from '../lib/search';
@@ -77,7 +77,15 @@ export default function App() {
   );
   const preview = useMemo(() => (draft.trim() ? search(draft) : []), [draft]);
   const selected = top.b ? (BY_ID.get(top.b) ?? null) : null;
-  const group = useMemo(() => top.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b), [top.group]);
+  // Number point list: by category in the ring's order (Ancient → Others), then oldest first inside each
+  const group = useMemo(
+    () =>
+      top.group
+        .map((id) => BY_ID.get(id))
+        .filter((b): b is Building => !!b)
+        .sort((a, b) => ERA_ORDER.indexOf(a.era) - ERA_ORDER.indexOf(b.era) || byYear(a, b)),
+    [top.group],
+  );
   const back = canGoBack(stack);
 
   // The address and the history follow the screen, so a reload or a shared link opens the same screen
