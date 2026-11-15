@@ -90,6 +90,10 @@ export default function App() {
   );
   const back = canGoBack(stack);
 
+  // A row that goes away with its screen gets no pointer-leave: a new screen (card, list, ×, ＜) ends the ring
+  // that row put on the map, so it never stays on a building nothing is pointing at
+  useEffect(() => setHoverId(''), [top]);
+
   // The address and the history follow the screen, so a reload or a shared link opens the same screen
   const writeAddress = useCallback((s: Screen) => {
     const url = window.location.pathname + toQuery(s, viewRef.current) + window.location.hash;
