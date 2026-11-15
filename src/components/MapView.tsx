@@ -396,7 +396,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     );
     // The open building inside a number point: the point stays whole and is itself marked open (halo, ink
     // ring, the open building's name beside it); no separate mark is laid over it
-    const selMode = process.env.NEXT_PUBLIC_SEL_MODE ?? '';
+    const selMode = process.env.NEXT_PUBLIC_SEL_MODE ?? 'W1';
     const selGroup = selected ? (groups.find((g) => g.items.length > 1 && g.items.some((b) => b.id === selected.id)) ?? null) : null;
     for (const g of groups) {
       if (!inView(g.x, g.y)) continue;
@@ -412,35 +412,51 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         singles.push({ b, x: g.x, y: g.y });
         continue;
       }
+      if (g === selGroup) continue;
       const gr = size(g.items.length) + 6;
       taken.push([g.x - gr, g.y - gr, g.x + gr, g.y + gr]);
       const key = g.items.map((b) => b.id).join('~');
       const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
       marks.push(
         <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
-          <NumberPoint group={g} open={selMode === 'V2' && g === selGroup ? selected : null} />
+          <NumberPoint group={g} />
           <title>{`${g.items.length} Architectures`}</title>
         </g>,
       );
     }
     for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
-    if (selected && selGroup) {
-      const rad = size(selGroup.items.length);
-      const base = selected.name.length > LABEL_MAX ? `${selected.name.slice(0, LABEL_MAX - 1)}\u2026` : selected.name;
-      const text = selMode === 'V1' ? `${base} +${selGroup.items.length - 1}` : base;
-      const w = text.length * LABEL_CHAR * SEL_SCALE;
-      const gap = rad + 14;
+    // The open building inside a number point: no number point; the open building's own mark stands for the
+    // place, and "+N" tells how many more buildings are there (they show once the map is zoomed in)
+    const more = selGroup ? selGroup.items.length - 1 : 0;
+    const sp = selected ? proj(selected.lng, selected.lat) : null;
+    if (selGroup && sp) {
+      taken.push([sp.x - 24, sp.y - 24, sp.x + 24, sp.y + 24]);
+      const base = selected!.name.length > LABEL_MAX ? `${selected!.name.slice(0, LABEL_MAX - 1)}\u2026` : selected!.name;
+      const text = selMode === 'W2' ? `${base} +${more}` : base;
+      const sub = selMode === 'W3' ? `and ${more} more here` : '';
+      const w = Math.max(text.length * LABEL_CHAR * SEL_SCALE, sub.length * LABEL_CHAR * 0.95);
+      const hh = sub ? 34 : 20;
+      const gap = selMode === 'W1' || selMode === 'W4' ? 40 : 27;
       for (const side of [1, -1, 2, -2] as const) {
-        const { x, y } = selGroup;
+        const { x, y } = sp;
         const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
-        const yc = side === 2 ? y + gap + 6 : side === -2 ? y - gap - 6 : y;
-        const box: [number, number, number, number] = [x0, yc - 10, x0 + w, yc + 10];
+        const top = side === 2 ? y + 28 : side === -2 ? y - 28 - hh : y - 10;
+        const box: [number, number, number, number] = [x0, top, x0 + w, top + hh];
         if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
         taken.push(box);
+        const tx = side === 1 ? box[0] : side === -1 ? box[2] : x;
+        const anchor = side === 1 ? 'start' : side === -1 ? 'end' : 'middle';
         labels.push(
-          <text key="sel-label" className="mk-label sel" x={side === 1 ? box[0] : side === -1 ? box[2] : x} y={yc + 5} textAnchor={side === 1 ? 'start' : side === -1 ? 'end' : 'middle'}>
-            {text}
-          </text>,
+          <g key="sel-label">
+            <text className="mk-label sel" x={tx} y={top + 15} textAnchor={anchor}>
+              {text}
+            </text>
+            {sub && (
+              <text className="mk-label" x={tx} y={top + 30} textAnchor={anchor} style={{ fill: 'var(--mute)', fontWeight: 600 }}>
+                {sub}
+              </text>
+            )}
+          </g>,
         );
         break;
       }
@@ -475,22 +491,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         break;
       }
     }
-    if (selected && selGroup) {
-      const rad = size(selGroup.items.length);
-      marks.unshift(<circle key="sel-halo" className="sel-mark" cx={selGroup.x} cy={selGroup.y} r={rad + 12} fill={ERAS[selected.era].color} opacity={0.22} />);
-      marks.push(<circle key="sel-ring" className="sel-mark" cx={selGroup.x} cy={selGroup.y} r={rad + 2.5} fill="none" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />);
-      if (selMode === 'V2') {
-        const bx = selGroup.x + rad * 0.75, by = selGroup.y - rad * 0.75;
-        marks.push(
-          <g key="sel-badge" className="sel-mark" transform={`translate(${bx.toFixed(1)},${by.toFixed(1)})`}>
-            <rect x={-13} y={-9} width={26} height={18} rx={9} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={1.5} />
-            <text className="num-n" y={4.3} textAnchor="middle" style={{ fontSize: 11 }}>{`+${selGroup.items.length - 1}`}</text>
-          </g>,
-        );
-      }
-    }
     // The open building is always marked (when merged, its number point carries the mark, above)
-    if (selected && !selGroup) {
+    if (selected) {
       const { x, y } = proj(selected.lng, selected.lat);
       if (inView(x, y)) {
         marks.push(
@@ -500,6 +502,19 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             <circle r={7.5} fill={ERAS[selected.era].color} />
           </g>,
         );
+        if (selGroup && (selMode === 'W1' || selMode === 'W4')) {
+          const ids = selGroup.items.map((b) => b.id);
+          // W4: a stack of discs behind the mark says "several here"
+          if (selMode === 'W4')
+            marks.splice(marks.length - 1, 0, ...[2, 1].map((k) => <circle key={`stack-${k}`} className="sel-mark" cx={x + 6 * k} cy={y - 6 * k} r={13} fill="#fff" style={{ stroke: 'var(--mute)' }} strokeWidth={1.5} />));
+          marks.push(
+            <g key="sel-more" className="mk" transform={`translate(${(x + 20).toFixed(1)},${(y - 18).toFixed(1)})`} {...act(ids.join('~'), () => onGroup(ids))}>
+              <rect x={-14} y={-10} width={28} height={20} rx={10} fill="var(--ink)" />
+              <text y={4.5} textAnchor="middle" style={{ fill: '#fff', fontSize: 12, fontWeight: 700 }}>{`+${more}`}</text>
+              <title>{`${more} more here`}</title>
+            </g>,
+          );
+        }
       }
     }
     overlay = createPortal(

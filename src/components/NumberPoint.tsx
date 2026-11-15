@@ -2,7 +2,7 @@ import { pointRadius, type Group } from '../lib/geo';
 import { ERAS, ERA_ORDER, type Building } from '../lib/model';
 
 /** Number point: a ring split by category colour, the count in the middle (the v1 city circle) */
-export default function NumberPoint({ group, open }: { group: Group<Building>; open?: Building | null }) {
+export default function NumberPoint({ group }: { group: Group<Building> }) {
   const items = group.items;
   const r = pointRadius(items.length);
   const ring = 6;
@@ -25,14 +25,9 @@ export default function NumberPoint({ group, open }: { group: Group<Building>; o
         })
       )}
       <circle r={r - ring} fill="#fff" />
-      {open ? (
-        // the open building's dot in place of the count (the count of the others sits in a badge, see MapView)
-        <circle r={7.5} fill={ERAS[open.era].color} />
-      ) : (
-        <text className="num-n" y={4.3} textAnchor="middle">
-          {items.length}
-        </text>
-      )}
+      <text className="num-n" y={4.3} textAnchor="middle">
+        {items.length}
+      </text>
     </>
   );
 }
