@@ -64,20 +64,16 @@ ul, ol { list-style: none; }
 /* light blue under a mouse, a keyboard focus or a finger (a phone keeps it on the last row touched) */
 .row:hover, .row:focus-visible, .row:active { background: var(--soft); }
 .row .strip { flex: none; width: 4px; }
-.row-t { padding: 10px 0; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.row-t b { font-size: 14px; font-weight: 700; line-height: 1.3; }
+/* two lines (Polish 29): name, then built span · city beside it (below it when the name is too long); architect · style */
+.row-t { padding: 8px 0; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 1px; }
+.row-t b { max-width: 100%; font-size: 14px; font-weight: 700; line-height: 1.3; }
 .row-t span { font-size: 12.5px; color: var(--mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-t span:last-child { flex-basis: 100%; }
 .row-who { font-weight: 600; text-decoration: none; }
 .row.text { align-items: center; padding: 0 16px; height: 40px; color: var(--mute); gap: 10px; }
 .row.text span { color: var(--ink); font-size: 14px; }
 .rows.recent + .rows { border-top: 1px solid var(--rule); }
 .rows.recent + .recent-b { border-top: 1px solid var(--rule); }
-/* recent buildings in the search preview: name with built span · city on the first line, architect · style below */
-.recent-b .row-t { padding: 8px 0; }
-.recent-b .row-t { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 1px; }
-.recent-b .row-t b { flex: none; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.recent-b .row-t span:nth-of-type(1) { flex: 1; min-width: 0; }
-.recent-b .row-t span:last-child { flex-basis: 100%; }
 /* long results: a small grey country line among the rows (part of the same list); a click frames the country */
 .rows .country + li { border-top: 0 !important; }
 .c-head { width: 100%; display: flex; align-items: baseline; gap: 6px; padding: 10px 16px 2px; font-size: 12px; font-weight: 600; color: var(--mute); }

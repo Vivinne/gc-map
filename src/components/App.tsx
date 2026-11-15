@@ -275,7 +275,7 @@ export default function App() {
               </ul>
             )}
             {recentList.length > 0 && (
-              // recent buildings: name with built span · city, then architect · style (see .recent-b)
+              // recent buildings, after the recent texts (two-line rows like every list)
               <div className="recent-b">
                 <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} />
               </div>
