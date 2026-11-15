@@ -34,6 +34,8 @@ const NAME_SCALE = 100000;
 /** Map name labels: longest name shown in full, and the width a character takes at 12 px */
 const LABEL_MAX = 24;
 const LABEL_CHAR = 6.6;
+/** The open building's name: 15 px against 12 px */
+const SEL_SCALE = 15 / 12;
 
 export interface Padding {
   top: number;
@@ -271,8 +273,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           const q = map.project([o.lng, o.lat]);
           near = Math.min(near, Math.hypot(q.x - here.x, q.y - here.y));
         }
-        // Far enough for the selection ring (r 18) to clear a neighbouring dot or small number point
-        const need = 32;
+        // Far enough for the selection ring (r 24) to clear a neighbouring dot or small number point
+        const need = 38;
         if (!shown.length || near >= need) {
           reveal(map, b);
           return;
@@ -388,26 +390,28 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // Screen boxes no name may cover: every marker and number point, then each name placed
     const taken: [number, number, number, number][] = [];
     const hits: React.ReactNode[] = [];
-    // PREVIEW: how the open card's building shows when it would be merged into a number point
-    const mode = process.env.NEXT_PUBLIC_SEL_MODE ?? '';
-    const pull = !!selected && (mode === '2' || mode === '3') && buildings.some((b) => b.id === selected.id);
     let groups = groupOnScreen(
-      buildings.filter((b) => !pull || b.id !== selected!.id).map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
+      buildings.map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
       size,
     );
-    if (pull) groups.push({ ...proj(selected!.lng, selected!.lat), items: [selected!] } as (typeof groups)[number]);
-    if (selected && mode === '1') {
-      // the number point holding the open building opens up: its buildings at their own places, overlapping
-      groups = groups.flatMap((g) => (g.items.length > 1 && g.items.some((b) => b.id === selected.id) ? g.items.map((b) => ({ ...g, ...proj(b.lng, b.lat), items: [b] })) : [g]));
+    // The open building is never hidden in a number point: the point holding it opens up, each of its
+    // buildings at its own place (they may overlap), and the open building's mark is drawn over them.
+    // Those neighbours carry no name and block no name: the open building's name goes beside its mark.
+    const opened = new Set<string>();
+    if (selected) {
+      groups = groups.flatMap((g) => {
+        if (g.items.length < 2 || !g.items.some((b) => b.id === selected.id)) return [g];
+        for (const b of g.items) if (b.id !== selected.id) opened.add(b.id);
+        return g.items.map((b) => ({ ...g, ...proj(b.lng, b.lat), items: [b] }));
+      });
     }
-    const fade = (isSel: boolean, isNum: boolean) => (!pull || isSel ? '' : mode === '2' || isNum ? ' dim' : '');
     for (const g of groups) {
       if (!inView(g.x, g.y)) continue;
       if (g.items.length === 1) {
         const b = g.items[0]!;
         const on = selected?.id === b.id;
         marks.push(
-          <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}${fade(on, false)}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
+          <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
             <title>{b.name}</title>
           </circle>,
         );
@@ -420,31 +424,36 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const key = g.items.map((b) => b.id).join('~');
       const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
       marks.push(
-        <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}${fade(false, true)}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
+        <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
           <NumberPoint group={g} />
           <title>{`${g.items.length} Architectures`}</title>
         </g>,
       );
     }
-    for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
+    for (const d of singles.filter((d) => !opened.has(d.b.id))) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
     // The open building's name first, then the rows on screen in the list, then the rest in list order
     const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
-    for (const { b, x, y } of [...singles].filter((d) => named(d.b)).sort((p, q) => rank(p.b) - rank(q.b))) {
+    for (const { b, x, y } of [...singles].filter((d) => named(d.b) && !opened.has(d.b.id)).sort((p, q) => rank(p.b) - rank(q.b))) {
       const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
-      const w = text.length * LABEL_CHAR;
+      const isSel = selected?.id === b.id;
+      // the open building's name is larger (15 px), like its mark
+      const w = text.length * LABEL_CHAR * (isSel ? SEL_SCALE : 1);
+      const half = isSel ? 10 : 8;
       // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
       // the open building's selection ring is wider than a dot
-      const gap = selected?.id === b.id ? 21 : DOT_R + 4;
-      for (const side of [1, -1] as const) {
-        const x0 = side > 0 ? x + gap : x - gap - w;
-        const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
+      const gap = isSel ? 27 : DOT_R + 4;
+      // the open building's name may also go under or over its mark when both sides are taken
+      for (const side of (isSel ? [1, -1, 2, -2] : [1, -1]) as (1 | -1 | 2 | -2)[]) {
+        const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
+        const yc = side === 2 ? y + gap + half - 4 : side === -2 ? y - gap - half + 4 : y;
+        const box: [number, number, number, number] = [x0, yc - half, x0 + w, yc + half];
         if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
         taken.push(box);
         // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
         labels.push(
-          <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}${fade(selected?.id === b.id, false)}`} {...act(b.id, () => onSelect(b.id))}>
+          <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
             <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
-            <text className="mk-label" x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
+            <text className={`mk-label${isSel ? ' sel' : ''}`} x={side === 1 ? box[0] : side === -1 ? box[2] : x} y={yc + (isSel ? 5 : 4)} textAnchor={side === 1 ? 'start' : side === -1 ? 'end' : 'middle'}>
               {text}
             </text>
           </g>,
@@ -458,9 +467,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       if (inView(x, y)) {
         marks.push(
           <g key="sel" className="sel-mark" transform={`translate(${x},${y})`}>
-            <circle r={18} fill={ERAS[selected.era].color} opacity={0.22} />
-            <circle r={10} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
-            <circle r={5.5} fill={ERAS[selected.era].color} />
+            <circle r={24} fill={ERAS[selected.era].color} opacity={0.22} />
+            <circle r={13} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
+            <circle r={7.5} fill={ERAS[selected.era].color} />
           </g>,
         );
       }

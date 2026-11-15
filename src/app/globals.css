@@ -138,6 +138,7 @@ ul, ol { list-style: none; }
 .overlay .mk { transition: opacity var(--t-mid) var(--ease); }
 .overlay .mk.dim { opacity: 0.3; }
 .mk-label { font-size: 12px; font-weight: 700; fill: var(--ink); stroke: #fff; stroke-width: 3.5px; stroke-linejoin: round; paint-order: stroke; pointer-events: none; transition: opacity var(--t-mid) var(--ease); }
+.mk-label.sel { font-size: 15px; stroke-width: 4px; }
 .overlay .name-hit { fill: transparent; }
 /* a dimmed marker or name pointed at by the mouse comes back to full colour with its ink ring */
 .overlay .mk.dim.hot { opacity: 1; }
