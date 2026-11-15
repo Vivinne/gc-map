@@ -22,6 +22,8 @@ const idsOf = (list: Building[]) => list.map((b) => b.id).join('~');
 const sameView = (a: View, b: View) => Math.abs(a.zoom - b.zoom) < 0.01 && Math.abs(a.lng - b.lng) < 1e-5 && Math.abs(a.lat - b.lat) < 1e-5;
 /** Wait for a panel to take its size before the map frames what it shows */
 const PANEL_WAIT = 60;
+/** Longest camera move (1600 ms) and a little: a card that did not move the map notes its view by then */
+const CARD_SETTLE = 1800;
 /** How many rows the search preview lists while typing */
 const PREVIEW_MAX = 30;
 /** Width the zoom buttons take from the right edge (32 px buttons + 16 px inset) */
@@ -117,8 +119,11 @@ export default function App() {
     const prev = stack[stack.length - 2]!;
     setStack((st) => st.slice(0, -1));
     setDraft(prev.draft ?? prev.q);
-    if (prev.view) {
-      const v = prev.view;
+    // a card comes back with its building in sight, as it was when the card opened (the map may have been
+    // moved away from it before the next card was opened); a list comes back with the map as it was left
+    const target = prev.b && prev.home ? prev.home : prev.view;
+    if (target) {
+      const v = target;
       afterPanel(() => mapRef.current?.moveTo(v));
     } else if (prev.q && prev.q !== top.q) afterPanel(() => mapRef.current?.fitTo(search(prev.q)));
   };
@@ -153,13 +158,31 @@ export default function App() {
     afterPanel(() => mapRef.current?.fitTo(found));
   };
 
+  /** The card waiting for its map view (noted when the map stops after opening it) */
+  const cardHome = useRef('');
+  const noteHome = (id: string) => {
+    if (cardHome.current !== id) return;
+    cardHome.current = '';
+    const v = mapRef.current?.view();
+    if (!v) return;
+    setStack((st) => {
+      const last = st[st.length - 1]!;
+      return last.b === id && !last.home ? [...st.slice(0, -1), { ...last, home: v }] : st;
+    });
+  };
+
   const openCard = (id: string) => {
     const b = BY_ID.get(id);
     if (!b) return;
     inputRef.current?.blur();
     setRecentB(addRecentBuilding(id));
     push({ ...top, b: id });
-    afterPanel(() => mapRef.current?.focus(b));
+    afterPanel(() => {
+      cardHome.current = id;
+      mapRef.current?.focus(b);
+      // the map may not need to move at all: then the view right now is the card's view
+      window.setTimeout(() => noteHome(id), CARD_SETTLE);
+    });
   };
 
   const openGroup = (ids: string[]) => {
@@ -355,6 +378,7 @@ export default function App() {
           onView={(v) => {
             viewRef.current = v;
             writeAddress(top);
+            if (cardHome.current) noteHome(cardHome.current);
             // the map stopped after a group line's click: that is the group's framed view
             if (frameClick.current && !frameClick.current.view) frameClick.current.view = v;
             // lines that frame groups on the map are clickable or not by what the map now shows

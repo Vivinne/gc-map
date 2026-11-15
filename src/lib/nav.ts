@@ -14,6 +14,8 @@ export interface Screen {
   b: string;
   /** Map view when the next screen opened: ＜ brings the map back to it */
   view?: View;
+  /** Card: the map view once the card had brought its building into sight; ＜ back to the card returns here */
+  home?: View;
   /** Search preview: the text typed (not submitted) when the next screen opened; ＜ puts it back */
   draft?: string;
   /** How far its list or card was scrolled when the next screen opened; ＜ scrolls back there */
