@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
-import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
+import { EMPTY_SCREEN, canGoBack, fromQuery, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
 import { search, searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
@@ -237,7 +237,9 @@ export default function App() {
   const boxBack = back && !top.b && (top.list === 'results' || (editing && !!prevScreen?.q));
   // the typed text stays in the box while a card opened from the preview is on top of it
   const boxText = top.list === 'preview' ? draft : top.q;
-  const anything = !isEmptyScreen(top) || !!boxText;
+  // × in the search box only for search text (or the open search preview, which has no × of its own);
+  // a number point list, the category list or a card opened without a search close with their own ×
+  const showClear = !!boxText || top.list === 'preview';
 
   // The panel on screen: the card over everything, else the open list (one at a time)
   let panel: React.ReactNode = null;
@@ -363,7 +365,7 @@ export default function App() {
         <SearchBox
           ref={inputRef}
           value={boxText}
-          showClear={anything}
+          showClear={showClear}
           categoryOpen={top.list === 'category' && !top.b}
           onBack={boxBack ? () => (inputRef.current?.blur(), goBack()) : undefined}
           onFocus={openPreview}
