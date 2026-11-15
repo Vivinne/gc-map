@@ -30,12 +30,13 @@ const DRAG = 40;
 /**
  * A list or card over the map. Phone sheets: the title area drags, the content scrolls.
  * Dragged down: from half to the title only, from full to half. Dragged up: from the title to half, and from
- * half to full when the content is longer than half the screen.
+ * half to full when the content is longer than half the screen. A sheet that cannot go a way does not move that way.
  */
 const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fill, label, className = '', head, resetKey, scroll, children }, ref) {
   const [state, setState] = useState<SheetState>('half');
   const [dy, setDy] = useState(0);
-  const drag = useRef<{ y: number; id: number } | null>(null);
+  /** The pointer being dragged, and which ways the sheet can go from where it is (it only follows those) */
+  const drag = useRef<{ y: number; id: number; up: boolean; down: boolean } | null>(null);
   const body = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     setState('half');
@@ -44,14 +45,21 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fil
   }, [resetKey]);
 
   const sheet = mobile && place === 'sheet';
+  /** The sheet can grow: from the title only, or when the content is longer than the sheet shows */
+  const canGrow = () => {
+    if (state === 'fold') return true;
+    const el = body.current;
+    return state === 'half' && !!el && el.scrollHeight > el.clientHeight + 1;
+  };
   const onDown = (e: React.PointerEvent) => {
     if (!sheet || (e.target as Element).closest('button, a, input')) return;
-    drag.current = { y: e.clientY, id: e.pointerId };
+    drag.current = { y: e.clientY, id: e.pointerId, up: canGrow(), down: state !== 'fold' };
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
   const onMove = (e: React.PointerEvent) => {
     if (drag.current?.id !== e.pointerId) return;
-    setDy(e.clientY - drag.current.y);
+    const d = e.clientY - drag.current.y;
+    setDy(d < 0 ? (drag.current.up ? d : 0) : drag.current.down ? d : 0);
   };
   const onUp = (e: React.PointerEvent) => {
     if (drag.current?.id !== e.pointerId) return;
@@ -60,11 +68,7 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, fil
     setDy(0);
     if (d > DRAG) setState((s) => (s === 'full' ? 'half' : 'fold'));
     else if (d < -DRAG) {
-      setState((s) => {
-        if (s === 'fold') return 'half';
-        const el = body.current;
-        return el && el.scrollHeight > el.clientHeight + 1 ? 'full' : s;
-      });
+      setState((s) => (s === 'fold' ? 'half' : canGrow() ? 'full' : s));
     }
   };
 
