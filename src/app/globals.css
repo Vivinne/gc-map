@@ -69,6 +69,13 @@ ul, ol { list-style: none; }
 .row.text { align-items: center; padding: 0 16px; height: 40px; color: var(--mute); gap: 10px; }
 .row.text span { color: var(--ink); font-size: 14px; }
 .rows.recent + .rows { border-top: 1px solid var(--rule); }
+.rows.recent + .recent-b { border-top: 1px solid var(--rule); }
+/* recent buildings in the search preview: one 40 px line each, so 5 texts and 5 buildings fit without scrolling */
+.recent-b .row { height: 40px; padding: 0 16px 0 0; align-items: center; }
+.recent-b .row .strip { align-self: stretch; }
+.recent-b .row-t { flex-direction: row; align-items: baseline; gap: 8px; }
+.recent-b .row-t b { flex: none; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-b .row-t span:last-child { display: none; }
 /* long results: a small grey country line among the rows (part of the same list); a click frames the country */
 .rows .country + li { border-top: 0 !important; }
 .c-head { width: 100%; display: flex; align-items: baseline; gap: 6px; padding: 10px 16px 2px; font-size: 12px; font-weight: 600; color: var(--mute); }

@@ -274,7 +274,12 @@ export default function App() {
                 ))}
               </ul>
             )}
-            {recentList.length > 0 && <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} />}
+            {recentList.length > 0 && (
+              // recent buildings: one line each (name, built span · city), as tall as the recent texts above
+              <div className="recent-b">
+                <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} />
+              </div>
+            )}
           </>
         )}
       </Panel>
