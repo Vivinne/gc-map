@@ -388,17 +388,26 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // Screen boxes no name may cover: every marker and number point, then each name placed
     const taken: [number, number, number, number][] = [];
     const hits: React.ReactNode[] = [];
-    const groups = groupOnScreen(
-      buildings.map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
+    // PREVIEW: how the open card's building shows when it would be merged into a number point
+    const mode = process.env.NEXT_PUBLIC_SEL_MODE ?? '';
+    const pull = !!selected && (mode === '2' || mode === '3') && buildings.some((b) => b.id === selected.id);
+    let groups = groupOnScreen(
+      buildings.filter((b) => !pull || b.id !== selected!.id).map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
       size,
     );
+    if (pull) groups.push({ ...proj(selected!.lng, selected!.lat), items: [selected!] } as (typeof groups)[number]);
+    if (selected && mode === '1') {
+      // the number point holding the open building opens up: its buildings at their own places, overlapping
+      groups = groups.flatMap((g) => (g.items.length > 1 && g.items.some((b) => b.id === selected.id) ? g.items.map((b) => ({ ...g, ...proj(b.lng, b.lat), items: [b] })) : [g]));
+    }
+    const fade = (isSel: boolean, isNum: boolean) => (!pull || isSel ? '' : mode === '2' || isNum ? ' dim' : '');
     for (const g of groups) {
       if (!inView(g.x, g.y)) continue;
       if (g.items.length === 1) {
         const b = g.items[0]!;
         const on = selected?.id === b.id;
         marks.push(
-          <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
+          <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}${fade(on, false)}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
             <title>{b.name}</title>
           </circle>,
         );
@@ -411,7 +420,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const key = g.items.map((b) => b.id).join('~');
       const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
       marks.push(
-        <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
+        <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}${fade(false, true)}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
           <NumberPoint group={g} />
           <title>{`${g.items.length} Architectures`}</title>
         </g>,
@@ -433,7 +442,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         taken.push(box);
         // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
         labels.push(
-          <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
+          <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}${fade(selected?.id === b.id, false)}`} {...act(b.id, () => onSelect(b.id))}>
             <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
             <text className="mk-label" x={side > 0 ? box[0] : box[2]} y={y + 4} textAnchor={side > 0 ? 'start' : 'end'}>
               {text}
