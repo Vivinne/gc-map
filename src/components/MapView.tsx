@@ -396,6 +396,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     );
     // The open building inside a number point: the point stays whole and is itself marked open (halo, ink
     // ring, the open building's name beside it); no separate mark is laid over it
+    const selMode = process.env.NEXT_PUBLIC_SEL_MODE ?? '';
     const selGroup = selected ? (groups.find((g) => g.items.length > 1 && g.items.some((b) => b.id === selected.id)) ?? null) : null;
     for (const g of groups) {
       if (!inView(g.x, g.y)) continue;
@@ -417,7 +418,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
       marks.push(
         <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
-          <NumberPoint group={g} />
+          <NumberPoint group={g} open={selMode === 'V2' && g === selGroup ? selected : null} />
           <title>{`${g.items.length} Architectures`}</title>
         </g>,
       );
@@ -425,7 +426,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
     if (selected && selGroup) {
       const rad = size(selGroup.items.length);
-      const text = selected.name.length > LABEL_MAX ? `${selected.name.slice(0, LABEL_MAX - 1)}\u2026` : selected.name;
+      const base = selected.name.length > LABEL_MAX ? `${selected.name.slice(0, LABEL_MAX - 1)}\u2026` : selected.name;
+      const text = selMode === 'V1' ? `${base} +${selGroup.items.length - 1}` : base;
       const w = text.length * LABEL_CHAR * SEL_SCALE;
       const gap = rad + 14;
       for (const side of [1, -1, 2, -2] as const) {
@@ -477,6 +479,15 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       const rad = size(selGroup.items.length);
       marks.unshift(<circle key="sel-halo" className="sel-mark" cx={selGroup.x} cy={selGroup.y} r={rad + 12} fill={ERAS[selected.era].color} opacity={0.22} />);
       marks.push(<circle key="sel-ring" className="sel-mark" cx={selGroup.x} cy={selGroup.y} r={rad + 2.5} fill="none" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />);
+      if (selMode === 'V2') {
+        const bx = selGroup.x + rad * 0.75, by = selGroup.y - rad * 0.75;
+        marks.push(
+          <g key="sel-badge" className="sel-mark" transform={`translate(${bx.toFixed(1)},${by.toFixed(1)})`}>
+            <rect x={-13} y={-9} width={26} height={18} rx={9} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={1.5} />
+            <text className="num-n" y={4.3} textAnchor="middle" style={{ fontSize: 11 }}>{`+${selGroup.items.length - 1}`}</text>
+          </g>,
+        );
+      }
     }
     // The open building is always marked (when merged, its number point carries the mark, above)
     if (selected && !selGroup) {
