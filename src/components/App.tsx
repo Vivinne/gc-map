@@ -231,15 +231,20 @@ export default function App() {
   }, []);
 
   const editing = top.list === 'preview' && !top.b;
-  // ＜ in the search box: on submitted results, and while the box is opened again over text already in it
-  // (it goes back to the screen from before the box was clicked)
+  // ＜ in the search box only while the box is opened again over a submitted search (it goes back to the
+  // screen from before the box was clicked); submitted results carry their ＜ and × in the list's own top row
   const prevScreen = stack.length > 1 ? stack[stack.length - 2]! : null;
-  const boxBack = back && !top.b && (top.list === 'results' || (editing && !!prevScreen?.q));
+  const boxBack = back && editing && !!prevScreen?.q;
   // the typed text stays in the box while a card opened from the preview is on top of it
   const boxText = top.list === 'preview' ? draft : top.q;
-  // × in the search box only for search text (or the open search preview, which has no × of its own);
-  // a number point list, the category list or a card opened without a search close with their own ×
-  const showClear = !!boxText || top.list === 'preview';
+  // × in the search box only while typing (the search preview is open): it clears the text, or closes the
+  // empty preview. Every other screen closes with the × in its own top row
+  const showClear = editing;
+  const clearBox = () => {
+    if (!draft) return closeAll();
+    setDraft('');
+    inputRef.current?.focus();
+  };
 
   // The panel on screen: the card over everything, else the open list (one at a time)
   let panel: React.ReactNode = null;
@@ -288,7 +293,7 @@ export default function App() {
     );
   } else if (top.list === 'results' && results.length) {
     panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={null}>
+      <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} />}>
         <ResultList
           list={hasMain ? found.main : found.more}
           onOpen={openCard}
@@ -374,7 +379,7 @@ export default function App() {
             setDraft(t);
           }}
           onSubmit={() => submit(draft)}
-          onClear={closeAll}
+          onClear={clearBox}
           onCategory={toggleCategory}
         />
         <Leave show={!!panel}>{panel}</Leave>
