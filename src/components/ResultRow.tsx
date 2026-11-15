@@ -4,11 +4,11 @@ import { ERAS, type Building } from '../lib/model';
 import { architectOf, builtOf, joinDot, shownStyle } from '../lib/style';
 
 /**
- * One building in a list (preview, results, number point): a strip in its category colour; the name in bold with
- * built span · city beside it, architect (bold) · style. Rows are split by thin grey rules (see .rows in globals.css).
+ * One building in a list (preview, results, number point): a strip in its category colour, the name in bold,
+ * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in globals.css).
  */
 export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(id: string): void; onHover(id: string): void }) {
-  // the architect in bold (no architect: the style only)
+  // the architect is underlined, as on the card (no architect: the style only)
   const who = architectOf(b) === '-' ? '' : architectOf(b);
   return (
     <li data-id={b.id}>
