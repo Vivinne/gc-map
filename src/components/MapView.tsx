@@ -34,8 +34,8 @@ const NAME_SCALE = 100000;
 /** Map name labels: longest name shown in full, and the width a character takes at 12 px */
 const LABEL_MAX = 24;
 const LABEL_CHAR = 6.6;
-/** The open building's name: 15 px against 12 px */
-const SEL_SCALE = 15 / 12;
+/** Halo of the open building's mark (the white disc with its ink ring is r 13) */
+const SEL_HALO = 18;
 
 export interface Padding {
   top: number;
@@ -273,8 +273,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           const q = map.project([o.lng, o.lat]);
           near = Math.min(near, Math.hypot(q.x - here.x, q.y - here.y));
         }
-        // Far enough for the selection ring (r 24) to clear a neighbouring dot or small number point
-        const need = 38;
+        // Far enough for the selection halo (r 18) to clear a neighbouring dot or small number point
+        const need = 32;
         if (!shown.length || near >= need) {
           reveal(map, b);
           return;
@@ -431,9 +431,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // else over; when every place is taken it still goes on the roomier side (over other markers, kept on the
     // map, shortened with … if the map is too narrow)
     if (sp && inView(sp.x, sp.y)) {
-      taken.push([sp.x - 24, sp.y - 24, sp.x + 24, sp.y + 24]);
-      const ch = LABEL_CHAR * SEL_SCALE;
-      const gap = 27;
+      taken.push([sp.x - SEL_HALO, sp.y - SEL_HALO, sp.x + SEL_HALO, sp.y + SEL_HALO]);
+      const ch = LABEL_CHAR;
+      const gap = SEL_HALO + 3;
       const fit = (t: string) => (t.length > LABEL_MAX ? `${t.slice(0, LABEL_MAX - 1)}\u2026` : t);
       let text = fit(selected!.name);
       const { x, y } = sp;
@@ -442,7 +442,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       for (const side of [1, -1, 2, -2] as const) {
         const w = text.length * ch;
         const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
-        const top = side === 2 ? y + 28 : side === -2 ? y - 48 : y - 10;
+        const top = side === 2 ? y + SEL_HALO + 2 : side === -2 ? y - SEL_HALO - 22 : y - 10;
         const box: [number, number, number, number] = [x0, top, x0 + w, top + 20];
         if (box[0] < left || box[2] > right || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
         placed = { box, tx: side === 1 ? box[0] : side === -1 ? box[2] : x, anchor: side === 1 ? 'start' : side === -1 ? 'end' : 'middle' };
@@ -461,35 +461,29 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       labels.push(
         <g key="sel-label" className="mk name" {...act(selected!.id, () => onSelect(selected!.id))}>
           <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={20} />
-          <text className="mk-label sel" x={placed.tx} y={placed.box[1] + 15} textAnchor={placed.anchor}>
+          <text className="mk-label" x={placed.tx} y={placed.box[1] + 14} textAnchor={placed.anchor}>
             {text}
           </text>
         </g>,
       );
     }
-    // The open building's name first, then the rows on screen in the list, then the rest in list order
-    const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
+    // (the open building's name is placed above) then the rows on screen in the list, then the rest in list order
+    const rank = (b: Building) => (seen?.has(b.id) ? 1 : 2);
     for (const { b, x, y } of [...singles].filter((d) => named(d.b) && d.b.id !== selected?.id).sort((p, q) => rank(p.b) - rank(q.b))) {
       const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
-      const isSel = selected?.id === b.id;
-      // the open building's name is larger (15 px), like its mark
-      const w = text.length * LABEL_CHAR * (isSel ? SEL_SCALE : 1);
-      const half = isSel ? 10 : 8;
+      const w = text.length * LABEL_CHAR;
       // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
-      // the open building's selection ring is wider than a dot
-      const gap = isSel ? 27 : DOT_R + 4;
-      // the open building's name may also go under or over its mark when both sides are taken
-      for (const side of (isSel ? [1, -1, 2, -2] : [1, -1]) as (1 | -1 | 2 | -2)[]) {
-        const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
-        const yc = side === 2 ? y + gap + half - 4 : side === -2 ? y - gap - half + 4 : y;
-        const box: [number, number, number, number] = [x0, yc - half, x0 + w, yc + half];
+      const gap = DOT_R + 4;
+      for (const side of [1, -1] as const) {
+        const x0 = side === 1 ? x + gap : x - gap - w;
+        const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
         if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
         taken.push(box);
         // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
         labels.push(
           <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
             <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
-            <text className={`mk-label${isSel ? ' sel' : ''}`} x={side === 1 ? box[0] : side === -1 ? box[2] : x} y={yc + (isSel ? 5 : 4)} textAnchor={side === 1 ? 'start' : side === -1 ? 'end' : 'middle'}>
+            <text className="mk-label" x={side === 1 ? box[0] : box[2]} y={y + 4} textAnchor={side === 1 ? 'start' : 'end'}>
               {text}
             </text>
           </g>,
@@ -503,7 +497,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       if (inView(x, y)) {
         marks.push(
           <g key="sel" className="sel-mark" transform={`translate(${x},${y})`}>
-            <circle r={24} fill={ERAS[selected.era].color} opacity={0.22} />
+            <circle r={SEL_HALO} fill={ERAS[selected.era].color} opacity={0.22} />
             <circle r={13} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
             <circle r={7.5} fill={ERAS[selected.era].color} />
           </g>,
