@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
 import { EMPTY_SCREEN, canGoBack, fromQuery, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
-import { search, searchSplit } from '../lib/search';
+import { searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
 import CategoryList from './CategoryList';
 import { HeadBar } from './HeadBar';
@@ -71,13 +71,11 @@ export default function App() {
   const found = useMemo(() => (top.q ? searchSplit(top.q) : { main: [], more: [] }), [top.q]);
   const [moreOpen, setMoreOpen] = useState('');
   const moreView = useRef<View | null>(null);
-  const hasMain = found.main.length > 0;
-  const moreList = hasMain ? found.more : [];
-  const results = useMemo(
-    () => (hasMain ? (moreOpen === top.q ? [...found.main, ...found.more] : found.main) : found.more),
-    [found, hasMain, moreOpen, top.q],
-  );
-  const preview = useMemo(() => (draft.trim() ? search(draft) : []), [draft]);
+  // With no main match the list says No Results; the other matches still wait behind Other Possible Outcomes
+  const moreList = found.more;
+  const results = useMemo(() => (moreOpen === top.q ? [...found.main, ...found.more] : found.main), [found, moreOpen, top.q]);
+  // the preview while typing shows main matches only
+  const preview = useMemo(() => (draft.trim() ? searchSplit(draft).main : []), [draft]);
   const selected = top.b ? (BY_ID.get(top.b) ?? null) : null;
   // Number point list: by category in the ring's order (Ancient → Others), then oldest first inside each
   const group = useMemo(
@@ -131,7 +129,7 @@ export default function App() {
       if (prev.list === 'group') items = prev.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
       else {
         const f = searchSplit(prev.q);
-        items = f.main.length ? [...f.main, ...(moreOpen === prev.q ? f.more : [])] : f.more;
+        items = [...f.main, ...(moreOpen === prev.q ? f.more : [])];
       }
       if (items.length) {
         afterPanel(() => (prev.list === 'group' ? mapRef.current?.split(items) : mapRef.current?.fitTo(items)));
@@ -142,7 +140,7 @@ export default function App() {
     if (target) {
       const v = target;
       afterPanel(() => mapRef.current?.moveTo(v));
-    } else if (prev.q && prev.q !== top.q) afterPanel(() => mapRef.current?.fitTo(search(prev.q)));
+    } else if (prev.q && prev.q !== top.q) afterPanel(() => mapRef.current?.fitTo(searchSplit(prev.q).main));
   };
 
   /** × and Esc: everything closes, the text and results go; the map stays where it is */
@@ -161,9 +159,10 @@ export default function App() {
   const submit = (text: string) => {
     const t = text.trim();
     if (!t) return;
-    const found = search(t);
-    // no result: nothing is submitted, the preview says No Results
-    if (!found.length) return;
+    const split = searchSplit(t);
+    // no match at all: nothing is submitted, the preview says No Results
+    if (!split.main.length && !split.more.length) return;
+    const found = split.main;
     inputRef.current?.blur();
     setDraft(t);
     setRecentT(addRecentText(t));
@@ -172,7 +171,7 @@ export default function App() {
     // so ＜ goes back to the screen before the typing (e.g. the previous search's results), not to the half-typed text
     if (top.list === 'preview' && !top.b) setStack((st) => [...st.slice(0, -1), next]);
     else push(next);
-    afterPanel(() => mapRef.current?.fitTo(found));
+    if (found.length) afterPanel(() => mapRef.current?.fitTo(found));
   };
 
   /** The card waiting for its map view (noted when the map stops after opening it) */
@@ -266,7 +265,7 @@ export default function App() {
 
   // A shared link or reload with a search but no saved view: frame the results once the map is there
   useEffect(() => {
-    if (!START.view && top.q) afterPanel(() => mapRef.current?.fitTo(search(top.q)));
+    if (!START.view && top.q) afterPanel(() => mapRef.current?.fitTo(searchSplit(top.q).main));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -336,11 +335,11 @@ export default function App() {
         <ResultList list={group} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} />
       </Panel>
     );
-  } else if (top.list === 'results' && results.length) {
+  } else if (top.list === 'results' && (found.main.length || found.more.length)) {
     panel = (
       <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} />}>
         <ResultList
-          list={hasMain ? found.main : found.more}
+          list={found.main}
           onOpen={openCard}
           onHover={setHoverId}
           onVisible={setSeenIds}

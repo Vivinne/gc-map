@@ -102,6 +102,12 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
   if (!split) {
     return (
       <ul className="rows" ref={ul}>
+        {/* a search with only other possible outcomes: No Results, then the button */}
+        {list.length === 0 && (
+          <li key="none" className="none-row">
+            <p className="none">No Results</p>
+          </li>
+        )}
         {list.map((b) => (
           <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />
         ))}
