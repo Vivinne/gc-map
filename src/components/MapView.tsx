@@ -1,5 +1,6 @@
 'use client';
 
+import { BY_COUNTRY_MIN, byCountry } from '../lib/country';
 import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
 import { createPortal, flushSync } from 'react-dom';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
@@ -249,9 +250,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   useImperativeHandle(
     ref,
     () => ({
-      fitTo: (list) => {
+      fitTo: (all) => {
         const map = mapRef.current;
-        const t = map && frameTarget(map, list);
+        if (!map) return;
+        // Too spread to fit even fully zoomed out (a phone cannot hold America and Europe together): frame the
+        // buildings at the top of the list instead — the first country of a list split by country, else the
+        // country of the first row — so the map shows what the list shows first
+        let list = all;
+        const b = boundsOf(all);
+        const p0 = padRef.current;
+        const raw = b && map.cameraForBounds(b, { padding: { top: p0.top + FRAME, right: p0.right + FRAME, bottom: p0.bottom + FRAME, left: p0.left + FRAME } })?.zoom;
+        if (raw != null && raw < map.getMinZoom() - 0.01 && all.length > 1) {
+          const groups = byCountry(all);
+          list = all.length >= BY_COUNTRY_MIN ? groups[0]!.items : groups.find((g) => g.items.includes(all[0]!))!.items;
+        }
+        const t = frameTarget(map, list);
         if (!map || !t) return;
         const p = padRef.current;
         const dz = t.zoom - map.getZoom();
