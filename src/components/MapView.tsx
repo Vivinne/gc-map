@@ -186,6 +186,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       });
     };
     map.on('move', redraw);
+    // A zoom moves the markers under a still mouse: the ring of the number point it pointed at would stay on every
+    // building that point splits into, so a zoom ends it (the marker under the mouse rings again once the mouse moves)
+    map.on('zoomstart', () => setPinHover(''));
     map.on('resize', redraw);
     map.on('load', redraw);
     map.on('moveend', () => {
