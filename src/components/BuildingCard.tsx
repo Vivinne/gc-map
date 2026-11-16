@@ -2,7 +2,7 @@
 
 import { forwardRef } from 'react';
 import { ERAS, examNote, type Building } from '../lib/model';
-import { architectOf, builtOf, joinDot, keywordsOf, shownStyle } from '../lib/style';
+import { architectParts, builtOf, joinDot, keywordsOf, shownStyle } from '../lib/style';
 import Panel from './Panel';
 import { HeadBar } from './HeadBar';
 
@@ -24,7 +24,7 @@ interface Props {
  * in small grey italics, the TEST-ARCHED years.
  */
 const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, scroll, mobile, canBack, onBack, onClose, onArchitect }, ref) {
-  const who = architectOf(b);
+  const who = architectParts(b);
   const keys = keywordsOf(b);
   const exam = examNote(b);
   return (
@@ -46,14 +46,17 @@ const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, s
       <div className="c-body">
         <p className="c-line">{joinDot(builtOf(b), b.city)}</p>
         <p className="c-line">
-          {who !== '-' && (
-            <>
-              <button type="button" className="c-who" onClick={() => onArchitect(who)}>
-                {who}
+          {/* every architect is a link of its own (A and B → two links) */}
+          {who.map((part, i) =>
+            part.search ? (
+              <button key={i} type="button" className="c-who" onClick={() => onArchitect(part.search!)}>
+                {part.text}
               </button>
-              {' · '}
-            </>
+            ) : (
+              <span key={i}>{part.text}</span>
+            ),
           )}
+          {who.length > 0 && ' · '}
           {shownStyle(b)}
         </p>
         {b.summary && <p className="c-sum sum">{b.summary}</p>}

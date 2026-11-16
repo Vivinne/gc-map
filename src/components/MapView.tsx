@@ -55,7 +55,7 @@ export interface MapHandle {
    * stand alone and bring it into the free part of the map; otherwise the map only moves as far as needed
    * to show it in the free part (the zoom stays).
    */
-  focus(b: Building): void;
+  focus(b: Building, centre?: boolean): void;
   /**
    * A number point opened: zoom in only as far as needed for each of its buildings to stand alone as a single
    * marker (no number point left among them), centred on them in the free part of the map; never past the
@@ -279,10 +279,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           easing: camEase(dz),
         });
       },
-      focus: (b) => {
+      focus: (b, centre) => {
         const map = mapRef.current;
         if (!map) return;
         const zoom = map.getZoom();
+        const p0 = padRef.current;
+        // a marker clicked on the map: the building comes to the middle of the free part of the map
+        const toMiddle = () =>
+          map.easeTo({ center: [b.lng, b.lat], offset: [(p0.left - p0.right) / 2, (p0.top - p0.bottom) / 2], duration: motion(MAP_MS), easing: EASE });
         const shown = markersShown.current;
         const here = map.project([b.lng, b.lat]);
         let near = Infinity;
@@ -294,7 +298,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         // Far enough for the selection halo (r 18) to clear a neighbouring dot or small number point
         const need = 32;
         if (!shown.length || near >= need) {
-          reveal(map, b);
+          if (centre) toMiddle();
+          else reveal(map, b);
           return;
         }
         const to = Math.min(MAX_ZOOM, zoom + (near > 0 ? Math.log2(need / near) + 0.15 : MAX_ZOOM));
@@ -532,7 +537,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     );
   }
 
-  const zoomBy = (d: 1 | -1) => (d > 0 ? map?.zoomIn({ duration: motion(220), easing: EASE }) : map?.zoomOut({ duration: motion(220), easing: EASE }));
+  // + / −: around the open building while its card is open (the mouse wheel zooms around the mouse)
+  const zoomBy = (d: 1 | -1) => {
+    if (!map) return;
+    const around = selected ? ([selected.lng, selected.lat] as [number, number]) : undefined;
+    map.easeTo({ zoom: map.getZoom() + d, ...(around ? { around } : {}), duration: motion(220), easing: EASE });
+  };
 
   return (
     <div className={`map-box${noMap ? ' no-map' : ''}`}>

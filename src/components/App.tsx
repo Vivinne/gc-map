@@ -187,7 +187,8 @@ export default function App() {
     });
   };
 
-  const openCard = (id: string) => {
+  /** Open a building's card; `centre`: it was clicked on the map, so the map brings it to the middle */
+  const openCard = (id: string, centre = false) => {
     const b = BY_ID.get(id);
     if (!b) return;
     inputRef.current?.blur();
@@ -195,7 +196,7 @@ export default function App() {
     push({ ...top, b: id });
     afterPanel(() => {
       cardHome.current = id;
-      mapRef.current?.focus(b);
+      mapRef.current?.focus(b, centre);
       // the map may not need to move at all: then the view right now is the card's view
       window.setTimeout(() => noteHome(id), CARD_SETTLE);
     });
@@ -390,7 +391,7 @@ export default function App() {
           reducedMotion={reducedMotion}
           compact={mobile}
           start={START.view}
-          onSelect={openCard}
+          onSelect={(id) => openCard(id, true)}
           onGroup={openGroup}
           onView={(v) => {
             viewRef.current = v;

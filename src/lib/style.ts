@@ -45,6 +45,21 @@ export function architectOf(b: Building): string {
   return ascii(whoOf(b)) || '-';
 }
 
+/**
+ * The architect line split into its people, each searchable on its own: "A and B", "A / B" and "A, B and C"
+ * become separate names with the joining words kept as plain text. A firm stays whole ("Herzog & de Meuron",
+ * "Shreve, Lamb & Harmon": no " and "). A note in brackets stays on the name but is not searched.
+ */
+export function architectParts(b: Building): { text: string; search?: string }[] {
+  const who = architectOf(b);
+  if (who === '-') return [];
+  const sep = who.includes(' and ') ? /(, | and | \/ )/ : /( \/ )/;
+  return who
+    .split(sep)
+    .filter(Boolean)
+    .map((t, i) => (i % 2 ? { text: t } : { text: t, search: t.replace(/\s*\([^)]*\)/g, '').trim() }));
+}
+
 /** Built span as shown (start–completion, digits, centuries as "15th"); empty when unknown */
 export function builtOf(b: Building): string {
   return b.built && b.built !== '—' ? ascii(b.built) : '';
