@@ -396,7 +396,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     );
     // The open building inside a number point: the point stays whole and is itself marked open (halo, ink
     // ring, the open building's name beside it); no separate mark is laid over it
-    const selMode = process.env.NEXT_PUBLIC_SEL_MODE ?? 'W1';
     const selGroup = selected ? (groups.find((g) => g.items.length > 1 && g.items.some((b) => b.id === selected.id)) ?? null) : null;
     for (const g of groups) {
       if (!inView(g.x, g.y)) continue;
@@ -425,18 +424,16 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       );
     }
     for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
-    // The open building inside a number point: no number point; the open building's own mark stands for the
-    // place, and "+N" tells how many more buildings are there (they show once the map is zoomed in)
-    const more = selGroup ? selGroup.items.length - 1 : 0;
+    // The open building inside a number point: that number point is not drawn; the open building's own mark
+    // stands alone and the other buildings of that point are left out until the map is zoomed in again
     const sp = selected ? proj(selected.lng, selected.lat) : null;
     if (selGroup && sp) {
       taken.push([sp.x - 24, sp.y - 24, sp.x + 24, sp.y + 24]);
       const base = selected!.name.length > LABEL_MAX ? `${selected!.name.slice(0, LABEL_MAX - 1)}\u2026` : selected!.name;
-      const text = selMode === 'W2' ? `${base} +${more}` : base;
-      const sub = selMode === 'W3' ? `and ${more} more here` : '';
-      const w = Math.max(text.length * LABEL_CHAR * SEL_SCALE, sub.length * LABEL_CHAR * 0.95);
-      const hh = sub ? 34 : 20;
-      const gap = selMode === 'W1' || selMode === 'W4' ? 40 : 27;
+      const text = base;
+      const w = text.length * LABEL_CHAR * SEL_SCALE;
+      const hh = 20;
+      const gap = 27;
       for (const side of [1, -1, 2, -2] as const) {
         const { x, y } = sp;
         const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
@@ -447,16 +444,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         const tx = side === 1 ? box[0] : side === -1 ? box[2] : x;
         const anchor = side === 1 ? 'start' : side === -1 ? 'end' : 'middle';
         labels.push(
-          <g key="sel-label">
-            <text className="mk-label sel" x={tx} y={top + 15} textAnchor={anchor}>
-              {text}
-            </text>
-            {sub && (
-              <text className="mk-label" x={tx} y={top + 30} textAnchor={anchor} style={{ fill: 'var(--mute)', fontWeight: 600 }}>
-                {sub}
-              </text>
-            )}
-          </g>,
+          <text key="sel-label" className="mk-label sel" x={tx} y={top + 15} textAnchor={anchor}>
+            {text}
+          </text>,
         );
         break;
       }
@@ -502,19 +492,6 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             <circle r={7.5} fill={ERAS[selected.era].color} />
           </g>,
         );
-        if (selGroup && (selMode === 'W1' || selMode === 'W4')) {
-          const ids = selGroup.items.map((b) => b.id);
-          // W4: a stack of discs behind the mark says "several here"
-          if (selMode === 'W4')
-            marks.splice(marks.length - 1, 0, ...[2, 1].map((k) => <circle key={`stack-${k}`} className="sel-mark" cx={x + 6 * k} cy={y - 6 * k} r={13} fill="#fff" style={{ stroke: 'var(--mute)' }} strokeWidth={1.5} />));
-          marks.push(
-            <g key="sel-more" className="mk" transform={`translate(${(x + 20).toFixed(1)},${(y - 18).toFixed(1)})`} {...act(ids.join('~'), () => onGroup(ids))}>
-              <rect x={-14} y={-10} width={28} height={20} rx={10} fill="var(--ink)" />
-              <text y={4.5} textAnchor="middle" style={{ fill: '#fff', fontSize: 12, fontWeight: 700 }}>{`+${more}`}</text>
-              <title>{`${more} more here`}</title>
-            </g>,
-          );
-        }
       }
     }
     overlay = createPortal(
