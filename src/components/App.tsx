@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
-import { EMPTY_SCREEN, canGoBack, fromQuery, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
+import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
 import { searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
@@ -324,8 +324,9 @@ export default function App() {
       </Panel>
     );
   } else if (top.list === 'category') {
+    // opened from the plain map, ＜ would only close it, like ×: only × shows
     panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title="Category" />}>
+      <Panel ref={panelRef} scroll={top.scroll} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back && !(prevScreen && isEmptyScreen(prevScreen))} onBack={goBack} onClose={closeAll} title="Category" />}>
         <CategoryList onPick={submit} />
       </Panel>
     );
