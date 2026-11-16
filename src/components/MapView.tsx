@@ -499,7 +499,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           <g key="sel" className="sel-mark" transform={`translate(${x},${y})`}>
             <circle r={SEL_HALO} fill={ERAS[selected.era].color} opacity={0.22} />
             <circle r={13} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
-            <circle r={7.5} fill={ERAS[selected.era].color} />
+            <circle r={DOT_R} fill={ERAS[selected.era].color} />
           </g>,
         );
       }
