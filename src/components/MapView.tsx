@@ -427,33 +427,49 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // The open building inside a number point: that number point is not drawn; the open building's own mark
     // stands alone and the other buildings of that point are left out until the map is zoomed in again
     const sp = selected ? proj(selected.lng, selected.lat) : null;
-    if (selGroup && sp) {
+    // The open building's name is placed first and always shows: right of its mark, else left, else under,
+    // else over; when every place is taken it still goes on the roomier side (over other markers, kept on the
+    // map, shortened with … if the map is too narrow)
+    if (sp && inView(sp.x, sp.y)) {
       taken.push([sp.x - 24, sp.y - 24, sp.x + 24, sp.y + 24]);
-      const base = selected!.name.length > LABEL_MAX ? `${selected!.name.slice(0, LABEL_MAX - 1)}\u2026` : selected!.name;
-      const text = base;
-      const w = text.length * LABEL_CHAR * SEL_SCALE;
-      const hh = 20;
+      const ch = LABEL_CHAR * SEL_SCALE;
       const gap = 27;
+      const fit = (t: string) => (t.length > LABEL_MAX ? `${t.slice(0, LABEL_MAX - 1)}\u2026` : t);
+      let text = fit(selected!.name);
+      const { x, y } = sp;
+      const left = padding.left + 4, right = W - padding.right - 4;
+      let placed: { box: [number, number, number, number]; tx: number; anchor: 'start' | 'end' | 'middle' } | null = null;
       for (const side of [1, -1, 2, -2] as const) {
-        const { x, y } = sp;
+        const w = text.length * ch;
         const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
-        const top = side === 2 ? y + 28 : side === -2 ? y - 28 - hh : y - 10;
-        const box: [number, number, number, number] = [x0, top, x0 + w, top + hh];
-        if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
-        taken.push(box);
-        const tx = side === 1 ? box[0] : side === -1 ? box[2] : x;
-        const anchor = side === 1 ? 'start' : side === -1 ? 'end' : 'middle';
-        labels.push(
-          <text key="sel-label" className="mk-label sel" x={tx} y={top + 15} textAnchor={anchor}>
-            {text}
-          </text>,
-        );
+        const top = side === 2 ? y + 28 : side === -2 ? y - 48 : y - 10;
+        const box: [number, number, number, number] = [x0, top, x0 + w, top + 20];
+        if (box[0] < left || box[2] > right || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
+        placed = { box, tx: side === 1 ? box[0] : side === -1 ? box[2] : x, anchor: side === 1 ? 'start' : side === -1 ? 'end' : 'middle' };
         break;
       }
+      if (!placed) {
+        const toRight = right - (x + gap) >= x - gap - left;
+        const room = Math.max(0, toRight ? right - (x + gap) : x - gap - left);
+        const most = Math.floor(room / ch);
+        if (text.length > most) text = most > 2 ? `${text.slice(0, most - 1)}\u2026` : text;
+        const w = text.length * ch;
+        const x0 = toRight ? x + gap : x - gap - w;
+        placed = { box: [x0, y - 10, x0 + w, y + 10], tx: toRight ? x0 : x0 + w, anchor: toRight ? 'start' : 'end' };
+      }
+      taken.push(placed.box);
+      labels.push(
+        <g key="sel-label" className="mk name" {...act(selected!.id, () => onSelect(selected!.id))}>
+          <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={20} />
+          <text className="mk-label sel" x={placed.tx} y={placed.box[1] + 15} textAnchor={placed.anchor}>
+            {text}
+          </text>
+        </g>,
+      );
     }
     // The open building's name first, then the rows on screen in the list, then the rest in list order
     const rank = (b: Building) => (selected?.id === b.id ? 0 : seen?.has(b.id) ? 1 : 2);
-    for (const { b, x, y } of [...singles].filter((d) => named(d.b)).sort((p, q) => rank(p.b) - rank(q.b))) {
+    for (const { b, x, y } of [...singles].filter((d) => named(d.b) && d.b.id !== selected?.id).sort((p, q) => rank(p.b) - rank(q.b))) {
       const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
       const isSel = selected?.id === b.id;
       // the open building's name is larger (15 px), like its mark

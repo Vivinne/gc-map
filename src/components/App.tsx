@@ -123,8 +123,21 @@ export default function App() {
     const prev = stack[stack.length - 2]!;
     setStack((st) => st.slice(0, -1));
     setDraft(prev.draft ?? prev.q);
+    // A results list or a number point list comes back with all its buildings framed (as when it opened);
     // a card comes back with its building in sight, as it was when the card opened (the map may have been
-    // moved away from it before the next card was opened); a list comes back with the map as it was left
+    // moved away from it before the next card was opened); other screens come back with the map as it was left
+    if (!prev.b && (prev.list === 'results' || prev.list === 'group')) {
+      let items: Building[];
+      if (prev.list === 'group') items = prev.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
+      else {
+        const f = searchSplit(prev.q);
+        items = f.main.length ? [...f.main, ...(moreOpen === prev.q ? f.more : [])] : f.more;
+      }
+      if (items.length) {
+        afterPanel(() => (prev.list === 'group' ? mapRef.current?.split(items) : mapRef.current?.fitTo(items)));
+        return;
+      }
+    }
     const target = prev.b && prev.home ? prev.home : prev.view;
     if (target) {
       const v = target;
