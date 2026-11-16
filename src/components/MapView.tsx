@@ -34,6 +34,8 @@ const NAME_SCALE = 100000;
 /** Map name labels: longest name shown in full, and the width a character takes at 12 px */
 const LABEL_MAX = 24;
 const LABEL_CHAR = 6.6;
+/** The open building's name: 13.5 px against 12 px */
+const SEL_SCALE = 13.5 / 12;
 /** Halo of the open building's mark (the white disc with its ink ring is r 13) */
 const SEL_HALO = 18;
 
@@ -432,7 +434,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // map, shortened with … if the map is too narrow)
     if (sp && inView(sp.x, sp.y)) {
       taken.push([sp.x - SEL_HALO, sp.y - SEL_HALO, sp.x + SEL_HALO, sp.y + SEL_HALO]);
-      const ch = LABEL_CHAR;
+      const ch = LABEL_CHAR * SEL_SCALE;
       const gap = SEL_HALO + 3;
       const fit = (t: string) => (t.length > LABEL_MAX ? `${t.slice(0, LABEL_MAX - 1)}\u2026` : t);
       let text = fit(selected!.name);
@@ -461,7 +463,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       labels.push(
         <g key="sel-label" className="mk name" {...act(selected!.id, () => onSelect(selected!.id))}>
           <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={20} />
-          <text className="mk-label" x={placed.tx} y={placed.box[1] + 14} textAnchor={placed.anchor}>
+          <text className="mk-label sel" x={placed.tx} y={placed.box[1] + 14.5} textAnchor={placed.anchor}>
             {text}
           </text>
         </g>,
