@@ -49,6 +49,11 @@
   --r-s: 6px;
   --r-m: 10px;
   --top-h: 48px;
+  /* B6: the zoom buttons and the scale bar share one bottom line, clear of the source line under them */
+  --map-bottom: 24px;
+  /* the map's source line: its distance from the bottom, and the height it takes */
+  --credit-gap: 2px;
+  --credit-h: 14px;
   --index-w: 320px;
   --detail-w: 340px;
   color-scheme: only light;

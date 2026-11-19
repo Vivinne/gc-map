@@ -28,6 +28,8 @@ export const MAP_COLORS = {
 
 /** Spacing on the map: every floating part keeps this distance from the map and window edges */
 export const INSET = 16;
+/** Bottom line of the zoom buttons and the scale bar (desktop): clear of the map's source line under them (B6) */
+export const MAP_BOTTOM = 24;
 /** Height of a control (buttons, search box) */
 export const CONTROL_H = 32;
 /** Height of a list row */

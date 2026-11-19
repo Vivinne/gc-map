@@ -65,6 +65,28 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
       root.removeProperty('--sheet-fold');
     };
   }, [folded]);
+  // The map's source line stays in sight above a phone sheet (B5 / N11, OpenStreetMap asks for it to be visible):
+  // --sheet-h is the sheet's height; a full sheet leaves no map below the search box, so the line sits on it
+  useLayoutEffect(() => {
+    const el = self.current;
+    if (!sheet || !el) return;
+    const root = document.documentElement;
+    const set = () => root.style.setProperty('--sheet-h', state === 'full' ? '0px' : `${el.offsetHeight}px`);
+    set();
+    root.classList.toggle('sheet-full', state === 'full');
+    let raf = 0;
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(set);
+    });
+    ro.observe(el);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      root.style.removeProperty('--sheet-h');
+      root.classList.remove('sheet-full');
+    };
+  }, [sheet, state]);
   /** The sheet can grow: from the title only, or when the content is longer than the sheet shows */
   const canGrow = () => {
     if (state === 'fold') return true;

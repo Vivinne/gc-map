@@ -3,6 +3,7 @@ import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent, ReactNode } f
 import { createPortal } from 'react-dom';
 import { DOT_R, groupOnScreen, pointRadius } from '../../lib/geo';
 import { ERAS, type Building } from '../../lib/model';
+import { labelSize } from '../../lib/labelSize';
 import NumberPoint from '../NumberPoint';
 import type { Padding } from './camera';
 
@@ -10,9 +11,12 @@ import type { Padding } from './camera';
 
 /** Map name labels: longest name shown in full, and the width a character takes at 12 px */
 const LABEL_MAX = 24;
-const LABEL_CHAR = 6.6;
-/** The open building's name: 13.5 px against 12 px */
-const SEL_SCALE = 13.5 / 12;
+/** Height of the box a name keeps clear (12 px names; a larger system text makes it taller) */
+const LABEL_BOX_H = 16;
+/** Height of the open building's name box */
+const SEL_BOX_H = 20;
+/** Text baseline below the middle of its box, as a share of the text's height */
+const BASELINE = 0.25;
 /** Halo of the open building's mark (the white disc with its ink ring is r 13) */
 const SEL_HALO = 18;
 /** Space kept between a map name and the map's controls */
@@ -152,18 +156,21 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
   // map, shortened with … if the map is too narrow)
   if (sp && inView(sp.x, sp.y)) {
     taken.push([sp.x - SEL_HALO, sp.y - SEL_HALO, sp.x + SEL_HALO, sp.y + SEL_HALO]);
-    const ch = LABEL_CHAR * SEL_SCALE;
     const gap = SEL_HALO + 3;
     const fit = (t: string) => (t.length > LABEL_MAX ? `${t.slice(0, LABEL_MAX - 1)}\u2026` : t);
     let text = fit(selected!.name);
+    // measured as drawn (larger system text makes it wider and taller)
+    let size = labelSize(text, true, layer);
+    const boxH = Math.max(SEL_BOX_H, size.h + 4);
+    const ch = size.w / Math.max(1, text.length);
     const { x, y } = sp;
     const left = padding.left + 4, right = W - padding.right - 4;
     let placed: { box: [number, number, number, number]; tx: number; anchor: 'start' | 'end' | 'middle' } | null = null;
     for (const side of [1, -1, 2, -2] as const) {
-      const w = text.length * ch;
+      const w = size.w;
       const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
-      const top = side === 2 ? y + SEL_HALO + 2 : side === -2 ? y - SEL_HALO - 22 : y - 10;
-      const box: [number, number, number, number] = [x0, top, x0 + w, top + 20];
+      const top = side === 2 ? y + SEL_HALO + 2 : side === -2 ? y - SEL_HALO - 2 - boxH : y - boxH / 2;
+      const box: [number, number, number, number] = [x0, top, x0 + w, top + boxH];
       if (box[0] < left || box[2] > right || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
       placed = { box, tx: side === 1 ? box[0] : side === -1 ? box[2] : x, anchor: side === 1 ? 'start' : side === -1 ? 'end' : 'middle' };
       break;
@@ -172,16 +179,19 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
       const toRight = right - (x + gap) >= x - gap - left;
       const room = Math.max(0, toRight ? right - (x + gap) : x - gap - left);
       const most = Math.floor(room / ch);
-      if (text.length > most) text = most > 2 ? `${text.slice(0, most - 1)}\u2026` : text;
-      const w = text.length * ch;
+      if (text.length > most && most > 2) {
+        text = `${text.slice(0, most - 1)}\u2026`;
+        size = labelSize(text, true, layer);
+      }
+      const w = size.w;
       const x0 = toRight ? x + gap : x - gap - w;
-      placed = { box: [x0, y - 10, x0 + w, y + 10], tx: toRight ? x0 : x0 + w, anchor: toRight ? 'start' : 'end' };
+      placed = { box: [x0, y - boxH / 2, x0 + w, y + boxH / 2], tx: toRight ? x0 : x0 + w, anchor: toRight ? 'start' : 'end' };
     }
     taken.push(placed.box);
     labels.push(
       <g key="sel-label" className="mk name" {...act(selected!.id, () => onSelect(selected!.id))}>
-        <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={20} />
-        <text className="mk-label sel" x={placed.tx} y={placed.box[1] + 14.5} textAnchor={placed.anchor}>
+        <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={boxH} />
+        <text className="mk-label sel" x={placed.tx} y={placed.box[1] + boxH / 2 + size.h * BASELINE} textAnchor={placed.anchor}>
           {text}
         </text>
       </g>,
@@ -191,19 +201,20 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
   const rank = (b: Building) => (seen?.has(b.id) ? 1 : 2);
   for (const { b, x, y } of [...singles].filter((d) => named(d.b) && d.b.id !== selected?.id).sort((p, q) => rank(p.b) - rank(q.b))) {
     const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
-    const w = text.length * LABEL_CHAR;
+    const { w, h } = labelSize(text, false, layer);
+    const half = Math.max(LABEL_BOX_H, h) / 2;
     // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
     const gap = DOT_R + 4;
     for (const side of [1, -1] as const) {
       const x0 = side === 1 ? x + gap : x - gap - w;
-      const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
+      const box: [number, number, number, number] = [x0, y - half, x0 + w, y + half];
       if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
       taken.push(box);
       // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
       labels.push(
         <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
           <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
-          <text className="mk-label" x={side === 1 ? box[0] : box[2]} y={y + 4} textAnchor={side === 1 ? 'start' : 'end'}>
+          <text className="mk-label" x={side === 1 ? box[0] : box[2]} y={y + h * BASELINE} textAnchor={side === 1 ? 'start' : 'end'}>
             {text}
           </text>
         </g>,
