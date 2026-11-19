@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { BUILDINGS } from '../src/lib/model';
 import { search } from '../src/lib/search';
+import { readFileSync } from 'node:fs';
 
 /** Browser storage for the tests (localStorage, sessionStorage) */
 class Store {
@@ -47,4 +48,10 @@ test('recent texts: "Rome" and "rome" are one entry, the spelling typed last sta
   assert.deepEqual(recentTexts(), ['rome', 'Gaudi']);
   addRecentText('ROME');
   assert.deepEqual(recentTexts(), ['ROME', 'Gaudi']);
+});
+
+test('S1 MapLibre: 6.5 or newer (the XSS fix of GHSA-jrc7-96c5-q579)', () => {
+  const { version } = JSON.parse(readFileSync(new URL('../node_modules/maplibre-gl/package.json', import.meta.url), 'utf8')) as { version: string };
+  const [major, minor] = version.split('.').map(Number) as [number, number];
+  assert.ok(major > 6 || (major === 6 && minor >= 5), version);
 });

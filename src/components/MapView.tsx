@@ -1,6 +1,6 @@
 'use client';
 
-import maplibregl, { type Map as MlMap } from 'maplibre-gl';
+import { Map as MaplibreMap, setWorkerUrl, type Map as MlMap } from 'maplibre-gl';
 import { flushSync } from 'react-dom';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { Building } from '../lib/model';
@@ -20,6 +20,10 @@ export type { MapHandle, Padding };
 
 /** With no search, every name shows when the scale bar reads this length (metres) or less; wider, only exam buildings */
 const NAME_SCALE = 100000;
+// MapLibre 6 draws tiles in a worker it loads from beside its own file; the bundler moves that file, so the
+// worker is pointed to where the bundler put it (S1: MapLibre 6 for the XSS fix in 5.x)
+if (typeof window !== 'undefined') setWorkerUrl(new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href);
+
 /** Longest press (ms) that still counts as a click on a mark */
 const PRESS_MS = 700;
 
@@ -69,7 +73,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     if (!box.current) return;
     let map: MlMap;
     try {
-      map = new maplibregl.Map({
+      map = new MaplibreMap({
         container: box.current,
         style: styleSpec(),
         ...(start ? { center: [start.lng, start.lat] as [number, number], zoom: start.zoom } : { bounds: EUROPE, fitBoundsOptions: { padding: 20 } }),
