@@ -1,7 +1,7 @@
 import type { Map as MlMap } from 'maplibre-gl';
 import type { MutableRefObject } from 'react';
 import { BY_COUNTRY_MIN, byCountry } from '../../lib/country';
-import { DOT_R, boundsOf } from '../../lib/geo';
+import { DOT_R, boundsCenter, boundsOf } from '../../lib/geo';
 import type { Building } from '../../lib/model';
 import type { View } from '../../lib/nav';
 
@@ -99,7 +99,7 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
     let near = Infinity;
     for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) near = Math.min(near, Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y));
     const splitAt = Number.isFinite(near) ? (near > 0 ? zoom + Math.log2((2 * DOT_R + 2) / near) + 0.1 : SPLIT_MAX) : -Infinity;
-    return { center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2], zoom: Math.min(fitZ, Math.max(splitAt, Math.min(zoom, fitZ))) };
+    return { center: boundsCenter(b), zoom: Math.min(fitZ, Math.max(splitAt, Math.min(zoom, fitZ))) };
   };
 
   return {
@@ -181,7 +181,7 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
       const to = Math.min(splitAt, fit?.zoom ?? SPLIT_MAX, SPLIT_MAX);
       const dz = to - zoom;
       map.easeTo({
-        center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2],
+        center: boundsCenter(b),
         zoom: to,
         offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
         duration: motion(camMs(dz)),

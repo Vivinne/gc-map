@@ -82,6 +82,11 @@ function pageWriter(): AddressWriter {
   return w;
 }
 
+/** Write a waiting address now (before the page loads again by itself) */
+export function flushAddress(): void {
+  pageWriter().flush();
+}
+
 /** Change the page address (path + query + hash), within the rate limit */
 export function setAddress(url: string): void {
   pageWriter().set(url);

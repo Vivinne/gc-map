@@ -1,5 +1,6 @@
 'use client';
 
+import { isMouseHover } from '../lib/pointer';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { BY_COUNTRY_MIN, byCountry } from '../lib/country';
 import type { Building } from '../lib/model';
@@ -37,7 +38,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
           className={`c-head${off ? ' off' : ''}${extra}`}
           aria-disabled={off}
           onClick={() => !off && onCountry?.(items)}
-          onPointerEnter={(e) => e.pointerType === 'mouse' && onHover(ids)}
+          onPointerEnter={(e) => isMouseHover(e) && onHover(ids)}
           onPointerLeave={() => onHover('')}
         >
           <span>{label}</span>

@@ -21,4 +21,5 @@ ul, ol { list-style: none; }
 
 /* ---------- page ---------- */
 .app { position: relative; height: 100vh; height: 100dvh; overflow: hidden; }
-.main { position: absolute; inset: 0; }
+/* left and right: clear of a notch or Dynamic Island (phone landscape); top and bottom are kept clear per part */
+.main { position: absolute; top: 0; bottom: 0; left: env(safe-area-inset-left); right: env(safe-area-inset-right); }

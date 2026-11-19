@@ -10,6 +10,17 @@ export function boundsOf(list: { lng: number; lat: number }[]): Bounds | null {
   return [[w, s], [e, n]];
 }
 
+/**
+ * Middle of a box as the map draws it: halfway across, and halfway up on the (Mercator) map, which lies
+ * north of the middle latitude. Framing on the middle latitude put the northern buildings of a spread
+ * search (Finland with France and Italy) under the search box on short maps (N21).
+ */
+export function boundsCenter(b: Bounds): [number, number] {
+  const y = (lat: number) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+  const mid = (y(b[0][1]) + y(b[1][1])) / 2;
+  return [(b[0][0] + b[1][0]) / 2, (360 / Math.PI) * Math.atan(Math.exp(mid)) - 90];
+}
+
 /** Radius of a number point by its count */
 export function pointRadius(n: number): number {
   return n >= 15 ? 19 : n >= 7 ? 16 : 13.5;

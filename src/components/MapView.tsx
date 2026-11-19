@@ -4,6 +4,7 @@ import maplibregl, { type Map as MlMap } from 'maplibre-gl';
 import { flushSync } from 'react-dom';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { Building } from '../lib/model';
+import { isMouseHover } from '../lib/pointer';
 import type { View } from '../lib/nav';
 import { INSET, MAP_COLORS } from '../styles/tokens';
 import { Icon } from './Icons';
@@ -100,7 +101,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     map.on('move', redraw);
     // A zoom moves the markers under a still mouse: the ring of the number point it pointed at would stay on every
     // building that point splits into, so a zoom ends it (the marker under the mouse rings again once the mouse moves)
+    // Any camera move does the same: marks slide away from (or under) a still mouse without a pointer-leave
     map.on('zoomstart', () => setPinHover(''));
+    map.on('movestart', () => setPinHover(''));
     map.on('resize', redraw);
     map.on('load', redraw);
     map.on('moveend', () => {
@@ -127,6 +130,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // A new screen (card, list, search) redraws the marks: the ring of a mark the mouse was on ends with it
+  useEffect(() => setPinHover(''), [buildings, selected]);
+
   useImperativeHandle(ref, () => cameraApi(mapRef, { padRef, markersShown, motion }), [motion]);
 
   const map = mapRef.current;
@@ -148,12 +154,29 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
   // Buildings pointed at: one id, or several joined by "~" (a number point, a country heading in a list)
   const hot = hoverId || pinHover;
-  const act: Act = (key, click) => ({
+  const act: Act = (key, click, label) => ({
     onPointerDown: onDown,
     // the ink ring follows a mouse only: a finger's tap would leave it stuck on
-    onPointerEnter: (e: React.PointerEvent) => e.pointerType === 'mouse' && setPinHover(key),
+    onPointerEnter: (e: React.PointerEvent) => isMouseHover(e) && setPinHover(key),
+    // the ring ends whenever the map moves or the screen changes (below); a mouse still on the mark rings it again as it moves
+    onPointerMove: (e: React.PointerEvent) => isMouseHover(e) && setPinHover(key),
     onPointerLeave: () => setPinHover((h) => (h === key ? '' : h)),
-    onClick: (e: React.MouseEvent) => isClick(e) && click(),
+    onClick: (e: React.MouseEvent) => isClick(e) && click(e),
+    ...(label
+      ? {
+          tabIndex: 0,
+          role: 'button',
+          'aria-label': label,
+          onKeyDown: (e: React.KeyboardEvent) => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            e.preventDefault();
+            click();
+          },
+          // the keyboard points at a mark as a mouse does: its ink ring shows while it has the focus
+          onFocus: (e: React.FocusEvent) => e.currentTarget.matches(':focus-visible') && setPinHover(key),
+          onBlur: () => setPinHover((h) => (h === key ? '' : h)),
+        }
+      : { 'aria-hidden': true }),
   });
 
   const overlay = map && layer

@@ -87,7 +87,7 @@ export function loadStack(): Screen[] | null {
 
 export function saveStack(stack: Screen[]): void {
   try {
-    sessionStorage.setItem(STACK_KEY, JSON.stringify(stack.slice(-50)));
+    sessionStorage.setItem(STACK_KEY, JSON.stringify(stack));
   } catch {
     /* storage blocked: the history lives in memory only */
   }

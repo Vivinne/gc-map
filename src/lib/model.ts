@@ -47,7 +47,8 @@ export function shortYear(raw: string): string {
 }
 
 export function norm(s: string): string {
-  return s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  // a phone keyboard types curly apostrophes and quotes (’ ‘ “ ”): they match the straight ones
+  return s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[\u2018\u2019\u02bc\u2032]/g, "'").replace(/[\u201c\u201d]/g, '"').toLowerCase();
 }
 
 export function cityOf(p: Place): string {

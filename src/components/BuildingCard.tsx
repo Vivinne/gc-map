@@ -59,9 +59,9 @@ const BuildingCard = forwardRef<HTMLElement, Props>(function BuildingCard({ b, s
           {who.length > 0 && ' · '}
           {shownStyle(b)}
         </p>
-        {b.summary && <p className="c-sum sum">{b.summary}</p>}
+        {b.summary && <p className="c-sum sum" lang="zh-Hant">{b.summary}</p>}
         {keys.length > 0 && (
-          <p className="c-keys sum">
+          <p className="c-keys sum" lang="zh-Hant">
             {'\u95dc\u9375\u5b57\uff1a'}
             {keys.map((k, i) => (
               <span key={k.text}>

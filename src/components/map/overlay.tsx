@@ -1,5 +1,5 @@
 import type { Map as MlMap } from 'maplibre-gl';
-import type { MouseEvent, PointerEvent, ReactNode } from 'react';
+import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { DOT_R, groupOnScreen, pointRadius } from '../../lib/geo';
 import { ERAS, type Building } from '../../lib/model';
@@ -15,15 +15,29 @@ const LABEL_CHAR = 6.6;
 const SEL_SCALE = 13.5 / 12;
 /** Halo of the open building's mark (the white disc with its ink ring is r 13) */
 const SEL_HALO = 18;
+/** A finger's touch circle around each single marker on phones */
+const HIT_R = 20;
 
 const size = (n: number) => (n > 1 ? pointRadius(n) : DOT_R);
 
-/** Pointer handlers of one marker, number point or name (made by MapView: it keeps the hover and tap state) */
-export type Act = (key: string, click: () => void) => {
+/**
+ * Pointer handlers of one marker, number point or name (made by MapView: it keeps the hover and tap state).
+ * With a `label` the mark is also a button for the keyboard and screen readers (Tab, Enter or Space); the
+ * names and the phone touch circles repeat a marker, so they take no label and stay out of the Tab order.
+ */
+export type Act = (key: string, click: (e?: MouseEvent) => void, label?: string) => {
   onPointerDown: (e: PointerEvent) => void;
   onPointerEnter: (e: PointerEvent) => void;
   onPointerLeave: () => void;
+  onPointerMove: (e: PointerEvent) => void;
   onClick: (e: MouseEvent) => void;
+  tabIndex?: number;
+  role?: string;
+  'aria-label'?: string;
+  'aria-hidden'?: boolean;
+  onKeyDown?: (e: KeyboardEvent) => void;
+  onFocus?: (e: FocusEvent) => void;
+  onBlur?: () => void;
 };
 
 interface OverlayArgs {
@@ -57,6 +71,20 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
   };
   const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
   const marks: ReactNode[] = [];
+  // Markers and number points a finger can mean: their centres and sizes on screen
+  const targets: { x: number; y: number; r: number; go(): void }[] = [];
+  const tapNearest = (e: MouseEvent | undefined, own: string) => {
+    if (!e) return onSelect(own);
+    const box = layer.getBoundingClientRect();
+    const x = e.clientX - box.left, y = e.clientY - box.top;
+    let best: (typeof targets)[number] | null = null, gap = Infinity;
+    for (const t of targets) {
+      const d = Math.hypot(t.x - x, t.y - y) - t.r;
+      if (d < gap) (gap = d), (best = t);
+    }
+    if (best && gap <= HIT_R) best.go();
+    else onSelect(own);
+  };
   // Names beside every single marker (placed after all markers, see below)
   const labels: ReactNode[] = [];
   const singles: { b: Building; x: number; y: number }[] = [];
@@ -75,22 +103,25 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
     if (g.items.length === 1) {
       const b = g.items[0]!;
       const on = selected?.id === b.id;
+      targets.push({ x: g.x, y: g.y, r: DOT_R, go: () => onSelect(b.id) });
       marks.push(
-        <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
+        <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id), b.name)}>
           <title>{b.name}</title>
         </circle>,
       );
-      if (compact) hits.push(<circle key={`h-${b.id}`} className="mk hit" cx={g.x} cy={g.y} r={20} {...act(b.id, () => onSelect(b.id))} />);
+      // a finger's touch circle (r 20) can lie over a marker next to it: the tap goes to the marker nearest the finger
+      if (compact) hits.push(<circle key={`h-${b.id}`} className="mk hit" cx={g.x} cy={g.y} r={HIT_R} {...act(b.id, (e) => tapNearest(e, b.id))} />);
       singles.push({ b, x: g.x, y: g.y });
       continue;
     }
     if (g === selGroup) continue;
+    targets.push({ x: g.x, y: g.y, r: size(g.items.length), go: () => onGroup(g.items.map((b) => b.id)) });
     const gr = size(g.items.length) + 6;
     taken.push([g.x - gr, g.y - gr, g.x + gr, g.y + gr]);
     const key = g.items.map((b) => b.id).join('~');
     const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
     marks.push(
-      <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
+      <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)), `${g.items.length} Architectures`)}>
         <NumberPoint group={g} />
         <title>{`${g.items.length} Architectures`}</title>
       </g>,

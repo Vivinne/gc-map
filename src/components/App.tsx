@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { setAddress } from '../lib/address';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
-import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
+import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, sameScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
 import { searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
@@ -29,6 +29,8 @@ const CARD_SETTLE = 1800;
 const PREVIEW_MAX = 30;
 /** Width the zoom buttons take from the right edge (32 px buttons + 16 px inset) */
 const ZOOM_W = 48;
+/** A phone keyboard closes within this time after a search is sent (ms): the map frames the results again then */
+const KEYBOARD_WAIT = 1500;
 const NO_PAD: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
 
 function useMedia(q: string): boolean {
@@ -72,6 +74,10 @@ export default function App() {
   const found = useMemo(() => (top.q ? searchSplit(top.q) : { main: [], more: [] }), [top.q]);
   const [moreOpen, setMoreOpen] = useState('');
   const moreView = useRef<View | null>(null);
+  // another search on screen folds the other outcomes away: ＜ back to this search shows them folded
+  useEffect(() => {
+    if (moreOpen && moreOpen !== top.q) setMoreOpen('');
+  }, [moreOpen, top.q]);
   // With no main match the list says No Results; the other matches still wait behind Other Possible Outcomes
   const moreList = found.more;
   const results = useMemo(() => (moreOpen === top.q ? [...found.main, ...found.more] : found.main), [found, moreOpen, top.q]);
@@ -111,6 +117,8 @@ export default function App() {
     const scroll = panelRef.current?.querySelector('.p-body')?.scrollTop ?? undefined;
     setStack((st) => {
       const cur = st[st.length - 1]!;
+      // the screen already on top (the open card or number point clicked again, a double click): no new step
+      if (sameScreen(cur, s)) return st;
       return [...st.slice(0, -1), { ...cur, view, scroll, ...(cur.list === 'preview' ? { draft } : {}) }, s];
     });
   };
@@ -145,6 +153,7 @@ export default function App() {
 
   /** × and Esc: everything closes, the text and results go; the map stays where it is */
   const closeAll = () => {
+    setMoreOpen('');
     setStack([EMPTY_SCREEN]);
     setDraft('');
     inputRef.current?.blur();
@@ -166,13 +175,42 @@ export default function App() {
     inputRef.current?.blur();
     setDraft(t);
     setRecentT(addRecentText(t));
+    setMoreOpen('');
     const next: Screen = { q: t, list: 'results', group: [], b: '' };
     // The search preview is only the typing step: the submitted search takes its place in the history,
     // so ＜ goes back to the screen before the typing (e.g. the previous search's results), not to the half-typed text
     if (top.list === 'preview' && !top.b) setStack((st) => [...st.slice(0, -1), next]);
     else push(next);
-    if (found.length) afterPanel(() => mapRef.current?.fitTo(found));
+    if (found.length) {
+      // sent with the keyboard up: the map frames them in the short window above it, so it frames them
+      // again once the keyboard has gone and the map has its full height
+      refit.current = { items: found, until: performance.now() + KEYBOARD_WAIT };
+      afterPanel(() => mapRef.current?.fitTo(found));
+    }
   };
+
+  /** Results to frame again when the map changes size right after a search (the keyboard closing) */
+  const refit = useRef<{ items: Building[]; until: number } | null>(null);
+  useEffect(() => {
+    let t = 0;
+    const onResize = () => {
+      const r = refit.current;
+      if (!r || performance.now() > r.until) return;
+      window.clearTimeout(t);
+      t = window.setTimeout(() => mapRef.current?.fitTo(r.items), PANEL_WAIT);
+    };
+    // a finger or mouse on the page ends the wait: the map is the person's now
+    const stop = () => (refit.current = null);
+    window.addEventListener('resize', onResize);
+    window.visualViewport?.addEventListener('resize', onResize);
+    window.addEventListener('pointerdown', stop, true);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener('resize', onResize);
+      window.visualViewport?.removeEventListener('resize', onResize);
+      window.removeEventListener('pointerdown', stop, true);
+    };
+  }, []);
 
   /** The card waiting for its map view (noted when the map stops after opening it) */
   const cardHome = useRef('');
@@ -404,13 +442,14 @@ export default function App() {
           }}
           onFail={() => setMapDown(true)}
           fallback={
-            <div className="map-down">
+            // kept clear of the search box and the open panel; while a panel lists buildings, the page does not list them again
+            <div className="map-down" style={{ marginTop: padding.top, marginLeft: padding.left, marginBottom: padding.bottom }}>
               <h2>The map can&apos;t be shown in this browser.</h2>
               <details>
                 <summary>Details</summary>
                 <p>The map draws with WebGL (3D graphics in the browser), which is turned off or blocked here. Turning on hardware acceleration in the browser settings, or another browser, usually brings it back.</p>
               </details>
-              <ResultList list={top.q ? results : BUILDINGS} onOpen={openCard} onHover={setHoverId} />
+              {!panel && <ResultList list={top.q ? results : BUILDINGS} onOpen={openCard} onHover={setHoverId} />}
             </div>
           }
         />

@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Component, useEffect, type ReactNode } from 'react';
-import { setAddress } from '../lib/address';
+import { flushAddress, setAddress } from '../lib/address';
 
 // The map needs the browser (WebGL, window), so the whole app renders on the client only
 const App = dynamic(() => import('./App'), { ssr: false, loading: () => <div className="boot">Loading the atlas</div> });
@@ -92,7 +92,14 @@ function useFreshVersion() {
         } catch {
           /* storage blocked: the address check above still stops a loop */
         }
-        if (live && live !== mine && !done) location.replace(`${location.pathname}?v=${live}`);
+        if (live && live !== mine && !done) {
+          // the fresh address keeps the screen's own address: the new copy opens the same screen, and the
+          // history behind ＜ (kept for this tab) comes back with it
+          flushAddress();
+          const next = new URLSearchParams(location.search);
+          next.set('v', live);
+          location.replace(`${location.pathname}?${next}${location.hash}`);
+        }
       } catch {
         /* offline: keep the copy we have */
       } finally {
