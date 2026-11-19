@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { setAddress } from '../lib/address';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
 import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
@@ -94,8 +95,7 @@ export default function App() {
 
   // The address and the history follow the screen, so a reload or a shared link opens the same screen
   const writeAddress = useCallback((s: Screen) => {
-    const url = window.location.pathname + toQuery(s, viewRef.current) + window.location.hash;
-    window.history.replaceState(window.history.state, '', url);
+    setAddress(window.location.pathname + toQuery(s, viewRef.current) + window.location.hash);
   }, []);
   useEffect(() => {
     writeAddress(top);

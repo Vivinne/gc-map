@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Component, useEffect, type ReactNode } from 'react';
+import { setAddress } from '../lib/address';
 
 // The map needs the browser (WebGL, window), so the whole app renders on the client only
 const App = dynamic(() => import('./App'), { ssr: false, loading: () => <div className="boot">Loading the atlas</div> });
@@ -73,7 +74,7 @@ function useFreshVersion() {
     const tried = q.get('v') ?? '';
     if (q.has('v')) {
       q.delete('v');
-      history.replaceState(history.state, '', location.pathname + (q.size ? `?${q}` : '') + location.hash);
+      setAddress(location.pathname + (q.size ? `?${q}` : '') + location.hash);
     }
     if (!mine) return;
     let busy = false;
