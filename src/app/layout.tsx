@@ -41,6 +41,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* this build's id: an open page loads a newer deploy when the live page's id differs (src/lib/fresh.ts) */}
+        <meta name="gc-build" content={process.env.NEXT_PUBLIC_GC_BUILD} />
         {/* only this site and the OpenFreeMap tile server may be used by the page (S4) */}
         <meta httpEquiv="Content-Security-Policy" content={CSP} />
         {/* the street tiles come from OpenFreeMap: open the connection while the app script loads */}

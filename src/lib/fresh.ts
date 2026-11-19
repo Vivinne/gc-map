@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { flushAddress, setAddress } from './address';
 
-/** Build id written by Next.js as the first comment of the exported page */
-const buildOf = (html: string) => /^<!DOCTYPE html><!--([\w-]+)-->/i.exec(html)?.[1] ?? '';
+/** Build id of a page: its meta gc-build (from 2026-11-20), else the comment Next.js 15 wrote at the top */
+const buildOf = (html: string) => /<meta name="gc-build" content="([\w-]+)"/.exec(html)?.[1] ?? /^<!DOCTYPE html><!--([\w-]+)-->/i.exec(html)?.[1] ?? '';
 
 /**
  * Keep phones on the newest version: in-app browsers (LINE, Instagram, ...) keep an old copy of the page.
@@ -11,7 +11,7 @@ const buildOf = (html: string) => /^<!DOCTYPE html><!--([\w-]+)-->/i.exec(html)?
  */
 export function useFreshVersion() {
   useEffect(() => {
-    const mine = document.firstChild?.nextSibling?.nodeType === Node.COMMENT_NODE ? (document.firstChild.nextSibling as Comment).data.trim() : '';
+    const mine = document.querySelector<HTMLMetaElement>('meta[name="gc-build"]')?.content ?? '';
     // the fresh address did its job: drop it from the address bar
     const q = new URLSearchParams(location.search);
     const tried = q.get('v') ?? '';
@@ -26,7 +26,7 @@ export function useFreshVersion() {
       busy = true;
       try {
         const r = await fetch(`${location.pathname}?fresh=${Date.now()}`, { cache: 'no-store' });
-        const live = r.ok ? buildOf((await r.text()).slice(0, 200)) : '';
+        const live = r.ok ? buildOf(await r.text()) : '';
         // once per build: if the fresh address still brought the old copy, stay on it rather than loop
         let done = tried === live;
         try {
