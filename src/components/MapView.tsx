@@ -1,6 +1,6 @@
 'use client';
 
-import { Map as MaplibreMap, setWorkerUrl, type Map as MlMap } from 'maplibre-gl';
+import type { Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import { flushSync } from 'react-dom';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { Building } from '../lib/model';
@@ -11,7 +11,6 @@ import { Icon } from './Icons';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
 import { renderOverlay, type Act, type Click } from './map/overlay';
-import { styleSpec } from './map/style';
 
 /* M8 map: the MapLibre map, its events, the scale bar, zoom buttons and the tile notice.
    Camera moves: map/camera.ts · markers and names: map/overlay.tsx · basemap style: map/style.ts */
@@ -20,9 +19,17 @@ export type { MapHandle, Padding };
 
 /** With no search, every name shows when the scale bar reads this length (metres) or less; wider, only exam buildings */
 const NAME_SCALE = 100000;
-// MapLibre 6 draws tiles in a worker it loads from beside its own file; the bundler moves that file, so the
-// worker is pointed to where the bundler put it (S1: MapLibre 6 for the XSS fix in 5.x)
-if (typeof window !== 'undefined') setWorkerUrl(new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href);
+/**
+ * The map library and the offline basemap are the biggest downloads: they load after the page is on screen,
+ * so the search box, Category and the lists work while the map is still coming (P1, slow networks).
+ * MapLibre 6 draws tiles in a worker it loads from beside its own file; the bundler moves that file, so the
+ * worker is pointed to where the bundler put it (S1: MapLibre 6 for the XSS fix in 5.x).
+ */
+async function loadMapLib() {
+  const [lib, style] = await Promise.all([import('maplibre-gl'), import('./map/style')]);
+  lib.setWorkerUrl(new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href);
+  return { Map: lib.Map, styleSpec: style.styleSpec };
+}
 
 /** Longest press (ms) that still counts as a click on a mark */
 const PRESS_MS = 700;
@@ -50,11 +57,13 @@ interface Props {
   onView(v: View): void;
   /** The map cannot start (no WebGL) */
   onFail(): void;
+  /** The map is on screen (it loads after the page): camera moves asked for before now can run */
+  onReady(): void;
   fallback: React.ReactNode;
 }
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
-  const { buildings, searched, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, fallback } = props;
+  const { buildings, searched, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, onReady, fallback } = props;
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const tilesOk = useRef(false);
@@ -69,8 +78,30 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   viewRef.current = onView;
   const motion = useCallback((ms: number) => (reducedMotion ? 0 : ms), [reducedMotion]);
 
+  const styleRef = useRef<(() => StyleSpecification) | null>(null);
+  // a map file that fails to download goes to the page's error guard (it reloads once for a newer deploy)
+  const [loadError, setLoadError] = useState<unknown>(null);
+  if (loadError) throw loadError;
+
   useEffect(() => {
-    if (!box.current) return;
+    let gone = false;
+    let stop = () => {};
+    loadMapLib().then(
+      (lib) => {
+        if (!gone) stop = startMap(lib);
+      },
+      (e) => !gone && setLoadError(e),
+    );
+    return () => {
+      gone = true;
+      stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startMap = ({ Map: MaplibreMap, styleSpec }: Awaited<ReturnType<typeof loadMapLib>>): (() => void) => {
+    if (!box.current) return () => {};
+    styleRef.current = styleSpec;
     let map: MlMap;
     try {
       map = new MaplibreMap({
@@ -87,7 +118,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     } catch {
       setNoMap(true);
       onFail();
-      return;
+      return () => {};
     }
     map.touchZoomRotate.disableRotation();
     map.on('error', (e) => {
@@ -128,13 +159,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     setLayer(map.getCanvasContainer());
     const ro = new ResizeObserver(() => map.resize());
     ro.observe(box.current);
+    onReady();
     return () => {
       ro.disconnect();
       map.remove();
       mapRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   // A new screen (card, list, search) redraws the marks: the ring of a mark the mouse was on ends with it
   useEffect(() => setPinHover(''), [buildings, selected]);
@@ -234,7 +265,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             onClick={() => {
               setTileFail(false);
               tilesOk.current = false;
-              mapRef.current?.setStyle(styleSpec());
+              if (styleRef.current) mapRef.current?.setStyle(styleRef.current());
             }}
           >
             Retry

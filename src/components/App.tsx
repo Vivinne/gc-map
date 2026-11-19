@@ -51,6 +51,10 @@ export default function App() {
   const mobile = useMedia(MOBILE_QUERY);
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)');
   const [stack, setStack] = useState<Screen[]>(() => startStack(START.screen));
+  const stackRef = useRef(stack);
+  stackRef.current = stack;
+  /** The stack the page opened with (the map frames a later screen when it arrives) */
+  const [startedWith] = useState(stack);
   const top = stack[stack.length - 1]!;
   // Text in the search box while the preview is open (typed, not yet submitted)
   const [draft, setDraft] = useState(top.q);
@@ -302,11 +306,15 @@ export default function App() {
     return () => ro.disconnect();
   });
 
-  // A shared link or reload with a search but no saved view: frame the results once the map is there
-  useEffect(() => {
-    if (!START.view && top.q) afterPanel(() => mapRef.current?.fitTo(searchSplit(top.q).main));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // A shared link or reload with a search but no saved view: frame the results once the map is there.
+  // The map loads after the page, so a search sent before then is framed when it arrives.
+  const mapReady = () => {
+    const s = stackRef.current[stackRef.current.length - 1]!;
+    const items = s.list === 'group' ? s.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b) : s.q ? searchSplit(s.q).main : [];
+    const card = s.b ? BY_ID.get(s.b) : undefined;
+    if (card && (!START.view || stackRef.current !== startedWith)) afterPanel(() => mapRef.current?.focus(card, false));
+    else if (items.length && (!START.view || stackRef.current !== startedWith)) afterPanel(() => mapRef.current?.fitTo(items));
+  };
 
   const editing = top.list === 'preview' && !top.b;
   // ＜ in the search box only while the box is opened again over a submitted search (it goes back to the
@@ -441,6 +449,7 @@ export default function App() {
             setViewTick((n) => n + 1);
           }}
           onFail={() => setMapDown(true)}
+          onReady={mapReady}
           fallback={
             // kept clear of the search box and the open panel; while a panel lists buildings, the page does not list them again
             <div className="map-down" style={{ marginTop: padding.top, marginLeft: padding.left, marginBottom: padding.bottom }}>
