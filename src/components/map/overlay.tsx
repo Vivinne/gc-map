@@ -25,7 +25,9 @@ const size = (n: number) => (n > 1 ? pointRadius(n) : DOT_R);
  * With a `label` the mark is also a button for the keyboard and screen readers (Tab, Enter or Space); the
  * names and the phone touch circles repeat a marker, so they take no label and stay out of the Tab order.
  */
-export type Act = (key: string, click: (e?: MouseEvent) => void, label?: string) => {
+/** Where the pointer was pressed (none: the keyboard) */
+export type Click = (at?: { clientX: number; clientY: number }) => void;
+export type Act = (key: string, click: Click, label?: string) => {
   onPointerDown: (e: PointerEvent) => void;
   onPointerEnter: (e: PointerEvent) => void;
   onPointerLeave: () => void;
@@ -73,7 +75,7 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
   const marks: ReactNode[] = [];
   // Markers and number points a finger can mean: their centres and sizes on screen
   const targets: { x: number; y: number; r: number; go(): void }[] = [];
-  const tapNearest = (e: MouseEvent | undefined, own: string) => {
+  const tapNearest = (e: { clientX: number; clientY: number } | undefined, own: string) => {
     if (!e) return onSelect(own);
     const box = layer.getBoundingClientRect();
     const x = e.clientX - box.left, y = e.clientY - box.top;

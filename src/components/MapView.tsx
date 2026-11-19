@@ -10,7 +10,7 @@ import { INSET, MAP_COLORS } from '../styles/tokens';
 import { Icon } from './Icons';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
-import { renderOverlay, type Act } from './map/overlay';
+import { renderOverlay, type Act, type Click } from './map/overlay';
 import { styleSpec } from './map/style';
 
 /* M8 map: the MapLibre map, its events, the scale bar, zoom buttons and the tile notice.
@@ -20,6 +20,8 @@ export type { MapHandle, Padding };
 
 /** With no search, every name shows when the scale bar reads this length (metres) or less; wider, only exam buildings */
 const NAME_SCALE = 100000;
+/** Longest press (ms) that still counts as a click on a mark */
+const PRESS_MS = 700;
 
 interface Props {
   /** Buildings the map may show: the search results, or every building */
@@ -146,22 +148,47 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const markersShown = useRef<Building[]>([]);
   markersShown.current = buildings;
 
-  // A tap moves a finger a little: allow more on phones before it counts as a drag
-  const down = useRef<[number, number] | null>(null);
-  const onDown = (e: React.PointerEvent) => {
-    down.current = [e.clientX, e.clientY];
-  };
-  const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
+  // A press on a mark opens what was under the pointer when it went down (N13): while the map still moves, the
+  // mark slides away before the pointer comes up, and the click would land on another mark or on none.
+  // A tap moves a finger a little: allow more on phones before it counts as a drag.
+  const press = useRef<{ click: Click; x: number; y: number; t: number } | null>(null);
+  /** A press just opened its mark: the click the browser sends after it is not a second open */
+  const pressed = useRef(false);
+  const slop = compact ? 14 : 5;
+  useEffect(() => {
+    const onUp = (e: PointerEvent) => {
+      const p = press.current;
+      press.current = null;
+      if (!p || e.button > 0 || performance.now() - p.t > PRESS_MS || Math.hypot(e.clientX - p.x, e.clientY - p.y) >= slop) return;
+      pressed.current = true;
+      // a click that never comes (it landed off the marks) must not swallow the next one
+      window.setTimeout(() => (pressed.current = false), PRESS_MS);
+      p.click({ clientX: p.x, clientY: p.y });
+    };
+    const onCancel = () => (press.current = null);
+    window.addEventListener('pointerup', onUp, true);
+    window.addEventListener('pointercancel', onCancel, true);
+    return () => {
+      window.removeEventListener('pointerup', onUp, true);
+      window.removeEventListener('pointercancel', onCancel, true);
+    };
+  }, [slop]);
   // Buildings pointed at: one id, or several joined by "~" (a number point, a country heading in a list)
   const hot = hoverId || pinHover;
   const act: Act = (key, click, label) => ({
-    onPointerDown: onDown,
+    onPointerDown: (e: React.PointerEvent) => {
+      if (e.button <= 0) press.current = { click, x: e.clientX, y: e.clientY, t: performance.now() };
+    },
     // the ink ring follows a mouse only: a finger's tap would leave it stuck on
     onPointerEnter: (e: React.PointerEvent) => isMouseHover(e) && setPinHover(key),
     // the ring ends whenever the map moves or the screen changes (below); a mouse still on the mark rings it again as it moves
     onPointerMove: (e: React.PointerEvent) => isMouseHover(e) && setPinHover(key),
     onPointerLeave: () => setPinHover((h) => (h === key ? '' : h)),
-    onClick: (e: React.MouseEvent) => isClick(e) && click(e),
+    // pointer presses open on release (above); a click with no press before it (a screen reader) opens here
+    onClick: (e: React.MouseEvent) => {
+      if (pressed.current) pressed.current = false;
+      else if (!press.current && e.detail === 0) click(e);
+    },
     ...(label
       ? {
           tabIndex: 0,
