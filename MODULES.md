@@ -24,15 +24,15 @@
 | M5 | 建築卡片 | 標題色塊、年代、建築師連結、摘要、考古年份 | `src/components/BuildingCard.tsx`、`src/lib/style.ts` | `Panel.tsx`、`HeadBar.tsx`、`styles/modules/card.css` | 中 |
 | M6 | 清單 | 預覽／結果／數字點清單、依國家分組、hover 連動 | `src/components/ResultList.tsx`、`src/components/ResultRow.tsx`、`src/lib/country.ts` | `styles/modules/rows.css`、`App.tsx`（清單切換） | 中 |
 | M7 | 面板外框 | 面板開關、標題列（＜ ×）、手機抽屜高度、離場動畫 | `src/components/Panel.tsx`、`src/components/HeadBar.tsx`、`src/components/Leave.tsx` | `styles/modules/panel.css`、`leave.css`、`phone.css` | 低 |
-| M8 | 地圖 | 地圖本體與事件、縮放鈕、圖磚失敗提示 | `src/components/MapView.tsx`（207 行） | `styles/modules/map.css` | 中 |
+| M8 | 地圖 | 地圖本體與事件、縮放鈕、圖磚失敗提示 | `src/components/MapView.tsx`、`src/lib/pointer.ts` | `styles/modules/map.css` | 中 |
 | M8a | 地圖：鏡頭 | 框選結果、開卡片時移動、數字點展開、＜ 返回 | `src/components/map/camera.ts` | `src/lib/geo.ts`、`src/lib/country.ts` | 中 |
 | M8b | 地圖：標記與數字點 | 圓點、重疊合併成數字點、建築名稱擺放、選取標記 | `src/components/map/overlay.tsx`、`src/components/NumberPoint.tsx` | `src/lib/geo.ts`（合併規則）、`styles/modules/map.css` | 中 |
 | M8c | 地圖：底圖樣式 | 海、陸、河、道路、建築輪廓的圖層 | `src/components/map/style.ts` | `src/lib/basemap.ts`、`tokens.ts`（`MAP_COLORS`） | 低 |
-| M9 | 比例尺 | 左下角比例尺；讀數也決定 100 km 以內才顯示所有建築名稱 | `src/components/ScaleBar.tsx` | `MapView.tsx`（`NAME_SCALE`）、`styles/modules/map.css` | 低 |
-| M10 | 導覽與狀態 | ＜ 返回、× 關閉、網址、重新整理還原、快捷鍵 | `src/lib/nav.ts`、`src/components/App.tsx`（437 行，串接所有模組） | 幾乎所有 UI 模組 | 低（高風險） |
+| M9 | 比例尺 | 左下角比例尺；讀數也決定 100 km 以內才顯示所有建築名稱 | `src/components/ScaleBar.tsx`、`src/lib/scale.ts` | `MapView.tsx`（`NAME_SCALE`）、`styles/modules/map.css` | 低 |
+| M10 | 導覽與狀態 | ＜ 返回、× 關閉、網址、重新整理還原、快捷鍵 | `src/lib/nav.ts`、`src/lib/address.ts`、`src/components/App.tsx`（串接所有模組） | 幾乎所有 UI 模組 | 低（高風險） |
 | M11 | 視覺設定 | 風格色、底圖色、灰階、動態、圓角、間距、字型 | `src/styles/tokens.ts`、`src/styles/tokens.css` | `styles/modules/base.css`、`shape.css`、`KEEP.md`（受保護值） | 低 |
 | M12 | 共用小件 | 圖示、資料型別、資料載入 | `src/components/Icons.tsx`、`src/lib/types.ts`、`src/lib/data.ts`、`src/lib/model.ts` | 改型別會影響多個模組 | 低 |
-| M13 | 頁面入口與發布 | Next.js 入口、`/atlas` 轉址、GitHub Pages | `src/app/*`、`src/components/ClientEntry.tsx`、`src/components/Redirect.tsx`、`.github/workflows/deploy.yml` | `next.config.ts`、`package.json` | 低 |
+| M13 | 頁面入口與發布 | Next.js 入口、`/atlas` 轉址、GitHub Pages | `src/app/*`、`src/components/ClientEntry.tsx`、`src/components/Guard.tsx`、`src/lib/fresh.ts`、`src/components/Redirect.tsx`、`.github/workflows/deploy.yml` | `next.config.ts`、`package.json` | 低 |
 
 ## 跨模組功能（一個動作經過多個模組）
 
