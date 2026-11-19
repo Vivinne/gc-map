@@ -1,76 +1,24 @@
 'use client';
 
-import { BY_COUNTRY_MIN, byCountry } from '../lib/country';
-import maplibregl, { type Map as MlMap, type StyleSpecification } from 'maplibre-gl';
-import { createPortal, flushSync } from 'react-dom';
+import maplibregl, { type Map as MlMap } from 'maplibre-gl';
+import { flushSync } from 'react-dom';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { basemap } from '../lib/basemap';
-import { DOT_R, boundsOf, groupOnScreen, pointRadius } from '../lib/geo';
-import { ERAS, type Building } from '../lib/model';
+import type { Building } from '../lib/model';
 import type { View } from '../lib/nav';
 import { INSET, MAP_COLORS } from '../styles/tokens';
 import { Icon } from './Icons';
-import NumberPoint from './NumberPoint';
 import ScaleBar, { scaleFor } from './ScaleBar';
+import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
+import { renderOverlay, type Act } from './map/overlay';
+import { styleSpec } from './map/style';
 
-/** Camera moves: one length and one curve, the same as the panels (fast start, soft landing) */
-const MAP_MS = 420;
-const EASE = (t: number) => 1 - (1 - t) ** 4;
-/**
- * Long camera moves (a jump of several zoom levels: card focus, ＜, framing results) take longer and start
- * and end softly, so the eye can follow where the map goes. Short moves keep the panel timing.
- */
-const EASE_LONG = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
-const LONG_FROM = 1.5;
-const camMs = (dz: number) => Math.min(1600, MAP_MS + 150 * Math.abs(dz));
-const camEase = (dz: number) => (Math.abs(dz) >= LONG_FROM ? EASE_LONG : EASE);
-const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]];
-/** Space kept round the buildings when the map frames them */
-const FRAME = 40;
-const MAX_ZOOM = 18;
-/** Closest zoom when a number point is opened (buildings at the same spot never split) */
-const SPLIT_MAX = 17;
+/* M8 map: the MapLibre map, its events, the scale bar, zoom buttons and the tile notice.
+   Camera moves: map/camera.ts · markers and names: map/overlay.tsx · basemap style: map/style.ts */
+
+export type { MapHandle, Padding };
+
 /** With no search, every name shows when the scale bar reads this length (metres) or less; wider, only exam buildings */
 const NAME_SCALE = 100000;
-/** Map name labels: longest name shown in full, and the width a character takes at 12 px */
-const LABEL_MAX = 24;
-const LABEL_CHAR = 6.6;
-/** The open building's name: 13.5 px against 12 px */
-const SEL_SCALE = 13.5 / 12;
-/** Halo of the open building's mark (the white disc with its ink ring is r 13) */
-const SEL_HALO = 18;
-
-export interface Padding {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-}
-
-export interface MapHandle {
-  /** Frame a set of buildings in the free part of the map, zooming in no further than needed for each to stand alone */
-  fitTo(list: Building[]): void;
-  /**
-   * Show the building of an open card. If it is merged into a number point, zoom in just enough for it to
-   * stand alone and bring it into the free part of the map; otherwise the map only moves as far as needed
-   * to show it in the free part (the zoom stays).
-   */
-  focus(b: Building, centre?: boolean): void;
-  /**
-   * A number point opened: zoom in only as far as needed for each of its buildings to stand alone as a single
-   * marker (no number point left among them), centred on them in the free part of the map; never past the
-   * view that still shows them all.
-   */
-  split(list: Building[]): void;
-  /**
-   * Whether the map already shows a set of buildings as framing would: every one inside the free part of the
-   * map and standing alone (no two merged). A list line that frames them is then not clickable.
-   */
-  framed(list: Building[]): boolean;
-  /** Go back to a view saved earlier (＜) */
-  moveTo(v: View): void;
-  view(): View | null;
-}
 
 interface Props {
   /** Buildings the map may show: the search results, or every building */
@@ -97,42 +45,6 @@ interface Props {
   onFail(): void;
   fallback: React.ReactNode;
 }
-
-function styleSpec(): StyleSpecification {
-  const c = MAP_COLORS;
-  const { land, borders } = basemap();
-  return {
-    version: 8,
-    sources: {
-      land: { type: 'geojson', data: land },
-      borders: { type: 'geojson', data: borders },
-      // Streets for the city scale. Optional: if the tile server cannot be reached the offline layers still draw the map.
-      ofm: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' },
-    },
-    layers: [
-      { id: 'sea', type: 'background', paint: { 'background-color': c.sea } },
-      { id: 'land', type: 'fill', source: 'land', paint: { 'fill-color': c.land } },
-      { id: 'ofm-water', type: 'fill', source: 'ofm', 'source-layer': 'water', minzoom: 6, paint: { 'fill-color': c.sea } },
-      {
-        id: 'ofm-river', type: 'line', source: 'ofm', 'source-layer': 'waterway', minzoom: 9,
-        paint: { 'line-color': c.sea, 'line-width': ['interpolate', ['linear'], ['zoom'], 9, 0.8, 15, 4] },
-      },
-      {
-        id: 'ofm-roads', type: 'line', source: 'ofm', 'source-layer': 'transportation', minzoom: 10,
-        filter: ['match', ['get', 'class'], ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'minor', 'service'], true, false],
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': c.road,
-          'line-width': ['interpolate', ['exponential', 1.6], ['zoom'], 10, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 1.4, 0.4], 16, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 12, ['secondary', 'tertiary'], 9, 5]],
-        },
-      },
-      { id: 'ofm-buildings', type: 'fill', source: 'ofm', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': c.building } },
-      { id: 'borders', type: 'line', source: 'borders', maxzoom: 10, paint: { 'line-color': '#FFFFFF', 'line-width': 1 } },
-    ],
-  };
-}
-
-const size = (n: number) => (n > 1 ? pointRadius(n) : DOT_R);
 
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const { buildings, searched, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, fallback } = props;
@@ -215,156 +127,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /** Move the map only as far as needed to show a point in the free part; the zoom stays */
-  const reveal = (map: MlMap, b: { lng: number; lat: number }) => {
-    const p = padRef.current;
-    const { clientWidth: W, clientHeight: H } = map.getContainer();
-    const pt = map.project([b.lng, b.lat]);
-    const x1 = p.left + FRAME;
-    const x2 = W - p.right - FRAME;
-    const y1 = p.top + FRAME;
-    const y2 = H - p.bottom - FRAME;
-    const dx = pt.x < x1 ? pt.x - x1 : pt.x > x2 ? pt.x - x2 : 0;
-    const dy = pt.y < y1 ? pt.y - y1 : pt.y > y2 ? pt.y - y2 : 0;
-    if (!dx && !dy) return;
-    map.panBy([dx, dy], { duration: motion(MAP_MS), easing: EASE });
-  };
-
-  /**
-   * Where framing a set of buildings takes the map: their centre, at the closest zoom holding them all but no
-   * closer than needed for every one to stand alone; when they already stand alone at the present zoom the zoom
-   * does not grow (the map only moves, or zooms out to take them all in)
-   */
-  const frameTarget = (map: MlMap, list: Building[]): { center: [number, number]; zoom: number } | null => {
-    const b = boundsOf(list);
-    if (!b) return null;
-    const p = padRef.current;
-    const padding = { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME };
-    const zoom = map.getZoom();
-    const fitZ = Math.min(map.cameraForBounds(b, { padding })?.zoom ?? zoom, MAX_ZOOM);
-    // zoom at which every one of them stands alone (no number point among them); one building has no limit
-    const pts = list.map((x) => map.project([x.lng, x.lat]));
-    let near = Infinity;
-    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) near = Math.min(near, Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y));
-    const splitAt = Number.isFinite(near) ? (near > 0 ? zoom + Math.log2((2 * DOT_R + 2) / near) + 0.1 : SPLIT_MAX) : -Infinity;
-    return { center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2], zoom: Math.min(fitZ, Math.max(splitAt, Math.min(zoom, fitZ))) };
-  };
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      fitTo: (all) => {
-        const map = mapRef.current;
-        if (!map) return;
-        // Too spread to fit even fully zoomed out (a phone cannot hold America and Europe together): frame the
-        // buildings at the top of the list instead — the first country of a list split by country, else the
-        // country of the first row — so the map shows what the list shows first
-        let list = all;
-        const b = boundsOf(all);
-        const p0 = padRef.current;
-        const raw = b && map.cameraForBounds(b, { padding: { top: p0.top + FRAME, right: p0.right + FRAME, bottom: p0.bottom + FRAME, left: p0.left + FRAME } })?.zoom;
-        if (raw != null && raw < map.getMinZoom() - 0.01 && all.length > 1) {
-          const groups = byCountry(all);
-          list = all.length >= BY_COUNTRY_MIN ? groups[0]!.items : groups.find((g) => g.items.includes(all[0]!))!.items;
-        }
-        const t = frameTarget(map, list);
-        if (!map || !t) return;
-        const p = padRef.current;
-        const dz = t.zoom - map.getZoom();
-        map.easeTo({
-          center: t.center,
-          zoom: t.zoom,
-          offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
-          duration: motion(camMs(dz)),
-          easing: camEase(dz),
-        });
-      },
-      focus: (b, centre) => {
-        const map = mapRef.current;
-        if (!map) return;
-        const zoom = map.getZoom();
-        const p0 = padRef.current;
-        // a marker clicked on the map: the building comes to the middle of the free part of the map
-        const toMiddle = () =>
-          map.easeTo({ center: [b.lng, b.lat], offset: [(p0.left - p0.right) / 2, (p0.top - p0.bottom) / 2], duration: motion(MAP_MS), easing: EASE });
-        const shown = markersShown.current;
-        const here = map.project([b.lng, b.lat]);
-        let near = Infinity;
-        for (const o of shown) {
-          if (o.id === b.id) continue;
-          const q = map.project([o.lng, o.lat]);
-          near = Math.min(near, Math.hypot(q.x - here.x, q.y - here.y));
-        }
-        // Far enough for the selection halo (r 18) to clear a neighbouring dot or small number point
-        const need = 32;
-        if (!shown.length || near >= need) {
-          if (centre) toMiddle();
-          else reveal(map, b);
-          return;
-        }
-        const to = Math.min(MAX_ZOOM, zoom + (near > 0 ? Math.log2(need / near) + 0.15 : MAX_ZOOM));
-        const p = padRef.current;
-        // offset, not padding: map padding would stay on the map and shift every saved centre after it
-        map.easeTo({
-          center: [b.lng, b.lat],
-          zoom: to,
-          offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
-          duration: motion(camMs(to - zoom)),
-          easing: camEase(to - zoom),
-        });
-      },
-      split: (list) => {
-        const map = mapRef.current;
-        const b = boundsOf(list);
-        if (!map || !b || !list.length) return;
-        const zoom = map.getZoom();
-        // closest pair on screen now: two dots stand apart once their centres are two radii and the gap apart
-        const pts = list.map((x) => map.project([x.lng, x.lat]));
-        let near = Infinity;
-        for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) near = Math.min(near, Math.hypot(pts[i]!.x - pts[j]!.x, pts[i]!.y - pts[j]!.y));
-        const need = 2 * DOT_R + 2;
-        const splitAt = near > 0 && Number.isFinite(near) ? zoom + Math.max(0, Math.log2(need / near)) + 0.1 : SPLIT_MAX;
-        // never closer than the view that still holds all of them: buildings that cannot split there stay in a
-        // smaller number point, which splits on its own click
-        const p = padRef.current;
-        const fit = map.cameraForBounds(b, { padding: { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME } });
-        const to = Math.min(splitAt, fit?.zoom ?? SPLIT_MAX, SPLIT_MAX);
-        const dz = to - zoom;
-        map.easeTo({
-          center: [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2],
-          zoom: to,
-          offset: [(p.left - p.right) / 2, (p.top - p.bottom) / 2],
-          duration: motion(camMs(dz)),
-          easing: camEase(dz),
-        });
-      },
-      // Framed: every one of them is in the free part of the map, and framing would not zoom in any further
-      // (it would only move the map a little, or zoom out). Number points that framing cannot split may stay.
-      framed: (list) => {
-        const map = mapRef.current;
-        const t = map && frameTarget(map, list);
-        if (!map || !t) return false;
-        const p = padRef.current;
-        const { clientWidth: W, clientHeight: H } = map.getContainer();
-        const pts = list.map((x) => map.project([x.lng, x.lat]));
-        if (pts.some((q) => q.x < p.left || q.x > W - p.right || q.y < p.top || q.y > H - p.bottom)) return false;
-        return map.getZoom() >= t.zoom - 0.05;
-      },
-      moveTo: (v) => {
-        const map = mapRef.current;
-        if (!map) return;
-        const dz = v.zoom - map.getZoom();
-        map.easeTo({ center: [v.lng, v.lat], zoom: v.zoom, duration: motion(camMs(dz)), easing: camEase(dz) });
-      },
-      view: () => {
-        const m = mapRef.current;
-        if (!m) return null;
-        const c = m.getCenter();
-        return { lng: c.lng, lat: c.lat, zoom: m.getZoom() };
-      },
-    }),
-    [motion],
-  );
+  useImperativeHandle(ref, () => cameraApi(mapRef, { padRef, markersShown, motion }), [motion]);
 
   const map = mapRef.current;
   const scale = map ? scaleFor(map.getCenter().lat, map.getZoom()) : null;
@@ -385,10 +148,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const isClick = (e: React.MouseEvent) => !down.current || Math.hypot(e.clientX - down.current[0], e.clientY - down.current[1]) < (compact ? 14 : 5);
   // Buildings pointed at: one id, or several joined by "~" (a number point, a country heading in a list)
   const hot = hoverId || pinHover;
-  const hotSet = new Set(hot ? hot.split('~') : []);
-  const seen = seenIds && seenIds.length ? new Set(seenIds) : null;
-  const seenCls = (ids: string[]) => (seen && !ids.some((id) => seen.has(id)) ? ' dim' : '');
-  const act = (key: string, click: () => void) => ({
+  const act: Act = (key, click) => ({
     onPointerDown: onDown,
     // the ink ring follows a mouse only: a finger's tap would leave it stuck on
     onPointerEnter: (e: React.PointerEvent) => e.pointerType === 'mouse' && setPinHover(key),
@@ -396,146 +156,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     onClick: (e: React.MouseEvent) => isClick(e) && click(),
   });
 
-  let overlay: React.ReactNode = null;
-  if (map && layer) {
-    const { clientWidth: W, clientHeight: H } = map.getContainer();
-    // The world repeats sideways: each point is drawn on the copy nearest the middle of the free part of the map
-    const mid = map.unproject([(padding.left + W - padding.right) / 2, H / 2]).lng;
-    const proj = (lng: number, lat: number) => {
-      const p = map.project([lng + 360 * Math.round((mid - lng) / 360), lat]);
-      return { x: p.x, y: p.y };
-    };
-    const inView = (x: number, y: number, m = 40) => x > -m && y > -m && x < W + m && y < H + m;
-    const marks: React.ReactNode[] = [];
-    // Names beside every single marker (placed after all markers, see below)
-    const labels: React.ReactNode[] = [];
-    const singles: { b: Building; x: number; y: number }[] = [];
-    // Screen boxes no name may cover: every marker and number point, then each name placed
-    const taken: [number, number, number, number][] = [];
-    const hits: React.ReactNode[] = [];
-    const groups = groupOnScreen(
-      buildings.map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
-      size,
-    );
-    // The open building inside a number point: the point stays whole and is itself marked open (halo, ink
-    // ring, the open building's name beside it); no separate mark is laid over it
-    const selGroup = selected ? (groups.find((g) => g.items.length > 1 && g.items.some((b) => b.id === selected.id)) ?? null) : null;
-    for (const g of groups) {
-      if (!inView(g.x, g.y)) continue;
-      if (g.items.length === 1) {
-        const b = g.items[0]!;
-        const on = selected?.id === b.id;
-        marks.push(
-          <circle key={b.id} className={`mk dot${hotSet.has(b.id) ? ' hot' : ''}${on ? ' sel' : ''}${seenCls([b.id])}`} cx={g.x} cy={g.y} r={DOT_R} fill={ERAS[b.era].color} {...act(b.id, () => onSelect(b.id))}>
-            <title>{b.name}</title>
-          </circle>,
-        );
-        if (compact) hits.push(<circle key={`h-${b.id}`} className="mk hit" cx={g.x} cy={g.y} r={20} {...act(b.id, () => onSelect(b.id))} />);
-        singles.push({ b, x: g.x, y: g.y });
-        continue;
-      }
-      if (g === selGroup) continue;
-      const gr = size(g.items.length) + 6;
-      taken.push([g.x - gr, g.y - gr, g.x + gr, g.y + gr]);
-      const key = g.items.map((b) => b.id).join('~');
-      const isHot = hot === key || g.items.some((b) => hotSet.has(b.id));
-      marks.push(
-        <g key={key} className={`mk num${isHot ? ' hot' : ''}${seenCls(g.items.map((x) => x.id))}`} transform={`translate(${g.x.toFixed(1)},${g.y.toFixed(1)})`} {...act(key, () => onGroup(g.items.map((b) => b.id)))}>
-          <NumberPoint group={g} />
-          <title>{`${g.items.length} Architectures`}</title>
-        </g>,
-      );
-    }
-    for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
-    // The open building inside a number point: that number point is not drawn; the open building's own mark
-    // stands alone and the other buildings of that point are left out until the map is zoomed in again
-    const sp = selected ? proj(selected.lng, selected.lat) : null;
-    // The open building's name is placed first and always shows: right of its mark, else left, else under,
-    // else over; when every place is taken it still goes on the roomier side (over other markers, kept on the
-    // map, shortened with … if the map is too narrow)
-    if (sp && inView(sp.x, sp.y)) {
-      taken.push([sp.x - SEL_HALO, sp.y - SEL_HALO, sp.x + SEL_HALO, sp.y + SEL_HALO]);
-      const ch = LABEL_CHAR * SEL_SCALE;
-      const gap = SEL_HALO + 3;
-      const fit = (t: string) => (t.length > LABEL_MAX ? `${t.slice(0, LABEL_MAX - 1)}\u2026` : t);
-      let text = fit(selected!.name);
-      const { x, y } = sp;
-      const left = padding.left + 4, right = W - padding.right - 4;
-      let placed: { box: [number, number, number, number]; tx: number; anchor: 'start' | 'end' | 'middle' } | null = null;
-      for (const side of [1, -1, 2, -2] as const) {
-        const w = text.length * ch;
-        const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
-        const top = side === 2 ? y + SEL_HALO + 2 : side === -2 ? y - SEL_HALO - 22 : y - 10;
-        const box: [number, number, number, number] = [x0, top, x0 + w, top + 20];
-        if (box[0] < left || box[2] > right || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
-        placed = { box, tx: side === 1 ? box[0] : side === -1 ? box[2] : x, anchor: side === 1 ? 'start' : side === -1 ? 'end' : 'middle' };
-        break;
-      }
-      if (!placed) {
-        const toRight = right - (x + gap) >= x - gap - left;
-        const room = Math.max(0, toRight ? right - (x + gap) : x - gap - left);
-        const most = Math.floor(room / ch);
-        if (text.length > most) text = most > 2 ? `${text.slice(0, most - 1)}\u2026` : text;
-        const w = text.length * ch;
-        const x0 = toRight ? x + gap : x - gap - w;
-        placed = { box: [x0, y - 10, x0 + w, y + 10], tx: toRight ? x0 : x0 + w, anchor: toRight ? 'start' : 'end' };
-      }
-      taken.push(placed.box);
-      labels.push(
-        <g key="sel-label" className="mk name" {...act(selected!.id, () => onSelect(selected!.id))}>
-          <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={20} />
-          <text className="mk-label sel" x={placed.tx} y={placed.box[1] + 14.5} textAnchor={placed.anchor}>
-            {text}
-          </text>
-        </g>,
-      );
-    }
-    // (the open building's name is placed above) then the rows on screen in the list, then the rest in list order
-    const rank = (b: Building) => (seen?.has(b.id) ? 1 : 2);
-    for (const { b, x, y } of [...singles].filter((d) => named(d.b) && d.b.id !== selected?.id).sort((p, q) => rank(p.b) - rank(q.b))) {
-      const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
-      const w = text.length * LABEL_CHAR;
-      // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
-      const gap = DOT_R + 4;
-      for (const side of [1, -1] as const) {
-        const x0 = side === 1 ? x + gap : x - gap - w;
-        const box: [number, number, number, number] = [x0, y - 8, x0 + w, y + 8];
-        if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
-        taken.push(box);
-        // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
-        labels.push(
-          <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
-            <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
-            <text className="mk-label" x={side === 1 ? box[0] : box[2]} y={y + 4} textAnchor={side === 1 ? 'start' : 'end'}>
-              {text}
-            </text>
-          </g>,
-        );
-        break;
-      }
-    }
-    // The open building is always marked (when merged, its number point carries the mark, above)
-    if (selected) {
-      const { x, y } = proj(selected.lng, selected.lat);
-      if (inView(x, y)) {
-        marks.push(
-          <g key="sel" className="sel-mark" transform={`translate(${x},${y})`}>
-            <circle r={SEL_HALO} fill={ERAS[selected.era].color} opacity={0.22} />
-            <circle r={13} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
-            <circle r={DOT_R} fill={ERAS[selected.era].color} />
-          </g>,
-        );
-      }
-    }
-    overlay = createPortal(
-      <svg className="overlay" width={W} height={H}>
-        {marks}
-        {labels}
-        {hits}
-      </svg>,
-      layer,
-    );
-  }
+  const overlay = map && layer
+    ? renderOverlay({ map, layer, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup })
+    : null;
 
   // + / −: around the open building while its card is open (the mouse wheel zooms around the mouse)
   const zoomBy = (d: 1 | -1) => {

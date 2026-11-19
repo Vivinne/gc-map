@@ -50,7 +50,7 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
   }, [resetKey]);
 
   const sheet = mobile && place === 'sheet';
-  // A folded sheet sits on the bottom edge: the scale bar moves up above it (--sheet-fold, see globals.css)
+  // A folded sheet sits on the bottom edge: the scale bar moves up above it (--sheet-fold, see src/styles/modules/phone.css)
   const self = useRef<HTMLElement | null>(null);
   const folded = sheet && state === 'fold';
   useLayoutEffect(() => {

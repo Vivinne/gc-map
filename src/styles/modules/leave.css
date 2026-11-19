@@ -1,0 +1,7 @@
+/* M7 panel exit animation. Order matters: imported by src/app/globals.css. */
+/* panels slide away instead of vanishing (Leave.tsx); nothing else moves */
+.leave { display: contents; }
+.leave > * { animation: out-l var(--leave) var(--ease-in) forwards !important; pointer-events: none; }
+.is-mobile .leave > .panel.sheet { animation-name: out-d !important; }
+@keyframes out-l { to { transform: translateX(-14px); opacity: 0; } }
+@keyframes out-d { to { transform: translateY(40px); opacity: 0; } }

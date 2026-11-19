@@ -1,0 +1,16 @@
+/* phone layout (all modules). Order matters: imported by src/app/globals.css. */
+/* ---------- phone ---------- */
+.is-mobile .topbar { top: calc(12px + env(safe-area-inset-top)); left: 12px; right: 12px; width: auto; max-width: none; }
+.panel.m.top { top: calc(64px + env(safe-area-inset-top)); left: 12px; right: 12px; max-height: calc(100% - 64px - 12px - env(safe-area-inset-top)); animation: drop-in var(--t-mid) var(--ease); }
+.panel.m.sheet { left: 0; right: 0; bottom: 0; max-height: 50%; padding-bottom: env(safe-area-inset-bottom); animation: sheet-in var(--t-mid) var(--ease); transition: max-height var(--t-mid) var(--ease), transform var(--t-mid) var(--ease); }
+.panel.m.sheet.full { max-height: calc(100% - 64px - env(safe-area-inset-top)); height: calc(100% - 64px - env(safe-area-inset-top)); }
+.panel.m.sheet .p-head.drag { position: relative; touch-action: none; cursor: grab; padding-top: 14px; user-select: none; -webkit-user-select: none; }
+.panel.m.sheet .grab { position: absolute; top: 5px; left: 50%; width: 40px; height: 4px; margin-left: -20px; background: var(--g84); }
+/* folded to the title: a list without a title keeps a strip a finger can hit (tap or drag up opens it) */
+.panel.m.sheet.fold .p-head { min-height: 32px; }
+.panel.m.card .grab { background: rgba(255, 255, 255, 0.8); z-index: 1; }
+.panel.m.card .p-head.drag { padding-top: 0; }
+.panel.m.card .c-top { padding-top: 14px; }
+.is-mobile .ctrls { display: none; }
+.is-mobile .credit { right: 12px; left: 12px; text-align: right; font-size: 9px; }
+.is-mobile .scale { bottom: calc(22px + var(--sheet-fold, 0px)) !important; }

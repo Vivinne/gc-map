@@ -1,0 +1,15 @@
+/* M7 panel frame and title bar. Order matters: imported by src/app/globals.css. */
+/* ---------- panels: desktop under the search box, top left of the map; they stop above the scale bar ---------- */
+.panel { position: absolute; z-index: 6; background: #fff; display: flex; flex-direction: column; box-shadow: 0 0 0 1px var(--rule), 0 6px 20px rgba(0, 0, 0, 0.08); }
+.panel.d { top: 64px; left: 16px; width: calc(var(--detail-w) + 40px); max-height: calc(100% - 64px - 56px); animation: drawer-in var(--t-mid) var(--ease); }
+.p-head { flex: none; }
+.p-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+@keyframes drawer-in { from { transform: translateX(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes drop-in { from { transform: translateY(-8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.h-bar { display: flex; align-items: center; height: 40px; padding: 0 4px; border-bottom: 1px solid var(--rule); }
+.h-title { padding: 0 8px; font-weight: 600; font-size: 14px; }
+.h-sp { flex: 1; }
+.h-ic { width: 32px; height: 32px; display: grid; place-items: center; }
+.h-ic:hover { background: var(--soft); }

@@ -5,7 +5,7 @@ import { architectOf, builtOf, joinDot, shownStyle } from '../lib/style';
 
 /**
  * One building in a list (preview, results, number point): a strip in its category colour, the name in bold,
- * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in globals.css).
+ * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in src/styles/modules/rows.css).
  */
 export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(id: string): void; onHover(id: string): void }) {
   // the architect is underlined, as on the card (no architect: the style only)

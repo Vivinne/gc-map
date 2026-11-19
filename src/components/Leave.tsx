@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-/** How long a closing panel takes to slide away (kept in step with .leave in globals.css) */
+/** How long a closing panel takes to slide away (kept in step with .leave in src/styles/modules/leave.css) */
 export const LEAVE_MS = 160;
 
 /**
  * Lets a panel slide away instead of vanishing. While `show` is true the children render as usual;
  * when it turns false the last children stay on screen for a moment in a wrapper that plays the exit
- * (see .leave in globals.css), then go. The wrapper does not take part in the layout (display: contents),
+ * (see .leave in src/styles/modules/leave.css), then go. The wrapper does not take part in the layout (display: contents),
  * so nothing around the panel moves. The leaving copy cannot be clicked.
  */
 export default function Leave({ show, children }: { show: boolean; children: ReactNode }) {

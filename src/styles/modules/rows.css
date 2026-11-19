@@ -1,0 +1,41 @@
+/* M6 list rows. Order matters: imported by src/app/globals.css. */
+/* ---------- rows: colour strip, name, built · city, architect · style; thin grey rules between ---------- */
+.rows > li + li { border-top: 1px solid var(--rule); }
+.row { width: 100%; display: flex; align-items: stretch; gap: 12px; padding: 10px 16px 10px 0; }
+/* light blue under a mouse, a keyboard focus or a finger (a phone keeps it on the last row touched) */
+.row:hover, .row:focus-visible, .row:active { background: var(--soft); }
+.row .strip { flex: none; width: 4px; }
+.row-t { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.row-t b { font-size: 14px; font-weight: 700; line-height: 1.3; }
+.row-t span { font-size: 12.5px; color: var(--mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-who { font-weight: 600; text-decoration: none; }
+.row.text { align-items: center; padding: 0 16px; height: 40px; color: var(--mute); gap: 10px; }
+.row.text span { color: var(--ink); font-size: 14px; }
+.rows.recent + .rows { border-top: 1px solid var(--rule); }
+.rows.recent + .recent-b { border-top: 1px solid var(--rule); }
+/* recent buildings in the search preview: name with built span · city on the first line, architect · style below */
+.recent-b .row { padding: 8px 16px 8px 0; }
+.recent-b .row-t { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 1px; }
+.recent-b .row-t b { flex: none; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-b .row-t span:nth-of-type(1) { flex: 1; min-width: 0; }
+.recent-b .row-t span:last-child { flex-basis: 100%; }
+/* long results: a small grey country line among the rows (part of the same list); a click frames the country */
+.rows .country + li { border-top: 0 !important; }
+.c-head { width: 100%; display: flex; align-items: baseline; gap: 6px; padding: 10px 16px 2px; font-size: 12px; font-weight: 600; color: var(--mute); }
+/* the grey lines and their buttons darken under a mouse only: a finger leaves no hover colour behind on them */
+@media (hover: hover) { .c-head:hover { color: var(--ink); } }
+.c-head .n { font-weight: 500; }
+/* the search's other matches: a quiet button at the end of the list; once pressed, a grey line above them */
+.rows .more { border-top: 1px solid var(--rule); }
+.rows .more { display: flex; justify-content: center; padding: 10px 16px 12px; }
+.more-btn { padding: 6px 8px; margin: -4px -4px; font-size: 13px; font-weight: 600; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; border-radius: var(--r-s); }
+@media (hover: hover) { .more-btn:hover { color: var(--ink); background: var(--soft); } }
+/* the other outcomes' line: ∧ at the far right folds them away again */
+.rows .country.more-row, .rows li.country:has(.fold-btn) { display: flex; align-items: flex-end; }
+.rows li.country .c-head.more-line { flex: 1; min-width: 0; }
+.fold-btn { flex: none; width: 28px; height: 24px; margin: 0 8px 0 0; display: grid; place-items: center; color: var(--mute); border-radius: var(--r-s); }
+@media (hover: hover) { .fold-btn:hover { color: var(--ink); background: var(--soft); } }
+/* a group line whose buildings the map already shows framed: lighter grey, not clickable, no hover colour, no press */
+.c-head.off, .c-head.off:hover { cursor: default; color: var(--g74); }
+.c-head.off:active { transform: none; }
+.none { padding: 14px 16px; color: var(--mute); font-weight: 600; }

@@ -1,0 +1,14 @@
+/* M11 corners (KEEP.md) and reduced motion. Order matters: imported by src/app/globals.css. */
+/* ---------- shape (kept from v1) ----------
+   Corners: 6px on controls, 10px on panels, cards and the zoom buttons, pills for chips. */
+.sbox, .cat-btn, .s-x, .s-back, .h-ic, .btn, .c-who { border-radius: var(--r-s); }
+.ctrls { border-radius: var(--r-m); overflow: hidden; }
+.ctrls button { border-radius: 0; }
+.panel { border-radius: var(--r-m); overflow: hidden; }
+.panel.m.sheet { border-radius: var(--r-m) var(--r-m) 0 0; }
+.chip { border-radius: 999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .leave { display: none; }
+}

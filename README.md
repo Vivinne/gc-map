@@ -55,9 +55,13 @@ Priority: `geo-manual.csv` > `geo-raw.txt` > `geo-estimate.csv`.
 
 ## Code
 
+Module list (which files to read for which change): `MODULES.md`.
+
+
 | Path | Purpose |
 |---|---|
 | `src/styles/tokens.ts`, `tokens.css` | Colours, greys, motion, corners, spacing (the only place for these values) |
+| `src/styles/modules/*.css` | Page styles, one file per module, loaded in order by `src/app/globals.css` (see `MODULES.md`) |
 | `src/lib/model.ts` | Building model: start year, city key, categories |
 | `src/lib/style.ts` | Shown style, architect, built span, keywords |
 | `src/lib/search.ts` | Plain text search over name, architect, style, city, country, keywords, summary |
@@ -65,6 +69,7 @@ Priority: `geo-manual.csv` > `geo-raw.txt` > `geo-estimate.csv`.
 | `src/lib/recent.ts`, `storage.ts` | Recent searches and buildings, browser storage |
 | `src/lib/geo.ts` | Bounds, screen grouping into number points |
 | `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), search box, Category, lists, card, panel, scale bar |
+| `src/components/map/` | Map parts: `camera.ts` (camera moves), `overlay.tsx` (markers and names), `style.ts` (basemap layers) |
 
 All code, comments and UI text are English (one approved exception: the keyword label of the card); the study notes in `content/` and the data files keep their original wording.
 
