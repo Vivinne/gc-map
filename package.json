@@ -9,7 +9,6 @@
     "dev": "next dev",
     "prebuild": "npm run data",
     "build": "next build",
-    "site": "npm run data && tsx scripts/build-standalone.ts",
     "serve": "python3 -m http.server 3000 --directory out",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts"

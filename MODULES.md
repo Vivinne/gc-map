@@ -32,7 +32,7 @@
 | M10 | 導覽與狀態 | ＜ 返回、× 關閉、網址、重新整理還原、快捷鍵 | `src/lib/nav.ts`、`src/components/App.tsx`（437 行，串接所有模組） | 幾乎所有 UI 模組 | 低（高風險） |
 | M11 | 視覺設定 | 風格色、底圖色、灰階、動態、圓角、間距、字型 | `src/styles/tokens.ts`、`src/styles/tokens.css` | `styles/modules/base.css`、`shape.css`、`KEEP.md`（受保護值） | 低 |
 | M12 | 共用小件 | 圖示、資料型別、資料載入 | `src/components/Icons.tsx`、`src/lib/types.ts`、`src/lib/data.ts`、`src/lib/model.ts` | 改型別會影響多個模組 | 低 |
-| M13 | 頁面入口與發布 | Next.js 入口、`/atlas` 轉址、單檔版、GitHub Pages | `src/app/*`、`src/components/ClientEntry.tsx`、`src/components/Redirect.tsx`、`src/standalone/main.tsx`、`scripts/build-standalone.ts`、`.github/workflows/deploy.yml` | `next.config.ts`、`package.json` | 低 |
+| M13 | 頁面入口與發布 | Next.js 入口、`/atlas` 轉址、GitHub Pages | `src/app/*`、`src/components/ClientEntry.tsx`、`src/components/Redirect.tsx`、`.github/workflows/deploy.yml` | `next.config.ts`、`package.json` | 低 |
 
 ## 跨模組功能（一個動作經過多個模組）
 
