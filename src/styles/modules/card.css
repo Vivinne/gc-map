@@ -1,17 +1,17 @@
 /* M5 building card. Order matters: imported by src/app/globals.css. */
 /* ---------- building card ---------- */
-.c-top { color: #fff; padding: 4px 4px 16px 16px; }
-.c-top .h-bar { border: 0; height: 36px; margin: 0 0 6px -12px; padding: 0; }
-.c-top .h-ic { color: #fff; }
-.c-top .h-ic:hover { background: rgba(0, 0, 0, 0.18); }
-.c-top .h-ic:active { background: rgba(0, 0, 0, 0.32); }
-.c-top h1 { font-stretch: 112%; font-weight: 800; font-size: 22px; line-height: 1.15; overflow-wrap: anywhere; padding-right: 12px; }
-.c-body { padding: 16px; display: flex; flex-direction: column; gap: 4px; }
-.c-line { font-size: 14px; line-height: 1.6; }
+.c-top { color: var(--paper); padding: var(--sz-4) var(--sz-4) var(--sz-16) var(--sz-16); }
+.c-top .h-bar { border: 0; height: var(--sz-36); margin: 0 0 var(--sz-6) calc(-1 * var(--sz-12)); padding: 0; }
+.c-top .h-ic { color: var(--paper); }
+.c-top .h-ic:hover { background: var(--shade-18); }
+.c-top .h-ic:active { background: var(--shade-32); }
+.c-top h1 { font-stretch: 112%; font-weight: 800; font-size: var(--fs-22); line-height: 1.15; overflow-wrap: anywhere; padding-right: var(--sz-12); }
+.c-body { padding: var(--sz-16); display: flex; flex-direction: column; gap: var(--sz-4); }
+.c-line { font-size: var(--fs-14); line-height: 1.6; }
 /* a finger-sized target (24 px) that keeps the line where it was */
-.c-who { padding: 4px 2px; margin: -4px -2px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+.c-who { padding: var(--sz-4) var(--sz-2); margin: calc(-1 * var(--sz-4)) calc(-1 * var(--sz-2)); font-weight: 700; text-decoration: underline; text-underline-offset: var(--sz-2); text-decoration-thickness: var(--sz-1); }
 .c-who:hover { background: var(--soft); }
 .c-who:active { background: var(--g92); }
-.c-sum { margin-top: 12px; font-size: 15px; line-height: 1.75; }
-.c-keys { margin-top: 12px; font-size: 13.5px; font-style: italic; color: var(--g37); }
-.c-body .exam { margin-top: 12px; }
+.c-sum { margin-top: var(--sz-12); font-size: var(--fs-15); line-height: 1.75; }
+.c-keys { margin-top: var(--sz-12); font-size: var(--fs-13-5); font-style: italic; color: var(--g37); }
+.c-body .exam { margin-top: var(--sz-12); }

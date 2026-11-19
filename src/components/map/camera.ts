@@ -4,11 +4,12 @@ import { BY_COUNTRY_MIN, byCountry } from '../../lib/country';
 import { DOT_R, boundsCenter, boundsOf } from '../../lib/geo';
 import type { Building } from '../../lib/model';
 import type { View } from '../../lib/nav';
+import { MOTION } from '../../styles/tokens';
 
 /* M8 camera: every map move (frame results, focus a card, split a number point, ＜). No drawing here. */
 
 /** Camera moves: one length and one curve, the same as the panels (fast start, soft landing) */
-export const MAP_MS = 420;
+export const MAP_MS = MOTION.slow;
 export const EASE = (t: number) => 1 - (1 - t) ** 4;
 /**
  * Long camera moves (a jump of several zoom levels: card focus, ＜, framing results) take longer and start

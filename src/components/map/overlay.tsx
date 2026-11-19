@@ -6,6 +6,7 @@ import { ERAS, type Building } from '../../lib/model';
 import { labelSize } from '../../lib/labelSize';
 import NumberPoint from '../NumberPoint';
 import type { Padding } from './camera';
+import { PAPER } from '../../styles/tokens';
 
 /* M8 markers and names: the SVG drawn over the map each frame (dots, number points, names, the open building's mark). */
 
@@ -229,7 +230,7 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
       marks.push(
         <g key="sel" className="sel-mark" transform={`translate(${x},${y})`}>
           <circle r={SEL_HALO} fill={ERAS[selected.era].color} opacity={0.22} />
-          <circle r={13} fill="#fff" style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
+          <circle r={13} fill={PAPER} style={{ stroke: 'var(--ink)' }} strokeWidth={3} />
           <circle r={DOT_R} fill={ERAS[selected.era].color} />
         </g>,
       );

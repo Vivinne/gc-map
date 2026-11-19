@@ -3,5 +3,5 @@
 .leave { display: contents; }
 .leave > * { animation: out-l var(--leave) var(--ease-in) forwards !important; pointer-events: none; }
 .is-mobile .leave > .panel.sheet { animation-name: out-d !important; }
-@keyframes out-l { to { transform: translateX(-14px); opacity: 0; } }
-@keyframes out-d { to { transform: translateY(40px); opacity: 0; } }
+@keyframes out-l { to { transform: translateX(calc(-1 * var(--sz-14))); opacity: 0; } }
+@keyframes out-d { to { transform: translateY(var(--sz-40)); opacity: 0; } }

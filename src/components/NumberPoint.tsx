@@ -1,5 +1,6 @@
 import { pointRadius, type Group } from '../lib/geo';
 import { ERAS, ERA_ORDER, type Building } from '../lib/model';
+import { PAPER } from '../styles/tokens';
 
 /** Number point: a ring split by category colour, the count in the middle (the v1 city circle) */
 export default function NumberPoint({ group }: { group: Group<Building> }) {
@@ -21,10 +22,10 @@ export default function NumberPoint({ group }: { group: Group<Building> }) {
           const large = a1 - a0 > Math.PI ? 1 : 0;
           const d = `M${P(a0, r)} A${r},${r} 0 ${large} 1 ${P(a1, r)} L${P(a1, r - ring)} A${r - ring},${r - ring} 0 ${large} 0 ${P(a0, r - ring)} Z`;
           a0 = a1;
-          return <path key={e} d={d} fill={ERAS[e].color} stroke="#fff" strokeWidth={1} />;
+          return <path key={e} d={d} fill={ERAS[e].color} stroke={PAPER} strokeWidth={1} />;
         })
       )}
-      <circle r={r - ring} fill="#fff" />
+      <circle r={r - ring} fill={PAPER} />
       <text className="num-n" y={4.3} textAnchor="middle">
         {items.length}
       </text>

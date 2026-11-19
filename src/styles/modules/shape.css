@@ -6,7 +6,7 @@
 .ctrls button { border-radius: 0; }
 .panel { border-radius: var(--r-m); overflow: hidden; }
 .panel.m.sheet { border-radius: var(--r-m) var(--r-m) 0 0; }
-.chip { border-radius: 999px; }
+.chip { border-radius: var(--sz-999); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

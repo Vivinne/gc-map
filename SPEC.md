@@ -8,7 +8,7 @@ Status: approved 2026-11-13; published 2026-11-13 at https://vivinne.github.io/g
 - Top left: Search box; Category button (icon: four squares) to its right.
 - Bottom right: Zoom + / − (desktop; phone pinches). Mouse wheel zooms.
 - Bottom left: scale bar (KEEP.md).
-- Every floating part 16 px from window, map and other parts.
+- Every floating part 16 px from window, map and other parts. Exception (B6, 2026-11-20): on desktop the zoom buttons and the scale bar share one bottom line 24 px from the bottom, clear of the map's source line under them; the panels stop 16 px above the scale bar.
 
 ## 2. Site rules
 | Rule | Behaviour |

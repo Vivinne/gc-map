@@ -88,3 +88,17 @@ test('D2 / S5 deploy: type check and tests before the build; outside actions pin
   assert.ok(wf.indexOf('npm run typecheck') > 0 && wf.indexOf('npm test') > wf.indexOf('npm run typecheck') && wf.indexOf('npm run build') > wf.indexOf('npm test'));
   for (const line of wf.split('\n').filter((l) => /uses:\s/.test(l))) assert.match(line, /@[0-9a-f]{40}\b/, line.trim());
 });
+
+test('C2 tokens: the style modules write no lengths or colours of their own; motion times match tokens.css', async () => {
+  const { readdirSync } = await import('node:fs');
+  const dir = new URL('../src/styles/modules/', import.meta.url);
+  for (const f of readdirSync(dir)) {
+    const css = readFileSync(new URL(f, dir), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/var\([^,()]+,\s*0px\)/g, '');
+    assert.equal(css.match(/(?<![\w-])\d+(\.\d+)?px\b/g), null, `${f}: lengths`);
+    assert.equal(css.match(/#[0-9a-fA-F]{3,6}\b|rgba?\(/g), null, `${f}: colours`);
+  }
+  const { MOTION, PAPER } = await import('../src/styles/tokens');
+  const tokens = readFileSync(new URL('../src/styles/tokens.css', import.meta.url), 'utf8');
+  for (const [k, css] of [['fast', '--t-fast'], ['mid', '--t-mid'], ['slow', '--t-slow'], ['leave', '--leave']] as const) assert.match(tokens, new RegExp(`${css}: ${MOTION[k]}ms;`));
+  assert.match(tokens, new RegExp(`--paper: ${PAPER};`));
+});

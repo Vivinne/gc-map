@@ -1,19 +1,19 @@
 /* phone layout (all modules). Order matters: imported by src/app/globals.css. */
 /* ---------- phone ---------- */
-.is-mobile .topbar { top: calc(12px + env(safe-area-inset-top)); left: 12px; right: 12px; width: auto; max-width: none; }
-.panel.m.top { top: calc(64px + env(safe-area-inset-top)); left: 12px; right: 12px; max-height: calc(100% - 64px - 12px - var(--credit-h) - env(safe-area-inset-top)); animation: drop-in var(--t-mid) var(--ease); }
+.is-mobile .topbar { top: calc(var(--sz-12) + env(safe-area-inset-top)); left: var(--sz-12); right: var(--sz-12); width: auto; max-width: none; }
+.panel.m.top { top: calc(var(--sz-64) + env(safe-area-inset-top)); left: var(--sz-12); right: var(--sz-12); max-height: calc(100% - var(--sz-64) - var(--sz-12) - var(--credit-h) - env(safe-area-inset-top)); animation: drop-in var(--t-mid) var(--ease); }
 .panel.m.sheet { left: 0; right: 0; bottom: 0; max-height: 50%; padding-bottom: env(safe-area-inset-bottom); animation: sheet-in var(--t-mid) var(--ease); transition: max-height var(--t-mid) var(--ease), transform var(--t-mid) var(--ease); }
-.panel.m.sheet.full { max-height: calc(100% - 64px - env(safe-area-inset-top)); height: calc(100% - 64px - env(safe-area-inset-top)); }
-.panel.m.sheet .p-head.drag { position: relative; touch-action: none; cursor: grab; padding-top: 14px; user-select: none; -webkit-user-select: none; }
-.panel.m.sheet .grab { position: absolute; top: 5px; left: 50%; width: 40px; height: 4px; margin-left: -20px; background: var(--g84); }
+.panel.m.sheet.full { max-height: calc(100% - var(--sz-64) - env(safe-area-inset-top)); height: calc(100% - var(--sz-64) - env(safe-area-inset-top)); }
+.panel.m.sheet .p-head.drag { position: relative; touch-action: none; cursor: grab; padding-top: var(--sz-14); user-select: none; -webkit-user-select: none; }
+.panel.m.sheet .grab { position: absolute; top: var(--sz-5); left: 50%; width: var(--sz-40); height: var(--sz-4); margin-left: calc(-1 * var(--sz-20)); background: var(--g84); }
 /* folded to the title: a list without a title keeps a strip a finger can hit (tap or drag up opens it) */
-.panel.m.sheet.fold .p-head { min-height: 32px; }
-.panel.m.card .grab { background: rgba(255, 255, 255, 0.8); z-index: 1; }
+.panel.m.sheet.fold .p-head { min-height: var(--sz-32); }
+.panel.m.card .grab { background: var(--veil-80); z-index: 1; }
 .panel.m.card .p-head.drag { padding-top: 0; }
-.panel.m.card .c-top { padding-top: 14px; }
+.panel.m.card .c-top { padding-top: var(--sz-14); }
 .is-mobile .ctrls { display: none; }
-.is-mobile .credit { right: 12px; left: 12px; text-align: right; font-size: 9px; bottom: calc(var(--credit-gap) + var(--sheet-h, 0px)); }
+.is-mobile .credit { right: var(--sz-12); left: var(--sz-12); text-align: right; font-size: var(--fs-9); bottom: calc(var(--credit-gap) + var(--sheet-h, 0px)); }
 /* a full sheet covers the map: the source line is a white strip along its bottom edge, and the list ends above it */
-.sheet-full .is-mobile .credit { z-index: 8; left: 0; right: 0; padding: 0 12px; height: var(--credit-h); line-height: var(--credit-h); background: var(--paper); bottom: env(safe-area-inset-bottom); }
+.sheet-full .is-mobile .credit { z-index: 8; left: 0; right: 0; padding: 0 var(--sz-12); height: var(--credit-h); line-height: var(--credit-h); background: var(--paper); bottom: env(safe-area-inset-bottom); }
 .sheet-full .panel.m.sheet.full .p-body { padding-bottom: var(--credit-h); }
-.is-mobile .scale { bottom: calc(22px + var(--sheet-fold, 0px)) !important; }
+.is-mobile .scale { bottom: calc(var(--sz-22) + var(--sheet-fold, 0px)) !important; }

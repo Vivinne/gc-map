@@ -6,7 +6,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import type { Building } from '../lib/model';
 import { isMouseHover } from '../lib/pointer';
 import type { View } from '../lib/nav';
-import { INSET, MAP_BOTTOM, MAP_COLORS } from '../styles/tokens';
+import { INSET, MAP_BOTTOM, MAP_COLORS, MOTION } from '../styles/tokens';
 import { Icon } from './Icons';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
@@ -265,7 +265,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const zoomBy = (d: 1 | -1) => {
     if (!map) return;
     const around = selected ? ([selected.lng, selected.lat] as [number, number]) : undefined;
-    map.easeTo({ zoom: map.getZoom() + d, ...(around ? { around } : {}), duration: motion(220), easing: EASE });
+    map.easeTo({ zoom: map.getZoom() + d, ...(around ? { around } : {}), duration: motion(MOTION.mid), easing: EASE });
   };
 
   return (

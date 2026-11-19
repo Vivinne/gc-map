@@ -1,17 +1,17 @@
 /* M3 search box, M4 Category button (top left). Order matters: imported by src/app/globals.css. */
 /* ---------- search box and Category, top left: 16 px from the edges, 32 px high ---------- */
-.topbar { position: absolute; z-index: 7; top: 16px; left: 16px; display: flex; gap: 8px; width: calc(var(--detail-w) + 40px); max-width: calc(100% - 32px); }
-.sbox { flex: 1; min-width: 0; height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 12px; background: #fff; box-shadow: 0 0 0 1px var(--rule), 0 6px 20px rgba(0, 0, 0, 0.08); color: var(--mute); }
-.sbox:hover, .sbox:focus-within { box-shadow: 0 0 0 1.5px var(--ink), 0 6px 20px rgba(0, 0, 0, 0.08); }
-.sbox input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--ink); font-size: 14px; }
+.topbar { position: absolute; z-index: 7; top: var(--sz-16); left: var(--sz-16); display: flex; gap: var(--sz-8); width: calc(var(--detail-w) + var(--sz-40)); max-width: calc(100% - var(--sz-32)); }
+.sbox { flex: 1; min-width: 0; height: var(--sz-40); display: flex; align-items: center; gap: var(--sz-8); padding: 0 var(--sz-4) 0 var(--sz-12); background: var(--paper); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-6) var(--sz-20) var(--shade-8); color: var(--mute); }
+.sbox:hover, .sbox:focus-within { box-shadow: 0 0 0 var(--sz-1-5) var(--ink), 0 var(--sz-6) var(--sz-20) var(--shade-8); }
+.sbox input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--ink); font-size: var(--fs-14); }
 .sbox input::placeholder { color: var(--g66); }
 /* touch screens: iOS Safari (and in-app browsers built on it) zooms the whole page into a text box under 16 px */
-@media (pointer: coarse) { .sbox input { font-size: 16px; text-overflow: ellipsis; } }
+@media (pointer: coarse) { .sbox input { font-size: var(--fs-16); text-overflow: ellipsis; } }
 .sbox input::-webkit-search-cancel-button { display: none; }
-.s-back { flex: none; width: 32px; height: 32px; margin: 0 -8px; display: grid; place-items: center; color: var(--ink); }
+.s-back { flex: none; width: var(--sz-32); height: var(--sz-32); margin: 0 calc(-1 * var(--sz-8)); display: grid; place-items: center; color: var(--ink); }
 .s-back:hover { background: var(--soft); }
-.s-x { width: 32px; height: 32px; display: grid; place-items: center; color: var(--ink); }
+.s-x { width: var(--sz-32); height: var(--sz-32); display: grid; place-items: center; color: var(--ink); }
 .s-x:hover { background: var(--soft); }
-.cat-btn { flex: none; width: 40px; height: 40px; display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 1px var(--rule), 0 6px 20px rgba(0, 0, 0, 0.08); }
-.cat-btn:hover { box-shadow: 0 0 0 1.5px var(--ink); }
-.cat-btn.on { background: var(--ink); color: #fff; }
+.cat-btn { flex: none; width: var(--sz-40); height: var(--sz-40); display: grid; place-items: center; background: var(--paper); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-6) var(--sz-20) var(--shade-8); }
+.cat-btn:hover { box-shadow: 0 0 0 var(--sz-1-5) var(--ink); }
+.cat-btn.on { background: var(--ink); color: var(--paper); }

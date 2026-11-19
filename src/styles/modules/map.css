@@ -8,33 +8,33 @@
 /* a mark with the keyboard focus shows its ink ring (MapView), not the browser's box */
 .overlay .mk:focus { outline: none; }
 .overlay .hit { fill: transparent; stroke: none; }
-.overlay .dot { stroke: #fff; stroke-width: 1.8; }
+.overlay .dot { stroke: var(--paper); stroke-width: 1.8; }
 .overlay .dot.hot { stroke: var(--ink); stroke-width: 3; }
 .overlay .num-hot { fill: none; stroke: transparent; stroke-width: 3; }
 .overlay .num.hot .num-hot { stroke: var(--ink); }
-.num-n { font-weight: 750; font-size: 12px; fill: var(--ink); pointer-events: none; }
+.num-n { font-weight: 750; font-size: var(--fs-12); fill: var(--ink); pointer-events: none; }
 .sel-mark { pointer-events: none; }
 /* list open: markers of the list rows not on screen step back; the ink ring is for pointing only */
 .overlay .mk { transition: opacity var(--t-mid) var(--ease); }
 .overlay .mk.dim { opacity: 0.3; }
-.mk-label { font-size: 12px; font-weight: 700; fill: var(--ink); stroke: #fff; stroke-width: 3.5px; stroke-linejoin: round; paint-order: stroke; pointer-events: none; transition: opacity var(--t-mid) var(--ease); }
-.mk-label.sel { font-size: 13.5px; }
+.mk-label { font-size: var(--fs-12); font-weight: 700; fill: var(--ink); stroke: var(--paper); stroke-width: var(--sz-3-5); stroke-linejoin: round; paint-order: stroke; pointer-events: none; transition: opacity var(--t-mid) var(--ease); }
+.mk-label.sel { font-size: var(--fs-13-5); }
 .overlay .name-hit { fill: transparent; }
 /* a dimmed marker or name pointed at by the mouse comes back to full colour with its ink ring */
 .overlay .mk.dim.hot { opacity: 1; }
-.scale { position: absolute; z-index: 2; font-size: 11.5px; font-weight: 650; color: var(--ink); pointer-events: none; }
-.scale i { display: block; height: 5px; border: 2px solid var(--ink); border-top: 0; margin-top: 2px; }
-.ctrls { position: absolute; z-index: 2; right: 16px; bottom: var(--map-bottom); display: flex; flex-direction: column; gap: 1px; background: var(--rule); }
-.ctrls button { width: 32px; height: 32px; display: grid; place-items: center; background: #fff; }
-.ctrls button:hover { background: var(--ink); color: #fff; }
-.ctrls button:active { background: var(--ink-press); color: #fff; }
-.credit { position: absolute; z-index: 2; right: 16px; bottom: var(--credit-gap); font-size: 10px; color: var(--mute); pointer-events: none; white-space: nowrap; }
-.map-tiles { position: absolute; z-index: 5; bottom: 56px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; background: #fff; border-radius: var(--r-m); box-shadow: 0 0 0 1px var(--rule), 0 4px 14px rgba(0, 0, 0, 0.08); font-size: 13px; font-weight: 600; white-space: nowrap; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 12px; font-weight: 650; font-size: 14px; background: var(--soft); white-space: nowrap; }
+.scale { position: absolute; z-index: 2; font-size: var(--fs-11-5); font-weight: 650; color: var(--ink); pointer-events: none; }
+.scale i { display: block; height: var(--sz-5); border: var(--sz-2) solid var(--ink); border-top: 0; margin-top: var(--sz-2); }
+.ctrls { position: absolute; z-index: 2; right: var(--sz-16); bottom: var(--map-bottom); display: flex; flex-direction: column; gap: var(--sz-1); background: var(--rule); }
+.ctrls button { width: var(--sz-32); height: var(--sz-32); display: grid; place-items: center; background: var(--paper); }
+.ctrls button:hover { background: var(--ink); color: var(--paper); }
+.ctrls button:active { background: var(--ink-press); color: var(--paper); }
+.credit { position: absolute; z-index: 2; right: var(--sz-16); bottom: var(--credit-gap); font-size: var(--fs-10); color: var(--mute); pointer-events: none; white-space: nowrap; }
+.map-tiles { position: absolute; z-index: 5; bottom: var(--sz-56); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--sz-10); padding: var(--sz-6) var(--sz-6) var(--sz-6) var(--sz-14); background: var(--paper); border-radius: var(--r-m); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-4) var(--sz-14) var(--shade-8); font-size: var(--fs-13); font-weight: 600; white-space: nowrap; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sz-8); height: var(--sz-36); padding: 0 var(--sz-12); font-weight: 650; font-size: var(--fs-14); background: var(--soft); white-space: nowrap; }
 .btn:hover:not(:disabled) { background: var(--g93); }
-.map-fail { position: absolute; inset: 0; z-index: 4; background: #fff; overflow-y: auto; }
+.map-fail { position: absolute; inset: 0; z-index: 4; background: var(--paper); overflow-y: auto; }
 /* the search box and an open panel are kept clear by margins set from the map padding (App) */
-.map-down { padding: 16px 16px 24px; max-width: 640px; }
-.map-down h2 { font-size: 18px; margin-bottom: 8px; }
-.map-down details { margin-bottom: 16px; color: var(--mute); font-size: 13px; }
-.crash { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; font-weight: 700; }
+.map-down { padding: var(--sz-16) var(--sz-16) var(--sz-24); max-width: var(--sz-640); }
+.map-down h2 { font-size: var(--fs-18); margin-bottom: var(--sz-8); }
+.map-down details { margin-bottom: var(--sz-16); color: var(--mute); font-size: var(--fs-13); }
+.crash { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sz-14); padding: var(--sz-24); text-align: center; font-weight: 700; }

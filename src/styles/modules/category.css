@@ -1,7 +1,7 @@
 /* M4 Category style tags. Order matters: imported by src/app/globals.css. */
 /* ---------- Category: the 10 style tags as in the v1 filters panel ---------- */
-.styles { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 16px; }
-.chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px; font-size: 13px; font-weight: 600; background: var(--soft); white-space: nowrap; }
-.chip:hover { background: var(--g94); box-shadow: inset 0 0 0 1.5px var(--ink); }
-.chip .sw { width: 12px; height: 12px; flex: none; }
-.chip .n { margin-left: auto; padding-left: 4px; font-weight: 500; color: var(--mute); font-size: 12px; }
+.styles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sz-4); padding: var(--sz-16); }
+.chip { display: inline-flex; align-items: center; gap: var(--sz-8); height: var(--sz-32); padding: 0 var(--sz-8); font-size: var(--fs-13); font-weight: 600; background: var(--soft); white-space: nowrap; }
+.chip:hover { background: var(--g94); box-shadow: inset 0 0 0 var(--sz-1-5) var(--ink); }
+.chip .sw { width: var(--sz-12); height: var(--sz-12); flex: none; }
+.chip .n { margin-left: auto; padding-left: var(--sz-4); font-weight: 500; color: var(--mute); font-size: var(--fs-12); }

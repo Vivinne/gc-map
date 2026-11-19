@@ -32,7 +32,7 @@ export function styleSpec(): StyleSpecification {
         },
       },
       { id: 'ofm-buildings', type: 'fill', source: 'ofm', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': c.building } },
-      { id: 'borders', type: 'line', source: 'borders', maxzoom: 10, paint: { 'line-color': '#FFFFFF', 'line-width': 1 } },
+      { id: 'borders', type: 'line', source: 'borders', maxzoom: 10, paint: { 'line-color': MAP_COLORS.border, 'line-width': 1 } },
     ],
   };
 }

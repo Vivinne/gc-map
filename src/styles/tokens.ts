@@ -18,12 +18,19 @@ export const ERA_COLORS: Record<EraId, string> = {
   others: '#80878F',
 };
 
+/** Paper white (tokens.css --paper): panels, the open building's disc, the rims of number points */
+export const PAPER = '#fff';
+
+/** Motion times in ms, the same as --t-fast, --t-mid, --t-slow and --leave in tokens.css (a test keeps them equal) */
+export const MOTION = { fast: 120, mid: 220, slow: 420, leave: 160 } as const;
+
 /** Basemap colours */
 export const MAP_COLORS = {
   sea: '#ECF1F8',
   land: '#D5DBE1',
   road: '#F1F7FD',
   building: '#CBD1D7',
+  border: '#FFFFFF',
 } as const;
 
 /** Spacing on the map: every floating part keeps this distance from the map and window edges */
