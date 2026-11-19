@@ -1,5 +1,7 @@
 /* M7 panel frame and title bar. Order matters: imported by src/app/globals.css. */
 /* ---------- panels: desktop under the search box, top left of the map; they stop above the scale bar ---------- */
+/* a panel takes the focus when the row that opened it goes (A4); its own buttons show the focus */
+.panel:focus { outline: none; }
 .panel { position: absolute; z-index: 6; background: #fff; display: flex; flex-direction: column; box-shadow: 0 0 0 1px var(--rule), 0 6px 20px rgba(0, 0, 0, 0.08); }
 .panel.d { top: 64px; left: 16px; width: calc(var(--detail-w) + 40px); max-height: calc(100% - 64px - 56px); animation: drawer-in var(--t-mid) var(--ease); }
 .p-head { flex: none; }

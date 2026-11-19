@@ -105,7 +105,7 @@ Publish path (approved): the new site at `https://vivinne.github.io/gc-map/`; `/
 - Colours, sizes, motion only from `src/styles/tokens.ts` / `tokens.css`.
 - One component per file, PascalCase (`SearchBox.tsx`); helpers camelCase in `src/lib/`.
 - Folders: `src/components/` (UI), `src/lib/` (state, search, data), `src/styles/` (tokens), `data/` + `content/` (source data), `scripts/` (build).
-- State: one history stack (`src/lib/history.ts`) drives panels, map and address.
+- State: one history stack (`src/lib/nav.ts`) drives panels, map and address.
 
 ## 13. Data (per building, as used by v2)
 `id`, `name`, `built`, `city`, `nation`, `who` (architect), `era` (category id, one of 10), `eras` (all categories), `styleCard` (finer style), `summary`, `tags` (zh keywords, `~~x~~` = struck), `tagsEn`, `exams` (years), `points[]` (`lat`, `lng`, `sub`).

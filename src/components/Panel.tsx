@@ -46,6 +46,10 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
   useLayoutEffect(() => {
     setState('half');
     body.current?.scrollTo({ top: scroll ?? 0 });
+    // the row or button that opened this panel went away with the old screen: the focus would fall back to the
+    // top of the page, so it moves into the new panel and the next Tab reaches its ＜ / × and rows (A4)
+    const a = document.activeElement;
+    if (!a || a === document.body) self.current?.focus({ preventScroll: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
 
@@ -100,6 +104,7 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
         if (typeof ref === 'function') ref(el);
         else if (ref) ref.current = el;
       }}
+      tabIndex={-1}
       className={cls} aria-label={label} style={sheet && dy ? { transform: `translateY(${Math.max(dy, -40)}px)`, transition: 'none' } : undefined}>
       <div
         className={`p-head${sheet ? ' drag' : ''}`}

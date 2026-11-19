@@ -15,6 +15,8 @@ const LABEL_CHAR = 6.6;
 const SEL_SCALE = 13.5 / 12;
 /** Halo of the open building's mark (the white disc with its ink ring is r 13) */
 const SEL_HALO = 18;
+/** Space kept between a map name and the map's controls */
+const UI_GAP = 4;
 /** A finger's touch circle around each single marker on phones */
 const HIT_R = 20;
 
@@ -130,6 +132,18 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
     );
   }
   for (const d of singles) taken.push([d.x - DOT_R - 1, d.y - DOT_R - 1, d.x + DOT_R + 1, d.y + DOT_R + 1]);
+  // The map's own controls (scale bar, source line, zoom buttons): no name is drawn over them (N15)
+  const box = map.getContainer().getBoundingClientRect();
+  for (const el of layer.closest('.map-box')?.querySelectorAll('.scale, .credit, .ctrls') ?? []) {
+    // the source line spans the phone width but its text sits right: only the text is kept clear
+    let r = el.getBoundingClientRect();
+    if (el.classList.contains('credit') && el.firstChild) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      r = range.getBoundingClientRect();
+    }
+    if (r.width) taken.push([r.left - box.left - UI_GAP, r.top - box.top - UI_GAP, r.right - box.left + UI_GAP, r.bottom - box.top + UI_GAP]);
+  }
   // The open building inside a number point: that number point is not drawn; the open building's own mark
   // stands alone and the other buildings of that point are left out until the map is zoomed in again
   const sp = selected ? proj(selected.lng, selected.lat) : null;

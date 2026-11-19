@@ -65,21 +65,40 @@ export function fromQuery(search: string): { screen: Screen; view: View | null }
   else if (pl === 'category') list = 'category';
   else if (group.length) list = 'group';
   else if (q) list = 'results';
-  const m = (p.get('m') ?? '').split(',').map(Number);
-  const view = m.length === 3 && m.every((n) => Number.isFinite(n)) ? { lng: m[0]!, lat: m[1]!, zoom: m[2]! } : null;
+  // a map view the map can show: three numbers, latitude inside the map (±85°), longitude ±180°, zoom 0–24;
+  // anything else is ignored and the map opens on its usual view (B3)
+  const raw = (p.get('m') ?? '').split(',');
+  const m = raw.map((t) => (t.trim() === '' ? NaN : Number(t)));
+  const ok = m.length === 3 && m.every((n) => Number.isFinite(n)) && Math.abs(m[0]!) <= 180 && Math.abs(m[1]!) <= MAX_LAT && m[2]! >= 0 && m[2]! <= 24;
+  const view = ok ? { lng: m[0]!, lat: m[1]!, zoom: m[2]! } : null;
   return { screen: { q, list, group: list === 'group' ? group : [], b }, view };
 }
 
 export const sameScreen = (a: Screen, b: Screen): boolean => a.q === b.q && a.list === b.list && a.b === b.b && a.group.join('~') === b.group.join('~');
 
 const STACK_KEY = 'gc-map:history';
+/** Farthest latitude the web map draws */
+const MAX_LAT = 85.0511;
 
 /** The history behind ＜, kept for this tab so a reload restores it */
 export function loadStack(): Screen[] | null {
   try {
     const raw = sessionStorage.getItem(STACK_KEY);
-    const list = raw ? (JSON.parse(raw) as Screen[]) : null;
-    return Array.isArray(list) && list.length ? list : null;
+    const list = raw ? (JSON.parse(raw) as unknown) : null;
+    if (!Array.isArray(list)) return null;
+    // a building removed or renamed since the history was saved (a new version of the data) leaves its screen:
+    // the step goes, so ＜ never lands on an empty screen (N4); a step equal to the one before it goes too
+    const out: Screen[] = [];
+    for (const s of list as Partial<Screen>[]) {
+      if (!s || typeof s !== 'object') continue;
+      const group = Array.isArray(s.group) ? s.group.filter((id): id is string => typeof id === 'string' && BY_ID.has(id)) : [];
+      const b = typeof s.b === 'string' && BY_ID.has(s.b) ? s.b : '';
+      if ((s.b && !b) || (s.list === 'group' && !group.length)) continue;
+      const next = { ...(s as Screen), q: typeof s.q === 'string' ? s.q : '', group, b };
+      if (out.length && sameScreen(out[out.length - 1]!, next)) continue;
+      out.push(next);
+    }
+    return out.length ? out : null;
   } catch {
     return null;
   }

@@ -55,3 +55,36 @@ test('S1 MapLibre: 6.5 or newer (the XSS fix of GHSA-jrc7-96c5-q579)', () => {
   const [major, minor] = version.split('.').map(Number) as [number, number];
   assert.ok(major > 6 || (major === 6 && minor >= 5), version);
 });
+
+test('B3 address: a map view out of range is ignored', async () => {
+  const { fromQuery } = await import('../src/lib/nav');
+  for (const m of ['12,95,5', '999,999,99', ',,', '12,41', '12,41,99', 'a,b,c']) assert.equal(fromQuery(`?m=${m}`).view, null, m);
+  assert.deepEqual(fromQuery('?m=12.48,41.89,13').view, { lng: 12.48, lat: 41.89, zoom: 13 });
+});
+
+test('N5 scale bar: never longer than 110 px, also near the poles fully zoomed in', async () => {
+  const { scaleFor } = await import('../src/lib/scale');
+  for (const lat of [0, 45, 70, 80, 84, 85]) for (let z = 0; z <= 18; z += 0.5) assert.ok(scaleFor(lat, z).px <= 110, `${lat} ${z}`);
+});
+
+test('N3 recents: damaged saved data gives empty lists', async () => {
+  const { recentTexts, recentBuildings } = await import('../src/lib/recent');
+  for (const v of ['{}', 'null', '"x"', '[1,{}]', 'not json']) {
+    localStorage.setItem('gc-atlas:recent-text', v);
+    localStorage.setItem('gc-atlas:recent-building', v);
+    assert.ok(Array.isArray(recentTexts()) && recentTexts().every((t) => typeof t === 'string'), v);
+    assert.ok(Array.isArray(recentBuildings()), v);
+  }
+});
+
+test('N4 history: a step whose building is gone is dropped on reload', async () => {
+  const { loadStack } = await import('../src/lib/nav');
+  sessionStorage.setItem('gc-map:history', JSON.stringify([{ q: '', list: '', group: [], b: '' }, { q: '', list: '', group: [], b: 'gone-building' }, { q: 'villa', list: 'results', group: [], b: '' }]));
+  assert.deepEqual(loadStack()?.map((s) => s.b || s.q), ['', 'villa']);
+});
+
+test('D2 / S5 deploy: type check and tests before the build; outside actions pinned to a commit', () => {
+  const wf = readFileSync(new URL('../.github/workflows/deploy.yml', import.meta.url), 'utf8');
+  assert.ok(wf.indexOf('npm run typecheck') > 0 && wf.indexOf('npm test') > wf.indexOf('npm run typecheck') && wf.indexOf('npm run build') > wf.indexOf('npm test'));
+  for (const line of wf.split('\n').filter((l) => /uses:\s/.test(l))) assert.match(line, /@[0-9a-f]{40}\b/, line.trim());
+});

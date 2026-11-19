@@ -11,6 +11,7 @@
 /* a finger-sized target (24 px) that keeps the line where it was */
 .c-who { padding: 4px 2px; margin: -4px -2px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
 .c-who:hover { background: var(--soft); }
+.c-who:active { background: var(--g92); }
 .c-sum { margin-top: 12px; font-size: 15px; line-height: 1.75; }
 .c-keys { margin-top: 12px; font-size: 13.5px; font-style: italic; color: var(--g37); }
 .c-body .exam { margin-top: 12px; }

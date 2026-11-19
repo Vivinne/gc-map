@@ -300,10 +300,18 @@ export default function App() {
       setPadding((o) => (o.top === next.top && o.left === next.left && o.bottom === next.bottom && o.right === next.right ? o : next));
     };
     measure();
-    const ro = new ResizeObserver(measure);
+    // measured in the next frame: a size set inside the observer's own callback loops it (B8, WebKit)
+    let raf = 0;
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(measure);
+    });
     if (panelRef.current) ro.observe(panelRef.current);
     if (appRef.current) ro.observe(appRef.current);
-    return () => ro.disconnect();
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
   });
 
   // A shared link or reload with a search but no saved view: frame the results once the map is there.
@@ -383,7 +391,7 @@ export default function App() {
         <ResultList list={group} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} />
       </Panel>
     );
-  } else if (top.list === 'results' && (found.main.length || found.more.length)) {
+  } else if (top.list === 'results' && top.q) {
     panel = (
       <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} />}>
         <ResultList
@@ -426,6 +434,23 @@ export default function App() {
   return (
     <div className={`app${mobile ? ' is-mobile' : ''}`} ref={appRef}>
       <main className="main">
+        <SearchBox
+          ref={inputRef}
+          value={boxText}
+          showClear={showClear}
+          categoryOpen={top.list === 'category' && !top.b}
+          onBack={boxBack ? () => (inputRef.current?.blur(), goBack()) : undefined}
+          onFocus={openPreview}
+          onChange={(t) => {
+            if (!editing) openPreview();
+            setDraft(t);
+          }}
+          onSubmit={() => submit(draft)}
+          onClear={clearBox}
+          onCategory={toggleCategory}
+        />
+        <Leave show={!!panel}>{panel}</Leave>
+        {/* last in the page order (Tab: search box, then the open panel, then the map); drawn under both */}
         <MapView
           ref={mapRef}
           buildings={top.q ? results : BUILDINGS}
@@ -462,24 +487,12 @@ export default function App() {
             </div>
           }
         />
-        <SearchBox
-          ref={inputRef}
-          value={boxText}
-          showClear={showClear}
-          categoryOpen={top.list === 'category' && !top.b}
-          onBack={boxBack ? () => (inputRef.current?.blur(), goBack()) : undefined}
-          onFocus={openPreview}
-          onChange={(t) => {
-            if (!editing) openPreview();
-            setDraft(t);
-          }}
-          onSubmit={() => submit(draft)}
-          onClear={clearBox}
-          onCategory={toggleCategory}
-        />
-        <Leave show={!!panel}>{panel}</Leave>
       </main>
       {mapDown && <span className="sr-only">Map unavailable</span>}
+      {/* read out by screen readers when a search is sent: how many results, or No Results (A3) */}
+      <p className="sr-only" role="status" aria-live="polite">
+        {top.list === 'results' && top.q && !top.b ? (found.main.length ? `${found.main.length} ${found.main.length === 1 ? 'result' : 'results'}` : 'No Results') : ''}
+      </p>
     </div>
   );
 }

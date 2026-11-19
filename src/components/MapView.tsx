@@ -31,6 +31,9 @@ async function loadMapLib() {
   return { Map: lib.Map, styleSpec: style.styleSpec };
 }
 
+/** Street tiles that have not come by this time (ms) count as failed: the notice and Retry show (L1) */
+const TILE_WAIT = 10000;
+
 /** Longest press (ms) that still counts as a click on a mark */
 const PRESS_MS = 700;
 
@@ -79,6 +82,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const motion = useCallback((ms: number) => (reducedMotion ? 0 : ms), [reducedMotion]);
 
   const styleRef = useRef<(() => StyleSpecification) | null>(null);
+  // a tile server that is slow or does not answer gives no error: no tile by TILE_WAIT counts as a failure
+  const tileTimer = useRef(0);
+  const waitForTiles = () => {
+    window.clearTimeout(tileTimer.current);
+    tileTimer.current = window.setTimeout(() => !tilesOk.current && setTileFail(true), TILE_WAIT);
+  };
+  useEffect(() => () => window.clearTimeout(tileTimer.current), []);
   // a map file that fails to download goes to the page's error guard (it reloads once for a newer deploy)
   const [loadError, setLoadError] = useState<unknown>(null);
   if (loadError) throw loadError;
@@ -156,11 +166,17 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       map.setLayerZoomRange('land', 0, 6);
     });
     mapRef.current = map;
+    waitForTiles();
     setLayer(map.getCanvasContainer());
-    const ro = new ResizeObserver(() => map.resize());
+    let raf = 0;
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => map.resize());
+    });
     ro.observe(box.current);
     onReady();
     return () => {
+      cancelAnimationFrame(raf);
       ro.disconnect();
       map.remove();
       mapRef.current = null;
@@ -266,6 +282,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
               setTileFail(false);
               tilesOk.current = false;
               if (styleRef.current) mapRef.current?.setStyle(styleRef.current());
+              waitForTiles();
             }}
           >
             Retry

@@ -51,7 +51,7 @@
   --top-h: 48px;
   --index-w: 320px;
   --detail-w: 340px;
-  color-scheme: light;
+  color-scheme: only light;
   font-family: 'Archivo Variable', Archivo, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.45;
