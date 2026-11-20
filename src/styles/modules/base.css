@@ -5,6 +5,8 @@
 html, body { height: 100%; background: var(--paper); overflow: hidden; }
 /* No grey flash on tap (iOS): every clickable part shows its own press and hover states */
 html { -webkit-tap-highlight-color: transparent; }
+/* a long press on a list row or a button selects no text and opens no phone menu (Q9); card text stays selectable */
+button, .row, .chip, .c-head { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
 button:disabled { cursor: default; opacity: 0.4; }
 input { font: inherit; color: inherit; }

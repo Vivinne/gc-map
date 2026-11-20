@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import '@fontsource-variable/archivo/wdth.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
+import { PAPER } from '../styles/tokens';
 
 /**
  * Content security rule (S4): scripts, styles, fonts and images from this site only, map data from this site and
@@ -23,6 +24,9 @@ const CSP = [
 ].join('; ');
 
 export const metadata: Metadata = {
+  // a shared link shows the map as its preview (Q5): src/app/opengraph-image.png, at the site's full address
+  metadataBase: new URL('https://vivinne.github.io'),
+  openGraph: { title: 'GC Atlas', description: 'General Culture buildings on a map', type: 'website' },
   title: 'GC Atlas',
   description: 'General Culture buildings on a map',
   robots: { index: false, follow: false },
@@ -32,7 +36,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#000000',
+  // the browser's top bar matches the white page (Q11)
+  themeColor: PAPER,
   // light only, also when a phone browser forces web pages dark: the map stays light, so the page does too (N23)
   colorScheme: 'only light',
 };

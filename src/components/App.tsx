@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { setAddress } from '../lib/address';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
-import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, sameScreen, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
+import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, loadDraft, sameScreen, saveDraft, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
 import { searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
@@ -57,7 +57,9 @@ export default function App() {
   const [startedWith] = useState(stack);
   const top = stack[stack.length - 1]!;
   // Text in the search box while the preview is open (typed, not yet submitted)
-  const [draft, setDraft] = useState(top.q);
+  // a reload while typing keeps the text typed so far (Q4)
+  const [draft, setDraft] = useState(() => (top.list === 'preview' ? (loadDraft() ?? top.q) : top.q));
+  useEffect(() => saveDraft(top.list === 'preview' ? draft : ''), [draft, top.list]);
   const [hoverId, setHoverId] = useState('');
   const [, setViewTick] = useState(0);
   /** The last group line clicked (country, other outcomes) and the map view its framing came to rest at */
@@ -157,6 +159,9 @@ export default function App() {
 
   /** × and Esc: everything closes, the text and results go; the map stays where it is */
   const closeAll = () => {
+    // the map stops where it is, also in the middle of a move (Q6), and no framing waits to run after it
+    mapRef.current?.stop();
+    refit.current = null;
     setMoreOpen('');
     setStack([EMPTY_SCREEN]);
     setDraft('');

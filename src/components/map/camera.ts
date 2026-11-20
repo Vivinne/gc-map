@@ -56,6 +56,8 @@ export interface MapHandle {
   /** Go back to a view saved earlier (＜) */
   moveTo(v: View): void;
   view(): View | null;
+  /** Stop a camera move where it is (Q6: × and Esc leave the map where it is, also mid-move) */
+  stop(): void;
 }
 
 interface CameraDeps {
@@ -200,6 +202,9 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
       const pts = list.map((x) => map.project([x.lng, x.lat]));
       if (pts.some((q) => q.x < p.left || q.x > W - p.right || q.y < p.top || q.y > H - p.bottom)) return false;
       return map.getZoom() >= t.zoom - 0.05;
+    },
+    stop: () => {
+      mapRef.current?.stop();
     },
     moveTo: (v) => {
       const map = mapRef.current;

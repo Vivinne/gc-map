@@ -5,6 +5,16 @@ import { forwardRef, useLayoutEffect, useRef, useState, type ReactNode } from 'r
 /** Phone sheet heights: title only, half the screen, or up to the search box */
 export type SheetState = 'fold' | 'half' | 'full';
 
+const SHEET_KEY = 'gc-map:sheet';
+/** How the phone sheet was left before a reload (this tab): the same panel opens at that height again (Q8) */
+let afterReload: { key: string; state: SheetState } | null = (() => {
+  try {
+    return typeof window === 'undefined' ? null : (JSON.parse(sessionStorage.getItem(SHEET_KEY) ?? 'null') as { key: string; state: SheetState } | null);
+  } catch {
+    return null;
+  }
+})();
+
 interface Props {
   mobile: boolean;
   /**
@@ -44,7 +54,10 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
   const drag = useRef<{ y: number; id: number; up: boolean; down: boolean } | null>(null);
   const body = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    setState('half');
+    // the first panel after a reload opens as it was left; every other panel opens at half
+    const was = afterReload;
+    afterReload = null;
+    setState(was && was.key === resetKey && ['fold', 'half', 'full'].includes(was.state) ? was.state : 'half');
     body.current?.scrollTo({ top: scroll ?? 0 });
     // the row or button that opened this panel went away with the old screen: the focus would fall back to the
     // top of the page, so it moves into the new panel and the next Tab reaches its ＜ / × and rows (A4)
@@ -54,6 +67,14 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
   }, [resetKey]);
 
   const sheet = mobile && place === 'sheet';
+  useLayoutEffect(() => {
+    if (!sheet) return;
+    try {
+      sessionStorage.setItem(SHEET_KEY, JSON.stringify({ key: resetKey, state }));
+    } catch {
+      /* storage blocked */
+    }
+  }, [sheet, resetKey, state]);
   // A folded sheet sits on the bottom edge: the scale bar moves up above it (--sheet-fold, see src/styles/modules/phone.css)
   const self = useRef<HTMLElement | null>(null);
   const folded = sheet && state === 'fold';

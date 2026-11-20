@@ -80,6 +80,26 @@ const STACK_KEY = 'gc-map:history';
 /** Farthest latitude the web map draws */
 const MAX_LAT = 85.0511;
 
+const DRAFT_KEY = 'gc-map:draft';
+
+/** Text typed in the search box and not sent yet, kept for this tab so a reload keeps it (Q4); never in an address */
+export function saveDraft(text: string): void {
+  try {
+    if (text) sessionStorage.setItem(DRAFT_KEY, text);
+    else sessionStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* storage blocked: the text lives in memory only */
+  }
+}
+
+export function loadDraft(): string | null {
+  try {
+    return sessionStorage.getItem(DRAFT_KEY);
+  } catch {
+    return null;
+  }
+}
+
 /** The history behind ＜, kept for this tab so a reload restores it */
 export function loadStack(): Screen[] | null {
   try {
