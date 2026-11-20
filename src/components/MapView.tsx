@@ -2,7 +2,7 @@
 
 import type { Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import { flushSync } from 'react-dom';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import type { Building } from '../lib/model';
 import { isMouseHover } from '../lib/pointer';
 import type { View } from '../lib/nav';
@@ -10,6 +10,7 @@ import { INSET, MAP_BOTTOM, MAP_COLORS, MOTION } from '../styles/tokens';
 import { Icon } from './Icons';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
+import { flatView, type ViewLike } from '../lib/flatView';
 import { renderOverlay, type Act, type Click } from './map/overlay';
 
 /* M8 map: the MapLibre map, its events, the scale bar, zoom buttons and the tile notice.
@@ -19,6 +20,8 @@ export type { MapHandle, Padding };
 
 /** With no search, every name shows when the scale bar reads this length (metres) or less; wider, only exam buildings */
 const NAME_SCALE = 100000;
+/** Farthest the map zooms out */
+const MIN_ZOOM = 0.8;
 /**
  * The map library and the offline basemap are the biggest downloads: they load after the page is on screen,
  * so the search box, Category and the lists work while the map is still coming (P1, slow networks).
@@ -82,6 +85,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const motion = useCallback((ms: number) => (reducedMotion ? 0 : ms), [reducedMotion]);
 
   const styleRef = useRef<(() => StyleSpecification) | null>(null);
+  /** Where the markers are drawn until the map is there */
+  const earlyLayer = useRef<HTMLDivElement>(null);
   // a tile server that is slow or does not answer gives no error: no tile by TILE_WAIT counts as a failure
   const tileTimer = useRef(0);
   const waitForTiles = () => {
@@ -121,7 +126,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         attributionControl: false,
         renderWorldCopies: true,
         maxZoom: MAX_ZOOM,
-        minZoom: 0.8,
+        minZoom: MIN_ZOOM,
         dragRotate: false,
         pitchWithRotate: false,
       });
@@ -189,7 +194,23 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   useImperativeHandle(ref, () => cameraApi(mapRef, { padRef, markersShown, motion }), [motion]);
 
   const map = mapRef.current;
-  const scale = map ? scaleFor(map.getCenter().lat, map.getZoom()) : null;
+  // Before the map library arrives the markers are drawn on the view the map will open at (P2), over the plain
+  // sea colour; they work as usual (a card opens, the map frames it once it is there)
+  const [early, setEarly] = useState<{ el: HTMLDivElement; view: ViewLike } | null>(null);
+  useLayoutEffect(() => {
+    if (map || noMap || !box.current) return;
+    const el = box.current;
+    const make = () => {
+      if (!el.clientWidth || !el.clientHeight) return;
+      setEarly({ el, view: flatView(el, start ?? { bounds: EUROPE, padding: 20, minZoom: MIN_ZOOM, maxZoom: MAX_ZOOM }) });
+    };
+    make();
+    const ro = new ResizeObserver(make);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [map, noMap, start]);
+  const shown: ViewLike | null = map ?? early?.view ?? null;
+  const scale = shown ? scaleFor(shown.getCenter().lat, shown.getZoom()) : null;
   // Markers show at every scale (with or without a search). With no search, a view wider than 100 km on the
   // scale bar names only the buildings set in past TEST-ARCHED papers (and the open card's); every name shows
   // from 100 km down.
@@ -259,7 +280,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
 
   const overlay = map && layer
     ? renderOverlay({ map, layer, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup })
-    : null;
+    : early && earlyLayer.current && !noMap
+      ? renderOverlay({ map: early.view, layer: earlyLayer.current, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup })
+      : null;
 
   // + / −: around the open building while its card is open (the mouse wheel zooms around the mouse)
   const zoomBy = (d: 1 | -1) => {
@@ -271,6 +294,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   return (
     <div className={`map-box${noMap ? ' no-map' : ''}`}>
       <div ref={box} className="map-canvas" />
+      {!map && <div ref={earlyLayer} className="map-early" />}
       {noMap && <div className="map-fail">{fallback}</div>}
       {tileFail && !noMap && (
         <div className="map-tiles" role="status">

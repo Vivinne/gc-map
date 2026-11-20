@@ -1,6 +1,8 @@
 /* M8 map, M9 scale bar and zoom buttons, map failure screen. Order matters: imported by src/app/globals.css. */
 /* ---------- map ---------- */
 .map-box, .map-canvas { position: absolute; inset: 0; }
+/* the markers drawn before the map library has arrived (P2) */
+.map-early { position: absolute; inset: 0; pointer-events: none; }
 .map-box { overflow: hidden; }
 .map-canvas { background: var(--sea); }
 .overlay { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; font-family: inherit; }

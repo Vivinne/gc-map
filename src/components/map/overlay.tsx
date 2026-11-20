@@ -1,8 +1,8 @@
-import type { Map as MlMap } from 'maplibre-gl';
 import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { DOT_R, groupOnScreen, pointRadius } from '../../lib/geo';
 import { ERAS, type Building } from '../../lib/model';
+import type { ViewLike } from '../../lib/flatView';
 import { labelSize } from '../../lib/labelSize';
 import NumberPoint from '../NumberPoint';
 import type { Padding } from './camera';
@@ -50,7 +50,8 @@ export type Act = (key: string, click: Click, label?: string) => {
 };
 
 interface OverlayArgs {
-  map: MlMap;
+  /** The map, or its stand-in while the map library loads (same projection) */
+  map: ViewLike;
   /** The map's canvas container: the SVG is portalled into it */
   layer: HTMLElement;
   buildings: Building[];
