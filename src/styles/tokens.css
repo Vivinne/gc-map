@@ -45,6 +45,8 @@
   --t-mid: 220ms;
   --t-slow: 420ms;
   --leave: 160ms;
+  /* desktop: the content panel slides out from the left rail and back */
+  --t-slide: 200ms;
   /* corners: controls, then cards and panels; chips and tags are pills */
   --r-s: 6px;
   --r-m: 10px;
@@ -56,6 +58,8 @@
   --credit-h: 14px;
   --index-w: 320px;
   --detail-w: 340px;
+  /* desktop: the fixed rail on the left edge (menu, search, category) */
+  --rail-w: 56px;
   /* sizes (C2): every length in the style modules comes from here */
   --sz-1: 1px;
   --sz-1-5: 1.5px;

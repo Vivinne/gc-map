@@ -1,4 +1,4 @@
-export type IconName = 'search' | 'plus' | 'minus' | 'close' | 'left' | 'up' | 'grid' | 'clock';
+export type IconName = 'search' | 'plus' | 'minus' | 'close' | 'left' | 'up' | 'grid' | 'clock' | 'menu';
 
 /** Line icons drawn on a 16 px grid; colour follows the text colour */
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
@@ -7,6 +7,8 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
   switch (name) {
     case 'grid':
       return (<svg {...p}><rect x="1.5" y="1.5" width="4.5" height="4.5" {...s} strokeWidth={1.6} /><rect x="10" y="1.5" width="4.5" height="4.5" {...s} strokeWidth={1.6} /><rect x="1.5" y="10" width="4.5" height="4.5" {...s} strokeWidth={1.6} /><rect x="10" y="10" width="4.5" height="4.5" {...s} strokeWidth={1.6} /></svg>);
+    case 'menu':
+      return (<svg {...p}><path d="M2 3.5h12M2 8h12M2 12.5h12" {...s} /></svg>);
     case 'clock':
       return (<svg {...p}><circle cx="8" cy="8" r="6" {...s} strokeWidth={1.6} /><path d="M8 4.5V8l2.5 1.6" {...s} strokeWidth={1.6} /></svg>);
     case 'search':

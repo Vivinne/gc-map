@@ -5,9 +5,9 @@ Status: approved 2026-11-13; published 2026-11-13 at https://vivinne.github.io/g
 
 ## 1. Screen
 - Map only, no top bar, no tabs. Default view: Europe (v1 Full map).
-- Top left: Search box; Category button (icon: four squares) to its right.
+- Desktop (Rail, 2026-11-23): a fixed rail on the left edge (56 px, over the map), top down: menu (three lines), Search (magnifier), Category (four squares); each a 40 px square with a thin frame and rounded corners, its press and lit colours inside the frame. Every non-map part (search box, preview, results, Category, number point list, card) is in one content panel beside it (§9). Phone: unchanged — top left: Search box; Category button (icon: four squares) to its right.
 - Bottom right: Zoom + / − (desktop; phone pinches). Mouse wheel zooms.
-- Bottom left: scale bar (KEEP.md).
+- Scale bar (KEEP.md): desktop at the bottom right, 16 px left of the zoom buttons, on their bottom line (Rail, 2026-11-23); phone bottom left.
 - Every floating part 16 px from window, map and other parts. Exception (B6, 2026-11-20): on desktop the zoom buttons and the scale bar share one bottom line 24 px from the bottom, clear of the map's source line under them; the panels stop 16 px above the scale bar.
 
 ## 2. Site rules
@@ -21,7 +21,8 @@ Status: approved 2026-11-13; published 2026-11-13 at https://vivinne.github.io/g
 | Reload | Restores search text, lists, map position, zoom and the panel history |
 | Search first | After a search is submitted and until ×, the map shows only its results |
 | Load failure | As v1 (KEEP.md) |
-| Keys | `/` opens Search; Esc = × |
+| Keys | `/` opens Search (desktop: opens the content panel on the search page); Esc = × |
+| Rail (desktop) | The page opens with the content panel closed and nothing lit (a reload or shared link naming a screen opens it on that screen). Menu: closed → opens on the screen last shown (the first time: the search page); open → closes, nothing lit. Search: opens the panel (if closed) on the search page (the submitted search's results, else the empty search page) and lights; Category: the same with the Category list. A lit button cannot be pressed. Card and number point list: nothing lit. A marker or number point clicked while the panel is closed opens it. × on a page leaves the panel open on the empty search page (magnifier lit); × on the empty search page closes the panel. Closing keeps the screen and the map; the map shows what that screen shows (the submitted search's results), with no dimming while the panel is closed |
 
 ## 3. Map rules
 - Markers show only when a search is submitted, or when the scale bar reads 100 km or less (`scale.metres <= 100000`). At the default Europe view with no search the map has no markers.
@@ -78,7 +79,8 @@ Category list: ＜ top left, `Category` beside it, × top right; the 10 style ta
 - Only the writing of names and terms changes; the meaning of each summary stays.
 
 ## 9. Desktop layout
-- Lists and card: top left of the map, under the search box, 16 px from the map edge; their height stops above the scale bar.
+- Content panel (Rail, 2026-11-23): floats over the map 16 px right of the rail and 16 px from the top, as wide as before (380 px), as tall as its content up to 16 px from the bottom. It slides out from behind the rail and back in 200 ms; opening or closing it moves nothing else (map, markers, rail, zoom buttons, scale bar).
+- Every page's top row: ＜ top left (when there is an earlier screen), title, × top right. Search page: `Search`, then the search box under the top row, then the preview or the results. The box has no ＜ / × of its own: while typing the top-row × clears the text (empty: closes the search, as the box × did), and the box's ＜ (opened again over a submitted search) is the top-row ＜.
 
 ## 10. Phone layout
 - Preview list: opens under the search box, full screen; folds away on submit.
@@ -120,6 +122,7 @@ Publish path (approved): the new site at `https://vivinne.github.io/gc-map/`; `/
 | Filters | Filters panel and button, multi-select, active filter chips at the bottom |
 | Search | `Try` examples, grouped Architect / City hits |
 | Card | Photo search link, Previous / Next and phone swipe, Also in / Nearest lists, tags under the card |
-| Help | `?` windows, first-visit note, page tours |
+| Help | `?` windows, first-visit note, page tours (the rail gets no help window either, 2026-11-23) |
+| Desktop (Rail) | Search box and Category button on the map; the scale bar on the bottom left |
 | Card (2) | Sub-point names line (buildings with several points) |
 | Other | Toasts, Sunset palette, F key, phone landscape side card |

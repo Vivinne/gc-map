@@ -6,7 +6,7 @@ import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useLayou
 import type { Building } from '../lib/model';
 import { isMouseHover } from '../lib/pointer';
 import type { View } from '../lib/nav';
-import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION } from '../styles/tokens';
+import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION, ZOOM_BTN } from '../styles/tokens';
 import { Icon } from './Icons';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
@@ -356,7 +356,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         </div>
       )}
       {overlay}
-      {scale && !noMap && <ScaleBar scale={scale} style={{ left: INSET, bottom: MAP_BOTTOM }} />}
+      {scale && !noMap && <ScaleBar scale={scale} style={compact ? { left: INSET, bottom: MAP_BOTTOM } : { right: INSET + ZOOM_BTN + INSET, bottom: MAP_BOTTOM }} />}
       {!noMap && !compact && (
         <div className="ctrls">
           <button type="button" aria-label="Zoom in" onClick={() => zoomBy(1)}>

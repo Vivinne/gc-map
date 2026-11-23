@@ -12,6 +12,10 @@
 .s-back:hover { background: var(--soft); }
 .s-x { width: var(--sz-32); height: var(--sz-32); display: grid; place-items: center; color: var(--ink); }
 .s-x:hover { background: var(--soft); }
+/* desktop: the search box in the content panel, under the panel's top row (＜ Search ×) */
+.p-search { display: flex; padding: var(--sz-12) var(--sz-16); border-bottom: var(--sz-1) solid var(--rule); }
+.p-search .sbox { box-shadow: 0 0 0 var(--sz-1) var(--rule); }
+.p-search .sbox:hover, .p-search .sbox:focus-within { box-shadow: 0 0 0 var(--sz-1-5) var(--ink); }
 .cat-btn { flex: none; width: var(--sz-40); height: var(--sz-40); display: grid; place-items: center; background: var(--paper); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-6) var(--sz-20) var(--shade-8); }
 .cat-btn:hover { box-shadow: 0 0 0 var(--sz-1-5) var(--ink); }
 .cat-btn.on { background: var(--ink); color: var(--paper); }

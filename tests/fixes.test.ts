@@ -99,7 +99,7 @@ test('C2 tokens: the style modules write no lengths or colours of their own; mot
   }
   const { MOTION, PAPER } = await import('../src/styles/tokens');
   const tokens = readFileSync(new URL('../src/styles/tokens.css', import.meta.url), 'utf8');
-  for (const [k, css] of [['fast', '--t-fast'], ['mid', '--t-mid'], ['slow', '--t-slow'], ['leave', '--leave']] as const) assert.match(tokens, new RegExp(`${css}: ${MOTION[k]}ms;`));
+  for (const [k, css] of [['fast', '--t-fast'], ['mid', '--t-mid'], ['slow', '--t-slow'], ['leave', '--leave'], ['slide', '--t-slide']] as const) assert.match(tokens, new RegExp(`${css}: ${MOTION[k]}ms;`));
   assert.match(tokens, new RegExp(`--paper: ${PAPER};`));
 });
 

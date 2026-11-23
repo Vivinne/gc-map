@@ -13,8 +13,10 @@ import { Icon } from './Icons';
 import Leave from './Leave';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import Panel from './Panel';
+import Rail, { type RailPage } from './Rail';
 import ResultList from './ResultList';
 import SearchBox from './SearchBox';
+import { RAIL_W } from '../styles/tokens';
 
 const MOBILE_QUERY = '(max-width: 900px)';
 /** One key for a group of buildings */
@@ -79,6 +81,24 @@ export default function App() {
   const appRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLElement>(null);
   const viewRef = useRef<View | null>(START.view);
+  /**
+   * Desktop: the content panel beside the rail is open. A fresh visit opens with it closed; a reload or a shared
+   * link that names a screen opens it on that screen. Closing it keeps the screen (and the map), so opening it
+   * again shows the screen that was left. The phone layout does not use it (its panels are always shown).
+   */
+  const [panelOpen, setPanelOpen] = useState(() => !isEmptyScreen(START.screen));
+  /**
+   * The panel has just been opened from the rail or the map: it slides out from behind the rail. Set to true on
+   * opening; the page shown then keeps the slide-in class until another page opens (removing the class sooner
+   * would restart the panel's own entry animation), so the panel is never mounted again for it.
+   */
+  const [slideKey, setSlideKey] = useState<string | null>(null);
+  const [opening, setOpening] = useState(false);
+  const openPanel = () => {
+    if (panelOpen) return;
+    setPanelOpen(true);
+    setOpening(true);
+  };
 
   // A search's main matches first; its other matches join below (list and map) after Other Possible Outcomes (Polish 13)
   const found = useMemo(() => (top.q ? searchSplit(top.q) : { main: [], more: [] }), [top.q]);
@@ -266,6 +286,7 @@ export default function App() {
     if (!b) return;
     inputRef.current?.blur();
     setRecentB(addRecentBuilding(id));
+    openPanel();
     push({ ...top, b: id });
     afterPanel(() => {
       cardHome.current = id;
@@ -278,6 +299,7 @@ export default function App() {
   const openGroup = (ids: string[]) => {
     const items = ids.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
     if (!items.length) return;
+    openPanel();
     push({ q: top.q, list: 'group', group: ids, b: '' });
     // the map zooms in beside the list it opened, just far enough for each of its buildings to stand alone
     afterPanel(() => mapRef.current?.split(items));
@@ -305,7 +327,11 @@ export default function App() {
         closeAll();
       } else if (e.key === '/' && document.activeElement !== inputRef.current) {
         e.preventDefault();
-        inputRef.current?.focus();
+        // desktop: the search box lives in the content panel, which opens on the search page first
+        if (!mobile && (!panelOpen || railPage !== 'search')) {
+          railSearch();
+          afterPanel(() => inputRef.current?.focus());
+        } else inputRef.current?.focus();
       }
     };
     window.addEventListener('keydown', onKey);
@@ -322,7 +348,8 @@ export default function App() {
       const p = el ? { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight } : null;
       if (!app) return;
       // Desktop: the zoom buttons sit along the right edge, so framed buildings stay clear of them
-      const next = { ...NO_PAD, top: bar ? bar.bottom - app.top : 0, right: mobile ? 0 : ZOOM_W };
+      // and the rail along the left edge
+      const next = { ...NO_PAD, top: bar ? bar.bottom - app.top : 0, right: mobile ? 0 : ZOOM_W, left: mobile ? 0 : RAIL_W };
       if (p && p.width && p.height) {
         if (!mobile) next.left = p.left + p.width;
         else if (p.top > app.height / 3) next.bottom = app.height - p.top;
@@ -393,43 +420,126 @@ export default function App() {
   const mapView = useCallback((v: View) => live.current.onView(v), []);
   const mapFail = useCallback(() => setMapDown(true), []);
   const mapReadyStable = useCallback(() => live.current.mapReady(), []);
+  // Desktop content panel: which page it shows, for the rail's lit button
+  const railPage: RailPage = top.b || top.list === 'group' ? 'other' : top.list === 'category' ? 'category' : 'search';
+  /** Rail search: the panel opens on the search page (the submitted search's results, else the empty search page) */
+  const railSearch = () => {
+    openPanel();
+    if (railPage === 'search') return;
+    push({ q: top.q, list: top.q ? 'results' : '', group: [], b: '' });
+  };
+  const railCategory = () => {
+    openPanel();
+    if (railPage === 'category') return;
+    push({ q: top.q, list: 'category', group: [], b: '' });
+  };
+  /** Desktop search page: ＜ as on the results list, or (box opened again over a submitted search) as in the box */
+  const searchBack = editing ? boxBack : back;
+  /** Desktop search page ×: while typing it clears the text (as the box × did); with nothing on the page it closes the panel */
+  const searchClose = () => {
+    if (editing) return clearBox();
+    if (isEmptyScreen(top)) return setPanelOpen(false);
+    closeAll();
+  };
+  const searchBox = (docked: boolean) => (
+    <SearchBox
+      ref={inputRef}
+      docked={docked}
+      value={boxText}
+      showClear={showClear}
+      categoryOpen={top.list === 'category' && !top.b}
+      onBack={boxBack ? () => (inputRef.current?.blur(), goBack()) : undefined}
+      onFocus={openPreview}
+      onChange={(t) => {
+        if (!editing) openPreview();
+        setDraft(t);
+      }}
+      onSubmit={() => submit(draft)}
+      onClear={clearBox}
+      onCategory={toggleCategory}
+    />
+  );
 
   // The panel on screen: the card over everything, else the open list (one at a time)
+  const recentList = recentB.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
+  const hasPreview = !!draft.trim() || recentT.length > 0 || recentList.length > 0;
+  // The search preview (typing matches, or the recent texts and buildings)
+  const previewBody = (
+    <>
+      {draft.trim() ? (
+        preview.length ? (
+          <ResultList list={preview.slice(0, PREVIEW_MAX)} onOpen={openCard} onHover={setHoverId} />
+        ) : (
+          <p className="none">No Results</p>
+        )
+      ) : (
+        <>
+          {recentT.length > 0 && (
+            <ul className="rows recent">
+              {recentT.map((t) => (
+                <li key={t}>
+                  <button type="button" className="row text" onClick={() => submit(t)}>
+                    <Icon name="clock" size={14} />
+                    <span>{t}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {recentList.length > 0 && (
+            // recent buildings: name with built span · city, then architect · style (see .recent-b)
+            <div className="recent-b">
+              <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} />
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+  // A submitted search's results list
+  const resultsBody = (
+    <ResultList
+      list={found.main}
+      onOpen={openCard}
+      onHover={setHoverId}
+      onVisible={setSeenIds}
+      onCountry={(items) => {
+        // the view this click leads to is noted when the map stops: while the map stays there, the line is off
+        frameClick.current = { ids: idsOf(items), view: null };
+        mapRef.current?.fitTo(items);
+      }}
+      framed={(items) => {
+        const f = frameClick.current;
+        const v = viewRef.current;
+        if (f && f.view && v && f.ids === idsOf(items) && sameView(f.view, v)) return true;
+        return mapRef.current?.framed(items) ?? false;
+      }}
+      more={{
+        list: moreList,
+        open: moreOpen === top.q,
+        onOpen: () => {
+          // the map as it was before, so folding the other outcomes away can bring it back
+          moreView.current = mapRef.current?.view() ?? null;
+          setMoreOpen(top.q);
+          afterPanel(() => mapRef.current?.fitTo([...found.main, ...found.more]));
+        },
+        onClose: () => {
+          setMoreOpen('');
+          const v = moreView.current;
+          moreView.current = null;
+          if (v) afterPanel(() => mapRef.current?.moveTo(v));
+        },
+      }}
+    />
+  );
+
   let panel: React.ReactNode = null;
   if (selected) {
     panel = <BuildingCard ref={panelRef} key="card" scroll={top.scroll} b={selected} mobile={mobile} canBack={back} onBack={goBack} onClose={closeAll} onArchitect={submit} />;
-  } else if (top.list === 'preview' && (draft.trim() || recentT.length > 0 || recentB.some((id) => BY_ID.has(id)))) {
-    const recentList = recentB.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
+  } else if (top.list === 'preview' && hasPreview) {
     panel = (
       <Panel ref={panelRef} scroll={top.scroll} key="preview" mobile={mobile} place="top" label="Search" className="preview" resetKey="preview" head={null}>
-        {draft.trim() ? (
-          preview.length ? (
-            <ResultList list={preview.slice(0, PREVIEW_MAX)} onOpen={openCard} onHover={setHoverId} />
-          ) : (
-            <p className="none">No Results</p>
-          )
-        ) : (
-          <>
-            {recentT.length > 0 && (
-              <ul className="rows recent">
-                {recentT.map((t) => (
-                  <li key={t}>
-                    <button type="button" className="row text" onClick={() => submit(t)}>
-                      <Icon name="clock" size={14} />
-                      <span>{t}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {recentList.length > 0 && (
-              // recent buildings: name with built span · city, then architect · style (see .recent-b)
-              <div className="recent-b">
-                <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} />
-              </div>
-            )}
-          </>
-        )}
+        {previewBody}
       </Panel>
     );
   } else if (top.list === 'category') {
@@ -448,62 +558,56 @@ export default function App() {
   } else if (top.list === 'results' && top.q) {
     panel = (
       <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} />}>
-        <ResultList
-          list={found.main}
-          onOpen={openCard}
-          onHover={setHoverId}
-          onVisible={setSeenIds}
-          onCountry={(items) => {
-            // the view this click leads to is noted when the map stops: while the map stays there, the line is off
-            frameClick.current = { ids: idsOf(items), view: null };
-            mapRef.current?.fitTo(items);
-          }}
-          framed={(items) => {
-            const f = frameClick.current;
-            const v = viewRef.current;
-            if (f && f.view && v && f.ids === idsOf(items) && sameView(f.view, v)) return true;
-            return mapRef.current?.framed(items) ?? false;
-          }}
-          more={{
-            list: moreList,
-            open: moreOpen === top.q,
-            onOpen: () => {
-              // the map as it was before, so folding the other outcomes away can bring it back
-              moreView.current = mapRef.current?.view() ?? null;
-              setMoreOpen(top.q);
-              afterPanel(() => mapRef.current?.fitTo([...found.main, ...found.more]));
-            },
-            onClose: () => {
-              setMoreOpen('');
-              const v = moreView.current;
-              moreView.current = null;
-              if (v) afterPanel(() => mapRef.current?.moveTo(v));
-            },
-          }}
-        />
+        {resultsBody}
       </Panel>
     );
   }
+  // Desktop content panel: the page the panel shows (a new page mounts a new panel, with its own entry animation)
+  const dockKey = selected ? 'card' : top.list === 'category' ? 'category' : top.list === 'group' && group.length ? `group-${top.group.join('~')}` : 'search';
+  // the page the panel opened on slides in; once another page opens, nothing slides until the next opening
+  useLayoutEffect(() => {
+    if (opening) {
+      setOpening(false);
+      setSlideKey(dockKey);
+    } else if (slideKey !== null && slideKey !== dockKey) setSlideKey(null);
+  }, [opening, dockKey, slideKey]);
+  // Desktop: every page sits in one content panel beside the rail. Closed: nothing shows (the screen is kept).
+  // The search page keeps one panel from the empty page to typing to results, so the box never loses its focus
+  if (!mobile) {
+    if (!panelOpen) panel = null;
+    else if (!selected && top.list !== 'category' && !(top.list === 'group' && group.length)) {
+      panel = (
+        <Panel
+          ref={panelRef}
+          scroll={top.scroll}
+          key="search"
+          mobile={false}
+          place="top"
+          label="Search"
+          className="search"
+          resetKey={`${top.list}:${top.q}`}
+          head={
+            <>
+              <HeadBar canBack={searchBack} onBack={() => (inputRef.current?.blur(), goBack())} onClose={searchClose} title="Search" />
+              {searchBox(true)}
+            </>
+          }
+        >
+          {editing ? hasPreview && previewBody : top.list === 'results' && top.q ? resultsBody : null}
+        </Panel>
+      );
+    }
+    // one wrapper that is always there (display: contents), so adding or dropping its class never mounts the panel again
+    if (panel) panel = <div className={`dock${opening || slideKey === dockKey ? ' slide-in' : ''}`}>{panel}</div>;
+  }
+
 
   return (
     <div className={`app${mobile ? ' is-mobile' : ''}`} ref={appRef}>
       <main className="main">
-        <SearchBox
-          ref={inputRef}
-          value={boxText}
-          showClear={showClear}
-          categoryOpen={top.list === 'category' && !top.b}
-          onBack={boxBack ? () => (inputRef.current?.blur(), goBack()) : undefined}
-          onFocus={openPreview}
-          onChange={(t) => {
-            if (!editing) openPreview();
-            setDraft(t);
-          }}
-          onSubmit={() => submit(draft)}
-          onClear={clearBox}
-          onCategory={toggleCategory}
-        />
-        <Leave show={!!panel}>{panel}</Leave>
+        {/* phone: the search box and Category stay top left; desktop: the rail, and the box in the content panel */}
+        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onMenu={() => (panelOpen ? setPanelOpen(false) : openPanel())} onSearch={railSearch} onCategory={railCategory} />}
+        <Leave show={!!panel} slide={!mobile && !panelOpen}>{panel}</Leave>
         {/* last in the page order (Tab: search box, then the open panel, then the map); drawn under both */}
         <MapView
           ref={mapRef}
@@ -511,7 +615,7 @@ export default function App() {
           searched={!!top.q}
           selected={selected}
           hoverId={hoverId}
-          seenIds={!selected && (top.list === 'results' || top.list === 'group') ? seenIds : null}
+          seenIds={!selected && (mobile || panelOpen) && (top.list === 'results' || top.list === 'group') ? seenIds : null}
           padding={padding}
           reducedMotion={reducedMotion}
           compact={mobile}

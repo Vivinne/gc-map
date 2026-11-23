@@ -25,6 +25,7 @@
 /* a dimmed marker or name pointed at by the mouse comes back to full colour with its ink ring */
 .overlay .mk.dim.hot { opacity: 1; }
 .scale { position: absolute; z-index: 2; font-size: var(--fs-11-5); font-weight: 650; color: var(--ink); pointer-events: none; }
+.app:not(.is-mobile) .scale { display: flex; flex-direction: column; align-items: flex-end; }
 .scale i { display: block; height: var(--sz-5); border: var(--sz-2) solid var(--ink); border-top: 0; margin-top: var(--sz-2); }
 .ctrls { position: absolute; z-index: 2; right: var(--sz-16); bottom: var(--map-bottom); display: flex; flex-direction: column; gap: var(--sz-1); background: var(--rule); }
 .ctrls button { width: var(--sz-32); height: var(--sz-32); display: grid; place-items: center; background: var(--paper); }

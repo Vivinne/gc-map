@@ -21,8 +21,8 @@ export const ERA_COLORS: Record<EraId, string> = {
 /** Paper white (tokens.css --paper): panels, the open building's disc, the rims of number points */
 export const PAPER = '#fff';
 
-/** Motion times in ms, the same as --t-fast, --t-mid, --t-slow and --leave in tokens.css (a test keeps them equal) */
-export const MOTION = { fast: 120, mid: 220, slow: 420, leave: 160 } as const;
+/** Motion times in ms, the same as --t-fast, --t-mid, --t-slow, --leave and --t-slide in tokens.css (a test keeps them equal) */
+export const MOTION = { fast: 120, mid: 220, slow: 420, leave: 160, slide: 200 } as const;
 
 /** Basemap colours */
 export const MAP_COLORS = {
@@ -39,6 +39,10 @@ export const INSET = 16;
 export const MAP_BOTTOM = 24;
 /** A phone page shorter than this (px, a keyboard up in landscape) has no room for the map's source line under the search box (R6) */
 export const CREDIT_MIN_H = 120;
+/** Desktop: width of the fixed rail on the left edge (tokens.css --rail-w) */
+export const RAIL_W = 56;
+/** Size of a zoom button (desktop, bottom right) */
+export const ZOOM_BTN = 32;
 /** Height of a control (buttons, search box) */
 export const CONTROL_H = 32;
 /** Height of a list row */

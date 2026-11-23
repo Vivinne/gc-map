@@ -3,5 +3,7 @@
 .leave { display: contents; }
 .leave > * { animation: out-l var(--leave) var(--ease-in) forwards !important; pointer-events: none; }
 .is-mobile .leave > .panel.sheet { animation-name: out-d !important; }
+.leave.slide > .dock > .panel.d { animation: slide-out var(--t-slide) var(--ease-in) forwards !important; }
+@keyframes slide-out { to { transform: translateX(calc(-100% - var(--sz-16))); } }
 @keyframes out-l { to { transform: translateX(calc(-1 * var(--sz-14))); opacity: 0; } }
 @keyframes out-d { to { transform: translateY(var(--sz-40)); opacity: 0; } }
