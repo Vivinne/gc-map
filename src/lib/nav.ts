@@ -95,6 +95,26 @@ export function saveDraft(text: string | null): void {
   }
 }
 
+const FOLD_KEY = 'gc-map:folded';
+
+/** Desktop: the content panel was folded with the rail's menu button; kept for this tab so a reload keeps it folded */
+export function saveFolded(folded: boolean): void {
+  try {
+    if (folded) sessionStorage.setItem(FOLD_KEY, '1');
+    else sessionStorage.removeItem(FOLD_KEY);
+  } catch {
+    /* storage blocked: folding lasts until the reload */
+  }
+}
+
+export function loadFolded(): boolean {
+  try {
+    return sessionStorage.getItem(FOLD_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 export function loadDraft(): string | null {
   try {
     return sessionStorage.getItem(DRAFT_KEY);

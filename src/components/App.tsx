@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { setAddress } from '../lib/address';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
-import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, loadDraft, sameScreen, saveDraft, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
+import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, loadDraft, loadFolded, sameScreen, saveDraft, saveFolded, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
 import { searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
@@ -73,6 +73,8 @@ export default function App() {
   const frameClick = useRef<{ ids: string; view: View | null } | null>(null);
   // Buildings of the list rows on screen; the map names them and dims the rest
   const [seenIds, setSeenIds] = useState<string[]>([]);
+  /** Desktop: the rows on screen when the panel was folded; the map keeps dimming the rest while it is folded */
+  const [foldSeen, setFoldSeen] = useState<string[]>([]);
   const [recentT, setRecentT] = useState<string[]>(() => recentTexts());
   const [recentB, setRecentB] = useState<string[]>(() => recentBuildings());
   const [mapDown, setMapDown] = useState(false);
@@ -87,7 +89,9 @@ export default function App() {
    * link that names a screen opens it on that screen. Closing it keeps the screen (and the map), so opening it
    * again shows the screen that was left. The phone layout does not use it (its panels are always shown).
    */
-  const [panelOpen, setPanelOpen] = useState(() => !isEmptyScreen(START.screen));
+  const [panelOpen, setPanelOpen] = useState(() => !isEmptyScreen(START.screen) && !loadFolded());
+  // a panel folded with Menu stays folded over a reload in this tab (user, 2026-11-23); × or opening it ends that
+  useEffect(() => saveFolded(!panelOpen && !isEmptyScreen(top)), [panelOpen, top]);
   /**
    * The panel has just been opened from the rail or the map: it slides out from behind the rail. Set to true on
    * opening; the page shown then keeps the slide-in class until another page opens (removing the class sooner
@@ -404,6 +408,9 @@ export default function App() {
   const clearBox = () => {
     if (!draft) return closeAll();
     setDraft('');
+    // × drops the submitted search the box was opened over (user, 2026-11-23): the typing screen no longer carries
+    // it, so a card opened next, or the box opened again, does not bring it back; the map shows every building
+    if (top.q) setStack((st) => [...st.slice(0, -1), { ...st[st.length - 1]!, q: '' }]);
     inputRef.current?.focus();
   };
 
@@ -624,7 +631,7 @@ export default function App() {
     <div className={`app${mobile ? ' is-mobile' : ''}`} ref={appRef}>
       <main className="main">
         {/* phone: the search box and Category stay top left; desktop: the rail, and the box in the content panel */}
-        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onMenu={() => (panelOpen ? setPanelOpen(false) : openPanel())} onSearch={railSearch} onCategory={railCategory} />}
+        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onMenu={() => (panelOpen ? (setFoldSeen(seenIds), setPanelOpen(false)) : openPanel())} onSearch={railSearch} onCategory={railCategory} />}
         <Leave show={!!panel} slide={!mobile && !panelOpen}>{panel}</Leave>
         {/* last in the page order (Tab: search box, then the open panel, then the map); drawn under both */}
         <MapView
@@ -633,7 +640,7 @@ export default function App() {
           searched={!!top.q}
           selected={selected}
           hoverId={hoverId}
-          seenIds={!selected && (mobile || panelOpen) && (top.list === 'results' || top.list === 'group') ? seenIds : null}
+          seenIds={!selected && (top.list === 'results' || top.list === 'group') ? (mobile || panelOpen ? seenIds : foldSeen) : null}
           padding={padding}
           reducedMotion={reducedMotion}
           compact={mobile}

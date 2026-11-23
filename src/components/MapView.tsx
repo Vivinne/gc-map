@@ -93,6 +93,22 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   // A phone page left only a strip by its keyboard: the source line would sit under the search box, so it waits
   // until the keyboard has gone (R6)
   const [noRoom, setNoRoom] = useState(false);
+  // Phone: the source line is a fixed strip on the bottom edge and the sheet stands on it (2026-11-23), so it never
+  // moves when a sheet folds, opens or closes. Its height (one line, or two on a narrow screen, R7) is --credit-strip
+  const creditRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = creditRef.current;
+    const root = document.documentElement.style;
+    if (!el || !compact) return;
+    const set = () => root.setProperty('--credit-strip', noRoom ? '0px' : `${el.offsetHeight}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      root.removeProperty('--credit-strip');
+    };
+  }, [compact, noRoom]);
   useEffect(() => {
     const check = () => setNoRoom(compact && window.innerHeight < CREDIT_MIN_H);
     check();
@@ -367,7 +383,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           </button>
         </div>
       )}
-      <div className={`credit${noRoom ? ' off' : ''}`}>Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors</div>
+      <div ref={creditRef} className={`credit${noRoom ? ' off' : ''}`}>Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors</div>
     </div>
   );
 });
