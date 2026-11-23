@@ -436,8 +436,10 @@ export default function App() {
   const railSearch = () => {
     openPanel();
     setSearchPage(true);
-    if (railPage === 'search' || menuPage) return;
-    push({ q: top.q, list: top.q ? 'results' : '', group: [], b: '' });
+    if (railPage === 'search') return;
+    if (!menuPage) push({ q: top.q, list: top.q ? 'results' : '', group: [], b: '' });
+    // no search on screen: the box takes the cursor, so the recent searches show at once and typing can start
+    if (!top.q) afterPanel(() => inputRef.current?.focus());
   };
   const railCategory = () => {
     openPanel();
