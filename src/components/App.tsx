@@ -260,8 +260,8 @@ export default function App() {
     });
   };
 
-  /** Open a building's card; `centre`: it was clicked on the map, so the map brings it to the middle */
-  const openCard = (id: string, centre = false) => {
+  /** Open a building's card: the map brings it to the middle of its free part, from a list row as from a marker (zoom kept) */
+  const openCard = (id: string, centre = true) => {
     const b = BY_ID.get(id);
     if (!b) return;
     inputRef.current?.blur();

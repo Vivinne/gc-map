@@ -37,6 +37,9 @@ async function loadMapLib() {
 /** Street tiles that have not come by this time (ms) count as failed: the notice and Retry show (L1) */
 const TILE_WAIT = 10000;
 
+/** Zoom from which the street tiles are drawn (map/style.ts) */
+const STREET_ZOOM = 6;
+
 /** Longest press (ms) that still counts as a click on a mark */
 const PRESS_MS = 700;
 
@@ -107,11 +110,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   }, []);
   /** Where the markers are drawn until the map is there */
   const earlyLayer = useRef<HTMLDivElement>(null);
-  // a tile server that is slow or does not answer gives no error: no tile by TILE_WAIT counts as a failure
+  // a tile server that is slow or does not answer gives no error: no street tile by TILE_WAIT counts as a failure.
+  // Street tiles are used only from STREET_ZOOM on, so the wait runs only while the map is that close (zoomed
+  // further out nothing is asked for; counting there showed the notice on the plain Europe view)
   const tileTimer = useRef(0);
-  const waitForTiles = () => {
-    window.clearTimeout(tileTimer.current);
-    tileTimer.current = window.setTimeout(() => !tilesOk.current && setTileFail(true), TILE_WAIT);
+  const waitForTiles = (map: MlMap) => {
+    if (tilesOk.current || map.getZoom() < STREET_ZOOM) {
+      window.clearTimeout(tileTimer.current);
+      tileTimer.current = 0;
+      return;
+    }
+    if (tileTimer.current) return;
+    tileTimer.current = window.setTimeout(() => {
+      tileTimer.current = 0;
+      if (!tilesOk.current && map.getZoom() >= STREET_ZOOM) setTileFail(true);
+    }, TILE_WAIT);
   };
   useEffect(() => () => window.clearTimeout(tileTimer.current), []);
   // a map file that fails to download goes to the page's error guard (it reloads once for a newer deploy)
@@ -197,7 +210,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
       map.setLayerZoomRange('land', 0, 6);
     });
     mapRef.current = map;
-    waitForTiles();
+    waitForTiles(map);
+    map.on('moveend', () => waitForTiles(map));
     setLayer(map.getCanvasContainer());
     let raf = 0;
     const ro = new ResizeObserver(() => {
@@ -332,8 +346,9 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             onClick={() => {
               setTileFail(false);
               tilesOk.current = false;
-              if (styleRef.current) mapRef.current?.setStyle(styleRef.current());
-              waitForTiles();
+              const m = mapRef.current;
+              if (styleRef.current) m?.setStyle(styleRef.current());
+              if (m) waitForTiles(m);
             }}
           >
             Retry
