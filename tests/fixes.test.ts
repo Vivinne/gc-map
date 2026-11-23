@@ -102,3 +102,21 @@ test('C2 tokens: the style modules write no lengths or colours of their own; mot
   for (const [k, css] of [['fast', '--t-fast'], ['mid', '--t-mid'], ['slow', '--t-slow'], ['leave', '--leave']] as const) assert.match(tokens, new RegExp(`${css}: ${MOTION[k]}ms;`));
   assert.match(tokens, new RegExp(`--paper: ${PAPER};`));
 });
+
+test('R4 framing room: the free part of the map never goes below the minimum, however much the panels cover', async () => {
+  const { roomFor } = await import('../src/lib/geo');
+  for (const [W, H, pad] of [[882, 264, { top: 64, right: 0, bottom: 132, left: 0 }], [882, 86, { top: 64, right: 0, bottom: 43, left: 0 }], [1280, 800, { top: 64, right: 48, bottom: 0, left: 396 }], [300, 200, { top: 300, right: 300, bottom: 300, left: 300 }]] as const) {
+    const { p, f } = roomFor(W, H, pad, 40, 40);
+    assert.ok(H - f.top - f.bottom >= 39.99 && W - f.left - f.right >= 39.99, `${W}×${H}`);
+    for (const k of ['top', 'right', 'bottom', 'left'] as const) assert.ok(p[k] >= 0 && f[k] >= p[k] && Number.isFinite(f[k]));
+  }
+  assert.deepEqual(roomFor(1280, 800, { top: 64, right: 48, bottom: 0, left: 396 }, 40, 40).f, { top: 104, right: 88, bottom: 40, left: 436 });
+});
+
+test('R5 typed text: an emptied search box is kept as empty over a reload', async () => {
+  const { saveDraft, loadDraft } = await import('../src/lib/nav');
+  saveDraft('');
+  assert.equal(loadDraft(), '');
+  saveDraft(null);
+  assert.equal(loadDraft(), null);
+});

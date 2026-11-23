@@ -2,11 +2,11 @@
 
 import type { Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import { flushSync } from 'react-dom';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import type { Building } from '../lib/model';
 import { isMouseHover } from '../lib/pointer';
 import type { View } from '../lib/nav';
-import { INSET, MAP_BOTTOM, MAP_COLORS, MOTION } from '../styles/tokens';
+import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION } from '../styles/tokens';
 import { Icon } from './Icons';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
@@ -65,6 +65,8 @@ interface Props {
   onFail(): void;
   /** The map is on screen (it loads after the page): camera moves asked for before now can run */
   onReady(): void;
+  /** The map could not start: only then does the fallback (which changes with every screen) need drawing */
+  down: boolean;
   fallback: React.ReactNode;
 }
 
@@ -85,6 +87,24 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const motion = useCallback((ms: number) => (reducedMotion ? 0 : ms), [reducedMotion]);
 
   const styleRef = useRef<(() => StyleSpecification) | null>(null);
+  // A phone page left only a strip by its keyboard: the source line would sit under the search box, so it waits
+  // until the keyboard has gone (R6)
+  const [noRoom, setNoRoom] = useState(false);
+  useEffect(() => {
+    const check = () => setNoRoom(compact && window.innerHeight < CREDIT_MIN_H);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, [compact]);
+  /** Where the mouse last was (the ring check after a map move) */
+  const mouseAt = useRef<[number, number] | null>(null);
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') mouseAt.current = [e.clientX, e.clientY];
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
+  }, []);
   /** Where the markers are drawn until the map is there */
   const earlyLayer = useRef<HTMLDivElement>(null);
   // a tile server that is slow or does not answer gives no error: no tile by TILE_WAIT counts as a failure
@@ -159,6 +179,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     map.on('resize', redraw);
     map.on('load', redraw);
     map.on('moveend', () => {
+      // a mark that slid away under a still mouse gets no pointer-leave (Safari also rings marks passing under it
+      // during the move): when the map stops, the ring stays only on the mark that is under the mouse now
+      const at = mouseAt.current;
+      const under = at ? document.elementFromPoint(at[0], at[1])?.closest('svg.overlay .mk') : null;
+      const now = under?.getAttribute('data-key') ?? '';
+      setPinHover((h) => (h && h !== now && !document.activeElement?.matches?.('svg.overlay .mk:focus-visible') ? now : h));
       const c = map.getCenter();
       viewRef.current({ lng: c.lng, lat: c.lat, zoom: map.getZoom() });
     });
@@ -256,6 +282,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // the ring ends whenever the map moves or the screen changes (below); a mouse still on the mark rings it again as it moves
     onPointerMove: (e: React.PointerEvent) => isMouseHover(e) && setPinHover(key),
     onPointerLeave: () => setPinHover((h) => (h === key ? '' : h)),
+    'data-key': key,
     // pointer presses open on release (above); a click with no press before it (a screen reader) opens here
     onClick: (e: React.MouseEvent) => {
       if (pressed.current) pressed.current = false;
@@ -325,9 +352,13 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
           </button>
         </div>
       )}
-      <div className="credit">Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors</div>
+      <div className={`credit${noRoom ? ' off' : ''}`}>Natural Earth, OpenFreeMap, OpenMapTiles, OpenStreetMap contributors</div>
     </div>
   );
 });
 
-export default MapView;
+// Drawn again only when something it shows changes (R8: not on every letter typed in the search box);
+// the fallback page counts only while the map is down
+export default memo(MapView, (a, b) =>
+  (Object.keys(b) as (keyof Props)[]).every((k) => (k === 'fallback' ? !b.down || a.fallback === b.fallback : a[k] === b[k])),
+);

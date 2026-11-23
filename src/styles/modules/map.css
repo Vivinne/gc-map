@@ -30,6 +30,8 @@
 .ctrls button { width: var(--sz-32); height: var(--sz-32); display: grid; place-items: center; background: var(--paper); }
 .ctrls button:hover { background: var(--ink); color: var(--paper); }
 .ctrls button:active { background: var(--ink-press); color: var(--paper); }
+/* hidden only while a phone keyboard leaves no room for it (R6) */
+.credit.off { visibility: hidden; }
 .credit { position: absolute; z-index: 2; right: var(--sz-16); bottom: var(--credit-gap); font-size: var(--fs-10); color: var(--mute); pointer-events: none; white-space: nowrap; }
 .map-tiles { position: absolute; z-index: 5; bottom: var(--sz-56); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--sz-10); padding: var(--sz-6) var(--sz-6) var(--sz-6) var(--sz-14); background: var(--paper); border-radius: var(--r-m); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-4) var(--sz-14) var(--shade-8); font-size: var(--fs-13); font-weight: 600; white-space: nowrap; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sz-8); height: var(--sz-36); padding: 0 var(--sz-12); font-weight: 650; font-size: var(--fs-14); background: var(--soft); white-space: nowrap; }

@@ -21,6 +21,32 @@ export function boundsCenter(b: Bounds): [number, number] {
   return [(b[0][0] + b[1][0]) / 2, (360 / Math.PI) * Math.atan(Math.exp(mid)) - 90];
 }
 
+export interface Pad {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+/**
+ * The map's free part for framing, kept at least `min` px each way (R4): on a very short or narrow map the
+ * panels and margins could take more than the whole map, and the camera then got no valid place to go.
+ * The margin `frame` shrinks first; if that is not enough, the parts the panels cover shrink in proportion.
+ * Returns the panel padding (`p`) and the padding with the margin added (`f`).
+ */
+export function roomFor(W: number, H: number, pad: Pad, frame: number, min: number): { p: Pad; f: Pad } {
+  const axis = (size: number, a: number, b: number): [number, number, number] => {
+    const free = size - a - b;
+    if (free - 2 * frame >= min) return [a, b, frame];
+    if (free >= min) return [a, b, Math.max(0, (free - min) / 2)];
+    const keep = Math.max(0, size - min) / Math.max(1, a + b);
+    return [a * keep, b * keep, 0];
+  };
+  const [top, bottom, fy] = axis(H, pad.top, pad.bottom);
+  const [left, right, fx] = axis(W, pad.left, pad.right);
+  return { p: { top, right, bottom, left }, f: { top: top + fy, right: right + fx, bottom: bottom + fy, left: left + fx } };
+}
+
 /** Radius of a number point by its count */
 export function pointRadius(n: number): number {
   return n >= 15 ? 19 : n >= 7 ? 16 : 13.5;

@@ -12,8 +12,9 @@
 .panel.m.card .p-head.drag { padding-top: 0; }
 .panel.m.card .c-top { padding-top: var(--sz-14); }
 .is-mobile .ctrls { display: none; }
-.is-mobile .credit { right: var(--sz-12); left: var(--sz-12); text-align: right; font-size: var(--fs-9); bottom: calc(var(--credit-gap) + var(--sheet-h, 0px)); }
+/* on a screen too narrow for one line, the source line wraps onto a second line, right-aligned (R7) */
+.is-mobile .credit { white-space: normal; right: var(--sz-12); left: var(--sz-12); text-align: right; font-size: var(--fs-9); bottom: calc(var(--credit-gap) + var(--sheet-h, 0px)); }
 /* a full sheet covers the map: the source line is a white strip along its bottom edge, and the list ends above it */
-.sheet-full .is-mobile .credit { z-index: 8; left: 0; right: 0; padding: 0 var(--sz-12); height: var(--credit-h); line-height: var(--credit-h); background: var(--paper); bottom: env(safe-area-inset-bottom); }
+.sheet-full .is-mobile .credit { z-index: 8; left: 0; right: 0; padding: 0 var(--sz-12); min-height: var(--credit-h); line-height: var(--credit-h); background: var(--paper); bottom: env(safe-area-inset-bottom); }
 .sheet-full .panel.m.sheet.full .p-body { padding-bottom: var(--credit-h); }
 .is-mobile .scale { bottom: calc(var(--sz-22) + var(--sheet-fold, 0px)) !important; }

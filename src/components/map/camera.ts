@@ -1,7 +1,7 @@
 import type { Map as MlMap } from 'maplibre-gl';
 import type { MutableRefObject } from 'react';
 import { BY_COUNTRY_MIN, byCountry } from '../../lib/country';
-import { DOT_R, boundsCenter, boundsOf } from '../../lib/geo';
+import { DOT_R, boundsCenter, boundsOf, roomFor } from '../../lib/geo';
 import type { Building } from '../../lib/model';
 import type { View } from '../../lib/nav';
 import { MOTION } from '../../styles/tokens';
@@ -22,6 +22,8 @@ const camEase = (dz: number) => (Math.abs(dz) >= LONG_FROM ? EASE_LONG : EASE);
 export const EUROPE: [[number, number], [number, number]] = [[-9.5, 36.5], [24.5, 57.5]];
 /** Space kept round the buildings when the map frames them */
 export const FRAME = 40;
+/** Smallest free part of the map (px each way) the camera frames into, however much the panels cover (R4) */
+const MIN_FREE = 40;
 export const MAX_ZOOM = 18;
 /** Closest zoom when a number point is opened (buildings at the same spot never split) */
 const SPLIT_MAX = 17;
@@ -70,15 +72,20 @@ interface CameraDeps {
 /** The camera methods the app calls through the map's ref */
 export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDeps): MapHandle {
   const { padRef, markersShown, motion } = deps;
+  /** Panel padding and framing padding that always leave the map a usable free part (R4) */
+  const room = (map: MlMap) => {
+    const { clientWidth: W, clientHeight: H } = map.getContainer();
+    return roomFor(W, H, padRef.current, FRAME, MIN_FREE);
+  };
   /** Move the map only as far as needed to show a point in the free part; the zoom stays */
   const reveal = (map: MlMap, b: { lng: number; lat: number }) => {
-    const p = padRef.current;
+    const { f } = room(map);
     const { clientWidth: W, clientHeight: H } = map.getContainer();
     const pt = map.project([b.lng, b.lat]);
-    const x1 = p.left + FRAME;
-    const x2 = W - p.right - FRAME;
-    const y1 = p.top + FRAME;
-    const y2 = H - p.bottom - FRAME;
+    const x1 = f.left;
+    const x2 = W - f.right;
+    const y1 = f.top;
+    const y2 = H - f.bottom;
     const dx = pt.x < x1 ? pt.x - x1 : pt.x > x2 ? pt.x - x2 : 0;
     const dy = pt.y < y1 ? pt.y - y1 : pt.y > y2 ? pt.y - y2 : 0;
     if (!dx && !dy) return;
@@ -93,8 +100,7 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
   const frameTarget = (map: MlMap, list: Building[]): { center: [number, number]; zoom: number } | null => {
     const b = boundsOf(list);
     if (!b) return null;
-    const p = padRef.current;
-    const padding = { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME };
+    const padding = room(map).f;
     const zoom = map.getZoom();
     const fitZ = Math.min(map.cameraForBounds(b, { padding })?.zoom ?? zoom, MAX_ZOOM);
     // zoom at which every one of them stands alone (no number point among them); one building has no limit
@@ -114,15 +120,14 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
       // country of the first row — so the map shows what the list shows first
       let list = all;
       const b = boundsOf(all);
-      const p0 = padRef.current;
-      const raw = b && map.cameraForBounds(b, { padding: { top: p0.top + FRAME, right: p0.right + FRAME, bottom: p0.bottom + FRAME, left: p0.left + FRAME } })?.zoom;
+      const raw = b && map.cameraForBounds(b, { padding: room(map).f })?.zoom;
       if (raw != null && raw < map.getMinZoom() - 0.01 && all.length > 1) {
         const groups = byCountry(all);
         list = all.length >= BY_COUNTRY_MIN ? groups[0]!.items : groups.find((g) => g.items.includes(all[0]!))!.items;
       }
       const t = frameTarget(map, list);
       if (!map || !t) return;
-      const p = padRef.current;
+      const p = room(map).p;
       const dz = t.zoom - map.getZoom();
       map.easeTo({
         center: t.center,
@@ -136,7 +141,7 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
       const map = mapRef.current;
       if (!map) return;
       const zoom = map.getZoom();
-      const p0 = padRef.current;
+      const p0 = room(map).p;
       // a marker clicked on the map: the building comes to the middle of the free part of the map
       const toMiddle = () =>
         map.easeTo({ center: [b.lng, b.lat], offset: [(p0.left - p0.right) / 2, (p0.top - p0.bottom) / 2], duration: motion(MAP_MS), easing: EASE });
@@ -156,7 +161,7 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
         return;
       }
       const to = Math.min(MAX_ZOOM, zoom + (near > 0 ? Math.log2(need / near) + 0.15 : MAX_ZOOM));
-      const p = padRef.current;
+      const p = room(map).p;
       // offset, not padding: map padding would stay on the map and shift every saved centre after it
       map.easeTo({
         center: [b.lng, b.lat],
@@ -179,8 +184,8 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
       const splitAt = near > 0 && Number.isFinite(near) ? zoom + Math.max(0, Math.log2(need / near)) + 0.1 : SPLIT_MAX;
       // never closer than the view that still holds all of them: buildings that cannot split there stay in a
       // smaller number point, which splits on its own click
-      const p = padRef.current;
-      const fit = map.cameraForBounds(b, { padding: { top: p.top + FRAME, right: p.right + FRAME, bottom: p.bottom + FRAME, left: p.left + FRAME } });
+      const { p, f: fpad } = room(map);
+      const fit = map.cameraForBounds(b, { padding: fpad });
       const to = Math.min(splitAt, fit?.zoom ?? SPLIT_MAX, SPLIT_MAX);
       const dz = to - zoom;
       map.easeTo({
@@ -197,7 +202,7 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
       const map = mapRef.current;
       const t = map && frameTarget(map, list);
       if (!map || !t) return false;
-      const p = padRef.current;
+      const p = room(map).p;
       const { clientWidth: W, clientHeight: H } = map.getContainer();
       const pts = list.map((x) => map.project([x.lng, x.lat]));
       if (pts.some((q) => q.x < p.left || q.x > W - p.right || q.y < p.top || q.y > H - p.bottom)) return false;

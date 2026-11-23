@@ -37,6 +37,8 @@ export const MAP_COLORS = {
 export const INSET = 16;
 /** Bottom line of the zoom buttons and the scale bar (desktop): clear of the map's source line under them (B6) */
 export const MAP_BOTTOM = 24;
+/** A phone page shorter than this (px, a keyboard up in landscape) has no room for the map's source line under the search box (R6) */
+export const CREDIT_MIN_H = 120;
 /** Height of a control (buttons, search box) */
 export const CONTROL_H = 32;
 /** Height of a list row */

@@ -29,8 +29,12 @@ const CARD_SETTLE = 1800;
 const PREVIEW_MAX = 30;
 /** Width the zoom buttons take from the right edge (32 px buttons + 16 px inset) */
 const ZOOM_W = 48;
-/** A phone keyboard closes within this time after a search is sent (ms): the map frames the results again then */
+/** A phone keyboard closes within this time after a search is sent (ms): the map frames the results by then */
 const KEYBOARD_WAIT = 1500;
+/** The page height has stayed put this long (ms): the keyboard has finished moving */
+const KEYBOARD_SETTLE = 150;
+/** The page is at least this much shorter than its full height (px): a keyboard is up */
+const KEYBOARD_MIN = 80;
 const NO_PAD: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
 
 function useMedia(q: string): boolean {
@@ -59,7 +63,7 @@ export default function App() {
   // Text in the search box while the preview is open (typed, not yet submitted)
   // a reload while typing keeps the text typed so far (Q4)
   const [draft, setDraft] = useState(() => (top.list === 'preview' ? (loadDraft() ?? top.q) : top.q));
-  useEffect(() => saveDraft(top.list === 'preview' ? draft : ''), [draft, top.list]);
+  useEffect(() => saveDraft(top.list === 'preview' ? draft : null), [draft, top.list]);
   const [hoverId, setHoverId] = useState('');
   const [, setViewTick] = useState(0);
   /** The last group line clicked (country, other outcomes) and the map view its framing came to rest at */
@@ -162,6 +166,7 @@ export default function App() {
     // the map stops where it is, also in the middle of a move (Q6), and no framing waits to run after it
     mapRef.current?.stop();
     refit.current = null;
+    window.clearTimeout(refitTimer.current);
     setMoreOpen('');
     setStack([EMPTY_SCREEN]);
     setDraft('');
@@ -188,33 +193,54 @@ export default function App() {
     const next: Screen = { q: t, list: 'results', group: [], b: '' };
     // The search preview is only the typing step: the submitted search takes its place in the history,
     // so ＜ goes back to the screen before the typing (e.g. the previous search's results), not to the half-typed text
-    if (top.list === 'preview' && !top.b) setStack((st) => [...st.slice(0, -1), next]);
+    // The same search sent again from the box over its own results goes back to those results: no second,
+    // identical step (R1, ＜ would seem to do nothing)
+    if (top.list === 'preview' && !top.b)
+      setStack((st) => (st.length > 1 && sameScreen(st[st.length - 2]!, next) ? st.slice(0, -1) : [...st.slice(0, -1), next]));
     else push(next);
     if (found.length) {
-      // sent with the keyboard up: the map frames them in the short window above it, so it frames them
-      // again once the keyboard has gone and the map has its full height
-      refit.current = { items: found, until: performance.now() + KEYBOARD_WAIT };
-      afterPanel(() => mapRef.current?.fitTo(found));
+      // Sent with a keyboard that made the page shorter: the map waits until the keyboard has gone and the page
+      // keeps one height, then frames the results once (R3; framing at each step of the keyboard closing made
+      // the map start again and again). Without such a keyboard the map frames them at once.
+      if (window.innerHeight < fullHeight.current - KEYBOARD_MIN) {
+        refit.current = { items: found, until: performance.now() + KEYBOARD_WAIT };
+        refitLater(KEYBOARD_WAIT);
+      } else afterPanel(() => mapRef.current?.fitTo(found));
     }
   };
 
-  /** Results to frame again when the map changes size right after a search (the keyboard closing) */
+  /** Results waiting to be framed until a closing keyboard has gone */
   const refit = useRef<{ items: Building[]; until: number } | null>(null);
-  useEffect(() => {
-    let t = 0;
-    const onResize = () => {
+  const refitTimer = useRef(0);
+  /** Frame the waiting results after `ms` with no change of the page's height */
+  const refitLater = (ms: number) => {
+    window.clearTimeout(refitTimer.current);
+    refitTimer.current = window.setTimeout(() => {
       const r = refit.current;
-      if (!r || performance.now() > r.until) return;
-      window.clearTimeout(t);
-      t = window.setTimeout(() => mapRef.current?.fitTo(r.items), PANEL_WAIT);
+      refit.current = null;
+      if (r) mapRef.current?.fitTo(r.items);
+    }, ms);
+  };
+  /** The page's height with no keyboard (taken while the search box is not being typed in) */
+  const fullHeight = useRef(typeof window !== 'undefined' ? window.innerHeight : 0);
+  useEffect(() => {
+    const onResize = () => {
+      if (document.activeElement !== inputRef.current) fullHeight.current = Math.max(window.innerHeight, refit.current ? fullHeight.current : 0);
+      const r = refit.current;
+      if (!r) return;
+      // the keyboard is still moving: wait for the height to stay put (or for the longest wait to end)
+      refitLater(Math.max(0, Math.min(KEYBOARD_SETTLE, r.until - performance.now())));
     };
     // a finger or mouse on the page ends the wait: the map is the person's now
-    const stop = () => (refit.current = null);
+    const stop = () => {
+      refit.current = null;
+      window.clearTimeout(refitTimer.current);
+    };
     window.addEventListener('resize', onResize);
     window.visualViewport?.addEventListener('resize', onResize);
     window.addEventListener('pointerdown', stop, true);
     return () => {
-      window.clearTimeout(t);
+      window.clearTimeout(refitTimer.current);
       window.removeEventListener('resize', onResize);
       window.visualViewport?.removeEventListener('resize', onResize);
       window.removeEventListener('pointerdown', stop, true);
@@ -345,6 +371,29 @@ export default function App() {
     inputRef.current?.focus();
   };
 
+  // The map gets callbacks that never change, each calling this render's own function (R8): typing in the search
+  // box then does not redraw every marker, and a click still acts on the newest screen and typed text
+  const live = useRef({ openCard, openGroup, mapReady, onView: (v: View) => void v });
+  live.current = {
+    openCard,
+    openGroup,
+    mapReady,
+    onView: (v: View) => {
+      viewRef.current = v;
+      writeAddress(top);
+      if (cardHome.current) noteHome(cardHome.current);
+      // the map stopped after a group line's click: that is the group's framed view
+      if (frameClick.current && !frameClick.current.view) frameClick.current.view = v;
+      // lines that frame groups on the map are clickable or not by what the map now shows
+      setViewTick((n) => n + 1);
+    },
+  };
+  const mapSelect = useCallback((id: string) => live.current.openCard(id, true), []);
+  const mapGroup = useCallback((ids: string[]) => live.current.openGroup(ids), []);
+  const mapView = useCallback((v: View) => live.current.onView(v), []);
+  const mapFail = useCallback(() => setMapDown(true), []);
+  const mapReadyStable = useCallback(() => live.current.mapReady(), []);
+
   // The panel on screen: the card over everything, else the open list (one at a time)
   let panel: React.ReactNode = null;
   if (selected) {
@@ -467,19 +516,12 @@ export default function App() {
           reducedMotion={reducedMotion}
           compact={mobile}
           start={START.view}
-          onSelect={(id) => openCard(id, true)}
-          onGroup={openGroup}
-          onView={(v) => {
-            viewRef.current = v;
-            writeAddress(top);
-            if (cardHome.current) noteHome(cardHome.current);
-            // the map stopped after a group line's click: that is the group's framed view
-            if (frameClick.current && !frameClick.current.view) frameClick.current.view = v;
-            // lines that frame groups on the map are clickable or not by what the map now shows
-            setViewTick((n) => n + 1);
-          }}
-          onFail={() => setMapDown(true)}
-          onReady={mapReady}
+          onSelect={mapSelect}
+          onGroup={mapGroup}
+          onView={mapView}
+          onFail={mapFail}
+          onReady={mapReadyStable}
+          down={mapDown}
           fallback={
             // kept clear of the search box and the open panel; while a panel lists buildings, the page does not list them again
             <div className="map-down" style={{ marginTop: padding.top, marginLeft: padding.left, marginBottom: padding.bottom }}>

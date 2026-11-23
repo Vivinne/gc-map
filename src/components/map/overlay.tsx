@@ -39,6 +39,7 @@ export type Act = (key: string, click: Click, label?: string) => {
   onPointerEnter: (e: PointerEvent) => void;
   onPointerLeave: () => void;
   onPointerMove: (e: PointerEvent) => void;
+  'data-key': string;
   onClick: (e: MouseEvent) => void;
   tabIndex?: number;
   role?: string;

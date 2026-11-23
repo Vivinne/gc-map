@@ -82,10 +82,13 @@ const MAX_LAT = 85.0511;
 
 const DRAFT_KEY = 'gc-map:draft';
 
-/** Text typed in the search box and not sent yet, kept for this tab so a reload keeps it (Q4); never in an address */
-export function saveDraft(text: string): void {
+/**
+ * Text typed in the search box and not sent yet, kept for this tab so a reload keeps it (Q4); never in an address.
+ * An emptied box is kept as empty (R5); null: no search box open, nothing to keep.
+ */
+export function saveDraft(text: string | null): void {
   try {
-    if (text) sessionStorage.setItem(DRAFT_KEY, text);
+    if (text !== null) sessionStorage.setItem(DRAFT_KEY, text);
     else sessionStorage.removeItem(DRAFT_KEY);
   } catch {
     /* storage blocked: the text lives in memory only */
