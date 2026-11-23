@@ -14,6 +14,7 @@ import Leave from './Leave';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import Panel from './Panel';
 import Rail, { type RailPage } from './Rail';
+import RailMenu from './RailMenu';
 import ResultList from './ResultList';
 import SearchBox from './SearchBox';
 import { RAIL_W } from '../styles/tokens';
@@ -94,6 +95,11 @@ export default function App() {
    */
   const [slideKey, setSlideKey] = useState<string | null>(null);
   const [opening, setOpening] = useState(false);
+  /**
+   * Desktop: with nothing open, the panel shows the menu page; the search page once Search was chosen (rail or
+   * menu). Closing the panel keeps this, so it opens again on the page that was left; × starts over at the menu.
+   */
+  const [searchPage, setSearchPage] = useState(false);
   const openPanel = () => {
     if (panelOpen) return;
     setPanelOpen(true);
@@ -191,6 +197,9 @@ export default function App() {
     setStack([EMPTY_SCREEN]);
     setDraft('');
     inputRef.current?.blur();
+    // desktop: nothing is open after ×, so the content panel closes too (the menu shows when it opens again)
+    setPanelOpen(false);
+    setSearchPage(false);
   };
 
   const openPreview = () => {
@@ -421,11 +430,13 @@ export default function App() {
   const mapFail = useCallback(() => setMapDown(true), []);
   const mapReadyStable = useCallback(() => live.current.mapReady(), []);
   // Desktop content panel: which page it shows, for the rail's lit button
-  const railPage: RailPage = top.b || top.list === 'group' ? 'other' : top.list === 'category' ? 'category' : 'search';
+  const menuPage = isEmptyScreen(top) && !searchPage;
+  const railPage: RailPage = top.b || top.list === 'group' || menuPage ? 'other' : top.list === 'category' ? 'category' : 'search';
   /** Rail search: the panel opens on the search page (the submitted search's results, else the empty search page) */
   const railSearch = () => {
     openPanel();
-    if (railPage === 'search') return;
+    setSearchPage(true);
+    if (railPage === 'search' || menuPage) return;
     push({ q: top.q, list: top.q ? 'results' : '', group: [], b: '' });
   };
   const railCategory = () => {
@@ -435,10 +446,9 @@ export default function App() {
   };
   /** Desktop search page: ＜ as on the results list, or (box opened again over a submitted search) as in the box */
   const searchBack = editing ? boxBack : back;
-  /** Desktop search page ×: while typing it clears the text (as the box × did); with nothing on the page it closes the panel */
+  /** Desktop search page ×: while typing it clears the text (as the box × did); otherwise it closes everything */
   const searchClose = () => {
     if (editing) return clearBox();
-    if (isEmptyScreen(top)) return setPanelOpen(false);
     closeAll();
   };
   const searchBox = (docked: boolean) => (
@@ -563,7 +573,7 @@ export default function App() {
     );
   }
   // Desktop content panel: the page the panel shows (a new page mounts a new panel, with its own entry animation)
-  const dockKey = selected ? 'card' : top.list === 'category' ? 'category' : top.list === 'group' && group.length ? `group-${top.group.join('~')}` : 'search';
+  const dockKey = menuPage && !selected ? 'menu' : selected ? 'card' : top.list === 'category' ? 'category' : top.list === 'group' && group.length ? `group-${top.group.join('~')}` : 'search';
   // the page the panel opened on slides in; once another page opens, nothing slides until the next opening
   useLayoutEffect(() => {
     if (opening) {
@@ -575,7 +585,13 @@ export default function App() {
   // The search page keeps one panel from the empty page to typing to results, so the box never loses its focus
   if (!mobile) {
     if (!panelOpen) panel = null;
-    else if (!selected && top.list !== 'category' && !(top.list === 'group' && group.length)) {
+    else if (menuPage && !selected) {
+      panel = (
+        <Panel ref={panelRef} key="menu" mobile={false} place="top" label="Menu" className="menu" resetKey="menu" head={<HeadBar canBack={false} onBack={goBack} onClose={closeAll} />}>
+          <RailMenu onSearch={railSearch} onCategory={railCategory} />
+        </Panel>
+      );
+    } else if (!selected && top.list !== 'category' && !(top.list === 'group' && group.length)) {
       panel = (
         <Panel
           ref={panelRef}

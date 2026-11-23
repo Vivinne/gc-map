@@ -1,7 +1,7 @@
 # SPEC.md — GC map redesign (v2)
 
 Source: Project doc "網頁修改 的副本" (2026-11-13) and the user's answers of 2026-11-13. KEEP.md lists what stays from v1.
-Status: approved 2026-11-13; published 2026-11-13 at https://vivinne.github.io/gc-map/ (gh-pages 955bbae, from `redesign`); `/gc-map/atlas/` redirects there.
+Status: approved 2026-11-13; desktop rail and content panel approved and published 2026-11-23; published 2026-11-13 at https://vivinne.github.io/gc-map/ (gh-pages 955bbae, from `redesign`); `/gc-map/atlas/` redirects there.
 
 ## 1. Screen
 - Map only, no top bar, no tabs. Default view: Europe (v1 Full map).
@@ -22,7 +22,7 @@ Status: approved 2026-11-13; published 2026-11-13 at https://vivinne.github.io/g
 | Search first | After a search is submitted and until ×, the map shows only its results |
 | Load failure | As v1 (KEEP.md) |
 | Keys | `/` opens Search (desktop: opens the content panel on the search page); Esc = × |
-| Rail (desktop) | The page opens with the content panel closed and nothing lit (a reload or shared link naming a screen opens it on that screen). Menu: closed → opens on the screen last shown (the first time: the search page); open → closes, nothing lit. Search: opens the panel (if closed) on the search page (the submitted search's results, else the empty search page) and lights; Category: the same with the Category list. A lit button cannot be pressed. Card and number point list: nothing lit. A marker or number point clicked while the panel is closed opens it. × on a page leaves the panel open on the empty search page (magnifier lit); × on the empty search page closes the panel. Closing keeps the screen and the map; the map shows what that screen shows (the submitted search's results), with no dimming while the panel is closed |
+| Rail (desktop) | The page opens with the content panel closed and nothing lit (a reload or shared link naming a screen opens it on that screen). Menu: closed → opens on the screen last shown; with nothing open (a fresh visit, or after ×) it opens on the menu page: no title, × top right, and two framed buttons (magnifier + `Search`, four squares + `Category`; the frame holds icon and name, hover darkens the frame, press fills it light blue and moves 1 px), each acting as the rail button with its icon; nothing lit; open → closes, nothing lit. Search: opens the panel (if closed) on the search page (the submitted search's results, else the empty search page) and lights; Category: the same with the Category list. A lit button cannot be pressed. Card and number point list: nothing lit. A marker or number point clicked while the panel is closed opens it. × (and Esc) closes everything, the panel too: nothing open, nothing lit (the menu page shows when it opens again). Search from the rail or the menu page with no search gives the empty search page. Closing keeps the screen and the map; the map shows what that screen shows (the submitted search's results), with no dimming while the panel is closed |
 
 ## 3. Map rules
 - Markers show only when a search is submitted, or when the scale bar reads 100 km or less (`scale.metres <= 100000`). At the default Europe view with no search the map has no markers.
