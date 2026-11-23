@@ -36,6 +36,8 @@ export default function Rail({ open, page, onMenu, onSearch, onCategory }: Props
   return (
     <nav className="rail" aria-label="Panel">
       {btn('menu', open ? 'Close panel' : 'Open panel', false, onMenu)}
+      {/* the menu button controls the panel; the two below choose its page: a short line as wide as a button sets them apart */}
+      <i className="rail-sep" aria-hidden="true" />
       {btn('search', 'Search', open && page === 'search', onSearch)}
       {btn('grid', 'Category', open && page === 'category', onCategory)}
     </nav>
