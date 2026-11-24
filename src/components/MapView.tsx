@@ -37,6 +37,9 @@ async function loadMapLib() {
 /** Street tiles that have not come by this time (ms) count as failed: the notice and Retry show (L1) */
 const TILE_WAIT = 10000;
 
+/** Most device pixels per point the map is drawn at (phones with 3 draw at 2) */
+const MAX_MAP_DPR = 2;
+
 /** Zoom from which the street tiles are drawn (map/style.ts) */
 const STREET_ZOOM = 6;
 
@@ -162,6 +165,12 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         minZoom: MIN_ZOOM,
         dragRotate: false,
         pitchWithRotate: false,
+        // phones (user, 2026-11-24: smoothness): the map is drawn at no more than 2 device pixels per point. Phones
+        // with 3 (most iPhones) then draw 44 % fewer pixels each frame, with lines and land edges still sharp; the
+        // markers, names and text are page elements and stay at full sharpness
+        pixelRatio: Math.min(window.devicePixelRatio || 1, MAX_MAP_DPR),
+        // tiles that arrive show at once instead of fading in over 300 ms of extra frames
+        fadeDuration: 0,
       });
     } catch {
       setNoMap(true);
