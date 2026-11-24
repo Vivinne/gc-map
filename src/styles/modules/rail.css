@@ -5,13 +5,11 @@
 .rail-btn { width: var(--sz-40); height: var(--sz-40); display: grid; place-items: center; text-align: center; color: var(--ink); border-radius: var(--r-m); box-shadow: inset 0 0 0 var(--sz-1) var(--g84); transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
 @media (hover: hover) { .rail-btn:hover { box-shadow: inset 0 0 0 var(--sz-1-5) var(--ink); } }
 .rail-btn:active { background: var(--soft); transform: translateY(var(--sz-1)); }
-/* between the menu button and the page buttons: as wide as a button, so the rail itself stays one piece */
-.rail-sep { flex: none; width: var(--sz-40); height: var(--sz-1); margin: var(--sz-4) 0 var(--sz-3); background: var(--g84); }
-/* lit: its page is on screen; pressed again it folds the panel. The menu button while the panel is out has the same
-   light grey tint (user, 2026-11-24: black drew too much attention) */
-.rail-btn.on, .rail-btn.open { background: var(--g92); color: var(--ink); }
-/* the menu page (RailMenu.tsx): one framed button per page, the frame holds the icon and the name */
-.r-menu { display: flex; flex-direction: column; gap: var(--sz-8); padding: var(--sz-12) var(--sz-16) var(--sz-16); }
-.r-item { display: flex; align-items: center; gap: var(--sz-12); width: 100%; height: var(--sz-48); padding: 0 var(--sz-16); font-weight: 650; font-size: var(--fs-14); color: var(--ink); border-radius: var(--r-m); box-shadow: inset 0 0 0 var(--sz-1) var(--g84); transition: background-color var(--t-fast), box-shadow var(--t-fast); }
-@media (hover: hover) { .r-item:hover { box-shadow: inset 0 0 0 var(--sz-1-5) var(--ink); } }
-.r-item:active { background: var(--soft); transform: translateY(var(--sz-1)); }
+/* lit: its page is on screen; pressed again it folds the panel (light grey, user 2026-11-24: black drew too much attention) */
+.rail-btn.on { background: var(--g92); color: var(--ink); }
+
+/* the fold tab (FoldTab.tsx): on the panel's right edge while it is out, beside the rail while a screen is folded away */
+.fold-tab { position: absolute; z-index: 6; top: var(--sz-28); left: calc(var(--rail-w) + var(--sz-16) + var(--detail-w) + var(--sz-40)); width: var(--sz-20); height: var(--sz-48); display: grid; place-items: center; color: var(--g51); background: var(--paper); border-radius: 0 var(--r-s) var(--r-s) 0; box-shadow: var(--sz-1) 0 0 var(--rule), 0 var(--sz-1) 0 var(--rule), 0 calc(-1 * var(--sz-1)) 0 var(--rule), var(--sz-4) var(--sz-6) var(--sz-12) var(--shade-8); transition: left var(--t-slide) var(--ease); }
+.fold-tab:not(.out) { left: var(--rail-w); }
+@media (hover: hover) { .fold-tab:hover { color: var(--ink); background: var(--soft); } }
+.fold-tab:active { color: var(--ink); background: var(--soft); }

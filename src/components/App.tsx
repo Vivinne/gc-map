@@ -15,7 +15,7 @@ import Leave from './Leave';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import Panel from './Panel';
 import Rail, { type RailPage } from './Rail';
-import RailMenu from './RailMenu';
+import FoldTab from './FoldTab';
 import ResultList from './ResultList';
 import SearchBox from './SearchBox';
 import { RAIL_W } from '../styles/tokens';
@@ -611,13 +611,7 @@ export default function App() {
   // The search page keeps one panel from the empty page to typing to results, so the box never loses its focus
   if (!mobile) {
     if (!panelOpen) panel = null;
-    else if (menuPage && !selected) {
-      panel = (
-        <Panel ref={panelRef} key="menu" mobile={false} place="top" label="Menu" className="menu" resetKey="menu" head={<HeadBar canBack={false} onBack={goBack} onClose={closeAll} />}>
-          <RailMenu onSearch={railSearch} onCategory={railCategory} />
-        </Panel>
-      );
-    } else if (!selected && top.list !== 'category' && !(top.list === 'group' && group.length)) {
+    else if (!selected && top.list !== 'category' && !(top.list === 'group' && group.length)) {
       panel = (
         <Panel
           ref={panelRef}
@@ -648,8 +642,10 @@ export default function App() {
     <div className={`app${mobile ? ' is-mobile' : ''}`} ref={appRef}>
       <main className="main">
         {/* phone: the search box and Category stay top left; desktop: the rail, and the box in the content panel */}
-        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onMenu={() => (panelOpen ? foldPanel() : openPanel())} onFold={foldPanel} onSearch={railSearch} onCategory={railCategory} />}
+        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onFold={foldPanel} onSearch={railSearch} onCategory={railCategory} />}
         <Leave show={!!panel} slide={!mobile && !panelOpen}>{panel}</Leave>
+        {/* desktop: the panel's fold tab, on its right edge while it is out, beside the rail while a screen is folded away */}
+        {!mobile && (panelOpen ? !!panel : !isEmptyScreen(top)) && <FoldTab open={panelOpen} onToggle={() => (panelOpen ? foldPanel() : openPanel())} />}
         {/* last in the page order (Tab: search box, then the open panel, then the map); drawn under both */}
         <MapView
           ref={mapRef}
