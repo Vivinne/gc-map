@@ -449,7 +449,11 @@ export default function App() {
     openPanel();
     setSearchPage(true);
     if (railPage === 'search') return;
-    if (!menuPage) push({ q: top.q, list: top.q ? 'results' : '', group: [], b: '' });
+    // with no search, the typing screen itself goes on top (no extra empty step that ＜ would stop at, 2026-11-25)
+    if (!menuPage) {
+      if (!top.q) setDraft('');
+      push({ q: top.q, list: top.q ? 'results' : 'preview', group: [], b: '' });
+    }
     // no search on screen: the box takes the cursor, so the recent searches show at once and typing can start
     if (!top.q) afterPanel(() => inputRef.current?.focus());
   };
@@ -458,8 +462,10 @@ export default function App() {
     if (railPage === 'category') return;
     push({ q: top.q, list: 'category', group: [], b: '' });
   };
-  /** Desktop search page: ＜ as on the results list, or (box opened again over a submitted search) as in the box */
-  const searchBack = editing ? boxBack : back;
+  /** Desktop search page: ＜ as on the results list; while typing, back to the screen the page was opened over */
+  // the typing page gets ＜ whenever it was opened over another screen than the plain map (card, list, Category;
+  // user, 2026-11-25), not only over a submitted search as the phone box does
+  const searchBack = editing ? back && !!prevScreen && !isEmptyScreen(prevScreen) : back;
   /** Desktop search page ×: while typing it clears the text (as the box × did); otherwise it closes everything */
   const searchClose = () => {
     if (editing) return clearBox();

@@ -37,13 +37,14 @@ export default function Rail({ open, page, onFold, onSearch, onCategory, canFold
       <Icon name={name} size={16} />
     </button>
   );
-  const foldOff = !canFold || (open && (page === 'search' || page === 'category'));
+  // grey also while folded: Search or Category alone brings its own page back (user, 2026-11-25)
+  const foldOff = !canFold || page === 'search' || page === 'category';
   return (
     <nav className="rail" aria-label="Panel">
       {btn('search', 'Search', open && page === 'search', onSearch)}
       {btn('grid', 'Category', open && page === 'category', onCategory)}
       {/* the fold button (user, 2026-11-25): always shown, right under Category with no line between. It is grey and
-          cannot be pressed while a lit page button already does its job (Search or Category open), or when there is
+          cannot be pressed while Search or Category already does its job (its page is open, or folded away), or when there is
           nothing to fold or bring back; otherwise it is live */}
       <button
         type="button"
