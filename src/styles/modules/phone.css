@@ -12,8 +12,11 @@
 .panel.m.card .p-head.drag { padding-top: 0; }
 .panel.m.card .c-top { padding-top: var(--sz-14); }
 .is-mobile .ctrls { display: none; }
-/* the source line sits and layers as the scale bar does (user, 2026-11-24): on the map at the bottom edge, under every
-   sheet (a half or full sheet covers it), and above a folded sheet only. On a screen too narrow for one line it wraps
-   onto a second line, right-aligned (R7) */
-.is-mobile .credit { white-space: normal; right: var(--sz-12); left: var(--sz-12); text-align: right; font-size: var(--fs-9); bottom: calc(var(--credit-gap) + var(--sheet-fold, 0px)); }
-.is-mobile .scale { bottom: calc(var(--sz-22) + var(--sheet-fold, 0px)) !important; }
+/* the source line sits and layers as the scale bar does (user, 2026-11-24): on the map, under every sheet (a half or
+   full sheet covers it), above a folded sheet only. It is always one line on the scale bar's bottom line, right of the
+   longest bar (110 px, lib/scale.ts): the type shrinks with the screen width to fit, however small (the user's choice);
+   the line is about 33 times its type size wide (Archivo), 34 leaves a margin */
+.is-mobile .credit { white-space: nowrap; left: calc(var(--sz-16) + var(--sz-110) + var(--sz-12)); right: var(--sz-12); text-align: right; font-size: min(var(--fs-9), calc((100vw - var(--sz-16) - var(--sz-110) - var(--sz-24)) / 34)); line-height: 1; bottom: calc(var(--sz-8) + env(safe-area-inset-bottom) + var(--sheet-fold, 0px)); }
+/* the scale bar and the source line share one bottom line, 8 px above the bottom edge or a folded sheet (user, 2026-11-24:
+   with the source line beside it, the room the bar kept under itself for that line is no longer needed) */
+.is-mobile .scale { bottom: calc(var(--sz-8) + env(safe-area-inset-bottom) + var(--sheet-fold, 0px)) !important; }

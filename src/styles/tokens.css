@@ -84,9 +84,12 @@
   --sz-48: 48px;
   --sz-56: 56px;
   --sz-64: 64px;
+  /* the longest scale bar (lib/scale.ts MAX_PX) */
+  --sz-110: 110px;
   --sz-640: 640px;
   --sz-999: 999px;
   /* font sizes */
+  --fs-8: 8px;
   --fs-9: 9px;
   --fs-10: 10px;
   --fs-11: 11px;
