@@ -31,6 +31,16 @@ const SearchBox = forwardRef<HTMLInputElement, Props>(function SearchBox({ value
       <form
         className="sbox"
         role="search"
+        // the whole box is the search field (user, 2026-11-24): a press on the magnifier or the box's padding puts
+        // the cursor in the text, as a press on the text does; the box's own buttons (＜, ×) keep their actions
+        onMouseDown={(e) => {
+          const t = e.target as HTMLElement;
+          if (t.tagName !== 'INPUT' && !t.closest('button')) e.preventDefault();
+        }}
+        onClick={(e) => {
+          const t = e.target as HTMLElement;
+          if (t.tagName !== 'INPUT' && !t.closest('button')) e.currentTarget.querySelector('input')?.focus();
+        }}
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit();

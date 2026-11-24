@@ -3,6 +3,7 @@
 .topbar { position: absolute; z-index: 7; top: var(--sz-16); left: var(--sz-16); display: flex; gap: var(--sz-8); width: calc(var(--detail-w) + var(--sz-40)); max-width: calc(100% - var(--sz-32)); }
 .sbox { flex: 1; min-width: 0; height: var(--sz-40); display: flex; align-items: center; gap: var(--sz-8); padding: 0 var(--sz-4) 0 var(--sz-12); background: var(--paper); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-6) var(--sz-20) var(--shade-8); color: var(--mute); }
 .sbox:hover, .sbox:focus-within { box-shadow: 0 0 0 var(--sz-1-5) var(--ink), 0 var(--sz-6) var(--sz-20) var(--shade-8); }
+.sbox { cursor: text; }
 .sbox input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--ink); font-size: var(--fs-14); }
 .sbox input::placeholder { color: var(--g66); }
 /* touch screens: iOS Safari (and in-app browsers built on it) zooms the whole page into a text box under 16 px */
