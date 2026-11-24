@@ -7,5 +7,7 @@
 .rail-btn:active { background: var(--soft); transform: translateY(var(--sz-1)); }
 /* lit: its page is on screen; pressed again it folds the panel (light grey, user 2026-11-24: black drew too much attention) */
 .rail-btn.on { background: var(--g92); color: var(--ink); }
-/* between the page buttons and the fold button: as wide as a button, so the rail itself stays one piece */
-.rail-sep { flex: none; width: var(--sz-40); height: var(--sz-1); margin: var(--sz-4) 0 var(--sz-3); background: var(--g84); }
+/* the fold button while a lit page button does its job, or with nothing to fold: grey, no hover or press */
+.rail-btn:disabled { color: var(--g74); box-shadow: inset 0 0 0 var(--sz-1) var(--g89); cursor: default; }
+@media (hover: hover) { .rail-btn:disabled:hover { box-shadow: inset 0 0 0 var(--sz-1) var(--g89); } }
+.rail-btn:disabled:active { background: none; transform: none; }

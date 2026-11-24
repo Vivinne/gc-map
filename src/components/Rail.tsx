@@ -37,20 +37,25 @@ export default function Rail({ open, page, onFold, onSearch, onCategory, canFold
       <Icon name={name} size={16} />
     </button>
   );
+  const foldOff = !canFold || (open && (page === 'search' || page === 'category'));
   return (
     <nav className="rail" aria-label="Panel">
       {btn('search', 'Search', open && page === 'search', onSearch)}
       {btn('grid', 'Category', open && page === 'category', onCategory)}
-      {/* the fold button (user, 2026-11-24): folds the panel on any page, or brings the folded screen back; set apart
-          from the page buttons by a short line as wide as a button. Not shown with nothing to fold or bring back */}
-      {canFold && (
-        <>
-          <i className="rail-sep" aria-hidden="true" />
-          <button type="button" className="rail-btn rail-fold" aria-label={open ? 'Fold panel' : 'Open panel'} title={open ? 'Fold panel' : 'Open panel'} aria-expanded={open} onClick={onToggle}>
-            <Icon name={open ? 'panel' : 'panelOff'} size={16} />
-          </button>
-        </>
-      )}
+      {/* the fold button (user, 2026-11-25): always shown, right under Category with no line between. It is grey and
+          cannot be pressed while a lit page button already does its job (Search or Category open), or when there is
+          nothing to fold or bring back; otherwise it is live */}
+      <button
+        type="button"
+        className="rail-btn rail-fold"
+        aria-label={open ? 'Fold panel' : 'Open panel'}
+        title={foldOff ? undefined : open ? 'Fold panel' : 'Open panel'}
+        aria-expanded={open}
+        disabled={foldOff}
+        onClick={onToggle}
+      >
+        <Icon name={open ? 'panel' : 'panelOff'} size={16} />
+      </button>
     </nav>
   );
 }

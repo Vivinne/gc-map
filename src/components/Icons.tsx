@@ -21,10 +21,9 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
       return (<svg {...p}><path d="M2.5 10.5 8 5l5.5 5.5" {...s} /></svg>);
     case 'left':
       return (<svg {...p}><path d="M10 2.5 4.5 8l5.5 5.5" {...s} /></svg>);
-    // the side panel: a frame with its left column, filled while the panel is out (the rail's fold button)
+    // the rail's fold button (user, 2026-11-25): a list in a rounded frame; the same icon whether the panel is out or not
     case 'panel':
-      return (<svg {...p}><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="1.5" {...s} /><path d="M6 2.75v10.5" {...s} /><rect x="1.75" y="2.75" width="4.25" height="10.5" rx="1.5" fill="currentColor" /></svg>);
     case 'panelOff':
-      return (<svg {...p}><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="1.5" {...s} /><path d="M6 2.75v10.5" {...s} /></svg>);
+      return (<svg {...p}><rect x="1.75" y="1.75" width="12.5" height="12.5" rx="1.8" {...s} strokeWidth={1.6} /><path d="M5 5.5h6M5 8h6M5 10.5h6" {...s} strokeWidth={1.5} strokeLinecap="round" /></svg>);
   }
 }
