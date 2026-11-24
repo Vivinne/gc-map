@@ -464,6 +464,16 @@ export default function App() {
   /** Desktop search page ×: while typing it clears the text (as the box × did); otherwise it closes everything */
   const searchClose = () => {
     if (editing) return clearBox();
+    // a submitted search (user, 2026-11-24): the × sits in the box, so it clears the search and opens the box for a
+    // new one (the map shows every building); a second × closes everything
+    if (top.q) {
+      setDraft('');
+      setMoreOpen('');
+      setStack((st) => [...st.slice(0, -1), { q: '', list: 'preview', group: [], b: '' }]);
+      // after the typing screen is on: focusing sooner would reopen the box over the old search
+      requestAnimationFrame(() => inputRef.current?.focus());
+      return;
+    }
     closeAll();
   };
   const searchBox = (docked: boolean) => (
