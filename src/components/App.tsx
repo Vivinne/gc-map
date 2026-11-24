@@ -104,6 +104,11 @@ export default function App() {
    * menu). Closing the panel keeps this, so it opens again on the page that was left; × starts over at the menu.
    */
   const [searchPage, setSearchPage] = useState(false);
+  /** Desktop: hide the panel only (not ×): the screen, the search and the map stay as they are */
+  const foldPanel = () => {
+    setFoldSeen(seenIds);
+    setPanelOpen(false);
+  };
   const openPanel = () => {
     if (panelOpen) return;
     setPanelOpen(true);
@@ -631,7 +636,7 @@ export default function App() {
     <div className={`app${mobile ? ' is-mobile' : ''}`} ref={appRef}>
       <main className="main">
         {/* phone: the search box and Category stay top left; desktop: the rail, and the box in the content panel */}
-        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onMenu={() => (panelOpen ? (setFoldSeen(seenIds), setPanelOpen(false)) : openPanel())} onSearch={railSearch} onCategory={railCategory} />}
+        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onMenu={() => (panelOpen ? foldPanel() : openPanel())} onFold={foldPanel} onSearch={railSearch} onCategory={railCategory} />}
         <Leave show={!!panel} slide={!mobile && !panelOpen}>{panel}</Leave>
         {/* last in the page order (Tab: search box, then the open panel, then the map); drawn under both */}
         <MapView

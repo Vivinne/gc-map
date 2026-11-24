@@ -3,14 +3,13 @@
 .rail { position: absolute; z-index: 8; left: 0; top: 0; bottom: 0; width: var(--rail-w); display: flex; flex-direction: column; align-items: center; gap: var(--sz-8); padding-top: var(--sz-16); background: var(--paper); box-shadow: var(--sz-1) 0 0 var(--rule); }
 /* each button is a square with a thin frame, so it reads as a place to click; its colours stay inside the frame */
 .rail-btn { width: var(--sz-40); height: var(--sz-40); display: grid; place-items: center; text-align: center; color: var(--ink); border-radius: var(--r-m); box-shadow: inset 0 0 0 var(--sz-1) var(--g84); transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
-@media (hover: hover) { .rail-btn:not(.on):hover { box-shadow: inset 0 0 0 var(--sz-1-5) var(--ink); } }
-.rail-btn:not(.on):active { background: var(--soft); transform: translateY(var(--sz-1)); }
+@media (hover: hover) { .rail-btn:hover { box-shadow: inset 0 0 0 var(--sz-1-5) var(--ink); } }
+.rail-btn:active { background: var(--soft); transform: translateY(var(--sz-1)); }
 /* between the menu button and the page buttons: as wide as a button, so the rail itself stays one piece */
 .rail-sep { flex: none; width: var(--sz-40); height: var(--sz-1); margin: var(--sz-4) 0 var(--sz-3); background: var(--g84); }
-/* lit: its page is on screen; it cannot be pressed again. The menu button while the panel is out has the same light
-   grey tint (user, 2026-11-24: black drew too much attention) and stays pressable */
+/* lit: its page is on screen; pressed again it folds the panel. The menu button while the panel is out has the same
+   light grey tint (user, 2026-11-24: black drew too much attention) */
 .rail-btn.on, .rail-btn.open { background: var(--g92); color: var(--ink); }
-.rail-btn.on { cursor: default; }
 /* the menu page (RailMenu.tsx): one framed button per page, the frame holds the icon and the name */
 .r-menu { display: flex; flex-direction: column; gap: var(--sz-8); padding: var(--sz-12) var(--sz-16) var(--sz-16); }
 .r-item { display: flex; align-items: center; gap: var(--sz-12); width: 100%; height: var(--sz-48); padding: 0 var(--sz-16); font-weight: 650; font-size: var(--fs-14); color: var(--ink); border-radius: var(--r-m); box-shadow: inset 0 0 0 var(--sz-1) var(--g84); transition: background-color var(--t-fast), box-shadow var(--t-fast); }
