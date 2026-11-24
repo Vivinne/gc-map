@@ -4,7 +4,8 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { setAddress } from '../lib/address';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
 import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, loadDraft, loadFolded, sameScreen, saveDraft, saveFolded, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
-import { addRecentBuilding, addRecentText, recentBuildings, recentTexts } from '../lib/recent';
+import { addRecentBuilding, addRecentText, recentBuildings, recentTexts, removeRecentBuilding, removeRecentText } from '../lib/recent';
+import RemoveButton from './RemoveButton';
 import { searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
 import CategoryList from './CategoryList';
@@ -470,16 +471,16 @@ export default function App() {
       ref={inputRef}
       docked={docked}
       value={boxText}
-      showClear={showClear}
+      showClear={docked || showClear}
       categoryOpen={top.list === 'category' && !top.b}
-      onBack={boxBack ? () => (inputRef.current?.blur(), goBack()) : undefined}
+      onBack={(docked ? searchBack : boxBack) ? () => (inputRef.current?.blur(), goBack()) : undefined}
       onFocus={openPreview}
       onChange={(t) => {
         if (!editing) openPreview();
         setDraft(t);
       }}
       onSubmit={() => submit(draft)}
-      onClear={clearBox}
+      onClear={docked ? searchClose : clearBox}
       onCategory={toggleCategory}
     />
   );
@@ -501,11 +502,12 @@ export default function App() {
           {recentT.length > 0 && (
             <ul className="rows recent">
               {recentT.map((t) => (
-                <li key={t}>
+                <li key={t} className="has-x">
                   <button type="button" className="row text" onClick={() => submit(t)}>
                     <Icon name="clock" size={14} />
                     <span>{t}</span>
                   </button>
+                  <RemoveButton label={t} onRemove={() => setRecentT(removeRecentText(t))} />
                 </li>
               ))}
             </ul>
@@ -513,7 +515,7 @@ export default function App() {
           {recentList.length > 0 && (
             // recent buildings: name with built span · city, then architect · style (see .recent-b)
             <div className="recent-b">
-              <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} />
+              <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} onRemove={(id) => setRecentB(removeRecentBuilding(id))} />
             </div>
           )}
         </>
@@ -618,7 +620,7 @@ export default function App() {
           resetKey={`${top.list}:${top.q}`}
           head={
             <>
-              <HeadBar canBack={searchBack} onBack={() => (inputRef.current?.blur(), goBack())} onClose={searchClose} title="Search" />
+              {/* the search box is the page's top row (user, 2026-11-24): ＜ and × sit in the box, no title */}
               {searchBox(true)}
             </>
           }

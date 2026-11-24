@@ -18,8 +18,8 @@ interface Props {
   onClear(): void;
   onCategory(): void;
   /**
-   * Desktop: the box sits in the content panel, under its top row. The panel's top row carries ＜ and ×, and the
-   * rail carries Category, so the box shows only the magnifier and the text
+   * Desktop: the box is the content panel's top row (user, 2026-11-24): ＜ (when there is an earlier screen) and ×
+   * sit in the box as on a phone; the rail carries Category
    */
   docked?: boolean;
 }
@@ -46,7 +46,7 @@ const SearchBox = forwardRef<HTMLInputElement, Props>(function SearchBox({ value
           onSubmit();
         }}
       >
-        {onBack && !docked ? (
+        {onBack ? (
           <button type="button" className="s-back" aria-label="Back" title="Back" onClick={onBack}>
             <Icon name="left" size={14} />
           </button>
@@ -65,7 +65,7 @@ const SearchBox = forwardRef<HTMLInputElement, Props>(function SearchBox({ value
           onFocus={onFocus}
           onChange={(e) => onChange(e.target.value)}
         />
-        {showClear && !docked && (
+        {showClear && (
           <button type="button" className="s-x" aria-label="Clear" title="Clear (Esc)" onClick={onClear}>
             <Icon name="close" size={13} />
           </button>

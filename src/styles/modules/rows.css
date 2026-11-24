@@ -11,6 +11,12 @@
 .row-who { font-weight: 600; text-decoration: none; }
 .row.text { align-items: center; padding: 0 var(--sz-16); height: var(--sz-40); color: var(--mute); gap: var(--sz-10); }
 .row.text span { color: var(--ink); font-size: var(--fs-14); }
+/* recent searches: a small grey × at the right end of each row takes it off the list (user, 2026-11-24) */
+.has-x { position: relative; }
+.has-x > .row { padding-right: var(--sz-40); }
+.rm-x { position: absolute; top: 50%; right: var(--sz-8); width: var(--sz-24); height: var(--sz-24); margin-top: calc(-1 * var(--sz-12)); display: grid; place-items: center; color: var(--g66); border-radius: var(--r-s); }
+@media (hover: hover) { .rm-x:hover { color: var(--ink); background: var(--g92); } }
+.rm-x:active { color: var(--ink); background: var(--g92); }
 .rows.recent + .rows { border-top: var(--sz-1) solid var(--rule); }
 .rows.recent + .recent-b { border-top: var(--sz-1) solid var(--rule); }
 /* recent buildings in the search preview: name with built span · city on the first line, architect · style below */

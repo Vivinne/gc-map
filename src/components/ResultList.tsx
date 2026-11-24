@@ -10,6 +10,8 @@ import ResultRow from './ResultRow';
 interface RowsProps {
   list: Building[];
   onOpen(id: string): void;
+  /** Recent buildings: each row ends in a small × that takes it off the recent list */
+  onRemove?(id: string): void;
   /** Building(s) pointed at: an id, several joined by "~", or '' */
   onHover(ids: string): void;
   onVisible?(ids: string[]): void;
@@ -25,7 +27,7 @@ interface RowsProps {
  * A list of buildings, split by country when `onCountry` is given and the list is long. `onVisible` reports
  * the rows that are on screen in the list, top to bottom, whenever the list scrolls, so the map can mark them.
  */
-export default function ResultList({ list, onOpen, onHover, onVisible, onCountry, more, framed }: RowsProps) {
+export default function ResultList({ list, onOpen, onHover, onVisible, onCountry, more, framed, onRemove }: RowsProps) {
   // A line that frames a group on the map (a country, the other possible outcomes): clickable only while the map
   // does not already show that group framed (moved away, zoomed out, or never framed)
   const groupLine = (key: string, label: string, items: Building[], extra = '', tail?: ReactNode) => {
@@ -110,7 +112,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
           </li>
         )}
         {list.map((b) => (
-          <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} />
+          <ResultRow key={b.id} b={b} onOpen={onOpen} onHover={onHover} onRemove={onRemove} />
         ))}
         {tail}
       </ul>

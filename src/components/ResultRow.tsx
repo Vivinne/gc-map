@@ -3,16 +3,17 @@
 import { ERAS, type Building } from '../lib/model';
 import { isMouseHover } from '../lib/pointer';
 import { architectOf, builtOf, joinDot, shownStyle } from '../lib/style';
+import RemoveButton from './RemoveButton';
 
 /**
  * One building in a list (preview, results, number point): a strip in its category colour, the name in bold,
  * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in src/styles/modules/rows.css).
  */
-export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(id: string): void; onHover(id: string): void }) {
+export default function ResultRow({ b, onOpen, onHover, onRemove }: { b: Building; onOpen(id: string): void; onHover(id: string): void; onRemove?(id: string): void }) {
   // the architect is underlined, as on the card (no architect: the style only)
   const who = architectOf(b) === '-' ? '' : architectOf(b);
   return (
-    <li data-id={b.id}>
+    <li data-id={b.id} className={onRemove ? 'has-x' : undefined}>
       <button
         type="button"
         className="row"
@@ -41,6 +42,7 @@ export default function ResultRow({ b, onOpen, onHover }: { b: Building; onOpen(
           </span>
         </span>
       </button>
+      {onRemove && <RemoveButton label={b.name} onRemove={() => onRemove(b.id)} />}
     </li>
   );
 }
