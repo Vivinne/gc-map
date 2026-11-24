@@ -45,10 +45,11 @@ export default function Rail({ open, page, onFold, onSearch, onCategory, canFold
       {btn('grid', 'Category', open && page === 'category', onCategory)}
       {/* the fold button (user, 2026-11-25): always shown, right under Category with no line between. It is grey and
           cannot be pressed while Search or Category already does its job (its page is open, or folded away), or when there is
-          nothing to fold or bring back; otherwise it is live */}
+          nothing to fold or bring back; otherwise it is live, lit while it is the one that folds the open panel (card, number point list), as a lit
+          page button folds its page (user, 2026-11-25) */}
       <button
         type="button"
-        className="rail-btn rail-fold"
+        className={`rail-btn rail-fold${open && !foldOff ? ' on' : ''}`}
         aria-label={open ? 'Fold panel' : 'Open panel'}
         title={foldOff ? undefined : open ? 'Fold panel' : 'Open panel'}
         aria-expanded={open}
