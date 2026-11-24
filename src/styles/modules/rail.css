@@ -7,9 +7,5 @@
 .rail-btn:active { background: var(--soft); transform: translateY(var(--sz-1)); }
 /* lit: its page is on screen; pressed again it folds the panel (light grey, user 2026-11-24: black drew too much attention) */
 .rail-btn.on { background: var(--g92); color: var(--ink); }
-
-/* the fold tab (FoldTab.tsx): on the panel's right edge while it is out, beside the rail while a screen is folded away */
-.fold-tab { position: absolute; z-index: 6; top: var(--sz-28); left: calc(var(--rail-w) + var(--sz-16) + var(--detail-w) + var(--sz-40)); width: var(--sz-20); height: var(--sz-48); display: grid; place-items: center; color: var(--g51); background: var(--paper); border-radius: 0 var(--r-s) var(--r-s) 0; box-shadow: var(--sz-1) 0 0 var(--rule), 0 var(--sz-1) 0 var(--rule), 0 calc(-1 * var(--sz-1)) 0 var(--rule), var(--sz-4) var(--sz-6) var(--sz-12) var(--shade-8); transition: left var(--t-slide) var(--ease); }
-.fold-tab:not(.out) { left: var(--rail-w); }
-@media (hover: hover) { .fold-tab:hover { color: var(--ink); background: var(--soft); } }
-.fold-tab:active { color: var(--ink); background: var(--soft); }
+/* between the page buttons and the fold button: as wide as a button, so the rail itself stays one piece */
+.rail-sep { flex: none; width: var(--sz-40); height: var(--sz-1); margin: var(--sz-4) 0 var(--sz-3); background: var(--g84); }

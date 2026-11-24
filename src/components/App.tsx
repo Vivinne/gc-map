@@ -15,7 +15,6 @@ import Leave from './Leave';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import Panel from './Panel';
 import Rail, { type RailPage } from './Rail';
-import FoldTab from './FoldTab';
 import ResultList from './ResultList';
 import SearchBox from './SearchBox';
 import { RAIL_W } from '../styles/tokens';
@@ -642,10 +641,8 @@ export default function App() {
     <div className={`app${mobile ? ' is-mobile' : ''}`} ref={appRef}>
       <main className="main">
         {/* phone: the search box and Category stay top left; desktop: the rail, and the box in the content panel */}
-        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onFold={foldPanel} onSearch={railSearch} onCategory={railCategory} />}
+        {mobile ? searchBox(false) : <Rail open={panelOpen} page={railPage} onFold={foldPanel} canFold={panelOpen ? !!panel : !isEmptyScreen(top)} onToggle={() => (panelOpen ? foldPanel() : openPanel())} onSearch={railSearch} onCategory={railCategory} />}
         <Leave show={!!panel} slide={!mobile && !panelOpen}>{panel}</Leave>
-        {/* desktop: the panel's fold tab, on its right edge while it is out, beside the rail while a screen is folded away */}
-        {!mobile && (panelOpen ? !!panel : !isEmptyScreen(top)) && <FoldTab open={panelOpen} onToggle={() => (panelOpen ? foldPanel() : openPanel())} />}
         {/* last in the page order (Tab: search box, then the open panel, then the map); drawn under both */}
         <MapView
           ref={mapRef}

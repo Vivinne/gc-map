@@ -1,4 +1,4 @@
-export type IconName = 'search' | 'plus' | 'minus' | 'close' | 'left' | 'up' | 'grid' | 'clock' | 'right';
+export type IconName = 'search' | 'plus' | 'minus' | 'close' | 'left' | 'up' | 'grid' | 'clock' | 'panel' | 'panelOff';
 
 /** Line icons drawn on a 16 px grid; colour follows the text colour */
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
@@ -21,7 +21,10 @@ export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
       return (<svg {...p}><path d="M2.5 10.5 8 5l5.5 5.5" {...s} /></svg>);
     case 'left':
       return (<svg {...p}><path d="M10 2.5 4.5 8l5.5 5.5" {...s} /></svg>);
-    case 'right':
-      return (<svg {...p}><path d="M6 2.5 11.5 8 6 13.5" {...s} /></svg>);
+    // the side panel: a frame with its left column, filled while the panel is out (the rail's fold button)
+    case 'panel':
+      return (<svg {...p}><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="1.5" {...s} /><path d="M6 2.75v10.5" {...s} /><rect x="1.75" y="2.75" width="4.25" height="10.5" rx="1.5" fill="currentColor" /></svg>);
+    case 'panelOff':
+      return (<svg {...p}><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="1.5" {...s} /><path d="M6 2.75v10.5" {...s} /></svg>);
   }
 }
