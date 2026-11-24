@@ -20,10 +20,10 @@ interface Props {
  * open it on their page. A lit button (its page is on screen) cannot be pressed again.
  */
 export default function Rail({ open, page, onMenu, onSearch, onCategory }: Props) {
-  const btn = (name: IconName, label: string, lit: boolean, onClick: () => void) => (
+  const btn = (name: IconName, label: string, lit: boolean, onClick: () => void, extra = '') => (
     <button
       type="button"
-      className={`rail-btn${lit ? ' on' : ''}`}
+      className={`rail-btn${lit ? ' on' : ''}${extra}`}
       aria-label={label}
       title={label}
       aria-pressed={lit}
@@ -35,7 +35,8 @@ export default function Rail({ open, page, onMenu, onSearch, onCategory }: Props
   );
   return (
     <nav className="rail" aria-label="Panel">
-      {btn('menu', open ? 'Close panel' : 'Open panel', false, onMenu)}
+      {/* open: tinted like a lit button (user, 2026-11-24), so it shows the panel is out; it stays pressable (folds the panel) */}
+      {btn('menu', open ? 'Close panel' : 'Open panel', false, onMenu, open ? ' open' : '')}
       {/* the menu button controls the panel; the two below choose its page: a short line as wide as a button sets them apart */}
       <i className="rail-sep" aria-hidden="true" />
       {btn('search', 'Search', open && page === 'search', onSearch)}
