@@ -177,7 +177,7 @@ export default function App() {
     // A results list or a number point list comes back with all its buildings framed (as when it opened);
     // a card comes back with its building in sight, as it was when the card opened (the map may have been
     // moved away from it before the next card was opened); other screens come back with the map as it was left
-    if (!prev.b && (prev.list === 'results' || prev.list === 'group')) {
+    if (!prev.b && (prev.list === 'results' || prev.list === 'era' || prev.list === 'group')) {
       let items: Building[];
       if (prev.list === 'group') items = prev.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
       else {
@@ -245,6 +245,18 @@ export default function App() {
         refitLater(KEYBOARD_WAIT);
       } else afterPanel(() => mapRef.current?.fitTo(found));
     }
+  };
+
+  /**
+   * Desktop: a tag picked in the Category page lists its buildings inside Category (user, 2026-11-25): Category stays
+   * lit, the search box and the recent searches are left alone, ＜ goes back to the tags. The phone sends it as a search.
+   */
+  const pickEra = (label: string) => {
+    const items = searchSplit(label).main;
+    if (!items.length) return;
+    setMoreOpen('');
+    push({ q: label, list: 'era', group: [], b: '' });
+    afterPanel(() => mapRef.current?.fitTo(items));
   };
 
   /** Results waiting to be framed until a closing keyboard has gone */
@@ -443,19 +455,21 @@ export default function App() {
   const mapReadyStable = useCallback(() => live.current.mapReady(), []);
   // Desktop content panel: which page it shows, for the rail's lit button
   const menuPage = isEmptyScreen(top) && !searchPage;
-  const railPage: RailPage = top.b || top.list === 'group' || menuPage ? 'other' : top.list === 'category' ? 'category' : 'search';
+  const railPage: RailPage = top.b || top.list === 'group' || menuPage ? 'other' : top.list === 'category' || top.list === 'era' ? 'category' : 'search';
   /** Rail search: the panel opens on the search page (the submitted search's results, else the empty search page) */
   const railSearch = () => {
     openPanel();
     setSearchPage(true);
     if (railPage === 'search') return;
     // with no search, the typing screen itself goes on top (no extra empty step that ＜ would stop at, 2026-11-25)
+    // a picked Category tag is not a search: the search page opens empty over it
+    const q = top.list === 'era' ? '' : top.q;
     if (!menuPage) {
-      if (!top.q) setDraft('');
-      push({ q: top.q, list: top.q ? 'results' : 'preview', group: [], b: '' });
+      if (!q) setDraft('');
+      push({ q, list: q ? 'results' : 'preview', group: [], b: '' });
     }
     // no search on screen: the box takes the cursor, so the recent searches show at once and typing can start
-    if (!top.q) afterPanel(() => inputRef.current?.focus());
+    if (!q) afterPanel(() => inputRef.current?.focus());
   };
   const railCategory = () => {
     openPanel();
@@ -587,13 +601,20 @@ export default function App() {
     // opened from the plain map, ＜ would only close it, like ×: only × shows
     panel = (
       <Panel ref={panelRef} scroll={top.scroll} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back && !(prevScreen && isEmptyScreen(prevScreen))} onBack={goBack} onClose={closeAll} title="Category" />}>
-        <CategoryList onPick={submit} />
+        <CategoryList onPick={mobile ? submit : pickEra} />
       </Panel>
     );
   } else if (top.list === 'group' && group.length) {
     panel = (
       <Panel ref={panelRef} scroll={top.scroll} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={goBack} onClose={closeAll} title={`${group.length} Architectures`} />}>
         <ResultList list={group} onOpen={openCard} onHover={setHoverId} onVisible={setSeenIds} />
+      </Panel>
+    );
+  } else if (top.list === 'era' && top.q) {
+    // a picked Category tag: its name is the title, ＜ goes back to the tags
+    panel = (
+      <Panel ref={panelRef} scroll={top.scroll} key="era" mobile={mobile} place="sheet" label={top.q} className="results" resetKey={`era:${top.q}`} head={<HeadBar canBack={back && !(prevScreen && isEmptyScreen(prevScreen))} onBack={goBack} onClose={closeAll} title={top.q} />}>
+        {resultsBody}
       </Panel>
     );
   } else if (top.list === 'results' && top.q) {
@@ -604,7 +625,7 @@ export default function App() {
     );
   }
   // Desktop content panel: the page the panel shows (a new page mounts a new panel, with its own entry animation)
-  const dockKey = menuPage && !selected ? 'menu' : selected ? 'card' : top.list === 'category' ? 'category' : top.list === 'group' && group.length ? `group-${top.group.join('~')}` : 'search';
+  const dockKey = menuPage && !selected ? 'menu' : selected ? 'card' : top.list === 'category' ? 'category' : top.list === 'era' ? `era-${top.q}` : top.list === 'group' && group.length ? `group-${top.group.join('~')}` : 'search';
   // the page the panel opened on slides in; once another page opens, nothing slides until the next opening
   useLayoutEffect(() => {
     if (opening) {
@@ -616,7 +637,7 @@ export default function App() {
   // The search page keeps one panel from the empty page to typing to results, so the box never loses its focus
   if (!mobile) {
     if (!panelOpen) panel = null;
-    else if (!selected && top.list !== 'category' && !(top.list === 'group' && group.length)) {
+    else if (!selected && top.list !== 'category' && top.list !== 'era' && !(top.list === 'group' && group.length)) {
       panel = (
         <Panel
           ref={panelRef}
@@ -656,7 +677,7 @@ export default function App() {
           searched={!!top.q}
           selected={selected}
           hoverId={hoverId}
-          seenIds={!selected && (top.list === 'results' || top.list === 'group') ? (mobile || panelOpen ? seenIds : foldSeen) : null}
+          seenIds={!selected && (top.list === 'results' || top.list === 'era' || top.list === 'group') ? (mobile || panelOpen ? seenIds : foldSeen) : null}
           padding={padding}
           reducedMotion={reducedMotion}
           compact={mobile}
@@ -683,7 +704,7 @@ export default function App() {
       {mapDown && <span className="sr-only">Map unavailable</span>}
       {/* read out by screen readers when a search is sent: how many results, or No Results (A3) */}
       <p className="sr-only" role="status" aria-live="polite">
-        {top.list === 'results' && top.q && !top.b ? (found.main.length ? `${found.main.length} ${found.main.length === 1 ? 'result' : 'results'}` : 'No Results') : ''}
+        {(top.list === 'results' || top.list === 'era') && top.q && !top.b ? (found.main.length ? `${found.main.length} ${found.main.length === 1 ? 'result' : 'results'}` : 'No Results') : ''}
       </p>
     </div>
   );

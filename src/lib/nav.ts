@@ -1,7 +1,8 @@
 import { BY_ID } from './model';
 
 /** Which list is open (a building card, when open, sits over it and the list is folded away) */
-export type ListKind = '' | 'preview' | 'category' | 'results' | 'group';
+/** 'era': desktop, the buildings of one Category tag picked in the Category page (q holds the tag) */
+export type ListKind = '' | 'preview' | 'category' | 'results' | 'group' | 'era';
 
 /** One screen state: what the history behind ＜ holds, and what the address names */
 export interface Screen {
@@ -37,7 +38,7 @@ const round = (n: number, d: number) => Number(n.toFixed(d));
 
 /**
  * Address of a screen (query string, so a link opens the same screen):
- * q = submitted search, p = open list that is not a result (search preview, category), g = number point
+ * q = submitted search (or the picked Category tag), p = open list that is not a result (search preview, category, era = a picked Category tag), g = number point
  * buildings (ids joined by "~"), b = building card, m = map view (lng,lat,zoom).
  * "v" is left alone: the page uses it to load a fresh copy after a deploy.
  */
@@ -46,6 +47,7 @@ export function toQuery(s: Screen, v: View | null): string {
   if (s.q) p.set('q', s.q);
   if (s.list === 'preview') p.set('p', 'search');
   if (s.list === 'category') p.set('p', 'category');
+  if (s.list === 'era') p.set('p', 'era');
   if (s.list === 'group' && s.group.length) p.set('g', s.group.join('~'));
   if (s.b) p.set('b', s.b);
   if (v) p.set('m', `${round(v.lng, 4)},${round(v.lat, 4)},${round(v.zoom, 2)}`);
@@ -63,6 +65,7 @@ export function fromQuery(search: string): { screen: Screen; view: View | null }
   let list: ListKind = '';
   if (pl === 'search') list = 'preview';
   else if (pl === 'category') list = 'category';
+  else if (pl === 'era' && q) list = 'era';
   else if (group.length) list = 'group';
   else if (q) list = 'results';
   // a map view the map can show: three numbers, latitude inside the map (±85°), longitude ±180°, zoom 0–24;
