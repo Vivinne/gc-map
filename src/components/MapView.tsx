@@ -154,6 +154,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     if (!box.current) return () => {};
     styleRef.current = styleSpec;
     let map: MlMap;
+    const sharp = Math.min(window.devicePixelRatio || 1, MAX_MAP_DPR);
     try {
       map = new MaplibreMap({
         container: box.current,
@@ -168,7 +169,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
         // phones (user, 2026-11-24: smoothness): the map is drawn at no more than 2 device pixels per point. Phones
         // with 3 (most iPhones) then draw 44 % fewer pixels each frame, with lines and land edges still sharp; the
         // markers, names and text are page elements and stay at full sharpness
-        pixelRatio: Math.min(window.devicePixelRatio || 1, MAX_MAP_DPR),
+        pixelRatio: sharp,
         // tiles that arrive show at once instead of fading in over 300 ms of extra frames
         fadeDuration: 0,
       });
@@ -198,6 +199,34 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // Any camera move does the same: marks slide away from (or under) a still mouse without a pointer-leave
     map.on('zoomstart', () => setPinHover(''));
     map.on('movestart', () => setPinHover(''));
+    // phones (user, 2026-11-25: zooms and clicks not smooth): while the map moves or zooms it is drawn at 1 device
+    // pixel per point, a quarter of the pixels of a still map; it comes back sharp (2x) as soon as it stops
+    if (compact && sharp > 1) {
+      let moving = false;
+      // map.setPixelRatio would resize through map.resize(), which stops a camera move still running (a fly to a
+      // card) and sends move events; the internal resize changes only the drawing buffer, with no events and no stop
+      // (maplibre-gl 6, pinned in package.json)
+      const inner = map as unknown as { _overridePixelRatio: number; _resizeInternal(constrain: boolean): void };
+      const ratio = (r: number) => {
+        inner._overridePixelRatio = r;
+        inner._resizeInternal(false);
+        map.triggerRepaint();
+      };
+      map.on('movestart', () => {
+        if (moving) return;
+        moving = true;
+        ratio(1);
+      });
+      map.on('moveend', () => {
+        if (!moving) return;
+        // a new move may start in the same frame (a camera chain): only a map that stays still gets sharp again
+        requestAnimationFrame(() => {
+          if (map.isMoving()) return;
+          moving = false;
+          ratio(sharp);
+        });
+      });
+    }
     map.on('resize', redraw);
     map.on('load', redraw);
     map.on('moveend', () => {
