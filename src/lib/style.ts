@@ -40,9 +40,16 @@ export function shownStyle(b: Building): string {
   return st;
 }
 
-/** Architect as shown (ASCII spelling); `-` when the source names none */
+/**
+ * Architect as shown (ASCII spelling); `-` when the source names none. Several people are always joined the same
+ * way (user, 2026-11-25): two with "and", three or more with commas and a last "and"; the source's "A / B" becomes
+ * "A and B". A firm stays as written ("Herzog & de Meuron", "Shreve, Lamb & Harmon").
+ */
 export function architectOf(b: Building): string {
-  return ascii(whoOf(b)) || '-';
+  const who = ascii(whoOf(b));
+  if (!who) return '-';
+  const people = who.split(' / ');
+  return people.length < 2 ? who : `${people.slice(0, -1).join(', ')} and ${people[people.length - 1]}`;
 }
 
 /**
@@ -53,7 +60,7 @@ export function architectOf(b: Building): string {
 export function architectParts(b: Building): { text: string; search?: string }[] {
   const who = architectOf(b);
   if (who === '-') return [];
-  const sep = who.includes(' and ') ? /(, | and | \/ )/ : /( \/ )/;
+  const sep = who.includes(' and ') ? /(, | and )/ : /^$/;
   return who
     .split(sep)
     .filter(Boolean)

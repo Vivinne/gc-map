@@ -2,7 +2,7 @@
 
 import { ERAS, type Building } from '../lib/model';
 import { isMouseHover } from '../lib/pointer';
-import { architectOf, builtOf, joinDot, shownStyle } from '../lib/style';
+import { architectParts, builtOf, joinDot, shownStyle } from '../lib/style';
 import RemoveButton from './RemoveButton';
 
 /**
@@ -10,8 +10,8 @@ import RemoveButton from './RemoveButton';
  * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in src/styles/modules/rows.css).
  */
 export default function ResultRow({ b, onOpen, onHover, onRemove }: { b: Building; onOpen(id: string): void; onHover(id: string): void; onRemove?(id: string): void }) {
-  // the architect is underlined, as on the card (no architect: the style only)
-  const who = architectOf(b) === '-' ? '' : architectOf(b);
+  // each architect's name in bold; the joining "," and "and" stay plain (user, 2026-11-25). No architect: the style only
+  const who = architectParts(b);
   return (
     <li data-id={b.id} className={onRemove ? 'has-x' : undefined}>
       <button
@@ -32,9 +32,9 @@ export default function ResultRow({ b, onOpen, onHover, onRemove }: { b: Buildin
           <b>{b.name}</b>
           <span>{joinDot(builtOf(b), b.city)}</span>
           <span>
-            {who && (
+            {who.length > 0 && (
               <>
-                <u className="row-who">{who}</u>
+                {who.map((p, i) => (p.search ? <u key={i} className="row-who">{p.text}</u> : p.text))}
                 {' · '}
               </>
             )}

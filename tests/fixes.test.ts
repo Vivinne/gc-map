@@ -120,3 +120,17 @@ test('R5 typed text: an emptied search box is kept as empty over a reload', asyn
   saveDraft(null);
   assert.equal(loadDraft(), null);
 });
+
+// 2026-11-25 (user): several architects are joined with "and" (two) or commas and a last "and" (three or more);
+// a firm stays whole; each name is its own part, the joining words plain text
+test('architects joined with and; parts split per person', async () => {
+  const { BUILDINGS } = await import('../src/lib/model');
+  const { architectOf, architectParts } = await import('../src/lib/style');
+  const who = BUILDINGS.map(architectOf);
+  assert.ok(!who.some((w) => w.includes(' / ')), 'no " / " left');
+  assert.ok(who.includes('Richard Rogers and Renzo Piano'));
+  const b = BUILDINGS.find((x) => architectOf(x) === 'Enrico Del Debbio, Arnaldo Foschini and Vittorio Ballio Morpurgo')!;
+  assert.deepEqual(architectParts(b).map((p) => [p.text, !!p.search]), [['Enrico Del Debbio', true], [', ', false], ['Arnaldo Foschini', true], [' and ', false], ['Vittorio Ballio Morpurgo', true]]);
+  const f = BUILDINGS.find((x) => architectOf(x) === 'Shreve, Lamb & Harmon')!;
+  assert.equal(architectParts(f).length, 1);
+});
