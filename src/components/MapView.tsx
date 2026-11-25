@@ -11,7 +11,7 @@ import { Icon } from './Icons';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
 import { flatView, type ViewLike } from '../lib/flatView';
-import { renderOverlay, type Act, type Click } from './map/overlay';
+import { renderOverlay, type Act, type Click, type GroupKeep } from './map/overlay';
 
 /* M8 map: the MapLibre map, its events, the scale bar, zoom buttons and the tile notice.
    Camera moves: map/camera.ts · markers and names: map/overlay.tsx · basemap style: map/style.ts */
@@ -202,7 +202,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // A zoom moves the markers under a still mouse: the ring of the number point it pointed at would stay on every
     // building that point splits into, so a zoom ends it (the marker under the mouse rings again once the mouse moves)
     // Any camera move does the same: marks slide away from (or under) a still mouse without a pointer-leave
-    map.on('zoomstart', () => setPinHover(''));
+    map.on('zoomstart', () => {
+      setPinHover('');
+      groupKeep.current.zooming = true;
+    });
+    map.on('zoomend', () => {
+      groupKeep.current.zooming = false;
+      redraw();
+    });
     map.on('movestart', () => setPinHover(''));
     map.on('resize', redraw);
     map.on('load', redraw);
@@ -272,6 +279,8 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const namesOn = searched || (!!scale && scale.metres <= NAME_SCALE);
   const named = (b: Building) => namesOn || b.exams.length > 0 || b.id === selected?.id;
   // Buildings drawn as markers at this moment (focus() checks whether the open one is merged)
+  /** Number point groups kept through a zoom (map/overlay.tsx GroupKeep) */
+  const groupKeep = useRef<GroupKeep>({ zooming: false, last: null });
   const markersShown = useRef<Building[]>([]);
   markersShown.current = buildings;
 
@@ -335,7 +344,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   });
 
   const overlay = map && layer
-    ? renderOverlay({ map, layer, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup })
+    ? renderOverlay({ map, layer, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup, keep: groupKeep.current })
     : early && earlyLayer.current && !noMap
       ? renderOverlay({ map: early.view, layer: earlyLayer.current, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup })
       : null;

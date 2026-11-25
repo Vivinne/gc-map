@@ -87,9 +87,22 @@ interface OverlayArgs {
   act: Act;
   onSelect(id: string): void;
   onGroup(ids: string[]): void;
+  /** Number point groups kept through a zoom (see GroupKeep); absent: grouped afresh every time */
+  keep?: GroupKeep;
 }
 
-export function renderOverlay({ map, layer, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup }: OverlayArgs): ReactNode {
+/**
+ * While the map zooms (a pinch, the wheel, + / −, a camera move) the markers keep the grouping they had when the zoom
+ * began and only follow the map (user, 2026-11-25: regrouping at every frame made the number points jump and change
+ * their counts all through a zoom); the groups are made afresh once the zoom ends
+ */
+export interface GroupKeep {
+  zooming: boolean;
+  /** Ids of each group's buildings, from the last grouping made while the map was not zooming */
+  last: string[][] | null;
+}
+
+export function renderOverlay({ map, layer, buildings, padding, selected, hot, seenIds, named, compact, act, onSelect, onGroup, keep }: OverlayArgs): ReactNode {
   const hotSet = new Set(hot ? hot.split('~') : []);
   const seen = seenIds && seenIds.length ? new Set(seenIds) : null;
   const seenCls = (ids: string[]) => (seen && !ids.some((id) => seen.has(id)) ? ' dim' : '');
@@ -122,10 +135,23 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
   // Screen boxes no name may cover: every marker and number point, then each name placed
   const taken: [number, number, number, number][] = [];
   const hits: ReactNode[] = [];
-  const groups = groupOnScreen(
-    buildings.map((b) => ({ item: b, ...proj(b.lng, b.lat) })),
-    size,
-  );
+  const placed = buildings.map((b) => ({ item: b, ...proj(b.lng, b.lat) }));
+  let groups: { items: Building[]; x: number; y: number }[] | null = null;
+  if (keep?.zooming && keep.last) {
+    // the same buildings as when the zoom began: each group sits at the mean of its buildings' places now
+    const at = new Map(placed.map((p) => [p.item.id, p]));
+    const kept = keep.last.map((ids) => ids.map((id) => at.get(id)));
+    if (kept.every((g) => g.every(Boolean)) && kept.reduce((n, g) => n + g.length, 0) === placed.length) {
+      groups = kept.map((g) => {
+        const ps = g as (typeof placed)[number][];
+        return { items: ps.map((p) => p.item), x: ps.reduce((s, p) => s + p.x, 0) / ps.length, y: ps.reduce((s, p) => s + p.y, 0) / ps.length };
+      });
+    }
+  }
+  if (!groups) {
+    groups = groupOnScreen(placed, size);
+    if (keep && !keep.zooming) keep.last = groups.map((g) => g.items.map((b) => b.id));
+  }
   // The open building inside a number point: the point stays whole and is itself marked open (halo, ink
   // ring, the open building's name beside it); no separate mark is laid over it
   const selGroup = selected ? (groups.find((g) => g.items.length > 1 && g.items.some((b) => b.id === selected.id)) ?? null) : null;
