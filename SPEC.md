@@ -26,7 +26,7 @@ Status: approved 2026-11-13; desktop rail and content panel approved and publish
 
 ## 3. Map rules
 - Markers show only when a search is submitted, or when the scale bar reads 100 km or less (`scale.metres <= 100000`). At the default Europe view with no search the map has no markers.
-- Markers that overlap on screen merge into a number point (count); zooming in splits them.
+- Markers that overlap on screen merge into a number point (count); zooming in splits them. Mouse wheel (desktop): merging and splitting follow every step of the zoom; a finger pinch, + / − and camera moves keep the groups until the zoom ends (2026-11-25).
 - Click a marker → building card. Click a number point → number point list → click a row → building card.
 - Opening a number point list moves the map only as far as needed to keep the point in sight.
 - Map move or zoom → markers update to the view (and to the submitted search, if any).

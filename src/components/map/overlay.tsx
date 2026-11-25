@@ -92,7 +92,8 @@ interface OverlayArgs {
 }
 
 /**
- * While the map zooms (a pinch, the wheel, + / −, a camera move) the markers keep the grouping they had when the zoom
+ * While the map zooms (a finger pinch, + / −, a camera move; not the mouse wheel, which regroups at every step,
+ * 2026-11-25) the markers keep the grouping they had when the zoom
  * began and only follow the map (user, 2026-11-25: regrouping at every frame made the number points jump and change
  * their counts all through a zoom); the groups are made afresh once the zoom ends
  */
