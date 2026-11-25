@@ -4,17 +4,16 @@ import { DOT_R, groupOnScreen, pointRadius } from '../../lib/geo';
 import { ERAS, type Building } from '../../lib/model';
 import type { ViewLike } from '../../lib/flatView';
 import { labelSize } from '../../lib/labelSize';
+import { fill, labelLines } from '../../lib/labelLines';
 import NumberPoint from '../NumberPoint';
 import type { Padding } from './camera';
 import { PAPER } from '../../styles/tokens';
 
 /* M8 markers and names: the SVG drawn over the map each frame (dots, number points, names, the open building's mark). */
 
-/** Map name labels: longest name shown in full, and the width a character takes at 12 px */
-const LABEL_MAX = 24;
-/** Height of the box a name keeps clear (12 px names; a larger system text makes it taller) */
+/** Height of one line of the box a name keeps clear (12 px names; a larger system text makes it taller) */
 const LABEL_BOX_H = 16;
-/** Height of the open building's name box */
+/** Height of one line of the open building's name box */
 const SEL_BOX_H = 20;
 /** Text baseline below the middle of its box, as a share of the text's height */
 const BASELINE = 0.25;
@@ -26,6 +25,27 @@ const UI_GAP = 4;
 const HIT_R = 20;
 
 const size = (n: number) => (n > 1 ? pointRadius(n) : DOT_R);
+
+/** Size of a name of one or two lines: the wider line, and every line as tall as the tallest */
+function linesSize(lines: string[], open: boolean, host: Element, minLine: number) {
+  const s = lines.map((t) => labelSize(t, open, host));
+  const h = Math.max(...s.map((x) => x.h));
+  const line = Math.max(minLine, h + (open ? 4 : 0));
+  return { w: Math.max(...s.map((x) => x.w)), h, line, boxH: line * lines.length };
+}
+
+/** The name's text: one <tspan> per line, each line's baseline below the middle of its own line box */
+function nameText(lines: string[], cls: string, x: number, top: number, line: number, h: number, anchor: 'start' | 'end' | 'middle') {
+  return (
+    <text className={cls} x={x} y={top + line / 2 + h * BASELINE} textAnchor={anchor}>
+      {lines.map((t, i) => (
+        <tspan key={i} x={x} y={top + line * i + line / 2 + h * BASELINE}>
+          {t}
+        </tspan>
+      ))}
+    </text>
+  );
+}
 
 /**
  * Pointer handlers of one marker, number point or name (made by MapView: it keeps the hover and tap state).
@@ -156,21 +176,18 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
   const sp = selected ? proj(selected.lng, selected.lat) : null;
   // The open building's name is placed first and always shows: right of its mark, else left, else under,
   // else over; when every place is taken it still goes on the roomier side (over other markers, kept on the
-  // map, shortened with … if the map is too narrow)
+  // map). A long name takes two lines; only when the map is too narrow for the two lines does the second end in …
   if (sp && inView(sp.x, sp.y)) {
     taken.push([sp.x - SEL_HALO, sp.y - SEL_HALO, sp.x + SEL_HALO, sp.y + SEL_HALO]);
     const gap = SEL_HALO + 3;
-    const fit = (t: string) => (t.length > LABEL_MAX ? `${t.slice(0, LABEL_MAX - 1)}\u2026` : t);
-    let text = fit(selected!.name);
+    let lines = labelLines(selected!.name);
     // measured as drawn (larger system text makes it wider and taller)
-    let size = labelSize(text, true, layer);
-    const boxH = Math.max(SEL_BOX_H, size.h + 4);
-    const ch = size.w / Math.max(1, text.length);
+    let size = linesSize(lines, true, layer, SEL_BOX_H);
     const { x, y } = sp;
     const left = padding.left + 4, right = W - padding.right - 4;
     let placed: { box: [number, number, number, number]; tx: number; anchor: 'start' | 'end' | 'middle' } | null = null;
     for (const side of [1, -1, 2, -2] as const) {
-      const w = size.w;
+      const { w, boxH } = size;
       const x0 = side === 1 ? x + gap : side === -1 ? x - gap - w : x - w / 2;
       const top = side === 2 ? y + SEL_HALO + 2 : side === -2 ? y - SEL_HALO - 2 - boxH : y - boxH / 2;
       const box: [number, number, number, number] = [x0, top, x0 + w, top + boxH];
@@ -181,45 +198,45 @@ export function renderOverlay({ map, layer, buildings, padding, selected, hot, s
     if (!placed) {
       const toRight = right - (x + gap) >= x - gap - left;
       const room = Math.max(0, toRight ? right - (x + gap) : x - gap - left);
-      const most = Math.floor(room / ch);
-      if (text.length > most && most > 2) {
-        text = `${text.slice(0, most - 1)}\u2026`;
-        size = labelSize(text, true, layer);
+      if (size.w > room) {
+        // the characters that fit the room, at this name's own width per character
+        const ch = size.w / Math.max(1, ...lines.map((t) => t.length));
+        const most = Math.floor(room / ch);
+        if (most > 2) {
+          lines = fill(selected!.name, most);
+          size = linesSize(lines, true, layer, SEL_BOX_H);
+        }
       }
-      const w = size.w;
+      const { w, boxH } = size;
       const x0 = toRight ? x + gap : x - gap - w;
       placed = { box: [x0, y - boxH / 2, x0 + w, y + boxH / 2], tx: toRight ? x0 : x0 + w, anchor: toRight ? 'start' : 'end' };
     }
     taken.push(placed.box);
     labels.push(
       <g key="sel-label" className="mk name" {...act(selected!.id, () => onSelect(selected!.id))}>
-        <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={boxH} />
-        <text className="mk-label sel" x={placed.tx} y={placed.box[1] + boxH / 2 + size.h * BASELINE} textAnchor={placed.anchor}>
-          {text}
-        </text>
+        <rect className="name-hit" x={placed.box[0] - 2} y={placed.box[1]} width={placed.box[2] - placed.box[0] + 4} height={size.boxH} />
+        {nameText(lines, 'mk-label sel', placed.tx, placed.box[1], size.line, size.h, placed.anchor)}
       </g>,
     );
   }
   // (the open building's name is placed above) then the rows on screen in the list, then the rest in list order
   const rank = (b: Building) => (seen?.has(b.id) ? 1 : 2);
   for (const { b, x, y } of [...singles].filter((d) => named(d.b) && d.b.id !== selected?.id).sort((p, q) => rank(p.b) - rank(q.b))) {
-    const text = b.name.length > LABEL_MAX ? `${b.name.slice(0, LABEL_MAX - 1)}\u2026` : b.name;
-    const { w, h } = labelSize(text, false, layer);
-    const half = Math.max(LABEL_BOX_H, h) / 2;
-    // right of the dot, else left; a name that would cover a marker or another name, run under a panel or leave the map is not drawn
+    const lines = labelLines(b.name);
+    const { w, h, line, boxH } = linesSize(lines, false, layer, LABEL_BOX_H);
+    const half = boxH / 2;
+    // right of the dot, else left; a name (one or two lines) that would cover a marker or another name, run under a panel or leave the map is not drawn
     const gap = DOT_R + 4;
     for (const side of [1, -1] as const) {
       const x0 = side === 1 ? x + gap : x - gap - w;
       const box: [number, number, number, number] = [x0, y - half, x0 + w, y + half];
       if (box[0] < padding.left + 4 || box[2] > W - padding.right - 4 || box[1] < padding.top || box[3] > H - padding.bottom || taken.some((t) => box[0] < t[2] && box[2] > t[0] && box[1] < t[3] && box[3] > t[1])) continue;
       taken.push(box);
-      // A name is part of its marker: pointing at it rings the dot, clicking it opens the card
+      // A name is part of its marker: pointing at it rings the dot, clicking it opens the card (both lines)
       labels.push(
         <g key={`l-${b.id}`} className={`mk name${hotSet.has(b.id) ? ' hot' : ''}${seen && !seen.has(b.id) ? ' dim' : ''}`} {...act(b.id, () => onSelect(b.id))}>
-          <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={box[3] - box[1]} />
-          <text className="mk-label" x={side === 1 ? box[0] : box[2]} y={y + h * BASELINE} textAnchor={side === 1 ? 'start' : 'end'}>
-            {text}
-          </text>
+          <rect className="name-hit" x={box[0] - 2} y={box[1]} width={w + 4} height={boxH} />
+          {nameText(lines, 'mk-label', side === 1 ? box[0] : box[2], box[1], line, h, side === 1 ? 'start' : 'end')}
         </g>,
       );
       break;

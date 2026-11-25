@@ -27,7 +27,7 @@
 | M7a | 左側直條（桌面） | 三條線／放大鏡／Category，面板開關與亮起 | `src/components/Rail.tsx`、`src/components/RailMenu.tsx`（選單頁） | `App.tsx`（`panelOpen`、`railPage`）、`styles/modules/rail.css`、`panel.css`（`.dock`、滑出） | 低 |
 | M8 | 地圖 | 地圖本體與事件、縮放鈕、圖磚失敗提示 | `src/components/MapView.tsx`、`src/lib/pointer.ts` | `styles/modules/map.css` | 中 |
 | M8a | 地圖：鏡頭 | 框選結果、開卡片時移動、數字點展開、＜ 返回 | `src/components/map/camera.ts` | `src/lib/geo.ts`、`src/lib/country.ts` | 中 |
-| M8b | 地圖：標記與數字點 | 圓點、重疊合併成數字點、建築名稱擺放、選取標記 | `src/components/map/overlay.tsx`、`src/components/NumberPoint.tsx` | `src/lib/geo.ts`（合併規則）、`styles/modules/map.css` | 中 |
+| M8b | 地圖：標記與數字點 | 圓點、重疊合併成數字點、建築名稱擺放、選取標記 | `src/components/map/overlay.tsx`、`src/components/NumberPoint.tsx` | `src/lib/geo.ts`（合併規則）、`src/lib/labelLines.ts`（名稱斷成兩行）、`styles/modules/map.css`、`tests/ellipsis.test.ts` | 中 |
 | M8c | 地圖：底圖樣式 | 海、陸、河、道路、建築輪廓的圖層 | `src/components/map/style.ts` | `src/lib/basemap.ts`、`tokens.ts`（`MAP_COLORS`） | 低 |
 | M9 | 比例尺 | 左下角比例尺；讀數也決定 100 km 以內才顯示所有建築名稱 | `src/components/ScaleBar.tsx`、`src/lib/scale.ts` | `MapView.tsx`（`NAME_SCALE`）、`styles/modules/map.css` | 低 |
 | M10 | 導覽與狀態 | ＜ 返回、× 關閉、網址、重新整理還原、快捷鍵 | `src/lib/nav.ts`、`src/lib/address.ts`、`src/components/App.tsx`（串接所有模組） | 幾乎所有 UI 模組 | 低（高風險） |
