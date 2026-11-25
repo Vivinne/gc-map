@@ -66,7 +66,14 @@ export default function App() {
   // Text in the search box while the preview is open (typed, not yet submitted)
   // a reload while typing keeps the text typed so far (Q4)
   const [draft, setDraft] = useState(() => (top.list === 'preview' ? (loadDraft() ?? top.q) : top.q));
-  useEffect(() => saveDraft(top.list === 'preview' ? draft : null), [draft, top.list]);
+  /**
+   * Text typed in the box and not sent: left there when another screen (Category, a card, the map) is opened
+   * from the typing screen, it comes back when the box is opened again (user, 2026-11-25). null: nothing waiting.
+   */
+  const unsent = useRef<string | null>(typeof window === 'undefined' ? null : loadDraft());
+  // kept over a reload: the typing screen's text, or on another screen the text typed and not sent
+  useEffect(() => saveDraft(top.list === 'preview' ? draft : unsent.current), [draft, top.list]);
+
   const [hoverId, setHoverId] = useState('');
   const [, setViewTick] = useState(0);
   /** The last group line clicked (country, other outcomes) and the map view its framing came to rest at */
@@ -204,6 +211,7 @@ export default function App() {
     window.clearTimeout(refitTimer.current);
     setMoreOpen('');
     setStack([EMPTY_SCREEN]);
+    unsent.current = null;
     setDraft('');
     inputRef.current?.blur();
     // desktop: nothing is open after ×, so the content panel closes too (the menu shows when it opens again)
@@ -213,9 +221,9 @@ export default function App() {
 
   const openPreview = () => {
     if (top.list === 'preview' && !top.b) return;
-    // a picked Category tag is not a search: the box opens empty over it
+    // a picked Category tag is not a search: the box opens over it with no search
     const q = top.list === 'era' ? '' : top.q;
-    setDraft(q);
+    setDraft(unsent.current ?? q);
     push({ q, list: 'preview', group: [], b: '' });
   };
 
@@ -225,6 +233,7 @@ export default function App() {
     const split = searchSplit(t);
     // no match at all: nothing is submitted, the preview says No Results
     if (!split.main.length && !split.more.length) return;
+    unsent.current = null;
     const found = split.main;
     inputRef.current?.blur();
     setDraft(t);
@@ -421,12 +430,14 @@ export default function App() {
   const prevScreen = stack.length > 1 ? stack[stack.length - 2]! : null;
   const boxBack = back && editing && !!prevScreen?.q;
   // the typed text stays in the box while a card opened from the preview is on top of it
-  const boxText = top.list === 'preview' ? draft : top.list === 'era' ? '' : top.q;
+  // over Category the text typed and not sent stays in the box (user, 2026-11-25)
+  const boxText = top.list === 'preview' ? draft : top.list === 'era' ? '' : top.list === 'category' ? (unsent.current ?? top.q) : top.q;
   // × in the search box only while typing (the search preview is open): it clears the text, or closes the
   // empty preview. Every other screen closes with the × in its own top row
   const showClear = editing;
   const clearBox = () => {
     if (!draft) return closeAll();
+    unsent.current = null;
     setDraft('');
     // × drops the submitted search the box was opened over (user, 2026-11-23): the typing screen no longer carries
     // it, so a card opened next, or the box opened again, does not bring it back; the map shows every building
@@ -467,12 +478,15 @@ export default function App() {
     // with no search, the typing screen itself goes on top (no extra empty step that ＜ would stop at, 2026-11-25)
     // a picked Category tag is not a search: the search page opens empty over it
     const q = top.list === 'era' ? '' : top.q;
+    // text typed and not sent comes back in the box, with the typing screen (user, 2026-11-25)
+    const typing = unsent.current !== null && unsent.current !== q;
     if (!menuPage) {
-      if (!q) setDraft('');
-      push({ q, list: q ? 'results' : 'preview', group: [], b: '' });
+      if (typing) setDraft(unsent.current!);
+      else if (!q) setDraft('');
+      push({ q, list: q && !typing ? 'results' : 'preview', group: [], b: '' });
     }
     // no search on screen: the box takes the cursor, so the recent searches show at once and typing can start
-    if (!q) afterPanel(() => inputRef.current?.focus());
+    if (!q || typing) afterPanel(() => inputRef.current?.focus());
   };
   const railCategory = () => {
     openPanel();
@@ -489,6 +503,7 @@ export default function App() {
     // a submitted search (user, 2026-11-24): the × sits in the box, so it clears the search and opens the box for a
     // new one (the map shows every building); a second × closes everything
     if (top.q) {
+      unsent.current = null;
       setDraft('');
       setMoreOpen('');
       setStack((st) => [...st.slice(0, -1), { q: '', list: 'preview', group: [], b: '' }]);
@@ -509,6 +524,7 @@ export default function App() {
       onFocus={openPreview}
       onChange={(t) => {
         if (!editing) openPreview();
+        unsent.current = t;
         setDraft(t);
       }}
       onSubmit={() => submit(draft)}
