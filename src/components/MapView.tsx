@@ -81,6 +81,9 @@ interface Props {
   fallback: React.ReactNode;
 }
 
+/** A zoom that starts this soon (ms) after a wheel event over the map is a wheel zoom */
+const WHEEL_RECENT = 250;
+
 const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   const { buildings, searched, selected, hoverId, seenIds, padding, reducedMotion, compact, start, onSelect, onGroup, onView, onFail, onReady, fallback } = props;
   const box = useRef<HTMLDivElement>(null);
@@ -202,9 +205,21 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     // A zoom moves the markers under a still mouse: the ring of the number point it pointed at would stay on every
     // building that point splits into, so a zoom ends it (the marker under the mouse rings again once the mouse moves)
     // Any camera move does the same: marks slide away from (or under) a still mouse without a pointer-leave
+    // The mouse wheel (and a desktop touchpad pinch, sent as wheel events) regroups at every step of the zoom
+    // (user, 2026-11-25); a finger pinch, + / − and camera moves keep the groups until the zoom ends.
+    // MapLibre's zoomstart does not say what started it, so the map's own wheel events are watched
+    let wheelAt = -Infinity;
+    map.getContainer().addEventListener(
+      'wheel',
+      () => {
+        wheelAt = performance.now();
+        groupKeep.current.zooming = false;
+      },
+      { passive: true, capture: true },
+    );
     map.on('zoomstart', () => {
       setPinHover('');
-      groupKeep.current.zooming = true;
+      groupKeep.current.zooming = performance.now() - wheelAt > WHEEL_RECENT;
     });
     map.on('zoomend', () => {
       groupKeep.current.zooming = false;
