@@ -23,6 +23,16 @@ interface RowsProps {
   framed?(items: Building[]): boolean;
 }
 
+/** No match: other words can be tried, or the search cleared */
+export function NoResults() {
+  return (
+    <div className="none">
+      <p>No Results</p>
+      <p className="none-hint">Try other words, or clear the search with ×.</p>
+    </div>
+  );
+}
+
 /**
  * A list of buildings, split by country when `onCountry` is given and the list is long. `onVisible` reports
  * the rows that are on screen in the list, top to bottom, whenever the list scrolls, so the map can mark them.
@@ -108,7 +118,7 @@ export default function ResultList({ list, onOpen, onHover, onVisible, onCountry
         {/* a search with only other possible outcomes: No Results, then the button */}
         {list.length === 0 && (
           <li key="none" className="none-row">
-            <p className="none">No Results</p>
+            <NoResults />
           </li>
         )}
         {list.map((b) => (

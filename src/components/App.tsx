@@ -6,7 +6,7 @@ import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model
 import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, loadDraft, loadFolded, sameScreen, saveDraft, saveFolded, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts, removeRecentBuilding, removeRecentText } from '../lib/recent';
 import RemoveButton from './RemoveButton';
-import { searchSplit } from '../lib/search';
+import { listOf, searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
 import CategoryList from './CategoryList';
 import { HeadBar } from './HeadBar';
@@ -15,7 +15,7 @@ import Leave from './Leave';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import Panel from './Panel';
 import Rail, { type RailPage } from './Rail';
-import ResultList from './ResultList';
+import ResultList, { NoResults } from './ResultList';
 import SearchBox from './SearchBox';
 import { RAIL_W } from '../styles/tokens';
 
@@ -116,7 +116,7 @@ export default function App() {
   };
 
   // A search's main matches first; its other matches join below (list and map) after Other Possible Outcomes (Polish 13)
-  const found = useMemo(() => (top.q ? searchSplit(top.q) : { main: [], more: [] }), [top.q]);
+  const found = useMemo(() => (top.q ? listOf(top.q, top.list) : { main: [], more: [] }), [top.q, top.list]);
   const [moreOpen, setMoreOpen] = useState('');
   const moreView = useRef<View | null>(null);
   // another search on screen folds the other outcomes away: ＜ back to this search shows them folded
@@ -181,7 +181,7 @@ export default function App() {
       let items: Building[];
       if (prev.list === 'group') items = prev.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
       else {
-        const f = searchSplit(prev.q);
+        const f = listOf(prev.q, prev.list);
         items = [...f.main, ...(moreOpen === prev.q ? f.more : [])];
       }
       if (items.length) {
@@ -193,7 +193,7 @@ export default function App() {
     if (target) {
       const v = target;
       afterPanel(() => mapRef.current?.moveTo(v));
-    } else if (prev.q && prev.q !== top.q) afterPanel(() => mapRef.current?.fitTo(searchSplit(prev.q).main));
+    } else if (prev.q && prev.q !== top.q) afterPanel(() => mapRef.current?.fitTo(listOf(prev.q, prev.list).main));
   };
 
   /** × and Esc: everything closes, the text and results go; the map stays where it is */
@@ -213,8 +213,10 @@ export default function App() {
 
   const openPreview = () => {
     if (top.list === 'preview' && !top.b) return;
-    setDraft(top.q);
-    push({ q: top.q, list: 'preview', group: [], b: '' });
+    // a picked Category tag is not a search: the box opens empty over it
+    const q = top.list === 'era' ? '' : top.q;
+    setDraft(q);
+    push({ q, list: 'preview', group: [], b: '' });
   };
 
   const submit = (text: string) => {
@@ -248,11 +250,12 @@ export default function App() {
   };
 
   /**
-   * Desktop: a tag picked in the Category page lists its buildings inside Category (user, 2026-11-25): Category stays
-   * lit, the search box and the recent searches are left alone, ＜ goes back to the tags. The phone sends it as a search.
+   * A tag picked in the Category page is not a search (user, 2026-11-25): exactly that category's buildings, oldest
+   * first; the search box and the recent searches are left alone, ＜ goes back to the tags. Desktop: inside Category,
+   * Category stays lit. Phone: Category folds away and the list rises from the bottom (2026-11-25, was a search).
    */
   const pickEra = (label: string) => {
-    const items = searchSplit(label).main;
+    const items = listOf(label, 'era').main;
     if (!items.length) return;
     setMoreOpen('');
     push({ q: label, list: 'era', group: [], b: '' });
@@ -406,7 +409,7 @@ export default function App() {
   // The map loads after the page, so a search sent before then is framed when it arrives.
   const mapReady = () => {
     const s = stackRef.current[stackRef.current.length - 1]!;
-    const items = s.list === 'group' ? s.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b) : s.q ? searchSplit(s.q).main : [];
+    const items = s.list === 'group' ? s.group.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b) : s.q ? listOf(s.q, s.list).main : [];
     const card = s.b ? BY_ID.get(s.b) : undefined;
     if (card && (!START.view || stackRef.current !== startedWith)) afterPanel(() => mapRef.current?.focus(card, false));
     else if (items.length && (!START.view || stackRef.current !== startedWith)) afterPanel(() => mapRef.current?.fitTo(items));
@@ -418,7 +421,7 @@ export default function App() {
   const prevScreen = stack.length > 1 ? stack[stack.length - 2]! : null;
   const boxBack = back && editing && !!prevScreen?.q;
   // the typed text stays in the box while a card opened from the preview is on top of it
-  const boxText = top.list === 'preview' ? draft : top.q;
+  const boxText = top.list === 'preview' ? draft : top.list === 'era' ? '' : top.q;
   // × in the search box only while typing (the search preview is open): it clears the text, or closes the
   // empty preview. Every other screen closes with the × in its own top row
   const showClear = editing;
@@ -524,7 +527,7 @@ export default function App() {
         preview.length ? (
           <ResultList list={preview.slice(0, PREVIEW_MAX)} onOpen={openCard} onHover={setHoverId} />
         ) : (
-          <p className="none">No Results</p>
+          <NoResults />
         )
       ) : (
         <>
@@ -601,7 +604,7 @@ export default function App() {
     // opened from the plain map, ＜ would only close it, like ×: only × shows
     panel = (
       <Panel ref={panelRef} scroll={top.scroll} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back && !(prevScreen && isEmptyScreen(prevScreen))} onBack={goBack} onClose={closeAll} title="Category" />}>
-        <CategoryList onPick={mobile ? submit : pickEra} />
+        <CategoryList onPick={pickEra} />
       </Panel>
     );
   } else if (top.list === 'group' && group.length) {

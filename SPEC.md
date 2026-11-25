@@ -5,7 +5,7 @@ Status: approved 2026-11-13; desktop rail and content panel approved and publish
 
 ## 1. Screen
 - Map only, no top bar, no tabs. Default view: Europe (v1 Full map).
-- Desktop (Rail, 2026-11-23): a fixed rail on the left edge (56 px, over the map), top down: Search (magnifier), Category (four squares), the fold button (a list in a rounded frame, no line above it; 2026-11-25). The fold button is grey and cannot be pressed while Search or Category does its job (its page is open, or folded away: that button alone brings it back) or when there is nothing to fold or bring back; A tag picked in the Category page (desktop) lists its buildings inside Category: Category stays lit, the title row reads ＜ and the tag's name (＜ back to the tags), the search box and the recent searches are left alone, the address is ?q=<tag>&p=era; the phone sends the tag as a search (2026-11-25). Search opened over a card, a number point list or Category shows ＜ in the box back to that screen (not over the plain map); otherwise it folds the panel (lit, as a lit page button, while the card or number point list is out) or brings the folded screen back (not lit); each a 40 px square with a thin frame and rounded corners, its press and lit colours inside the frame. Every non-map part (search box, preview, results, Category, number point list, card) is in one content panel beside it (§9). Phone: unchanged — top left: Search box; Category button (icon: four squares) to its right.
+- Desktop (Rail, 2026-11-23): a fixed rail on the left edge (56 px, over the map), top down: Search (magnifier), Category (four squares), the fold button (a list in a rounded frame, no line above it; 2026-11-25). The fold button is grey and cannot be pressed while Search or Category does its job (its page is open, or folded away: that button alone brings it back) or when there is nothing to fold or bring back; A tag picked in the Category page (desktop) lists its buildings inside Category: Category stays lit, the title row reads ＜ and the tag's name (＜ back to the tags), the search box and the recent searches are left alone, the address is ?q=<tag>&p=era; the phone does the same, as a list rising from the bottom titled with the tag, ＜ back to Category (2026-11-25). Search opened over a card, a number point list or Category shows ＜ in the box back to that screen (not over the plain map); otherwise it folds the panel (lit, as a lit page button, while the card or number point list is out) or brings the folded screen back (not lit); each a 40 px square with a thin frame and rounded corners, its press and lit colours inside the frame. Every non-map part (search box, preview, results, Category, number point list, card) is in one content panel beside it (§9). Phone: unchanged — top left: Search box; Category button (icon: four squares) to its right.
 - Bottom right: Zoom + / − (desktop; phone pinches). Mouse wheel zooms.
 - Scale bar (KEEP.md): desktop at the bottom right, 16 px left of the zoom buttons, on their bottom line (Rail, 2026-11-23); phone bottom left.
 - Every floating part 16 px from window, map and other parts. Exception (B6, 2026-11-20): on desktop the zoom buttons and the scale bar share one bottom line 24 px from the bottom, clear of the map's source line under them; the panels stop 16 px above the scale bar.
@@ -38,7 +38,7 @@ Status: approved 2026-11-13; desktop rail and content panel approved and publish
 | Text | Search → type → preview list → Enter → results list + results on map → card |
 | Recent building | Search → recent building → card |
 | Recent text | Search → recent text → text search [that text] |
-| Style | Category → style list → style → text search [style name] |
+| Style | Category → style list → style → that category's buildings, oldest first (not a search) |
 | Architect | Card → architect → text search [architect] |
 | Browse | Zoom in → markers in view → marker → card |
 | Dense | Number point → number point list → row → card |
@@ -50,7 +50,9 @@ Status: approved 2026-11-13; desktop rail and content panel approved and publish
 - Typing without Enter: preview list. Enter: submit. Empty text: nothing happens. No match: Enter does not submit, the list shows `No Results`.
 - Clicking a preview row opens its card; ＜ returns to the preview with the text kept.
 - Every search is a plain text search (Category and architect too). Fields matched: name, architect, style, city, country, keywords (zh and en), summary text.
-- Order: exact name, then name starts with the text, then other fields; same rank by year, oldest first.
+- Rules (Project doc gc/search-rules.md, 2026-11-25): case, full-/half-width, accents and extra spaces folded; a word is found when a field contains it; every word must be found, in any order ("and" is an ordinary word). One letter or digit: only names and tags starting with it.
+- Order: exactness (whole field > field start > a word in it starts > inside a word), then where (name > tags > summary), then year, oldest first; several words add up. Summary-only matches wait behind Other Possible Outcomes.
+- No match: `No Results`, then a grey line `Try other words, or clear the search with ×.`
 - A new search (typed, Category, architect) replaces the current one and is added to the history.
 
 ## 6. Lists

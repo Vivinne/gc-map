@@ -1,140 +1,144 @@
 import { BUILDINGS, ERAS, byYear, nationName, norm, type Building } from './model';
 import { architectOf, shownStyle } from './style';
+import type { EraId } from './types';
 
-/** Text of a building's name, of its data fields (architect, style, city, country, keywords) and of its summary */
+/**
+ * Search rules (Project doc gc/search-rules.md, 2026-11-25):
+ * 1. Text and query are folded the same way: letter case, full-width / half-width forms, accents and curly quotes
+ *    ignored; leading and trailing spaces dropped; a run of spaces counts as one.
+ * 2. A word of the query is found when a field contains it. Words split by spaces must all be found, in any order.
+ *    Short words such as "and" are words like any other.
+ * 3. Order, compared step by step: how exact the hit is (whole field, field start, start of a word in it, inside a
+ *    word), then where it is (name, tags, summary), then year, oldest first. With several words, the scores of the
+ *    words add up.
+ * 4. One letter or one digit: only names and tags that start with it.
+ *
+ * Fields: name; tags = architect, style, category, city, place, country and keywords (zh and en), each value on its
+ * own; summary.
+ */
+
+/** How exact a hit is, best last */
+const INSIDE = 1;
+const WORD_START = 2;
+const FIELD_START = 3;
+const WHOLE = 4;
+
+/** Where a hit is, best last */
+const SUMMARY = 1;
+const TAGS = 2;
+const NAME = 3;
+
+/** Folded text: case, width and accents folded, spaces trimmed and collapsed */
+export function normQuery(s: string): string {
+  return norm(s).replace(/\s+/g, ' ').trim();
+}
+
 interface Indexed {
   b: Building;
   name: string;
-  words: string[];
-  fields: string;
+  tags: string[];
   summary: string;
 }
 
 const INDEX: Indexed[] = BUILDINGS.map((b) => ({
   b,
-  name: norm(b.name),
-  words: norm(b.name).split(/[\s\-(/'’]+/).filter(Boolean),
-  // Style: the building's own categories and the style shown on it. The source's chapter name is left out:
-  // a chapter such as "Renaissance and Mannerism" would make every Renaissance building a Mannerism hit.
-  fields: norm(
-    [
-      architectOf(b),
-      b.who,
-      shownStyle(b),
-      b.styleCard,
-      ERAS[b.era].label,
-      ...b.eras.map((e) => ERAS[e].label),
-      b.city,
-      b.locLabel,
-      b.loc,
-      nationName(b),
-      ...b.tags.map((t) => t.replace(/~~/g, '')),
-      ...b.tagsEn.map((t) => t.replace(/~~/g, '')),
-    ].join(' | '),
-  ),
-  summary: norm(b.summary),
+  name: normQuery(b.name),
+  // The source's chapter name is left out: a chapter such as "Renaissance and Mannerism" would make every
+  // Renaissance building a Mannerism hit.
+  tags: [
+    architectOf(b),
+    b.who,
+    shownStyle(b),
+    b.styleCard,
+    ERAS[b.era].label,
+    ...b.eras.map((e) => ERAS[e].label),
+    b.city,
+    b.locLabel,
+    b.loc,
+    nationName(b),
+    ...b.tags.map((t) => t.replace(/~~/g, '')),
+    ...b.tagsEn.map((t) => t.replace(/~~/g, '')),
+  ]
+    .map((v) => normQuery(v ?? ''))
+    .filter(Boolean),
+  summary: normQuery(b.summary),
 }));
 
-/**
- * Plain text search. Every word of the text must appear in the building's name, data fields or summary.
- * Order: exact name, then a name (or a word of it) starting with the text, then a name containing it,
- * then a match in the data fields, then a match found only in the summary; same rank oldest first.
- * A category name is the exception: that category's buildings oldest first, then the other matches.
- * Matches found only inside another word come after all of these, in the same order; with two or more
- * words in the text, such matches are left out.
- */
-/** Whether a word of the text begins at a word start in the field (not only inside another word) */
-function atWordStart(hay: string, w: string): boolean {
-  for (let i = hay.indexOf(w); i >= 0; i = hay.indexOf(w, i + 1)) {
-    if (i === 0 || !/[\p{L}\p{N}]/u.test(hay[i - 1]!)) return true;
+/** How exact the word's best hit in one field is (0: not found) */
+function exactness(field: string, w: string): number {
+  if (!field) return 0;
+  if (field === w) return WHOLE;
+  if (field.startsWith(w)) return FIELD_START;
+  let inside = false;
+  for (let i = field.indexOf(w); i >= 0; i = field.indexOf(w, i + 1)) {
+    if (/[\s\-_/]/.test(field[i - 1]!)) return WORD_START;
+    inside = true;
   }
-  return false;
+  return inside ? INSIDE : 0;
 }
 
-function rankAll(text: string, list: readonly Indexed[] = INDEX): Building[] {
-  const t = norm(text.trim());
-  if (!t) return [];
-  // The text is a category name (from the Category list, or typed): the buildings of that category in
-  // year order, then any other match in year order. The same text always gives the same order.
-  const era = (Object.keys(ERAS) as (keyof typeof ERAS)[]).find((e) => norm(ERAS[e].label) === t);
-  const terms = t.split(/\s+/).filter(Boolean);
-  const ranked: { b: Building; r: number }[] = [];
-  for (const x of list) {
-    if (!terms.every((w) => x.name.includes(w) || x.fields.includes(w) || x.summary.includes(w))) continue;
-    const inData = terms.every((w) => x.name.includes(w) || x.fields.includes(w));
-    // a word found only inside another word ("tate" in "United States") ranks after every whole-word match;
-    // with two or more words every word must start a word ("le cor" finds Le Corbusier, not "capsule … core")
-    const inside = !terms.every((w) => atWordStart(x.name, w) || atWordStart(x.fields, w) || atWordStart(x.summary, w));
-    if (inside && terms.length > 1) continue;
-    const r = era
-      ? x.b.eras.includes(era)
-        ? 0
-        : 1
-      : x.name === t
-        ? 0
-        : x.name.startsWith(t) || x.words.some((w) => w.startsWith(t))
-          ? 1
-          : x.name.includes(t)
-            ? 2
-            : inData
-              ? 3
-              : 4;
-    ranked.push({ b: x.b, r: inside ? r + 10 : r });
-  }
-  return ranked.sort((p, q) => p.r - q.r || byYear(p.b, q.b)).map((x) => x.b);
+/** One number per hit: exactness first, then where; a higher number ranks higher */
+const hitScore = (exact: number, where: number) => (exact - 1) * 3 + where;
+
+interface Scored {
+  b: Building;
+  score: number;
+  /** Every word is found in the name or a tag (not only in the summary) */
+  inData: boolean;
 }
 
-/** Every whole word in the data and summaries: a search word that is one of these is a finished word, not a partial one */
-const WORDS = new Set(INDEX.flatMap((x) => `${x.name} ${x.fields} ${x.summary}`.split(/[^\p{L}\p{N}]+/u).filter(Boolean)));
-
-/** The word stands whole in the text (or as its plural: "villa" in "villas", "tower" in "towers") */
-function wholeIn(hay: string, w: string): boolean {
-  for (let i = hay.indexOf(w); i >= 0; i = hay.indexOf(w, i + 1)) {
-    if (i > 0 && /[\p{L}\p{N}]/u.test(hay[i - 1]!)) continue;
-    const rest = hay.slice(i + w.length);
-    if (!/^[\p{L}\p{N}]/u.test(rest) || /^(s|es)(?![\p{L}\p{N}])/u.test(rest)) return true;
+function scoreOf(x: Indexed, words: string[], short: boolean): Scored | null {
+  // one letter or digit: whole field or field start, in the name or a tag
+  const min = short ? FIELD_START : INSIDE;
+  let score = 0;
+  let inData = true;
+  for (const w of words) {
+    const en = exactness(x.name, w);
+    const et = Math.max(0, ...x.tags.map((t) => exactness(t, w)));
+    const es = short ? 0 : exactness(x.summary, w);
+    const best = Math.max(en >= min ? hitScore(en, NAME) : 0, et >= min ? hitScore(et, TAGS) : 0, es >= min ? hitScore(es, SUMMARY) : 0);
+    if (!best) return null;
+    if (en < min && et < min) inData = false;
+    score += best;
   }
-  return false;
-}
-
-/**
- * A word of the name is the search word with at most two more letters: the same word in another language or
- * form ("sant" → Santa, "chapel" → Sainte-Chapelle, "cathedral" → Cathédrale, "arch" → Grande Arche)
- */
-function nameVariant(name: string, w: string): boolean {
-  return name.split(/[^\p{L}\p{N}]+/u).some((n) => n.startsWith(w) && n.length - w.length <= 2);
+  return { b: x.b, score, inData };
 }
 
 /** Matches of a search, split in two (Polish 13) */
 export interface Found {
-  /** The buildings the text is about: each word stands whole in the name or a data field (architect, style,
-   *  place, keywords), or begins a word there while it is still being typed (not a finished word) */
+  /** Every word is found in the name or a tag (architect, style, place, keywords) */
   main: Building[];
-  /** The rest: a finished word that only begins a longer word ("villa" in "village"), a word found only in the
-   *  summary, or a word found inside another word ("art" in "Parthenon") */
+  /** The rest: some word is found only in the summary (behind Other Possible Outcomes) */
   more: Building[];
 }
 
 export function searchSplit(text: string): Found {
-  const all = rankAll(text);
-  const t = norm(text.trim());
-  const terms = t.split(/\s+/).filter(Boolean);
-  const era = (Object.keys(ERAS) as (keyof typeof ERAS)[]).find((e) => norm(ERAS[e].label) === t);
-  const byId = new Map(INDEX.map((x) => [x.b.id, x]));
-  const isMain = (b: Building): boolean => {
-    if (era) return b.eras.includes(era);
-    const x = byId.get(b.id)!;
-    const data = `${x.name} | ${x.fields}`;
-    return terms.every((w) => wholeIn(data, w) || nameVariant(x.name, w) || (!WORDS.has(w) && atWordStart(data, w)));
-  };
-  const main: Building[] = [];
-  const more: Building[] = [];
-  for (const b of all) (isMain(b) ? main : more).push(b);
-  return { main, more };
+  const q = normQuery(text);
+  if (!q) return { main: [], more: [] };
+  const words = [...new Set(q.split(' '))];
+  const short = /^[a-z0-9]$/.test(q);
+  const all: Scored[] = [];
+  for (const x of INDEX) {
+    const s = scoreOf(x, words, short);
+    if (s) all.push(s);
+  }
+  all.sort((p, r) => r.score - p.score || byYear(p.b, r.b));
+  return { main: all.filter((s) => s.inData).map((s) => s.b), more: all.filter((s) => !s.inData).map((s) => s.b) };
 }
 
 /** What a search shows first: its main matches, or, when it has none, the rest */
 export function search(text: string): Building[] {
   const f = searchSplit(text);
   return f.main.length ? f.main : f.more;
+}
+
+/** A Category tag picked in the Category page is not a search: exactly that category's buildings, oldest first */
+export function categoryList(label: string): Building[] {
+  const era = (Object.keys(ERAS) as EraId[]).find((e) => ERAS[e].label === label);
+  return era ? BUILDINGS.filter((b) => b.eras.includes(era)).sort(byYear) : [];
+}
+
+/** The buildings a screen lists: a picked Category tag, or a search */
+export function listOf(q: string, list: string): Found {
+  return list === 'era' ? { main: categoryList(q), more: [] } : searchSplit(q);
 }

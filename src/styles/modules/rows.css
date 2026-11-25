@@ -50,3 +50,4 @@
 .c-head.off, .c-head.off:hover { cursor: default; color: var(--g74); }
 .c-head.off:active { transform: none; }
 .none { padding: var(--sz-14) var(--sz-16); color: var(--mute); font-weight: 600; }
+.none-hint { margin-top: var(--sz-4); font-size: var(--fs-12-5); font-weight: 400; color: var(--g66); }

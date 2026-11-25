@@ -1,7 +1,7 @@
 import { BY_ID } from './model';
 
 /** Which list is open (a building card, when open, sits over it and the list is folded away) */
-/** 'era': desktop, the buildings of one Category tag picked in the Category page (q holds the tag) */
+/** 'era': the buildings of one Category tag picked in the Category page (q holds the tag) */
 export type ListKind = '' | 'preview' | 'category' | 'results' | 'group' | 'era';
 
 /** One screen state: what the history behind ＜ holds, and what the address names */
