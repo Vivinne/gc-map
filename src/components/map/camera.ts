@@ -9,6 +9,11 @@ import { MOTION } from '../../styles/tokens';
 /* M8 camera: every map move (frame results, focus a card, split a number point, ＜). No drawing here. */
 
 /** Camera moves: one length and one curve, the same as the panels (fast start, soft landing) */
+/** Two markers closer than this (px) are drawn as one number point (lib/geo.ts groupOnScreen: two dots and the gap) */
+const MERGED = DOT_R * 2 + 2;
+/** Distance (px) at which the open building's halo (r 18) clears the next marker */
+const HALO_CLEAR = 32;
+
 export const MAP_MS = MOTION.slow;
 export const EASE = (t: number) => 1 - (1 - t) ** 4;
 /**
@@ -153,14 +158,18 @@ export function cameraApi(mapRef: MutableRefObject<MlMap | null>, deps: CameraDe
         const q = map.project([o.lng, o.lat]);
         near = Math.min(near, Math.hypot(q.x - here.x, q.y - here.y));
       }
-      // Far enough for the selection halo (r 18) to clear a neighbouring dot or small number point
-      const need = 32;
+      // Phones and desktop (user, 2026-11-25: opening one card after another lagged): the map zooms in only when the
+      // building is merged into a number point (closer than two dots), so it can stand alone; a building shown on its
+      // own only comes to the middle, at the same zoom, even if its halo touches a neighbour (formerly Q3 zoomed in
+      // until the halo cleared it, which made the map load and draw a new zoom level at almost every click)
+      const need = MERGED;
       if (!shown.length || near >= need) {
         if (centre) toMiddle();
         else reveal(map, b);
         return;
       }
-      const to = Math.min(MAX_ZOOM, zoom + (near > 0 ? Math.log2(need / near) + 0.15 : MAX_ZOOM));
+      // just far enough for its halo (r 18) to clear the next marker, as before
+      const to = Math.min(MAX_ZOOM, zoom + (near > 0 ? Math.log2(HALO_CLEAR / near) + 0.15 : MAX_ZOOM));
       const p = room(map).p;
       // offset, not padding: map padding would stay on the map and shift every saved centre after it
       map.easeTo({
