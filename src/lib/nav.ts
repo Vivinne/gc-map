@@ -1,4 +1,5 @@
-import { BY_ID } from './model';
+import { BY_ID } from '../data';
+import { sessionGet, sessionRemove, sessionSet } from '../shared/storage';
 
 /** Which list is open (a building card, when open, sits over it and the list is folded away) */
 /** 'era': the buildings of one Category tag picked in the Category page (q holds the tag) */
@@ -90,46 +91,26 @@ const DRAFT_KEY = 'gc-map:draft';
  * An emptied box is kept as empty (R5); null: no search box open, nothing to keep.
  */
 export function saveDraft(text: string | null): void {
-  try {
-    if (text !== null) sessionStorage.setItem(DRAFT_KEY, text);
-    else sessionStorage.removeItem(DRAFT_KEY);
-  } catch {
-    /* storage blocked: the text lives in memory only */
-  }
+  if (text !== null) sessionSet(DRAFT_KEY, text);
+  else sessionRemove(DRAFT_KEY);
 }
 
 const FOLD_KEY = 'gc-map:folded';
 
 /** Desktop: the content panel was folded with the rail's menu button; kept for this tab so a reload keeps it folded */
 export function saveFolded(folded: boolean): void {
-  try {
-    if (folded) sessionStorage.setItem(FOLD_KEY, '1');
-    else sessionStorage.removeItem(FOLD_KEY);
-  } catch {
-    /* storage blocked: folding lasts until the reload */
-  }
+  if (folded) sessionSet(FOLD_KEY, '1');
+  else sessionRemove(FOLD_KEY);
 }
 
-export function loadFolded(): boolean {
-  try {
-    return sessionStorage.getItem(FOLD_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
+export const loadFolded = (): boolean => sessionGet(FOLD_KEY) === '1';
 
-export function loadDraft(): string | null {
-  try {
-    return sessionStorage.getItem(DRAFT_KEY);
-  } catch {
-    return null;
-  }
-}
+export const loadDraft = (): string | null => sessionGet(DRAFT_KEY);
 
 /** The history behind ＜, kept for this tab so a reload restores it */
 export function loadStack(): Screen[] | null {
   try {
-    const raw = sessionStorage.getItem(STACK_KEY);
+    const raw = sessionGet(STACK_KEY);
     const list = raw ? (JSON.parse(raw) as unknown) : null;
     if (!Array.isArray(list)) return null;
     // a building removed or renamed since the history was saved (a new version of the data) leaves its screen:
@@ -151,11 +132,7 @@ export function loadStack(): Screen[] | null {
 }
 
 export function saveStack(stack: Screen[]): void {
-  try {
-    sessionStorage.setItem(STACK_KEY, JSON.stringify(stack));
-  } catch {
-    /* storage blocked: the history lives in memory only */
-  }
+  sessionSet(STACK_KEY, JSON.stringify(stack));
 }
 
 /**

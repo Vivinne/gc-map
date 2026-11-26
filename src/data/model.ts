@@ -1,6 +1,6 @@
-import { dataset } from './data';
+import { dataset } from './dataset';
 import type { Era, EraId, Place } from './types';
-import { ERA_COLORS } from '../styles/tokens';
+import { ERA_COLORS } from '../shared/tokens';
 
 /** Category order used everywhere (Category list, number point segments) */
 export const ERA_ORDER: EraId[] = ['ancient', 'medieval', 'renaissance', 'mannerism', 'baroque', 'neoclassicism', 'artnouveau', 'beauxarts', 'modern', 'others'];

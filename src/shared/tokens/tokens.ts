@@ -1,4 +1,4 @@
-import type { EraId } from '../lib/types';
+import type { EraId } from '../../data';
 
 /**
  * Design tokens read from TypeScript: the colour of each style, the basemap colours and the spacing.

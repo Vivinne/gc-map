@@ -6,13 +6,13 @@ Everything below survives the redesign unchanged. Anything not listed here is fr
 ## Tokens (single source)
 | What | Where |
 |---|---|
-| Style colours, 10 categories, palette "Earth to sky" | `src/styles/tokens.ts` → `ERA_COLORS` |
-| Basemap colours (sea, land, road, building) | `src/styles/tokens.ts` → `MAP_COLORS` |
-| Ink, greys `--gNN`, rule, mute, soft | `src/styles/tokens.css` |
-| Motion: `--ease`, `--ease-in`, `--t-fast` 120 ms, `--t-mid` 220 ms, `--t-slow` 420 ms, `--leave` 160 ms | `src/styles/tokens.css` |
-| Corners `--r-s` 6 px, `--r-m` 10 px | `src/styles/tokens.css` |
-| Type: Archivo Variable for the interface; Chinese text (`.sum`) in the device's own Chinese font (Noto Sans TC if installed, else PingFang TC, Microsoft JhengHei…; no Chinese font is shipped, Q10, 2026-11-20), 14 px / 1.45 | `src/styles/tokens.css`, `globals.css` |
-| Spacing: 16 px from every edge, controls 32 px high, list rows 40 px | `src/styles/tokens.ts` (`INSET`, `CONTROL_H`, `ROW_H`), drawn from the size scale in `src/styles/tokens.css` |
+| Style colours, 10 categories, palette "Earth to sky" | `src/shared/tokens/tokens.ts` → `ERA_COLORS` |
+| Basemap colours (sea, land, road, building) | `src/shared/tokens/tokens.ts` → `MAP_COLORS` |
+| Ink, greys `--gNN`, rule, mute, soft | `src/shared/tokens/tokens.css` |
+| Motion: `--ease`, `--ease-in`, `--t-fast` 120 ms, `--t-mid` 220 ms, `--t-slow` 420 ms, `--leave` 160 ms | `src/shared/tokens/tokens.css` |
+| Corners `--r-s` 6 px, `--r-m` 10 px | `src/shared/tokens/tokens.css` |
+| Type: Archivo Variable for the interface; Chinese text (`.sum`) in the device's own Chinese font (Noto Sans TC if installed, else PingFang TC, Microsoft JhengHei…; no Chinese font is shipped, Q10, 2026-11-20), 14 px / 1.45 | `src/shared/tokens/tokens.css`, `globals.css` |
+| Spacing: 16 px from every edge, controls 32 px high, list rows 40 px | `src/shared/tokens/tokens.ts` (`INSET`, `CONTROL_H`, `ROW_H`), drawn from the size scale in `src/shared/tokens/tokens.css` |
 
 Category colours in order: Ancient `#D58774`, Medieval `#C38C53`, Renaissance `#A6943C`, Mannerism `#799C51`, Baroque `#4B9C75`, Neoclassicism `#1B9794`, Art Nouveau `#278CAB`, Modern `#507CB5`, Beaux-Arts `#6B8BA2`, Others `#80878F`.
 
@@ -31,4 +31,4 @@ Category colours in order: Ancient `#D58774`, Medieval `#C38C53`, Renaissance `#
 | Default view | Europe, as v1 Full map | As now |
 
 ## Data kept
-All of `data/`, `content/`, `scripts/build-data.ts` and the data rules (years, architects, styles, coordinates). Browser data under `gc-atlas:` keys is left untouched.
+All of `data/`, `content/`, `scripts/data/` and the data rules (years, architects, styles, coordinates). Browser data under `gc-atlas:` keys is left untouched.

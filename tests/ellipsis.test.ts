@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { BUILDINGS } from '../src/lib/model';
+import { BUILDINGS } from '../src/data';
 import { fill, LABEL_MAX, labelLines } from '../src/lib/labelLines';
 
 /* Fixed checks for the "…" fix (2026-11-25): list rows are never cut, recent rows keep room for the ×, map names take two lines */

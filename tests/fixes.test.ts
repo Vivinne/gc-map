@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { BUILDINGS } from '../src/lib/model';
+import { BUILDINGS } from '../src/data';
 import { search } from '../src/lib/search';
 import { readFileSync } from 'node:fs';
 
@@ -97,8 +97,8 @@ test('C2 tokens: the style modules write no lengths or colours of their own; mot
     assert.equal(css.match(/(?<![\w-])\d+(\.\d+)?px\b/g), null, `${f}: lengths`);
     assert.equal(css.match(/#[0-9a-fA-F]{3,6}\b|rgba?\(/g), null, `${f}: colours`);
   }
-  const { MOTION, PAPER } = await import('../src/styles/tokens');
-  const tokens = readFileSync(new URL('../src/styles/tokens.css', import.meta.url), 'utf8');
+  const { MOTION, PAPER } = await import('../src/shared/tokens');
+  const tokens = readFileSync(new URL('../src/shared/tokens/tokens.css', import.meta.url), 'utf8');
   for (const [k, css] of [['fast', '--t-fast'], ['mid', '--t-mid'], ['slow', '--t-slow'], ['leave', '--leave'], ['slide', '--t-slide']] as const) assert.match(tokens, new RegExp(`${css}: ${MOTION[k]}ms;`));
   assert.match(tokens, new RegExp(`--paper: ${PAPER};`));
 });
@@ -124,8 +124,8 @@ test('R5 typed text: an emptied search box is kept as empty over a reload', asyn
 // 2026-11-25 (user): several architects are joined with "and" (two) or commas and a last "and" (three or more);
 // a firm stays whole; each name is its own part, the joining words plain text
 test('architects joined with and; parts split per person', async () => {
-  const { BUILDINGS } = await import('../src/lib/model');
-  const { architectOf, architectParts } = await import('../src/lib/style');
+  const { BUILDINGS } = await import('../src/data');
+  const { architectOf, architectParts } = await import('../src/data');
   const who = BUILDINGS.map(architectOf);
   assert.ok(!who.some((w) => w.includes(' / ')), 'no " / " left');
   assert.ok(who.includes('Richard Rogers and Renzo Piano'));

@@ -16,7 +16,7 @@ export interface Point {
   lng: number;
 }
 
-/** One building as the site reads it (src/data/places.json, written by scripts/build-data.ts) */
+/** One building as the site reads it (src/data/places.json, written by scripts/data/) */
 export interface Place {
   id: string;
   name: string;

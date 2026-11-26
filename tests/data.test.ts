@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ERAS, LEAK, buildData, parseCoord, parseHandout, siteData, slug } from '../scripts/build-data';
-import { dataset as site } from '../src/lib/data';
+import { ERAS, LEAK, buildData, parseCoord, parseHandout, siteData, slug } from '../scripts/data';
+import { dataset as site } from '../src/data';
 
 // The full build result, with the source and audit fields the site file leaves out
 const built = buildData();

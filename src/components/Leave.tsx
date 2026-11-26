@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { MOTION } from '../styles/tokens';
+import { MOTION } from '../shared/tokens';
 
 /** How long a closing panel takes to slide away (kept in step with .leave in src/styles/modules/leave.css) */
 export const LEAVE_MS = MOTION.leave;

@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { Icon } from './Icons';
+import { Icon } from '../shared/ui';
 
 export const SEARCH_HINT = 'Search architecture, architect, style…';
 

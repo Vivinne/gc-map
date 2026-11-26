@@ -3,11 +3,11 @@
 import type { Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import { flushSync } from 'react-dom';
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
-import type { Building } from '../lib/model';
-import { isMouseHover } from '../lib/pointer';
+import type { Building } from '../data';
+import { isMouseHover } from '../shared/device';
 import type { View } from '../lib/nav';
-import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION, ZOOM_BTN } from '../styles/tokens';
-import { Icon } from './Icons';
+import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION, ZOOM_BTN } from '../shared/tokens';
+import { Icon } from '../shared/ui';
 import ScaleBar, { scaleFor } from './ScaleBar';
 import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
 import { flatView, type ViewLike } from '../lib/flatView';

@@ -1,10 +1,10 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { ERAS, examNote, type Building } from '../lib/model';
-import { architectParts, builtOf, joinDot, keywordsOf, shownStyle } from '../lib/style';
+import { ERAS, examNote, type Building } from '../data';
+import { architectParts, builtOf, joinDot, keywordsOf, shownStyle } from '../data';
 import Panel from './Panel';
-import { HeadBar } from './HeadBar';
+import { HeadBar } from '../shared/ui';
 
 interface Props {
   b: Building;

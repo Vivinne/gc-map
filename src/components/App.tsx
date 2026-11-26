@@ -2,24 +2,24 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { setAddress } from '../lib/address';
-import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../lib/model';
+import { MOBILE_QUERY, useMedia } from '../shared/device';
+import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../data';
 import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, loadDraft, loadFolded, sameScreen, saveDraft, saveFolded, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts, removeRecentBuilding, removeRecentText } from '../lib/recent';
-import RemoveButton from './RemoveButton';
+import { RemoveButton } from '../shared/ui';
 import { listOf, searchSplit } from '../lib/search';
 import BuildingCard from './BuildingCard';
 import CategoryList from './CategoryList';
-import { HeadBar } from './HeadBar';
-import { Icon } from './Icons';
+import { HeadBar } from '../shared/ui';
+import { Icon } from '../shared/ui';
 import Leave from './Leave';
 import MapView, { type MapHandle, type Padding } from './MapView';
 import Panel from './Panel';
 import Rail, { type RailPage } from './Rail';
 import ResultList, { NoResults } from './ResultList';
 import SearchBox from './SearchBox';
-import { RAIL_W } from '../styles/tokens';
+import { RAIL_W } from '../shared/tokens';
 
-const MOBILE_QUERY = '(max-width: 900px)';
 /** One key for a group of buildings */
 const idsOf = (list: Building[]) => list.map((b) => b.id).join('~');
 /** Two map views are the same place and zoom (a move of the map makes them differ) */
@@ -39,17 +39,6 @@ const KEYBOARD_SETTLE = 150;
 /** The page is at least this much shorter than its full height (px): a keyboard is up */
 const KEYBOARD_MIN = 80;
 const NO_PAD: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
-
-function useMedia(q: string): boolean {
-  const [on, setOn] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches);
-  useEffect(() => {
-    const m = window.matchMedia(q);
-    const f = () => setOn(m.matches);
-    m.addEventListener('change', f);
-    return () => m.removeEventListener('change', f);
-  }, [q]);
-  return on;
-}
 
 /** Address and history at the start: what the page address names (reload or shared link) */
 const START = typeof window !== 'undefined' ? fromQuery(window.location.search) : { screen: EMPTY_SCREEN, view: null };

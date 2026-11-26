@@ -1,13 +1,13 @@
 import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { DOT_R, groupOnScreen, pointRadius } from '../../lib/geo';
-import { ERAS, type Building } from '../../lib/model';
+import { ERAS, type Building } from '../../data';
 import type { ViewLike } from '../../lib/flatView';
 import { labelSize } from '../../lib/labelSize';
 import { fill, labelLines } from '../../lib/labelLines';
 import NumberPoint from '../NumberPoint';
 import type { Padding } from './camera';
-import { PAPER } from '../../styles/tokens';
+import { PAPER } from '../../shared/tokens';
 
 /* M8 markers and names: the SVG drawn over the map each frame (dots, number points, names, the open building's mark). */
 

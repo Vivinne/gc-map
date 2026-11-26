@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { sessionGet, sessionSet } from '../shared/storage';
 
 /** Phone sheet heights: title only, half the screen, or up to the search box */
 export type SheetState = 'fold' | 'half' | 'full';
@@ -9,7 +10,7 @@ const SHEET_KEY = 'gc-map:sheet';
 /** How the phone sheet was left before a reload (this tab): the same panel opens at that height again (Q8) */
 let afterReload: { key: string; state: SheetState } | null = (() => {
   try {
-    return typeof window === 'undefined' ? null : (JSON.parse(sessionStorage.getItem(SHEET_KEY) ?? 'null') as { key: string; state: SheetState } | null);
+    return typeof window === 'undefined' ? null : (JSON.parse(sessionGet(SHEET_KEY) ?? 'null') as { key: string; state: SheetState } | null);
   } catch {
     return null;
   }
@@ -69,11 +70,7 @@ const Panel = forwardRef<HTMLElement, Props>(function Panel({ mobile, place, lab
   const sheet = mobile && place === 'sheet';
   useLayoutEffect(() => {
     if (!sheet) return;
-    try {
-      sessionStorage.setItem(SHEET_KEY, JSON.stringify({ key: resetKey, state }));
-    } catch {
-      /* storage blocked */
-    }
+    sessionSet(SHEET_KEY, JSON.stringify({ key: resetKey, state }));
   }, [sheet, resetKey, state]);
   // A folded sheet sits on the bottom edge: the scale bar moves up above it (--sheet-fold, see src/styles/modules/phone.css)
   const self = useRef<HTMLElement | null>(null);

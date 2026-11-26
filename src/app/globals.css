@@ -1,6 +1,6 @@
 /* GC map v2: solid colour blocks, the style colours carry the meaning.
-   Every colour, size and motion value comes from src/styles/tokens.css (see KEEP.md). */
-@import '../styles/tokens.css';
+   Every colour, size and motion value comes from src/shared/tokens/tokens.css (see KEEP.md). */
+@import '../shared/tokens/tokens.css';
 /* One file per module (see MODULES.md). Keep this order: later files override earlier ones. */
 @import '../styles/modules/base.css';
 @import '../styles/modules/search.css';

@@ -4,7 +4,7 @@
   "private": true,
   "description": "General Culture buildings on a map: search, number points and a card per building",
   "scripts": {
-    "data": "tsx scripts/build-data.ts && tsx scripts/build-basemap.ts && tsx scripts/build-licenses.ts",
+    "data": "tsx scripts/data/run.ts && tsx scripts/build-basemap.ts && tsx scripts/build-licenses.ts",
     "predev": "npm run data",
     "dev": "next dev",
     "prebuild": "npm run data",

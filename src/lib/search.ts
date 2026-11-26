@@ -1,6 +1,6 @@
-import { BUILDINGS, ERAS, byYear, nationName, norm, type Building } from './model';
-import { architectOf, shownStyle } from './style';
-import type { EraId } from './types';
+import { BUILDINGS, ERAS, byYear, nationName, norm, type Building } from '../data';
+import { architectOf, shownStyle } from '../data';
+import type { EraId } from '../data';
 
 /**
  * Search rules (Project doc gc/search-rules.md, 2026-11-25):

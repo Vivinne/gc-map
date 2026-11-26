@@ -1,4 +1,4 @@
-import { load, save } from './storage';
+import { load, save } from '../shared/storage';
 
 const MAX = 3;
 const TEXT_KEY = 'recent-text';

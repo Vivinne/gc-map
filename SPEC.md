@@ -127,7 +127,7 @@ As v1 (KEEP.md): WebGL off → message, Details, building list. Street tiles fai
 
 - React + Next.js (static export) + TypeScript; CSS for styles; no `.js` files in the repo.
 - All code, comments, UI strings, scripts and repo docs in English (E3 aside); study content keeps its original wording.
-- Colours, sizes and motion only from `src/styles/tokens.ts` / `tokens.css`.
+- Colours, sizes and motion only from `src/shared/tokens/tokens.ts` / `tokens.css`.
 - Module layout: MODULES.md.
 
 ## 14. Data (per building)

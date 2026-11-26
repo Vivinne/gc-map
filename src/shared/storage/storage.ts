@@ -30,3 +30,31 @@ export function save(key: string, value: unknown): void {
     /* storage unavailable */
   }
 }
+
+/**
+ * Per-tab values (this tab only, kept over a reload): the history behind ＜, typed text, sheet heights.
+ * Blocked storage reads as nothing and writes are dropped; the app then keeps the value in memory only.
+ */
+export function sessionGet(key: string): string | null {
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+export function sessionSet(key: string, value: string): void {
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch {
+    /* storage blocked */
+  }
+}
+
+export function sessionRemove(key: string): void {
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch {
+    /* storage blocked */
+  }
+}

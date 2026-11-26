@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import '@fontsource-variable/archivo/wdth.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
-import { PAPER } from '../styles/tokens';
+import { PAPER } from '../shared/tokens';
 
 /**
  * Content security rule (S4): scripts, styles, fonts and images from this site only, map data from this site and

@@ -1,6 +1,6 @@
 import type { StyleSpecification } from 'maplibre-gl';
 import { basemap } from '../../lib/basemap';
-import { MAP_COLORS } from '../../styles/tokens';
+import { MAP_COLORS } from '../../shared/tokens';
 
 /** M8 basemap: offline land and borders, plus OpenFreeMap street tiles from zoom 6 (see README, Basemap) */
 export function styleSpec(): StyleSpecification {
