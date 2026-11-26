@@ -40,7 +40,8 @@
 | Basilica di Sant'Ambrogio<br><span class="loc">Milan</span> | 原堂 379–386；現堂約 1080 起 | — | Lombard Romanesque 原型；紅磚＋肋拱；無 clerestory |
 | Mont-Saint-Michel Abbey<br><span class="loc">Mont-Saint-Michel（法）</span> | 1023 | — | Romanesque／Gothic；La Merveille 奇蹟樓 |
 | Parma Baptistery<br><span class="loc">Parma</span> | 1196 | Benedetto Antelami | 八角形；粉紅 Verona 大理石；四層 loggias；Romanesque → Gothic |
-| Pisa Cathedral and Leaning Tower<br><span class="loc">Pisa</span> | 1118（主教堂）、1372（斜塔） | — | Italian Romanesque；彩色大理石盲拱廊 |
+| Pisa Cathedral<br><span class="loc">Pisa</span> | 1063–1092 | Buscheto／Rainaldo | Italian Romanesque；彩色大理石盲拱廊 |
+| Leaning Tower of Pisa<br><span class="loc">Pisa</span> | 1173–1372 | — | Italian Romanesque；斜塔 |
 | San Miniato al Monte<br><span class="loc">Florence</span> | 1207 | — | Romanesque；內有 Cardinal of Portugal Chapel（Rossellino） |
 
 ### 6.5 哥德式建築（Gothic）
@@ -96,8 +97,11 @@
 | Laurentian Library<br><span class="loc">Florence</span> | 1534 | Michelangelo | 三股樓梯、嵌牆暗柱；Mannerism 開端 |
 | Piazza del Campidoglio<br><span class="loc">Rome</span> | 1546 | Michelangelo | 橢圓／梯形；解決不對稱壓迫感 |
 | St. Peter's Basilica Dome<br><span class="loc">Vatican</span> | 1546 | Michelangelo | 雙層圓頂；Giacomo della Porta 完工 |
+| Villa Pojana<br><span class="loc">Pojana Maggiore</span> | 1548–1549 | Palladio | — |
 | Basilica Palladiana<br><span class="loc">Vicenza</span> | 1549 | Palladio | Serliana 拱 |
-| Palladio's Villas<br><span class="loc">Veneto</span> | 1549–1559 | Palladio | Pojana 1549、Barbaro 1554、Badoer 1556、Foscari 1559（Foscari 又名 Malcontenta） |
+| Villa Barbaro<br><span class="loc">Maser</span> | 1554–1560 | Palladio | — |
+| Villa Badoer<br><span class="loc">Fratta Polesine</span> | 1556–1563 | Palladio | — |
+| Villa Foscari<br><span class="loc">Mira</span> | 1558–1560 | Palladio | 又名 Malcontenta |
 | Palazzo Marino<br><span class="loc">Milan</span> | 1558 | Alessi | 今 Milan 市政廳 |
 | Villa Farnese<br><span class="loc">Caprarola</span> | 1559 | Vignola | Pentagon＋圓形庭院 |
 | Uffizi<br><span class="loc">Florence</span> | 1560 | Vasari | U 形中庭；Medici 辦公室 |

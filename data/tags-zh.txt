@@ -17,7 +17,8 @@ basilica-di-san-marco-venice | Basilica di San Marco | 希臘十字・金色馬�
 basilica-di-sant-ambrogio-milan | Basilica di Sant'Ambrogio | 紅磚・肋拱・~~高側窗~~
 mont-saint-michel-abbey-mont-saint-michel | Mont-Saint-Michel Abbey | 奇蹟樓
 parma-baptistery-parma | Parma Baptistery | 八角形・粉紅大理石・四層涼廊
-pisa-cathedral-and-leaning-tower-pisa | Pisa Cathedral and Leaning Tower | 彩色大理石・盲拱廊・斜塔
+pisa-cathedral-pisa | Pisa Cathedral | 彩色大理石・盲拱廊
+leaning-tower-of-pisa-pisa | Leaning Tower of Pisa | 斜塔
 san-miniato-al-monte-florence | San Miniato al Monte | 綠白大理石・幾何立面
 basilica-of-saint-denis-saint-denis | Basilica of Saint-Denis | 哥德起點
 notre-dame-de-mantes-la-jolie-mantes | Notre-Dame de Mantes-la-Jolie | 參事會教堂
@@ -63,7 +64,10 @@ laurentian-library-florence | Laurentian Library | 三股樓梯・嵌牆暗柱�
 piazza-del-campidoglio-rome | Piazza del Campidoglio | 橢圓・梯形廣場
 st-peters-dome-vatican | St. Peter's Basilica Dome | 雙層圓頂
 basilica-palladiana-vicenza | Basilica Palladiana | 塞利奧拱
-palladio-s-villas-veneto | Palladio's Villas | 神廟立面
+villa-pojana-pojana-maggiore | Villa Pojana | 
+villa-barbaro-maser | Villa Barbaro | 神廟立面
+villa-badoer-fratta-polesine | Villa Badoer | 神廟立面
+villa-foscari-mira | Villa Foscari | 神廟立面
 palazzo-marino-milan | Palazzo Marino | 米蘭市政廳
 villa-farnese-caprarola | Villa Farnese | 五角形平面・圓形中庭
 uffizi-florence | Uffizi | U 形中庭・Medici 辦公室
