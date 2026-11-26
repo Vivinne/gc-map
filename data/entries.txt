@@ -18,7 +18,8 @@ Basilica di San Marco | 1063–1094 | 希臘十字（Greek cross）平面、五�
 Basilica di Sant'Ambrogio | 379–386（原堂）；約 1080–12 世紀（現堂） | Lombard Romanesque 的原型，紅磚加肋拱（rib vaults），沒有高側窗（clerestory）。教堂源於 4 世紀由 Aurelio Ambrogio 建的堂。
 Mont-Saint-Michel Abbey | 1023–1521 | 築在潮汐島（tidal island）岩頂上的修道院，Romanesque 與 Gothic 並存，La Merveille（奇蹟樓）是代表。
 Parma Baptistery | 1196–1270 | 八角形洗禮堂，外覆粉紅 Verona 大理石，立面有四層涼廊（loggias），風格從 Romanesque 過渡到 Gothic。
-Pisa Cathedral and Leaning Tower | 1063–1118（主教堂）；1173–1372（斜塔） | Italian Romanesque 的彩色大理石盲拱廊（blind arcades）代表。獨立鐘塔（campanile）在施工期間因地基不均沉降而傾斜，成為世界知名的斜塔。
+Pisa Cathedral | 1063–1092 | Italian Romanesque 的彩色大理石盲拱廊（blind arcades）代表。
+Leaning Tower of Pisa | 1173–1372 | 獨立鐘塔（campanile）在施工期間因地基不均沉降而傾斜，成為世界知名的斜塔。
 San Miniato al Monte | 1018–1207 | 佛羅倫斯的 Romanesque 教堂，以綠白大理石幾何立面著稱。
 Basilica of Saint-Denis | 1135–1144（Suger 工程） | 法國王室陵寢，後殿（chevet）首度整合肋拱（rib vaults）、尖拱（pointed arches）與大片彩色玻璃（stained glass），被視為 Gothic 大教堂的起點。
 Notre-Dame de Mantes-la-Jolie | 約 1170–約 1220 | Collégiale（參事會教堂），Early Gothic 教堂，形式與 Notre-Dame de Paris 相近。
@@ -62,7 +63,10 @@ Laurentian Library | 1524–1571 | 三股階梯從門廳（ricetto）湧入閱�
 Piazza del Campidoglio | 1538–1655 | 以橢圓與梯形平面把不對稱的三棟建築整合成一個廣場，中央立有 Marco Aurelio 騎馬像。
 St. Peter's Basilica Dome | 1546–1590 | 雙層圓頂（double-shell dome），高度主宰羅馬天際線，由 Giacomo della Porta 完工。
 Basilica Palladiana | 1549–1614 | 為 Vicenza 的中世紀市政廳（Palazzo della Ragione）加上兩層拱廊（loggias），使用 Serliana 拱，成為廣泛流傳的母題。
-Palladio's Villas | 1549–1559（四座） | 威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。
+Villa Pojana | 1548–1549 | 威內托地區兼具農莊功能的別墅。
+Villa Barbaro | 1554–1560 | 威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。
+Villa Badoer | 1556–1563 | 威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。
+Villa Foscari | 1558–1560 | 威內托地區的別墅，把古典神廟立面用在住宅上。
 Palazzo Marino | 1558–1563 | 為銀行家所建，現為米蘭市政廳，面向 Piazza della Scala。
 Villa Farnese | 1559–1575 | 建在五角形堡壘基座上的別墅，內部是圓形中庭，位於山頂。
 Uffizi | 1560–1581 | U 形長中庭，向 Arno 河開口，原為 Medici 家族的行政辦公室，後來成為美術館。

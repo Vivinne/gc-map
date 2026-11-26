@@ -29,7 +29,10 @@ Fontainebleau | Mannerism | mannerism
 Piazza del Campidoglio | Mannerism | mannerism
 St. Peter's Basilica Dome | Renaissance
 Basilica Palladiana | Renaissance
-Palladio's Villas | Renaissance
+Villa Pojana | Renaissance
+Villa Barbaro | Renaissance
+Villa Badoer | Renaissance
+Villa Foscari | Renaissance
 Palazzo Marino | Mannerism | mannerism
 Villa Farnese | Mannerism | mannerism
 Uffizi | Mannerism | mannerism

@@ -45,8 +45,8 @@ Casa del Fascio |  | en:Casa_del_Fascio_(Como) | 45.812363°N 9.086022°E |
 Pirelli Tower |  | en:Pirelli_Tower | 45.48472°N 9.20139°E | 
 Torre Velasca |  | en:Torre_Velasca | 45.46000°N 9.19056°E | 
 Generali Tower (CityLife) |  | en:Generali_Tower | 45.4783°N 9.1552°E | 
-Pisa Cathedral and Leaning Tower | Pisa Cathedral | en:Pisa_Cathedral | 43.723281°N 10.395845°E | 
-Pisa Cathedral and Leaning Tower | Leaning Tower | en:Leaning_Tower_of_Pisa | 43.72306°N 10.39639°E | 
+Pisa Cathedral |  | en:Pisa_Cathedral | 43.723281°N 10.395845°E | 
+Leaning Tower of Pisa |  | en:Leaning_Tower_of_Pisa | 43.72306°N 10.39639°E | 
 Santa Maria del Fiore (Main Body) |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | 
 Santa Maria del Fiore Dome |  | en:Florence_Cathedral | 43.77306°N 11.25694°E | Coordinates taken from the containing cathedral page
 Pazzi Chapel (Santa Croce) |  | en:Santa_Croce,_Florence | 43°46′6.3″N 11°15′45.8″E | same point as Santa Croce (user decision)
@@ -62,9 +62,9 @@ Basilica Palladiana |  | en:Basilica_Palladiana | 45.5470°N 11.5466°E |
 Il Redentore |  | en:Il_Redentore | 45.4249917°N 12.3324528°E | 
 San Miniato al Monte |  | it:Basilica_di_San_Miniato_al_Monte | 43.759758,11.264731 | 
 Villa Capra (La Rotonda) |  | en:Villa_La_Rotonda | 45.5315°N 11.5603°E | 
-Palladio's Villas | Villa Barbaro（Maser） | en:Villa_Barbaro | 45.8122°N 11.9764°E | 
-Palladio's Villas | Villa Badoer（Fratta Polesine） | en:Villa_Badoer | 45.0303528°N 11.6398611°E | 
-Palladio's Villas | Villa Foscari（Malcontenta） | en:Villa_Foscari | 45.43528°N 12.20111°E | 
+Villa Barbaro |  | en:Villa_Barbaro | 45.8122°N 11.9764°E | 
+Villa Badoer |  | en:Villa_Badoer | 45.0303528°N 11.6398611°E | 
+Villa Foscari |  | en:Villa_Foscari | 45.43528°N 12.20111°E | 
 Santa Maria della Salute |  | en:Santa_Maria_della_Salute | 45.43083°N 12.33444°E | 
 Parma Baptistery |  | en:Parma_Baptistery | 44.80308°N 10.33041°E | 
 Castel del Monte |  | en:Castel_del_Monte,_Apulia | 41.0847535°N 16.2709346°E | 
@@ -148,7 +148,7 @@ Ospedale degli Innocenti (Foundling Hospital) |  | en:Ospedale_degli_Innocenti |
 Palazzo Rucellai |  | en:Palazzo_Rucellai | NONE | Page has no coordinates
 Palazzo Gondi |  | url:https://aroundus.com/p/8125110-palazzo-gondi | 43.76972,11.25722 | coordinates taken from Aroundus
 Laurentian Library |  | en:Laurentian_Library | NONE | Page has no coordinates
-Palladio's Villas | Villa Pojana | en:Villa_Pojana | NONE | Page has no coordinates
+Villa Pojana |  | en:Villa_Pojana | 45.285712°N 11.498501°E | 
 Museo Castelvecchio |  | url:https://latitude.to/articles-by-country/it/italy/32594/castelvecchio-museum | 45.4373,10.9860 | coordinates taken from latitude.to
 Basilica di San Francesco d'Assisi |  | url:https://latitude.to/articles-by-country/it/italy/6702/basilica-of-san-francesco-dassisi | 43.0715,12.6033 | coordinates taken from latitude.to
 Villa Farnese |  | en:Villa_Farnese | NONE | Page has no coordinates
@@ -194,7 +194,6 @@ Centre Pompidou |  | de:Centre_Pompidou | 48.8606°N 2.3522°E |
 Bibliothèque nationale de France |  | de:Bibliothèque_nationale_de_France | 48.8336°N 2.3758°E | 
 Louvre Abu Dhabi |  | de:Louvre_Abu_Dhabi | 24.5336°N 54.3984°E | 
 London City Hall |  | de:City_Hall_(London) | 51.5047°N 0.0783°W | 
-Palladio's Villas | Villa Pojana | de:Villa_Pojana | 45.2854°N 11.4983°E | 
 Colònia Güell | | de:Colònia_Güell | 41.3611°N 2.0294°E | 
 Nevsky Prospect |  | en:Nevsky_Prospect | 59°55′54″N 30°21′10″E | approximate: a linear street; point taken from the article page
 North Doors, Florence Baptistery |  | en:Florence_Baptistery | 43°46′23″N 11°15′18″E | taken from the containing building page

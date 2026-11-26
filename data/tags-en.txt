@@ -17,7 +17,8 @@ basilica-di-san-marco-venice | Basilica di San Marco | Greek Cross · Gold mosai
 basilica-di-sant-ambrogio-milan | Basilica di Sant'Ambrogio | Red brick · Rib vaults · ~~Clerestory~~
 mont-saint-michel-abbey-mont-saint-michel | Mont-Saint-Michel Abbey | La Merveille
 parma-baptistery-parma | Parma Baptistery | Octagonal · Pink marble · Four tiers of loggias
-pisa-cathedral-and-leaning-tower-pisa | Pisa Cathedral and Leaning Tower | Coloured marble · Blind arcades · Leaning tower
+pisa-cathedral-pisa | Pisa Cathedral | Coloured marble · Blind arcades
+leaning-tower-of-pisa-pisa | Leaning Tower of Pisa | Leaning tower
 san-miniato-al-monte-florence | San Miniato al Monte | Green and white marble · Geometric facade
 basilica-of-saint-denis-saint-denis | Basilica of Saint-Denis | Birth of Gothic
 notre-dame-de-mantes-la-jolie-mantes | Notre-Dame de Mantes-la-Jolie | Collégiale
@@ -63,7 +64,10 @@ laurentian-library-florence | Laurentian Library | Triple-flight staircase · Re
 piazza-del-campidoglio-rome | Piazza del Campidoglio | Oval · Trapezoidal piazza
 st-peters-dome-vatican | St. Peter's Basilica Dome | Double dome
 basilica-palladiana-vicenza | Basilica Palladiana | Serliana
-palladio-s-villas-veneto | Palladio's Villas | Temple front
+villa-pojana-pojana-maggiore | Villa Pojana | 
+villa-barbaro-maser | Villa Barbaro | Temple front
+villa-badoer-fratta-polesine | Villa Badoer | Temple front
+villa-foscari-mira | Villa Foscari | Temple front
 palazzo-marino-milan | Palazzo Marino | Milan City Hall
 villa-farnese-caprarola | Villa Farnese | Pentagonal plan · Circular courtyard
 uffizi-florence | Uffizi | U-shaped courtyard · Medici offices

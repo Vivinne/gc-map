@@ -685,15 +685,51 @@
    ]
   },
   {
-   "id": "pisa-cathedral-and-leaning-tower-pisa",
-   "name": "Pisa Cathedral and Leaning Tower",
+   "id": "pisa-cathedral-pisa",
+   "name": "Pisa Cathedral",
    "loc": "Pisa",
    "locLabel": "Pisa",
-   "year": "1063–1118（主教堂）；1173–1372（斜塔）",
-   "built": "1063–1372",
-   "who": "—",
+   "year": "1063–1092",
+   "built": "1063–1092",
+   "who": "Buscheto / Rainaldo",
    "note": "Italian Romanesque；彩色大理石盲拱廊",
-   "summary": "Italian Romanesque 的彩色大理石盲拱廊（blind arcades）代表。獨立鐘塔（campanile）在施工期間因地基不均沉降而傾斜，成為世界知名的斜塔。",
+   "summary": "Italian Romanesque 的彩色大理石盲拱廊（blind arcades）代表。",
+   "nation": "Italy",
+   "country": "Italy",
+   "exams": [],
+   "style": "羅曼式建築（Romanesque）",
+   "styleShown": "",
+   "tags": [
+    "彩色大理石",
+    "盲拱廊"
+   ],
+   "tagsEn": [
+    "Coloured marble",
+    "Blind arcades"
+   ],
+   "styleCard": "",
+   "era": "medieval",
+   "eras": [
+    "medieval"
+   ],
+   "points": [
+    {
+     "sub": "",
+     "lat": 43.723281,
+     "lng": 10.395845
+    }
+   ]
+  },
+  {
+   "id": "leaning-tower-of-pisa-pisa",
+   "name": "Leaning Tower of Pisa",
+   "loc": "Pisa",
+   "locLabel": "Pisa",
+   "year": "1173–1372",
+   "built": "1173–1372",
+   "who": "—",
+   "note": "Italian Romanesque；斜塔",
+   "summary": "獨立鐘塔（campanile）在施工期間因地基不均沉降而傾斜，成為世界知名的斜塔。",
    "nation": "Italy",
    "country": "Italy",
    "exams": [
@@ -702,13 +738,9 @@
    "style": "羅曼式建築（Romanesque）",
    "styleShown": "",
    "tags": [
-    "彩色大理石",
-    "盲拱廊",
     "斜塔"
    ],
    "tagsEn": [
-    "Coloured marble",
-    "Blind arcades",
     "Leaning tower"
    ],
    "styleCard": "",
@@ -718,12 +750,7 @@
    ],
    "points": [
     {
-     "sub": "Pisa Cathedral",
-     "lat": 43.723281,
-     "lng": 10.395845
-    },
-    {
-     "sub": "Leaning Tower",
+     "sub": "",
      "lat": 43.72306,
      "lng": 10.39639
     }
@@ -2256,6 +2283,36 @@
    ]
   },
   {
+   "id": "villa-pojana-pojana-maggiore",
+   "name": "Villa Pojana",
+   "loc": "Pojana Maggiore",
+   "locLabel": "Pojana Maggiore",
+   "year": "1548–1549",
+   "built": "1548–1549",
+   "who": "Andrea Palladio",
+   "note": "—",
+   "summary": "威內托地區兼具農莊功能的別墅。",
+   "nation": "Italy",
+   "country": "Italy",
+   "exams": [],
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleShown": "Renaissance",
+   "tags": [],
+   "tagsEn": [],
+   "styleCard": "",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
+   "points": [
+    {
+     "sub": "",
+     "lat": 45.285712,
+     "lng": 11.498501
+    }
+   ]
+  },
+  {
    "id": "basilica-palladiana-vicenza",
    "name": "Basilica Palladiana",
    "loc": "Vicenza",
@@ -2290,15 +2347,83 @@
    ]
   },
   {
-   "id": "palladio-s-villas-veneto",
-   "name": "Palladio's Villas",
-   "loc": "Veneto",
-   "locLabel": "Veneto",
-   "year": "1549–1559（四座）",
-   "built": "1549–1559",
+   "id": "villa-barbaro-maser",
+   "name": "Villa Barbaro",
+   "loc": "Maser",
+   "locLabel": "Maser",
+   "year": "1554–1560",
+   "built": "1554–1560",
    "who": "Andrea Palladio",
-   "note": "Pojana 1549、Barbaro 1554、Badoer 1556、Foscari 1559（Foscari 又名 Malcontenta）",
+   "note": "—",
    "summary": "威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。",
+   "nation": "Italy",
+   "country": "Italy",
+   "exams": [],
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleShown": "Renaissance",
+   "tags": [
+    "神廟立面"
+   ],
+   "tagsEn": [
+    "Temple front"
+   ],
+   "styleCard": "",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
+   "points": [
+    {
+     "sub": "",
+     "lat": 45.8122,
+     "lng": 11.9764
+    }
+   ]
+  },
+  {
+   "id": "villa-badoer-fratta-polesine",
+   "name": "Villa Badoer",
+   "loc": "Fratta Polesine",
+   "locLabel": "Fratta Polesine",
+   "year": "1556–1563",
+   "built": "1556–1563",
+   "who": "Andrea Palladio",
+   "note": "—",
+   "summary": "威內托地區兼具農莊功能的別墅，把古典神廟立面用在住宅上。",
+   "nation": "Italy",
+   "country": "Italy",
+   "exams": [],
+   "style": "文藝復興與矯飾主義建築（Renaissance and Mannerism）",
+   "styleShown": "Renaissance",
+   "tags": [
+    "神廟立面"
+   ],
+   "tagsEn": [
+    "Temple front"
+   ],
+   "styleCard": "",
+   "era": "renaissance",
+   "eras": [
+    "renaissance"
+   ],
+   "points": [
+    {
+     "sub": "",
+     "lat": 45.030353,
+     "lng": 11.639861
+    }
+   ]
+  },
+  {
+   "id": "villa-foscari-mira",
+   "name": "Villa Foscari",
+   "loc": "Mira",
+   "locLabel": "Mira",
+   "year": "1558–1560",
+   "built": "1558–1560",
+   "who": "Andrea Palladio",
+   "note": "又名 Malcontenta",
+   "summary": "威內托地區的別墅，把古典神廟立面用在住宅上。",
    "nation": "Italy",
    "country": "Italy",
    "exams": [
@@ -2319,24 +2444,9 @@
    ],
    "points": [
     {
-     "sub": "Villa Barbaro（Maser）",
-     "lat": 45.8122,
-     "lng": 11.9764
-    },
-    {
-     "sub": "Villa Badoer（Fratta Polesine）",
-     "lat": 45.030353,
-     "lng": 11.639861
-    },
-    {
-     "sub": "Villa Foscari（Malcontenta）",
+     "sub": "",
      "lat": 45.43528,
      "lng": 12.20111
-    },
-    {
-     "sub": "Villa Pojana",
-     "lat": 45.2854,
-     "lng": 11.4983
     }
    ]
   },

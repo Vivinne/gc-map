@@ -24,7 +24,7 @@ g.sessionStorage = new Store();
 
 test('N1 search: a curly apostrophe (iPhone keyboard) finds names with a straight one', () => {
   const named = BUILDINGS.filter((b) => b.name.includes("'"));
-  assert.ok(named.length >= 19, `${named.length} names with an apostrophe`);
+  assert.ok(named.length >= 18, `${named.length} names with an apostrophe`);
   for (const b of named) {
     const typed = b.name.replace(/'/g, '’');
     assert.equal(search(typed)[0]?.id, b.id, `"${typed}"`);

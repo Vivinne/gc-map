@@ -1,0 +1,6 @@
+# building name (as in content/handout-c3-s6.md) | landmark it is a part of
+# Parts of one landmark (SPEC P3): each part is its own entry with its own point and links to the landmark.
+# Not read by scripts/build-data.ts yet; wired in by the module restructure (D1, D2).
+# Source for the Pisa landmark: the UNESCO site "Piazza del Duomo, Pisa" (en.wikipedia.org/wiki/Pisa_Cathedral, "Part of").
+Pisa Cathedral | Piazza del Duomo, Pisa
+Leaning Tower of Pisa | Piazza del Duomo, Pisa

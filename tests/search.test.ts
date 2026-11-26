@@ -7,7 +7,7 @@ const names = (q: string) => searchSplit(q).main.map((b) => b.name);
 
 test('search: one letter keeps only names and tags that start with it, oldest first', () => {
   const v = names('v');
-  assert.deepEqual(v.slice(0, 5), ['Valle dei Templi', 'Villa Farnese', 'Vasari Corridor', 'Villa Capra (La Rotonda)', 'Versailles']);
+  assert.deepEqual(v.slice(0, 5), ['Valle dei Templi', 'Villa Pojana', 'Villa Barbaro', 'Villa Badoer', 'Villa Foscari']);
   assert.ok(!v.some((n) => /pavillon/i.test(n)));
   assert.deepEqual(searchSplit('7'), { main: [], more: [] });
 });
