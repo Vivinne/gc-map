@@ -24,7 +24,7 @@
 | M5 | 建築卡片 | 標題色塊、年代、建築師連結、摘要、考古年份 | `src/components/BuildingCard.tsx`、`src/lib/style.ts` | `Panel.tsx`、`HeadBar.tsx`、`styles/modules/card.css` | 中 |
 | M6 | 清單 | 預覽／結果／數字點清單、依國家分組、hover 連動 | `src/components/ResultList.tsx`、`src/components/ResultRow.tsx`、`src/lib/country.ts` | `styles/modules/rows.css`、`App.tsx`（清單切換） | 中 |
 | M7 | 面板外框 | 面板開關、標題列（＜ ×）、手機抽屜高度、離場動畫 | `src/components/Panel.tsx`、`src/components/HeadBar.tsx`、`src/components/Leave.tsx` | `styles/modules/panel.css`、`leave.css`、`phone.css` | 低 |
-| M7a | 左側直條（桌面） | 三條線／放大鏡／Category，面板開關與亮起 | `src/components/Rail.tsx`、`src/components/RailMenu.tsx`（選單頁） | `App.tsx`（`panelOpen`、`railPage`）、`styles/modules/rail.css`、`panel.css`（`.dock`、滑出） | 低 |
+| M7a | 左側直條（桌面） | 三條線／放大鏡／Category，面板開關與亮起 | `src/components/Rail.tsx` | `App.tsx`（`panelOpen`、`railPage`）、`styles/modules/rail.css`、`panel.css`（`.dock`、滑出） | 低 |
 | M8 | 地圖 | 地圖本體與事件、縮放鈕、圖磚失敗提示 | `src/components/MapView.tsx`、`src/lib/pointer.ts` | `styles/modules/map.css` | 中 |
 | M8a | 地圖：鏡頭 | 框選結果、開卡片時移動、數字點展開、＜ 返回 | `src/components/map/camera.ts` | `src/lib/geo.ts`、`src/lib/country.ts` | 中 |
 | M8b | 地圖：標記與數字點 | 圓點、重疊合併成數字點、建築名稱擺放、選取標記 | `src/components/map/overlay.tsx`、`src/components/NumberPoint.tsx` | `src/lib/geo.ts`（合併規則）、`src/lib/labelLines.ts`（名稱斷成兩行）、`styles/modules/map.css`、`tests/ellipsis.test.ts` | 中 |
@@ -75,7 +75,7 @@ M11 tokens ──> 全部
 
 | 項目 | 現況 | 建議 |
 |---|---|---|
-| `App.tsx` 437 行 | 串接所有模組 | 暫不動 |
+| `App.tsx` 730 行 | 串接所有模組 | 暫不動 |
 | `scripts/build-data.ts` 639 行 | 解析、座標、檢查、輸出在同一檔 | 改資料時通常不用讀；有需要再拆 |
 | `phone.css` | 手機版規則集中一檔，未分到各模組 | 改手機版時一併讀；拆開會改變覆蓋順序，暫不動 |
 
