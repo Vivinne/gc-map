@@ -1,15 +1,16 @@
-/* GC map v2: solid colour blocks, the style colours carry the meaning.
-   Every colour, size and motion value comes from src/shared/tokens/tokens.css (see KEEP.md). */
+/* GC map: solid colour blocks, the style colours carry the meaning.
+   Every colour, size and motion value comes from src/shared/tokens/tokens.css (see KEEP.md).
+   One style file per module, kept next to its code (see MODULES.md); each styles only its own parts. */
 @import '../shared/tokens/tokens.css';
-/* One file per module (see MODULES.md). Keep this order: later files override earlier ones. */
-@import '../styles/modules/base.css';
-@import '../styles/modules/search.css';
-@import '../styles/modules/panel.css';
-@import '../styles/modules/rail.css';
-@import '../styles/modules/rows.css';
-@import '../styles/modules/category.css';
-@import '../styles/modules/card.css';
-@import '../styles/modules/map.css';
-@import '../styles/modules/leave.css';
-@import '../styles/modules/phone.css';
-@import '../styles/modules/shape.css';
+@import '../shared/tokens/base.css';
+@import '../shared/ui/ui.css';
+@import '../features/search/search.css';
+@import '../layout/layout.css';
+@import '../features/rail/rail.css';
+@import '../features/list/list.css';
+@import '../features/category/category.css';
+@import '../features/card/card.css';
+@import '../features/map/map.css';
+@import '../features/map/markers/markers.css';
+@import '../features/map/extras/extras.css';
+@import '../entry/entry.css';

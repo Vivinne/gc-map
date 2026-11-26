@@ -1,0 +1,20 @@
+/* F5b markers: dots, number points, names, the open building's mark, dimming (SPEC R6). */
+.overlay { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; font-family: inherit; }
+.overlay .mk { pointer-events: auto; cursor: pointer; }
+/* a mark with the keyboard focus shows its ink ring (MapView), not the browser's box */
+.overlay .mk:focus { outline: none; }
+.overlay .hit { fill: transparent; stroke: none; }
+.overlay .dot { stroke: var(--paper); stroke-width: 1.8; }
+.overlay .dot.hot { stroke: var(--ink); stroke-width: 3; }
+.overlay .num-hot { fill: none; stroke: transparent; stroke-width: 3; }
+.overlay .num.hot .num-hot { stroke: var(--ink); }
+.num-n { font-weight: 750; font-size: var(--fs-12); fill: var(--ink); pointer-events: none; }
+.sel-mark { pointer-events: none; }
+/* list open: markers of the list rows not on screen step back; the ink ring is for pointing only */
+.overlay .mk { transition: opacity var(--t-mid) var(--ease); }
+.overlay .mk.dim { opacity: 0.3; }
+.mk-label { font-size: var(--fs-12); font-weight: 700; fill: var(--ink); stroke: var(--paper); stroke-width: var(--sz-3-5); stroke-linejoin: round; paint-order: stroke; pointer-events: none; transition: opacity var(--t-mid) var(--ease); }
+.mk-label.sel { font-size: var(--fs-13-5); }
+.overlay .name-hit { fill: transparent; }
+/* a dimmed marker or name pointed at by the mouse comes back to full colour with its ink ring */
+.overlay .mk.dim.hot { opacity: 1; }

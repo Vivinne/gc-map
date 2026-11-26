@@ -1,0 +1,12 @@
+/* F5 map: the map frame, the street-tile notice, the no-map page (SPEC §12, KEEP.md). */
+.map-box, .map-canvas { position: absolute; inset: 0; }
+/* the markers drawn before the map library has arrived (P2) */
+.map-early { position: absolute; inset: 0; pointer-events: none; }
+.map-box { overflow: hidden; }
+.map-canvas { background: var(--sea); }
+.map-tiles { position: absolute; z-index: 5; bottom: var(--sz-56); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--sz-10); padding: var(--sz-6) var(--sz-6) var(--sz-6) var(--sz-14); background: var(--paper); border-radius: var(--r-m); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-4) var(--sz-14) var(--shade-8); font-size: var(--fs-13); font-weight: 600; white-space: nowrap; }
+.map-fail { position: absolute; inset: 0; z-index: 4; background: var(--paper); overflow-y: auto; }
+/* the search box and an open panel are kept clear by margins set from the map padding (App) */
+.map-down { padding: var(--sz-16) var(--sz-16) var(--sz-24); max-width: var(--sz-640); }
+.map-down h2 { font-size: var(--fs-18); margin-bottom: var(--sz-8); }
+.map-down details { margin-bottom: var(--sz-16); color: var(--mute); font-size: var(--fs-13); }

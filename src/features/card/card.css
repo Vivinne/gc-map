@@ -1,4 +1,6 @@
-/* M5 building card. Order matters: imported by src/app/globals.css. */
+/* F4 card: title on the category colour, data lines, summary, keywords, exam years (SPEC §9, KEEP.md). */
+.sum { font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', 'Archivo Variable', sans-serif; }
+.exam { font-size: var(--fs-11); font-style: italic; color: var(--g66); }
 /* ---------- building card ---------- */
 .c-top { color: var(--paper); padding: var(--sz-4) var(--sz-4) var(--sz-16) var(--sz-16); }
 .c-top .h-bar { border: 0; height: var(--sz-36); margin: 0 0 var(--sz-6) calc(-1 * var(--sz-12)); padding: 0; }
@@ -15,3 +17,10 @@
 .c-sum { margin-top: var(--sz-12); font-size: var(--fs-15); line-height: 1.75; }
 .c-keys { margin-top: var(--sz-12); font-size: var(--fs-13-5); font-style: italic; color: var(--g37); }
 .c-body .exam { margin-top: var(--sz-12); }
+.c-who { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.c-who:active { transform: translateY(var(--sz-1)); }
+.c-who { border-radius: var(--r-s); }
+/* ---------- phone: the card's sheet ---------- */
+.panel.m.card .grab { background: var(--veil-80); z-index: 1; }
+.panel.m.card .p-head.drag { padding-top: 0; }
+.panel.m.card .c-top { padding-top: var(--sz-14); }

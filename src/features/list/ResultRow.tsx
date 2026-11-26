@@ -7,7 +7,7 @@ import { RemoveButton } from '../../shared/ui';
 
 /**
  * One building in a list (preview, results, number point): a strip in its category colour, the name in bold,
- * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in src/styles/modules/rows.css).
+ * built span · city, architect (underlined) · style. Rows are split by thin grey rules (see .rows in src/features/list/list.css).
  */
 export default function ResultRow({ b, onOpen, onHover, onRemove }: { b: Building; onOpen(id: string): void; onHover(id: string): void; onRemove?(id: string): void }) {
   // each architect's name in bold; the joining "," and "and" stay plain (user, 2026-11-25). No architect: the style only

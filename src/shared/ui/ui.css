@@ -1,0 +1,12 @@
+/* S2 ui: the ＜ / × title row and the plain button, with their press feedback and corners (SPEC R9, KEEP.md). */
+.h-bar { display: flex; align-items: center; height: var(--sz-40); padding: 0 var(--sz-4); border-bottom: var(--sz-1) solid var(--rule); }
+.h-title { padding: 0 var(--sz-8); font-weight: 600; font-size: var(--fs-14); }
+.h-sp { flex: 1; }
+.h-ic { width: var(--sz-32); height: var(--sz-32); display: grid; place-items: center; }
+.h-ic:hover { background: var(--soft); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sz-8); height: var(--sz-36); padding: 0 var(--sz-12); font-weight: 650; font-size: var(--fs-14); background: var(--soft); white-space: nowrap; }
+.btn:hover:not(:disabled) { background: var(--g93); }
+/* press feedback: darkens at once and moves down 1 px */
+.btn, .h-ic { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.btn:active, .h-ic:active { transform: translateY(var(--sz-1)); }
+.h-ic, .btn { border-radius: var(--r-s); }

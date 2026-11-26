@@ -1,7 +1,11 @@
-/* M4 Category style tags. Order matters: imported by src/app/globals.css. */
+/* F2 Category: the 10 style tags as in the v1 filters panel (SPEC R5, KEEP.md). */
 /* ---------- Category: the 10 style tags as in the v1 filters panel ---------- */
 .styles { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sz-4); padding: var(--sz-16); }
 .chip { display: inline-flex; align-items: center; gap: var(--sz-8); height: var(--sz-32); padding: 0 var(--sz-8); font-size: var(--fs-13); font-weight: 600; background: var(--soft); white-space: nowrap; }
 .chip:hover { background: var(--g94); box-shadow: inset 0 0 0 var(--sz-1-5) var(--ink); }
 .chip .sw { width: var(--sz-12); height: var(--sz-12); flex: none; }
 .chip .n { margin-left: auto; padding-left: var(--sz-4); font-weight: 500; color: var(--mute); font-size: var(--fs-12); }
+.chip { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.chip { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.chip:active { transform: translateY(var(--sz-1)); }
+.chip { border-radius: var(--sz-999); }

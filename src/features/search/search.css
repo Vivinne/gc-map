@@ -1,4 +1,4 @@
-/* M3 search box, M4 Category button (top left). Order matters: imported by src/app/globals.css. */
+/* F1 search: the search box, the Category button beside it (phone), the desktop box in the panel (SPEC §4, §5). */
 /* ---------- search box and Category, top left: 16 px from the edges, 32 px high ---------- */
 .topbar { position: absolute; z-index: 7; top: var(--sz-16); left: var(--sz-16); display: flex; gap: var(--sz-8); width: calc(var(--detail-w) + var(--sz-40)); max-width: calc(100% - var(--sz-32)); }
 .sbox { flex: 1; min-width: 0; height: var(--sz-40); display: flex; align-items: center; gap: var(--sz-8); padding: 0 var(--sz-4) 0 var(--sz-12); background: var(--paper); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-6) var(--sz-20) var(--shade-8); color: var(--mute); }
@@ -20,3 +20,9 @@
 .cat-btn { flex: none; width: var(--sz-40); height: var(--sz-40); display: grid; place-items: center; background: var(--paper); box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-6) var(--sz-20) var(--shade-8); }
 .cat-btn:hover { box-shadow: 0 0 0 var(--sz-1-5) var(--ink); }
 .cat-btn.on { background: var(--ink); color: var(--paper); }
+/* press feedback and corners */
+.s-x, .s-back, .cat-btn { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.s-x:active, .s-back:active, .cat-btn:active { transform: translateY(var(--sz-1)); }
+.sbox, .cat-btn, .s-x, .s-back { border-radius: var(--r-s); }
+/* ---------- phone ---------- */
+.is-mobile .topbar { top: calc(var(--sz-12) + env(safe-area-inset-top)); left: var(--sz-12); right: var(--sz-12); width: auto; max-width: none; }

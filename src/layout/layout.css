@@ -1,0 +1,40 @@
+/* L1 layout: panel frame, desktop panel slide, phone sheets, panel exit (SPEC R8, §4; KEEP.md).
+   Publishes the phone sheet's height as --sheet-h and a folded sheet's as --sheet-fold (Panel.tsx); the map's
+   scale bar and source line read them (src/features/map/extras/extras.css). */
+/* ---------- panels: desktop under the search box, top left of the map; they stop above the scale bar ---------- */
+/* a panel takes the focus when the row that opened it goes (A4); its own buttons show the focus */
+.panel:focus { outline: none; }
+.panel { position: absolute; z-index: 6; background: var(--paper); display: flex; flex-direction: column; box-shadow: 0 0 0 var(--sz-1) var(--rule), 0 var(--sz-6) var(--sz-20) var(--shade-8); }
+.panel.d { top: var(--sz-16); left: calc(var(--rail-w) + var(--sz-16)); width: calc(var(--detail-w) + var(--sz-40)); max-height: calc(100% - var(--sz-32)); animation: drawer-in var(--t-mid) var(--ease); }
+/* desktop: opened from the rail or the map, the panel slides out from behind the rail (App's .dock wrapper gets .slide-in) */
+.dock { display: contents; }
+.dock.slide-in > .panel.d { animation: slide-in var(--t-slide) var(--ease); }
+@keyframes slide-in { from { transform: translateX(calc(-100% - var(--sz-16))); } to { transform: none; } }
+.p-head { flex: none; }
+.p-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+@keyframes drawer-in { from { transform: translateX(calc(-1 * var(--sz-16))); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sheet-in { from { transform: translateY(var(--sz-40)); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes drop-in { from { transform: translateY(calc(-1 * var(--sz-8))); opacity: 0; } to { transform: none; opacity: 1; } }
+.panel { border-radius: var(--r-m); overflow: hidden; }
+
+/* ---------- phone ---------- */
+.panel.m.top { top: calc(var(--sz-64) + env(safe-area-inset-top)); left: var(--sz-12); right: var(--sz-12); max-height: calc(100% - var(--sz-64) - var(--sz-12) - var(--credit-h) - env(safe-area-inset-top)); animation: drop-in var(--t-mid) var(--ease); }
+.panel.m.sheet { left: 0; right: 0; bottom: 0; max-height: 50%; padding-bottom: env(safe-area-inset-bottom); animation: sheet-in var(--t-mid) var(--ease); transition: max-height var(--t-mid) var(--ease), transform var(--t-mid) var(--ease); }
+.panel.m.sheet.full { max-height: calc(100% - var(--sz-64) - env(safe-area-inset-top)); height: calc(100% - var(--sz-64) - env(safe-area-inset-top)); }
+.panel.m.sheet .p-head.drag { position: relative; touch-action: none; cursor: grab; padding-top: var(--sz-14); user-select: none; -webkit-user-select: none; }
+.panel.m.sheet .grab { position: absolute; top: var(--sz-5); left: 50%; width: var(--sz-40); height: var(--sz-4); margin-left: calc(-1 * var(--sz-20)); background: var(--g84); }
+/* folded to the title: a list without a title keeps a strip a finger can hit (tap or drag up opens it) */
+.panel.m.sheet.fold .p-head { min-height: var(--sz-32); }
+.panel.m.sheet { border-radius: var(--r-m) var(--r-m) 0 0; }
+
+/* ---------- exit ---------- */
+/* panels slide away instead of vanishing (Leave.tsx); nothing else moves */
+.leave { display: contents; }
+.leave > * { animation: out-l var(--leave) var(--ease-in) forwards !important; pointer-events: none; }
+.is-mobile .leave > .panel.sheet { animation-name: out-d !important; }
+.leave.slide > .dock > .panel.d { animation: slide-out var(--t-slide) var(--ease-in) forwards !important; }
+@keyframes slide-out { to { transform: translateX(calc(-100% - var(--sz-16))); } }
+@keyframes out-l { to { transform: translateX(calc(-1 * var(--sz-14))); opacity: 0; } }
+@keyframes out-d { to { transform: translateY(var(--sz-40)); opacity: 0; } }
+/* reduced motion: a closing panel goes at once (after .leave above, so it wins) */
+@media (prefers-reduced-motion: reduce) { .leave { display: none; } }

@@ -91,9 +91,12 @@ test('D2 / S5 deploy: type check and tests before the build; outside actions pin
 
 test('C2 tokens: the style modules write no lengths or colours of their own; motion times match tokens.css', async () => {
   const { readdirSync } = await import('node:fs');
-  const dir = new URL('../src/styles/modules/', import.meta.url);
-  for (const f of readdirSync(dir)) {
-    const css = readFileSync(new URL(f, dir), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/var\([^,()]+,\s*0px\)/g, '');
+  // every module's style file (tokens.css itself holds the values)
+  const src = new URL('../src/', import.meta.url);
+  const files = (readdirSync(src, { recursive: true }) as string[]).filter((f) => f.endsWith('.css') && !f.endsWith('tokens.css'));
+  assert.ok(files.length >= 12, `${files.length} style files`);
+  for (const f of files) {
+    const css = readFileSync(new URL(f, src), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/var\([^,()]+,\s*0px\)/g, '');
     assert.equal(css.match(/(?<![\w-])\d+(\.\d+)?px\b/g), null, `${f}: lengths`);
     assert.equal(css.match(/#[0-9a-fA-F]{3,6}\b|rgba?\(/g), null, `${f}: colours`);
   }

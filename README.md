@@ -61,7 +61,7 @@ Module list (which files to read for which change): `MODULES.md`.
 | Path | Purpose |
 |---|---|
 | `src/shared/tokens/` | Colours, greys, motion, corners, spacing (the only place for these values) |
-| `src/styles/modules/*.css` | Page styles, one file per module, loaded in order by `src/app/globals.css` (see `MODULES.md`) |
+| `*.css` next to each module | Page styles, one file per module beside its code, each styling only its own parts; `src/app/globals.css` lists them |
 | `src/shared/` | Shared parts: `tokens`, `ui` (icons, ＜ × title row, remove button), `storage` (browser storage), `device` (screen and pointer) |
 | `src/data/` | Building data: model, categories, shown style, architect, built span, keywords, country groups |
 | `src/features/` | Feature modules: `search` (box, rules, typed text, recents), `category`, `list` (rows), `card`, `map` (`camera`, `markers`, `basemap`, `extras`: zoom buttons, scale bar, source line), `rail` (desktop) |

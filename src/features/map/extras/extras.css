@@ -1,0 +1,26 @@
+/* F5d extras: zoom buttons, scale bar, map source line (SPEC §4, E1, E2; KEEP.md).
+   On the phone they rise above a folded sheet: --sheet-fold comes from the layout (src/layout/layout.css). */
+.scale { position: absolute; z-index: 2; font-size: var(--fs-11-5); font-weight: 650; color: var(--ink); pointer-events: none; }
+.app:not(.is-mobile) .scale { display: flex; flex-direction: column; align-items: flex-end; }
+.scale i { display: block; height: var(--sz-5); border: var(--sz-2) solid var(--ink); border-top: 0; margin-top: var(--sz-2); }
+.ctrls { position: absolute; z-index: 2; right: var(--sz-16); bottom: var(--map-bottom); display: flex; flex-direction: column; gap: var(--sz-1); background: var(--rule); }
+.ctrls button { width: var(--sz-32); height: var(--sz-32); display: grid; place-items: center; background: var(--paper); }
+.ctrls button:hover { background: var(--ink); color: var(--paper); }
+.ctrls button:active { background: var(--ink-press); color: var(--paper); }
+/* hidden only while a phone keyboard leaves no room for it (R6) */
+.credit.off { visibility: hidden; }
+.credit { position: absolute; z-index: 2; right: var(--sz-16); bottom: var(--credit-gap); font-size: var(--fs-10); color: var(--mute); pointer-events: none; white-space: nowrap; }
+.ctrls button { transition: background-color var(--t-fast), color var(--t-fast), box-shadow var(--t-fast); }
+.ctrls button:active { transform: translateY(var(--sz-1)); }
+.ctrls { border-radius: var(--r-m); overflow: hidden; }
+.ctrls button { border-radius: 0; }
+/* ---------- phone ---------- */
+.is-mobile .ctrls { display: none; }
+/* the source line sits and layers as the scale bar does (user, 2026-11-24): on the map, under every sheet (a half or
+   full sheet covers it), above a folded sheet only. It is always one line on the scale bar's bottom line, right of the
+   longest bar (110 px, lib/scale.ts): the type shrinks with the screen width to fit, however small (the user's choice);
+   the line is about 33 times its type size wide (Archivo), 34 leaves a margin */
+.is-mobile .credit { white-space: nowrap; left: calc(var(--sz-16) + var(--sz-110) + var(--sz-12)); right: var(--sz-12); text-align: right; font-size: min(var(--fs-9), calc((100vw - var(--sz-16) - var(--sz-110) - var(--sz-24)) / 34)); line-height: 1; bottom: calc(var(--sz-8) + env(safe-area-inset-bottom) + var(--sheet-fold, 0px)); }
+/* the scale bar and the source line share one bottom line, 8 px above the bottom edge or a folded sheet (user, 2026-11-24:
+   with the source line beside it, the room the bar kept under itself for that line is no longer needed) */
+.is-mobile .scale { bottom: calc(var(--sz-8) + env(safe-area-inset-bottom) + var(--sheet-fold, 0px)) !important; }

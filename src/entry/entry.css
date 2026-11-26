@@ -1,0 +1,7 @@
+/* A2 entry: the loading line, the old address and the 404 page, the error page. */
+.boot { padding: var(--sz-24); font-weight: 700; }
+/* the old address and the 404 page: a short line and a link back to the map */
+.moved { padding: var(--sz-24); }
+.moved h1 { font-size: var(--fs-18); margin-bottom: var(--sz-8); }
+.moved a { font-weight: 700; text-decoration: underline; text-underline-offset: var(--sz-2); }
+.crash { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sz-14); padding: var(--sz-24); text-align: center; font-weight: 700; }

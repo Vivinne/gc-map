@@ -6,7 +6,7 @@ import { fill, LABEL_MAX, labelLines } from '../src/features/map/markers/labelLi
 
 /* Fixed checks for the "…" fix (2026-11-25): list rows are never cut, recent rows keep room for the ×, map names take two lines */
 
-const css = readFileSync(new URL('../src/styles/modules/rows.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+const css = readFileSync(new URL('../src/features/list/list.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
 test('E1 rows: no list row line is cut with … or kept on one line', () => {
   assert.doesNotMatch(css, /text-overflow:\s*ellipsis/);
