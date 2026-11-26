@@ -5,7 +5,7 @@ import { flushSync } from 'react-dom';
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import type { Building } from '../data';
 import { isMouseHover } from '../shared/device';
-import type { View } from '../lib/nav';
+import type { View } from '../core/history';
 import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION, ZOOM_BTN } from '../shared/tokens';
 import { Icon } from '../shared/ui';
 import ScaleBar, { scaleFor } from './ScaleBar';

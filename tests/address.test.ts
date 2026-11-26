@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ADDRESS_GAP, createAddressWriter, type Clock } from '../src/lib/address';
+import { ADDRESS_GAP, createAddressWriter, type Clock } from '../src/core/address';
 
 /** A fake page and clock: timers run when the test moves time forward */
 function setup(opts: { refuse?: (n: number) => boolean } = {}) {

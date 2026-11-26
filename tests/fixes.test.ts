@@ -33,7 +33,7 @@ test('N1 search: a curly apostrophe (iPhone keyboard) finds names with a straigh
 });
 
 test('N2 history: a reload keeps every step (no 50-step limit)', async () => {
-  const { saveStack, loadStack, EMPTY_SCREEN } = await import('../src/lib/nav');
+  const { saveStack, loadStack, EMPTY_SCREEN } = await import('../src/core/history');
   const stack = [EMPTY_SCREEN, ...Array.from({ length: 300 }, (_, i) => ({ q: `q${i}`, list: 'results' as const, group: [], b: '' }))];
   saveStack(stack);
   assert.equal(loadStack()?.length, 301);
@@ -57,7 +57,7 @@ test('S1 MapLibre: 6.5 or newer (the XSS fix of GHSA-jrc7-96c5-q579)', () => {
 });
 
 test('B3 address: a map view out of range is ignored', async () => {
-  const { fromQuery } = await import('../src/lib/nav');
+  const { fromQuery } = await import('../src/core/address');
   for (const m of ['12,95,5', '999,999,99', ',,', '12,41', '12,41,99', 'a,b,c']) assert.equal(fromQuery(`?m=${m}`).view, null, m);
   assert.deepEqual(fromQuery('?m=12.48,41.89,13').view, { lng: 12.48, lat: 41.89, zoom: 13 });
 });
@@ -78,7 +78,7 @@ test('N3 recents: damaged saved data gives empty lists', async () => {
 });
 
 test('N4 history: a step whose building is gone is dropped on reload', async () => {
-  const { loadStack } = await import('../src/lib/nav');
+  const { loadStack } = await import('../src/core/history');
   sessionStorage.setItem('gc-map:history', JSON.stringify([{ q: '', list: '', group: [], b: '' }, { q: '', list: '', group: [], b: 'gone-building' }, { q: 'villa', list: 'results', group: [], b: '' }]));
   assert.deepEqual(loadStack()?.map((s) => s.b || s.q), ['', 'villa']);
 });

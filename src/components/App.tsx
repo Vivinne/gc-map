@@ -1,10 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { setAddress } from '../lib/address';
+import { fromQuery, setAddress, toQuery } from '../core/address';
+import { EMPTY_SCREEN, canGoBack, isEmptyScreen, useHistory, type Screen, type View } from '../core/history';
+import { usePointing } from '../core/pointing';
 import { MOBILE_QUERY, useMedia } from '../shared/device';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../data';
-import { EMPTY_SCREEN, canGoBack, fromQuery, isEmptyScreen, loadDraft, loadFolded, sameScreen, saveDraft, saveFolded, saveStack, startStack, toQuery, type Screen, type View } from '../lib/nav';
+import { loadDraft, loadFolded, saveDraft, saveFolded } from '../lib/nav';
 import { addRecentBuilding, addRecentText, recentBuildings, recentTexts, removeRecentBuilding, removeRecentText } from '../lib/recent';
 import { RemoveButton } from '../shared/ui';
 import { listOf, searchSplit } from '../lib/search';
@@ -46,9 +48,8 @@ const START = typeof window !== 'undefined' ? fromQuery(window.location.search) 
 export default function App() {
   const mobile = useMedia(MOBILE_QUERY);
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)');
-  const [stack, setStack] = useState<Screen[]>(() => startStack(START.screen));
-  const stackRef = useRef(stack);
-  stackRef.current = stack;
+  const history = useHistory(START.screen);
+  const { stack, stackRef } = history;
   /** The stack the page opened with (the map frames a later screen when it arrives) */
   const [startedWith] = useState(stack);
   const top = stack[stack.length - 1]!;
@@ -63,14 +64,11 @@ export default function App() {
   // kept over a reload: the typing screen's text, or on another screen the text typed and not sent
   useEffect(() => saveDraft(top.list === 'preview' ? draft : unsent.current), [draft, top.list]);
 
-  const [hoverId, setHoverId] = useState('');
   const [, setViewTick] = useState(0);
   /** The last group line clicked (country, other outcomes) and the map view its framing came to rest at */
   const frameClick = useRef<{ ids: string; view: View | null } | null>(null);
-  // Buildings of the list rows on screen; the map names them and dims the rest
-  const [seenIds, setSeenIds] = useState<string[]>([]);
-  /** Desktop: the rows on screen when the panel was folded; the map keeps dimming the rest while it is folded */
-  const [foldSeen, setFoldSeen] = useState<string[]>([]);
+  // What is pointed at, and the list rows on screen (the map rings, names and dims by them); a new screen ends the ring
+  const { hoverId, setHoverId, seenIds, setSeenIds, foldSeen, keepSeen } = usePointing(top);
   const [recentT, setRecentT] = useState<string[]>(() => recentTexts());
   const [recentB, setRecentB] = useState<string[]>(() => recentBuildings());
   const [mapDown, setMapDown] = useState(false);
@@ -102,7 +100,7 @@ export default function App() {
   const [searchPage, setSearchPage] = useState(false);
   /** Desktop: hide the panel only (not ×): the screen, the search and the map stay as they are */
   const foldPanel = () => {
-    setFoldSeen(seenIds);
+    keepSeen();
     setPanelOpen(false);
   };
   const openPanel = () => {
@@ -136,18 +134,11 @@ export default function App() {
   );
   const back = canGoBack(stack);
 
-  // A row that goes away with its screen gets no pointer-leave: a new screen (card, list, ×, ＜) ends the ring
-  // that row put on the map, so it never stays on a building nothing is pointing at
-  useEffect(() => setHoverId(''), [top]);
-
   // The address and the history follow the screen, so a reload or a shared link opens the same screen
   const writeAddress = useCallback((s: Screen) => {
     setAddress(window.location.pathname + toQuery(s, viewRef.current) + window.location.hash);
   }, []);
-  useEffect(() => {
-    writeAddress(top);
-    saveStack(stack);
-  }, [stack, top, writeAddress]);
+  useEffect(() => writeAddress(top), [stack, top, writeAddress]);
 
   /** Run after the panels have their new size */
   const afterPanel = (f: () => void) => window.setTimeout(f, PANEL_WAIT);
@@ -156,19 +147,15 @@ export default function App() {
   const push = (s: Screen) => {
     const view = mapRef.current?.view() ?? undefined;
     const scroll = panelRef.current?.querySelector('.p-body')?.scrollTop ?? undefined;
-    setStack((st) => {
-      const cur = st[st.length - 1]!;
-      // the screen already on top (the open card or number point clicked again, a double click): no new step
-      if (sameScreen(cur, s)) return st;
-      return [...st.slice(0, -1), { ...cur, view, scroll, ...(cur.list === 'preview' ? { draft } : {}) }, s];
-    });
+    // the screen already on top (the open card or number point clicked again, a double click): no new step
+    history.push(s, (cur) => ({ view, scroll, ...(cur.list === 'preview' ? { draft } : {}) }));
   };
 
   /** ＜: the previous screen comes back with its lists, its search and the map as it was then */
   const goBack = () => {
     if (stack.length < 2) return;
     const prev = stack[stack.length - 2]!;
-    setStack((st) => st.slice(0, -1));
+    history.back();
     setDraft(prev.draft ?? prev.q);
     // A results list or a number point list comes back with all its buildings framed (as when it opened);
     // a card comes back with its building in sight, as it was when the card opened (the map may have been
@@ -199,7 +186,7 @@ export default function App() {
     refit.current = null;
     window.clearTimeout(refitTimer.current);
     setMoreOpen('');
-    setStack([EMPTY_SCREEN]);
+    history.reset(EMPTY_SCREEN);
     unsent.current = null;
     setDraft('');
     inputRef.current?.blur();
@@ -234,7 +221,7 @@ export default function App() {
     // The same search sent again from the box over its own results goes back to those results: no second,
     // identical step (R1, ＜ would seem to do nothing)
     if (top.list === 'preview' && !top.b)
-      setStack((st) => (st.length > 1 && sameScreen(st[st.length - 2]!, next) ? st.slice(0, -1) : [...st.slice(0, -1), next]));
+      history.replace(next);
     else push(next);
     if (found.length) {
       // Sent with a keyboard that made the page shorter: the map waits until the keyboard has gone and the page
@@ -305,10 +292,7 @@ export default function App() {
     cardHome.current = '';
     const v = mapRef.current?.view();
     if (!v) return;
-    setStack((st) => {
-      const last = st[st.length - 1]!;
-      return last.b === id && !last.home ? [...st.slice(0, -1), { ...last, home: v }] : st;
-    });
+    history.update((last) => (last.b === id && !last.home ? { ...last, home: v } : last));
   };
 
   /** Open a building's card: the map brings it to the middle of its free part, from a list row as from a marker (zoom kept) */
@@ -340,15 +324,6 @@ export default function App() {
     if (top.list === 'category' && !top.b) goBack();
     else push({ q: top.q, list: 'category', group: [], b: '' });
   };
-
-  // A finger rings the last list row it touched (that row keeps its light blue); touching anything else ends it
-  useEffect(() => {
-    const onDown = (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse' && !(e.target as Element | null)?.closest?.('.row')) setHoverId('');
-    };
-    window.addEventListener('pointerdown', onDown, true);
-    return () => window.removeEventListener('pointerdown', onDown, true);
-  }, []);
 
   // Keys: "/" opens the search, Esc closes everything
   useEffect(() => {
@@ -430,7 +405,7 @@ export default function App() {
     setDraft('');
     // × drops the submitted search the box was opened over (user, 2026-11-23): the typing screen no longer carries
     // it, so a card opened next, or the box opened again, does not bring it back; the map shows every building
-    if (top.q) setStack((st) => [...st.slice(0, -1), { ...st[st.length - 1]!, q: '' }]);
+    if (top.q) history.update((t) => ({ ...t, q: '' }));
     inputRef.current?.focus();
   };
 
@@ -495,7 +470,7 @@ export default function App() {
       unsent.current = null;
       setDraft('');
       setMoreOpen('');
-      setStack((st) => [...st.slice(0, -1), { q: '', list: 'preview', group: [], b: '' }]);
+      history.update(() => ({ q: '', list: 'preview', group: [], b: '' }));
       // after the typing screen is on: focusing sooner would reopen the box over the old search
       requestAnimationFrame(() => inputRef.current?.focus());
       return;

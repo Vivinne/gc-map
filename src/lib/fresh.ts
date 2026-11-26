@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { flushAddress, setAddress } from './address';
+import { flushAddress, setAddress } from '../core/address';
 
 /** Build id of a page: its meta gc-build (from 2026-11-20), else the comment Next.js 15 wrote at the top */
 const buildOf = (html: string) => /<meta name="gc-build" content="([\w-]+)"/.exec(html)?.[1] ?? /^<!DOCTYPE html><!--([\w-]+)-->/i.exec(html)?.[1] ?? '';

@@ -65,7 +65,7 @@ Module list (which files to read for which change): `MODULES.md`.
 | `src/shared/` | Shared parts: `tokens`, `ui` (icons, ＜ × title row, remove button), `storage` (browser storage), `device` (screen and pointer) |
 | `src/data/` | Building data: model, categories, shown style, architect, built span, keywords, country groups |
 | `src/lib/search.ts` | Plain text search over name, architect, style, city, country, keywords, summary |
-| `src/lib/nav.ts` | Screen state, history behind the back button, page address |
+| `src/core/` | Core state: `history` (screens, history behind the back button), `address` (page address), `pointing` (pointed building, rows on screen) |
 | `src/lib/recent.ts` | Recent searches and buildings, browser storage |
 | `src/lib/geo.ts` | Bounds, screen grouping into number points |
 | `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), search box, Category, lists, card, panel, scale bar |

@@ -3,7 +3,7 @@ import type { MutableRefObject } from 'react';
 import { BY_COUNTRY_MIN, byCountry } from '../../data';
 import { DOT_R, boundsCenter, boundsOf, roomFor } from '../../lib/geo';
 import type { Building } from '../../data';
-import type { View } from '../../lib/nav';
+import type { View } from '../../core/history';
 import { MOTION } from '../../shared/tokens';
 
 /* M8 camera: every map move (frame results, focus a card, split a number point, ＜). No drawing here. */
