@@ -1,6 +1,6 @@
-import { pointRadius, type Group } from '../lib/geo';
-import { ERAS, ERA_ORDER, type Building } from '../data';
-import { PAPER } from '../shared/tokens';
+import { pointRadius, type Group } from '../geo';
+import { ERAS, ERA_ORDER, type Building } from '../../../data';
+import { PAPER } from '../../../shared/tokens';
 
 /** Number point: a ring split by category colour, the count in the middle (the v1 city circle) */
 export default function NumberPoint({ group }: { group: Group<Building> }) {

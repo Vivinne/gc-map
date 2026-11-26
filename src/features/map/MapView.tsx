@@ -3,15 +3,15 @@
 import type { Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import { flushSync } from 'react-dom';
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
-import type { Building } from '../data';
-import { isMouseHover } from '../shared/device';
-import type { View } from '../core/history';
-import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION, ZOOM_BTN } from '../shared/tokens';
-import { Icon } from '../shared/ui';
-import ScaleBar, { scaleFor } from './ScaleBar';
-import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './map/camera';
-import { flatView, type ViewLike } from '../lib/flatView';
-import { renderOverlay, type Act, type Click, type GroupKeep } from './map/overlay';
+import type { Building } from '../../data';
+import { isMouseHover } from '../../shared/device';
+import type { View } from '../../core/history';
+import { CREDIT_MIN_H, INSET, MAP_BOTTOM, MAP_COLORS, MOTION, ZOOM_BTN } from '../../shared/tokens';
+import { Icon } from '../../shared/ui';
+import ScaleBar, { scaleFor } from './extras/ScaleBar';
+import { EASE, EUROPE, MAX_ZOOM, cameraApi, type MapHandle, type Padding } from './camera/camera';
+import { flatView, type ViewLike } from './flatView';
+import { renderOverlay, type Act, type Click, type GroupKeep } from './markers/overlay';
 
 /* M8 map: the MapLibre map, its events, the scale bar, zoom buttons and the tile notice.
    Camera moves: map/camera.ts · markers and names: map/overlay.tsx · basemap style: map/style.ts */
@@ -29,7 +29,7 @@ const MIN_ZOOM = 0.8;
  * worker is pointed to where the bundler put it (S1: MapLibre 6 for the XSS fix in 5.x).
  */
 async function loadMapLib() {
-  const [lib, style] = await Promise.all([import('maplibre-gl'), import('./map/style')]);
+  const [lib, style] = await Promise.all([import('maplibre-gl'), import('./basemap/style')]);
   lib.setWorkerUrl(new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href);
   return { Map: lib.Map, styleSpec: style.styleSpec };
 }

@@ -1,9 +1,9 @@
 'use client';
 
-import { ERAS, type Building } from '../data';
-import { isMouseHover } from '../shared/device';
-import { architectParts, builtOf, joinDot, shownStyle } from '../data';
-import { RemoveButton } from '../shared/ui';
+import { ERAS, type Building } from '../../data';
+import { isMouseHover } from '../../shared/device';
+import { architectParts, builtOf, joinDot, shownStyle } from '../../data';
+import { RemoveButton } from '../../shared/ui';
 
 /**
  * One building in a list (preview, results, number point): a strip in its category colour, the name in bold,

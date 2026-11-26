@@ -1,6 +1,6 @@
 'use client';
 
-import { Icon, type IconName } from '../shared/ui';
+import { Icon, type IconName } from '../../shared/ui';
 
 /** What the desktop content panel shows; the rail lights the button of that page */
 export type RailPage = 'search' | 'category' | 'other';

@@ -1,10 +1,10 @@
 'use client';
 
-import { isMouseHover } from '../shared/device';
+import { isMouseHover } from '../../shared/device';
 import { useEffect, useRef, type ReactNode } from 'react';
-import { BY_COUNTRY_MIN, byCountry } from '../data';
-import type { Building } from '../data';
-import { Icon } from '../shared/ui';
+import { BY_COUNTRY_MIN, byCountry } from '../../data';
+import type { Building } from '../../data';
+import { Icon } from '../../shared/ui';
 import ResultRow from './ResultRow';
 
 interface RowsProps {

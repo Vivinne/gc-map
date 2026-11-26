@@ -1,6 +1,5 @@
-import { BUILDINGS, ERAS, byYear, nationName, norm, type Building } from '../data';
-import { architectOf, shownStyle } from '../data';
-import type { EraId } from '../data';
+import { BUILDINGS, ERAS, byYear, nationName, norm, type Building } from '../../data';
+import { architectOf, shownStyle } from '../../data';
 
 /**
  * Search rules (Project doc gc/search-rules.md, 2026-11-25):
@@ -130,15 +129,4 @@ export function searchSplit(text: string): Found {
 export function search(text: string): Building[] {
   const f = searchSplit(text);
   return f.main.length ? f.main : f.more;
-}
-
-/** A Category tag picked in the Category page is not a search: exactly that category's buildings, oldest first */
-export function categoryList(label: string): Building[] {
-  const era = (Object.keys(ERAS) as EraId[]).find((e) => ERAS[e].label === label);
-  return era ? BUILDINGS.filter((b) => b.eras.includes(era)).sort(byYear) : [];
-}
-
-/** The buildings a screen lists: a picked Category tag, or a search */
-export function listOf(q: string, list: string): Found {
-  return list === 'era' ? { main: categoryList(q), more: [] } : searchSplit(q);
 }

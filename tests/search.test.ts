@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { categoryList, listOf, searchSplit } from '../src/lib/search';
+import { categoryList } from '../src/features/category';
+import { searchSplit } from '../src/features/search';
+import { listOf } from '../src/flows/lists';
 
 // Rules: Project doc gc/search-rules.md (2026-11-25)
 const names = (q: string) => searchSplit(q).main.map((b) => b.name);

@@ -1,7 +1,7 @@
 import type { FeatureCollection, Geometry } from 'geojson';
 import { feature, mesh } from 'topojson-client';
 import type { GeometryObject, Topology } from 'topojson-specification';
-import basemapJson from '../data/basemap.json';
+import basemapJson from '../../../data/basemap.json';
 
 const raw = basemapJson as unknown as Topology;
 

@@ -64,12 +64,10 @@ Module list (which files to read for which change): `MODULES.md`.
 | `src/styles/modules/*.css` | Page styles, one file per module, loaded in order by `src/app/globals.css` (see `MODULES.md`) |
 | `src/shared/` | Shared parts: `tokens`, `ui` (icons, ＜ × title row, remove button), `storage` (browser storage), `device` (screen and pointer) |
 | `src/data/` | Building data: model, categories, shown style, architect, built span, keywords, country groups |
-| `src/lib/search.ts` | Plain text search over name, architect, style, city, country, keywords, summary |
-| `src/core/` | Core state: `history` (screens, history behind the back button), `address` (page address), `pointing` (pointed building, rows on screen) |
-| `src/lib/recent.ts` | Recent searches and buildings, browser storage |
-| `src/lib/geo.ts` | Bounds, screen grouping into number points |
-| `src/components/*` | App, map (MapLibre GL JS with an SVG overlay), search box, Category, lists, card, panel, scale bar |
-| `src/components/map/` | Map parts: `camera.ts` (camera moves), `overlay.tsx` (markers and names), `style.ts` (basemap layers) |
+| `src/features/` | Feature modules: `search` (box, rules, typed text, recents), `category`, `list` (rows), `card`, `map` (`camera`, `markers`, `basemap`, `extras`: zoom buttons, scale bar, source line), `rail` (desktop) |
+| `src/layout/` | Panel frame, phone sheets, panel entry and exit, desktop panel folding, the part of the map the panels cover |
+| `src/flows/` | Actions that use several modules (stage 4 of the restructure) |
+| `src/components/App.tsx` | Puts the modules on the page and wires them together |
 
 All code, comments and UI text are English (one approved exception: the keyword label of the card); the study notes in `content/` and the data files keep their original wording.
 

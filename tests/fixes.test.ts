@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { BUILDINGS } from '../src/data';
-import { search } from '../src/lib/search';
+import { search } from '../src/features/search';
 import { readFileSync } from 'node:fs';
 
 /** Browser storage for the tests (localStorage, sessionStorage) */
@@ -41,7 +41,7 @@ test('N2 history: a reload keeps every step (no 50-step limit)', async () => {
 });
 
 test('recent texts: "Rome" and "rome" are one entry, the spelling typed last stays', async () => {
-  const { addRecentText, recentTexts } = await import('../src/lib/recent');
+  const { addRecentText, recentTexts } = await import('../src/features/search');
   addRecentText('Rome');
   addRecentText('Gaudi');
   addRecentText('rome');
@@ -63,12 +63,12 @@ test('B3 address: a map view out of range is ignored', async () => {
 });
 
 test('N5 scale bar: never longer than 110 px, also near the poles fully zoomed in', async () => {
-  const { scaleFor } = await import('../src/lib/scale');
+  const { scaleFor } = await import('../src/features/map/extras/scale');
   for (const lat of [0, 45, 70, 80, 84, 85]) for (let z = 0; z <= 18; z += 0.5) assert.ok(scaleFor(lat, z).px <= 110, `${lat} ${z}`);
 });
 
 test('N3 recents: damaged saved data gives empty lists', async () => {
-  const { recentTexts, recentBuildings } = await import('../src/lib/recent');
+  const { recentTexts, recentBuildings } = await import('../src/features/search');
   for (const v of ['{}', 'null', '"x"', '[1,{}]', 'not json']) {
     localStorage.setItem('gc-atlas:recent-text', v);
     localStorage.setItem('gc-atlas:recent-building', v);
@@ -104,7 +104,7 @@ test('C2 tokens: the style modules write no lengths or colours of their own; mot
 });
 
 test('R4 framing room: the free part of the map never goes below the minimum, however much the panels cover', async () => {
-  const { roomFor } = await import('../src/lib/geo');
+  const { roomFor } = await import('../src/features/map');
   for (const [W, H, pad] of [[882, 264, { top: 64, right: 0, bottom: 132, left: 0 }], [882, 86, { top: 64, right: 0, bottom: 43, left: 0 }], [1280, 800, { top: 64, right: 48, bottom: 0, left: 396 }], [300, 200, { top: 300, right: 300, bottom: 300, left: 300 }]] as const) {
     const { p, f } = roomFor(W, H, pad, 40, 40);
     assert.ok(H - f.top - f.bottom >= 39.99 && W - f.left - f.right >= 39.99, `${W}×${H}`);
@@ -114,7 +114,7 @@ test('R4 framing room: the free part of the map never goes below the minimum, ho
 });
 
 test('R5 typed text: an emptied search box is kept as empty over a reload', async () => {
-  const { saveDraft, loadDraft } = await import('../src/lib/nav');
+  const { saveDraft, loadDraft } = await import('../src/features/search');
   saveDraft('');
   assert.equal(loadDraft(), '');
   saveDraft(null);

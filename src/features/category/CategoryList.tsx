@@ -1,6 +1,6 @@
 'use client';
 
-import { BUILDINGS, ERAS, ERA_ORDER } from '../data';
+import { BUILDINGS, ERAS, ERA_ORDER } from '../../data';
 
 /** Buildings per category (a building filed under several styles counts in each) */
 const COUNTS = Object.fromEntries(ERA_ORDER.map((e) => [e, BUILDINGS.filter((b) => b.eras.includes(e)).length]));

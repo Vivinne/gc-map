@@ -1,25 +1,26 @@
 'use client';
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fromQuery, setAddress, toQuery } from '../core/address';
 import { EMPTY_SCREEN, canGoBack, isEmptyScreen, useHistory, type Screen, type View } from '../core/history';
 import { usePointing } from '../core/pointing';
 import { MOBILE_QUERY, useMedia } from '../shared/device';
 import { BUILDINGS, BY_ID, ERA_ORDER, byYear, type Building } from '../data';
-import { loadDraft, loadFolded, saveDraft, saveFolded } from '../lib/nav';
-import { addRecentBuilding, addRecentText, recentBuildings, recentTexts, removeRecentBuilding, removeRecentText } from '../lib/recent';
+import { useRecent, useSearchText } from '../features/search';
+import { loadFolded, useDesktopPanel, useMapRoom, usePanelSlide } from '../layout';
+import { listOf } from '../flows/lists';
 import { RemoveButton } from '../shared/ui';
-import { listOf, searchSplit } from '../lib/search';
-import BuildingCard from './BuildingCard';
-import CategoryList from './CategoryList';
+import { searchSplit } from '../features/search';
+import { BuildingCard } from '../features/card';
+import { CategoryList } from '../features/category';
 import { HeadBar } from '../shared/ui';
 import { Icon } from '../shared/ui';
-import Leave from './Leave';
-import MapView, { type MapHandle, type Padding } from './MapView';
-import Panel from './Panel';
-import Rail, { type RailPage } from './Rail';
-import ResultList, { NoResults } from './ResultList';
-import SearchBox from './SearchBox';
+import { Leave } from '../layout';
+import { MapView, useKeyboardFraming, type MapHandle } from '../features/map';
+import { Panel } from '../layout';
+import { Rail, type RailPage } from '../features/rail';
+import { ResultList, NoResults } from '../features/list';
+import { SearchBox } from '../features/search';
 import { RAIL_W } from '../shared/tokens';
 
 /** One key for a group of buildings */
@@ -34,13 +35,6 @@ const CARD_SETTLE = 1800;
 const PREVIEW_MAX = 30;
 /** Width the zoom buttons take from the right edge (32 px buttons + 16 px inset) */
 const ZOOM_W = 48;
-/** A phone keyboard closes within this time after a search is sent (ms): the map frames the results by then */
-const KEYBOARD_WAIT = 1500;
-/** The page height has stayed put this long (ms): the keyboard has finished moving */
-const KEYBOARD_SETTLE = 150;
-/** The page is at least this much shorter than its full height (px): a keyboard is up */
-const KEYBOARD_MIN = 80;
-const NO_PAD: Padding = { top: 0, right: 0, bottom: 0, left: 0 };
 
 /** Address and history at the start: what the page address names (reload or shared link) */
 const START = typeof window !== 'undefined' ? fromQuery(window.location.search) : { screen: EMPTY_SCREEN, view: null };
@@ -53,46 +47,29 @@ export default function App() {
   /** The stack the page opened with (the map frames a later screen when it arrives) */
   const [startedWith] = useState(stack);
   const top = stack[stack.length - 1]!;
-  // Text in the search box while the preview is open (typed, not yet submitted)
-  // a reload while typing keeps the text typed so far (Q4)
-  const [draft, setDraft] = useState(() => (top.list === 'preview' ? (loadDraft() ?? top.q) : top.q));
-  /**
-   * Text typed in the box and not sent: left there when another screen (Category, a card, the map) is opened
-   * from the typing screen, it comes back when the box is opened again (user, 2026-11-25). null: nothing waiting.
-   */
-  const unsent = useRef<string | null>(typeof window === 'undefined' ? null : loadDraft());
-  // kept over a reload: the typing screen's text, or on another screen the text typed and not sent
-  useEffect(() => saveDraft(top.list === 'preview' ? draft : unsent.current), [draft, top.list]);
+
+  // Text in the search box: typed and not yet sent, and text left typed when another screen opened (F1)
+  const { draft, setDraft, unsent } = useSearchText(top.list, top.q);
 
   const [, setViewTick] = useState(0);
   /** The last group line clicked (country, other outcomes) and the map view its framing came to rest at */
   const frameClick = useRef<{ ids: string; view: View | null } | null>(null);
   // What is pointed at, and the list rows on screen (the map rings, names and dims by them); a new screen ends the ring
   const { hoverId, setHoverId, seenIds, setSeenIds, foldSeen, keepSeen } = usePointing(top);
-  const [recentT, setRecentT] = useState<string[]>(() => recentTexts());
-  const [recentB, setRecentB] = useState<string[]>(() => recentBuildings());
+  const recent = useRecent();
   const [mapDown, setMapDown] = useState(false);
-  const [padding, setPadding] = useState<Padding>(NO_PAD);
   const mapRef = useRef<MapHandle>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const appRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLElement>(null);
+  // Phone: results sent with the keyboard up are framed once it has gone (F5a)
+  const keyboard = useKeyboardFraming(mapRef, inputRef);
+  // The part of the map the search box, the open panel, the rail and the zoom buttons cover (L1)
+  const padding = useMapRoom(appRef, panelRef, mobile, { left: RAIL_W, right: ZOOM_W });
   const viewRef = useRef<View | null>(START.view);
-  /**
-   * Desktop: the content panel beside the rail is open. A fresh visit opens with it closed; a reload or a shared
-   * link that names a screen opens it on that screen. Closing it keeps the screen (and the map), so opening it
-   * again shows the screen that was left. The phone layout does not use it (its panels are always shown).
-   */
-  const [panelOpen, setPanelOpen] = useState(() => !isEmptyScreen(START.screen) && !loadFolded());
-  // a panel folded with Menu stays folded over a reload in this tab (user, 2026-11-23); × or opening it ends that
-  useEffect(() => saveFolded(!panelOpen && !isEmptyScreen(top)), [panelOpen, top]);
-  /**
-   * The panel has just been opened from the rail or the map: it slides out from behind the rail. Set to true on
-   * opening; the page shown then keeps the slide-in class until another page opens (removing the class sooner
-   * would restart the panel's own entry animation), so the panel is never mounted again for it.
-   */
-  const [slideKey, setSlideKey] = useState<string | null>(null);
-  const [opening, setOpening] = useState(false);
+  // Desktop content panel beside the rail: open or folded (L1)
+  const dock = useDesktopPanel(!isEmptyScreen(START.screen) && !loadFolded(), !isEmptyScreen(top));
+  const panelOpen = dock.open;
   /**
    * Desktop: with nothing open, the panel shows the menu page; the search page once Search was chosen (rail or
    * menu). Closing the panel keeps this, so it opens again on the page that was left; × starts over at the menu.
@@ -101,13 +78,9 @@ export default function App() {
   /** Desktop: hide the panel only (not ×): the screen, the search and the map stay as they are */
   const foldPanel = () => {
     keepSeen();
-    setPanelOpen(false);
+    dock.close();
   };
-  const openPanel = () => {
-    if (panelOpen) return;
-    setPanelOpen(true);
-    setOpening(true);
-  };
+  const openPanel = dock.show;
 
   // A search's main matches first; its other matches join below (list and map) after Other Possible Outcomes (Polish 13)
   const found = useMemo(() => (top.q ? listOf(top.q, top.list) : { main: [], more: [] }), [top.q, top.list]);
@@ -183,15 +156,14 @@ export default function App() {
   const closeAll = () => {
     // the map stops where it is, also in the middle of a move (Q6), and no framing waits to run after it
     mapRef.current?.stop();
-    refit.current = null;
-    window.clearTimeout(refitTimer.current);
+    keyboard.cancel();
     setMoreOpen('');
     history.reset(EMPTY_SCREEN);
     unsent.current = null;
     setDraft('');
     inputRef.current?.blur();
     // desktop: nothing is open after ×, so the content panel closes too (the menu shows when it opens again)
-    setPanelOpen(false);
+    dock.close();
     setSearchPage(false);
   };
 
@@ -213,7 +185,7 @@ export default function App() {
     const found = split.main;
     inputRef.current?.blur();
     setDraft(t);
-    setRecentT(addRecentText(t));
+    recent.addText(t);
     setMoreOpen('');
     const next: Screen = { q: t, list: 'results', group: [], b: '' };
     // The search preview is only the typing step: the submitted search takes its place in the history,
@@ -227,10 +199,8 @@ export default function App() {
       // Sent with a keyboard that made the page shorter: the map waits until the keyboard has gone and the page
       // keeps one height, then frames the results once (R3; framing at each step of the keyboard closing made
       // the map start again and again). Without such a keyboard the map frames them at once.
-      if (window.innerHeight < fullHeight.current - KEYBOARD_MIN) {
-        refit.current = { items: found, until: performance.now() + KEYBOARD_WAIT };
-        refitLater(KEYBOARD_WAIT);
-      } else afterPanel(() => mapRef.current?.fitTo(found));
+      if (keyboard.keyboardUp()) keyboard.frameAfterKeyboard(found);
+      else afterPanel(() => mapRef.current?.fitTo(found));
     }
   };
 
@@ -247,43 +217,6 @@ export default function App() {
     afterPanel(() => mapRef.current?.fitTo(items));
   };
 
-  /** Results waiting to be framed until a closing keyboard has gone */
-  const refit = useRef<{ items: Building[]; until: number } | null>(null);
-  const refitTimer = useRef(0);
-  /** Frame the waiting results after `ms` with no change of the page's height */
-  const refitLater = (ms: number) => {
-    window.clearTimeout(refitTimer.current);
-    refitTimer.current = window.setTimeout(() => {
-      const r = refit.current;
-      refit.current = null;
-      if (r) mapRef.current?.fitTo(r.items);
-    }, ms);
-  };
-  /** The page's height with no keyboard (taken while the search box is not being typed in) */
-  const fullHeight = useRef(typeof window !== 'undefined' ? window.innerHeight : 0);
-  useEffect(() => {
-    const onResize = () => {
-      if (document.activeElement !== inputRef.current) fullHeight.current = Math.max(window.innerHeight, refit.current ? fullHeight.current : 0);
-      const r = refit.current;
-      if (!r) return;
-      // the keyboard is still moving: wait for the height to stay put (or for the longest wait to end)
-      refitLater(Math.max(0, Math.min(KEYBOARD_SETTLE, r.until - performance.now())));
-    };
-    // a finger or mouse on the page ends the wait: the map is the person's now
-    const stop = () => {
-      refit.current = null;
-      window.clearTimeout(refitTimer.current);
-    };
-    window.addEventListener('resize', onResize);
-    window.visualViewport?.addEventListener('resize', onResize);
-    window.addEventListener('pointerdown', stop, true);
-    return () => {
-      window.clearTimeout(refitTimer.current);
-      window.removeEventListener('resize', onResize);
-      window.visualViewport?.removeEventListener('resize', onResize);
-      window.removeEventListener('pointerdown', stop, true);
-    };
-  }, []);
 
   /** The card waiting for its map view (noted when the map stops after opening it) */
   const cardHome = useRef('');
@@ -300,7 +233,7 @@ export default function App() {
     const b = BY_ID.get(id);
     if (!b) return;
     inputRef.current?.blur();
-    setRecentB(addRecentBuilding(id));
+    recent.addBuilding(id);
     openPanel();
     push({ ...top, b: id });
     afterPanel(() => {
@@ -344,39 +277,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  // The part of the map the search box and the open panel cover: the map frames buildings beside them
-  useLayoutEffect(() => {
-    const measure = () => {
-      const app = appRef.current?.getBoundingClientRect();
-      const bar = appRef.current?.querySelector('.topbar')?.getBoundingClientRect();
-      // Offsets, not the drawn box: a panel still sliding in (or being dragged) is measured where it comes to rest
-      const el = panelRef.current;
-      const p = el ? { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight } : null;
-      if (!app) return;
-      // Desktop: the zoom buttons sit along the right edge, so framed buildings stay clear of them
-      // and the rail along the left edge
-      const next = { ...NO_PAD, top: bar ? bar.bottom - app.top : 0, right: mobile ? 0 : ZOOM_W, left: mobile ? 0 : RAIL_W };
-      if (p && p.width && p.height) {
-        if (!mobile) next.left = p.left + p.width;
-        else if (p.top > app.height / 3) next.bottom = app.height - p.top;
-        else next.top = Math.max(next.top, p.top + p.height);
-      }
-      setPadding((o) => (o.top === next.top && o.left === next.left && o.bottom === next.bottom && o.right === next.right ? o : next));
-    };
-    measure();
-    // measured in the next frame: a size set inside the observer's own callback loops it (B8, WebKit)
-    let raf = 0;
-    const ro = new ResizeObserver(() => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(measure);
-    });
-    if (panelRef.current) ro.observe(panelRef.current);
-    if (appRef.current) ro.observe(appRef.current);
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-    };
-  });
 
   // A shared link or reload with a search but no saved view: frame the results once the map is there.
   // The map loads after the page, so a search sent before then is framed when it arrives.
@@ -498,8 +398,8 @@ export default function App() {
   );
 
   // The panel on screen: the card over everything, else the open list (one at a time)
-  const recentList = recentB.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
-  const hasPreview = !!draft.trim() || recentT.length > 0 || recentList.length > 0;
+  const recentList = recent.buildings.map((id) => BY_ID.get(id)).filter((b): b is Building => !!b);
+  const hasPreview = !!draft.trim() || recent.texts.length > 0 || recentList.length > 0;
   // The search preview (typing matches, or the recent texts and buildings)
   const previewBody = (
     <>
@@ -511,15 +411,15 @@ export default function App() {
         )
       ) : (
         <>
-          {recentT.length > 0 && (
+          {recent.texts.length > 0 && (
             <ul className="rows recent">
-              {recentT.map((t) => (
+              {recent.texts.map((t) => (
                 <li key={t} className="has-x">
                   <button type="button" className="row text" onClick={() => submit(t)}>
                     <Icon name="clock" size={14} />
                     <span>{t}</span>
                   </button>
-                  <RemoveButton label={t} onRemove={() => setRecentT(removeRecentText(t))} />
+                  <RemoveButton label={t} onRemove={() => recent.removeText(t)} />
                 </li>
               ))}
             </ul>
@@ -527,7 +427,7 @@ export default function App() {
           {recentList.length > 0 && (
             // recent buildings: name with built span · city, then architect · style (see .recent-b)
             <div className="recent-b">
-              <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} onRemove={(id) => setRecentB(removeRecentBuilding(id))} />
+              <ResultList list={recentList} onOpen={openCard} onHover={setHoverId} onRemove={recent.removeBuilding} />
             </div>
           )}
         </>
@@ -610,12 +510,7 @@ export default function App() {
   // Desktop content panel: the page the panel shows (a new page mounts a new panel, with its own entry animation)
   const dockKey = menuPage && !selected ? 'menu' : selected ? 'card' : top.list === 'category' ? 'category' : top.list === 'era' ? `era-${top.q}` : top.list === 'group' && group.length ? `group-${top.group.join('~')}` : 'search';
   // the page the panel opened on slides in; once another page opens, nothing slides until the next opening
-  useLayoutEffect(() => {
-    if (opening) {
-      setOpening(false);
-      setSlideKey(dockKey);
-    } else if (slideKey !== null && slideKey !== dockKey) setSlideKey(null);
-  }, [opening, dockKey, slideKey]);
+  const slideIn = usePanelSlide(dock, dockKey);
   // Desktop: every page sits in one content panel beside the rail. Closed: nothing shows (the screen is kept).
   // The search page keeps one panel from the empty page to typing to results, so the box never loses its focus
   if (!mobile) {
@@ -643,7 +538,7 @@ export default function App() {
       );
     }
     // one wrapper that is always there (display: contents), so adding or dropping its class never mounts the panel again
-    if (panel) panel = <div className={`dock${opening || slideKey === dockKey ? ' slide-in' : ''}`}>{panel}</div>;
+    if (panel) panel = <div className={`dock${slideIn ? ' slide-in' : ''}`}>{panel}</div>;
   }
 
 
