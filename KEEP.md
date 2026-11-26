@@ -19,15 +19,15 @@ Category colours in order: Ancient `#D58774`, Medieval `#C38C53`, Renaissance `#
 ## Components and effects
 | What | Where | Rule |
 |---|---|---|
-| Scale bar | `src/components/ScaleBar.tsx` (`scaleFor`, `ScaleBar`) | Same look: length label over an open bracket, longest round length within 110 px. The 100 km rule reads `scale.metres` |
+| Scale bar | `src/features/map/extras/ScaleBar.tsx` (`scaleFor`, `ScaleBar`) | Same look: length label over an open bracket, longest round length within 110 px. The 100 km rule reads `scale.metres` |
 | Press feedback | `src/styles/modules/base.css` (`:active` → `translateY(1px)`, background darkens over `--t-fast`) | Every clickable thing |
-| Panel entry / exit | `globals.css` keyframes `drawer-in`, `slide-in-l`, `sheet-in`, `out-l`, `out-d`; `src/components/Leave.tsx` | Panels slide and fade in, slide away on close; nothing else moves |
+| Panel entry / exit | `globals.css` keyframes `drawer-in`, `slide-in-l`, `sheet-in`, `out-l`, `out-d`; `src/layout/Leave.tsx` | Panels slide and fade in, slide away on close; nothing else moves |
 | Style colour on the card title (rows 1–2 of the building card) | `.c-top` background = category colour | As now |
 | Style tags layout in the Category list | `.styles` grid (2 columns, 4 px gap), `.chip` 32 px with swatch and count | Same size as the style tags in the v1 filters panel |
 | List ↔ map hover highlight | `onHover` in lists, `hoverId` in `MapView` | Kept as visual feedback |
 | Map failure screen | `MapView` `fallback` (WebGL off): message, Details, building list | As v1; the list uses the new row format |
-| Number point look | `src/components/NumberPoint.tsx` (v1 city circle: category ring, count) | |
-| Basemap | `src/lib/basemap.ts`, `src/data/basemap.json`, OpenFreeMap street tiles | As now |
+| Number point look | `src/features/map/markers/NumberPoint.tsx` (v1 city circle: category ring, count) | |
+| Basemap | `src/features/map/basemap/basemap.ts`, `src/data/basemap.json`, OpenFreeMap street tiles | As now |
 | Default view | Europe, as v1 Full map | As now |
 
 ## Data kept

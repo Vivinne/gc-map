@@ -22,6 +22,7 @@ import { Rail, type RailPage } from '../features/rail';
 import { ResultList, NoResults } from '../features/list';
 import { SearchBox } from '../features/search';
 import { RAIL_W } from '../shared/tokens';
+import { dockKeyOf, pageOf } from './pages';
 
 /** How many rows the search preview lists while typing */
 const PREVIEW_MAX = 30;
@@ -231,75 +232,65 @@ export default function App() {
     />
   );
 
+  // The page on screen (see pages.ts), and the panel that shows it
+  const page = pageOf(top, { card: !!selected, groupSize: group.length, hasPreview, mobile, panelOpen });
+  const head = (title?: string, canBack = back) => <HeadBar canBack={canBack} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} title={title} />;
+  // opened from the plain map, ＜ on Category or a tag list would only close it, like ×: only × shows
+  const backUnlessPlain = back && !(prevScreen && isEmptyScreen(prevScreen));
   let panel: React.ReactNode = null;
-  if (selected) {
-    panel = <BuildingCard ref={panelRef} key="card" scroll={top.scroll} b={selected} mobile={mobile} canBack={back} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} onArchitect={(t) => submitSearch(ctx, t)} />;
-  } else if (top.list === 'preview' && hasPreview) {
-    panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key="preview" mobile={mobile} place="top" label="Search" className="preview" resetKey="preview" head={null}>
-        {previewBody}
-      </Panel>
-    );
-  } else if (top.list === 'category') {
-    // opened from the plain map, ＜ would only close it, like ×: only × shows
-    panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={<HeadBar canBack={back && !(prevScreen && isEmptyScreen(prevScreen))} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} title="Category" />}>
-        <CategoryList onPick={(label) => pickTag(ctx, label)} />
-      </Panel>
-    );
-  } else if (top.list === 'group' && group.length) {
-    panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={<HeadBar canBack={back} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} title={`${group.length} Architectures`} />}>
-        <ResultList list={group} onOpen={(id) => openCard(ctx, id)} onHover={setHoverId} onVisible={setSeenIds} />
-      </Panel>
-    );
-  } else if (top.list === 'era' && top.q) {
-    // a picked Category tag: its name is the title, ＜ goes back to the tags
-    panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key="era" mobile={mobile} place="sheet" label={top.q} className="results" resetKey={`era:${top.q}`} head={<HeadBar canBack={back && !(prevScreen && isEmptyScreen(prevScreen))} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} title={top.q} />}>
-        {resultsBody}
-      </Panel>
-    );
-  } else if (top.list === 'results' && top.q) {
-    panel = (
-      <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={<HeadBar canBack={back} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} />}>
-        {resultsBody}
-      </Panel>
-    );
-  }
-  // Desktop content panel: the page the panel shows (a new page mounts a new panel, with its own entry animation)
-  const dockKey = menuPage && !selected ? 'menu' : selected ? 'card' : top.list === 'category' ? 'category' : top.list === 'era' ? `era-${top.q}` : top.list === 'group' && group.length ? `group-${top.group.join('~')}` : 'search';
-  // the page the panel opened on slides in; once another page opens, nothing slides until the next opening
-  const slideIn = usePanelSlide(dock, dockKey);
-  // Desktop: every page sits in one content panel beside the rail. Closed: nothing shows (the screen is kept).
-  // The search page keeps one panel from the empty page to typing to results, so the box never loses its focus
-  if (!mobile) {
-    if (!panelOpen) panel = null;
-    else if (!selected && top.list !== 'category' && top.list !== 'era' && !(top.list === 'group' && group.length)) {
+  switch (page) {
+    case 'card':
+      panel = <BuildingCard ref={panelRef} key="card" scroll={top.scroll} b={selected!} mobile={mobile} canBack={back} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} onArchitect={(t) => submitSearch(ctx, t)} />;
+      break;
+    case 'preview':
       panel = (
-        <Panel
-          ref={panelRef}
-          scroll={top.scroll}
-          key="search"
-          mobile={false}
-          place="top"
-          label="Search"
-          className="search"
-          resetKey={`${top.list}:${top.q}`}
-          head={
-            <>
-              {/* the search box is the page's top row (user, 2026-11-24): ＜ and × sit in the box, no title */}
-              {searchBox(true)}
-            </>
-          }
-        >
+        <Panel ref={panelRef} scroll={top.scroll} key="preview" mobile={mobile} place="top" label="Search" className="preview" resetKey="preview" head={null}>
+          {previewBody}
+        </Panel>
+      );
+      break;
+    case 'category':
+      panel = (
+        <Panel ref={panelRef} scroll={top.scroll} key="category" mobile={mobile} place="top" label="Category" className="category" resetKey="category" head={head('Category', backUnlessPlain)}>
+          <CategoryList onPick={(label) => pickTag(ctx, label)} />
+        </Panel>
+      );
+      break;
+    case 'group':
+      panel = (
+        <Panel ref={panelRef} scroll={top.scroll} key={`group-${top.group.join('~')}`} mobile={mobile} place="sheet" label="Architectures" className="group" resetKey={top.group.join('~')} head={head(`${group.length} Architectures`)}>
+          <ResultList list={group} onOpen={(id) => openCard(ctx, id)} onHover={setHoverId} onVisible={setSeenIds} />
+        </Panel>
+      );
+      break;
+    case 'tag':
+      // a picked Category tag: its name is the title, ＜ goes back to the tags
+      panel = (
+        <Panel ref={panelRef} scroll={top.scroll} key="era" mobile={mobile} place="sheet" label={top.q} className="results" resetKey={`era:${top.q}`} head={head(top.q, backUnlessPlain)}>
+          {resultsBody}
+        </Panel>
+      );
+      break;
+    case 'results':
+      panel = (
+        <Panel ref={panelRef} scroll={top.scroll} key="results" mobile={mobile} place="sheet" label="Results" className="results" resetKey={top.q} head={head()}>
+          {resultsBody}
+        </Panel>
+      );
+      break;
+    case 'search':
+      // desktop: the search box is the page's top row (2026-11-24): ＜ and × sit in the box, no title
+      panel = (
+        <Panel ref={panelRef} scroll={top.scroll} key="search" mobile={false} place="top" label="Search" className="search" resetKey={`${top.list}:${top.q}`} head={<>{searchBox(true)}</>}>
           {editing ? hasPreview && previewBody : top.list === 'results' && top.q ? resultsBody : null}
         </Panel>
       );
-    }
-    // one wrapper that is always there (display: contents), so adding or dropping its class never mounts the panel again
-    if (panel) panel = <div className={`dock${slideIn ? ' slide-in' : ''}`}>{panel}</div>;
+      break;
   }
+  // the page the desktop panel opened on slides in; once another page opens, nothing slides until the next opening
+  const slideIn = usePanelSlide(dock, dockKeyOf(top, { card: !!selected, groupSize: group.length, menuPage }));
+  // desktop: one wrapper that is always there (display: contents), so adding or dropping its class never mounts the panel again
+  if (!mobile && panel) panel = <div className={`dock${slideIn ? ' slide-in' : ''}`}>{panel}</div>;
 
 
   return (

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Redirect from '../../components/Redirect';
+import Redirect from '../../entry/Redirect';
 
 // The old GC Atlas address (/gc-map/atlas/) moved to the site root: this page sends visitors there
 export const metadata: Metadata = {
