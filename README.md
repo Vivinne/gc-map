@@ -66,7 +66,7 @@ Module list (which files to read for which change): `MODULES.md`.
 | `src/data/` | Building data: model, categories, shown style, architect, built span, keywords, country groups |
 | `src/features/` | Feature modules: `search` (box, rules, typed text, recents), `category`, `list` (rows), `card`, `map` (`camera`, `markers`, `basemap`, `extras`: zoom buttons, scale bar, source line), `rail` (desktop) |
 | `src/layout/` | Panel frame, phone sheets, panel entry and exit, desktop panel folding, the part of the map the panels cover |
-| `src/flows/` | Actions that use several modules (stage 4 of the restructure) |
+| `src/flows/` | Actions that use several modules, one per file (open a card, send a search, back, close, Category, keys, …); each acts on the session object the shell builds on every render |
 | `src/components/App.tsx` | Puts the modules on the page and wires them together |
 
 All code, comments and UI text are English (one approved exception: the keyword label of the card); the study notes in `content/` and the data files keep their original wording.
