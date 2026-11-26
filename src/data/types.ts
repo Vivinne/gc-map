@@ -1,4 +1,7 @@
-export type EraId = 'ancient' | 'medieval' | 'renaissance' | 'mannerism' | 'baroque' | 'neoclassicism' | 'artnouveau' | 'beauxarts' | 'modern' | 'others';
+import type { ERA_COLORS } from '../shared/tokens';
+
+/** The 10 categories (their colours are tokens, KEEP.md) */
+export type EraId = keyof typeof ERA_COLORS;
 
 /** page = page marker point; contained = taken from the containing building / square page; approx = approximate; manual = entered manually; estimate = memory estimate (no source, unverified) */
 export type Precision = 'page' | 'contained' | 'approx' | 'manual' | 'estimate';

@@ -1,8 +1,9 @@
+/* F1 search: matching and order (Project doc gc/search-rules.md), typed text, recent searches. */
+import '../../../tests/support/browser';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import test from 'node:test';
-import { categoryList } from '../src/features/category';
-import { searchSplit } from '../src/features/search';
-import { listOf } from '../src/flows/lists';
+import { BUILDINGS } from '../../data';
+import { search, searchSplit } from './index';
 
 // Rules: Project doc gc/search-rules.md (2026-11-25)
 const names = (q: string) => searchSplit(q).main.map((b) => b.name);
@@ -43,9 +44,40 @@ test('search: no match gives nothing', () => {
   assert.deepEqual(searchSplit('   '), { main: [], more: [] });
 });
 
-test('category: a picked tag lists exactly that category, oldest first; a typed style name is a search', () => {
-  const list = categoryList('Baroque');
-  assert.ok(list.length > 0 && list.every((b) => b.eras.includes('baroque')));
-  assert.deepEqual(listOf('Baroque', 'era'), { main: list, more: [] });
-  assert.equal(searchSplit('Baroque').more.length, 1);
+test('N1 search: a curly apostrophe (iPhone keyboard) finds names with a straight one', () => {
+  const named = BUILDINGS.filter((b) => b.name.includes("'"));
+  assert.ok(named.length >= 19, `${named.length} names with an apostrophe`);
+  for (const b of named) {
+    const typed = b.name.replace(/'/g, '’');
+    assert.equal(search(typed)[0]?.id, b.id, `"${typed}"`);
+    assert.equal(search(b.name.replace(/'/g, '‘'))[0]?.id, b.id);
+  }
+});
+
+test('recent texts: "Rome" and "rome" are one entry, the spelling typed last stays', async () => {
+  const { addRecentText, recentTexts } = await import('./index');
+  addRecentText('Rome');
+  addRecentText('Gaudi');
+  addRecentText('rome');
+  assert.deepEqual(recentTexts(), ['rome', 'Gaudi']);
+  addRecentText('ROME');
+  assert.deepEqual(recentTexts(), ['ROME', 'Gaudi']);
+});
+
+test('N3 recents: damaged saved data gives empty lists', async () => {
+  const { recentTexts, recentBuildings } = await import('./index');
+  for (const v of ['{}', 'null', '"x"', '[1,{}]', 'not json']) {
+    localStorage.setItem('gc-atlas:recent-text', v);
+    localStorage.setItem('gc-atlas:recent-building', v);
+    assert.ok(Array.isArray(recentTexts()) && recentTexts().every((t) => typeof t === 'string'), v);
+    assert.ok(Array.isArray(recentBuildings()), v);
+  }
+});
+
+test('R5 typed text: an emptied search box is kept as empty over a reload', async () => {
+  const { saveDraft, loadDraft } = await import('./index');
+  saveDraft('');
+  assert.equal(loadDraft(), '');
+  saveDraft(null);
+  assert.equal(loadDraft(), null);
 });

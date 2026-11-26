@@ -1,4 +1,4 @@
-import ClientEntry from '../entry/ClientEntry';
+import { ClientEntry } from '../entry';
 
 export default function Page() {
   return <ClientEntry />;

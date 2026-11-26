@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ERAS, LEAK, buildData, parseCoord, parseHandout, siteData, slug } from '../scripts/data';
-import { dataset as site } from '../src/data';
+import { ERAS, LEAK, buildData, parseCoord, parseHandout, siteData, slug } from './index';
+import { dataset as site } from '../../src/data';
 
 // The full build result, with the source and audit fields the site file leaves out
 const built = buildData();
@@ -35,10 +35,10 @@ test('slug: diacritics, punctuation and names with no ASCII letters', () => {
 });
 
 test('parseHandout: row count, styles, location split', () => {
-  const { rows, styles } = parseHandout(readFileSync(new URL('../content/handout-c3-s6.md', import.meta.url), 'utf8'));
+  const { rows, styles } = parseHandout(readFileSync(new URL('../../content/handout-c3-s6.md', import.meta.url), 'utf8'));
   assert.equal(styles.length, 15);
   assert.equal(rows.length, built.handoutRows);
-  assert.equal(dataset.places.length, built.handoutRows - readFileSync(new URL('../data/removed.txt', import.meta.url), 'utf8').split(/\r?\n/).filter((l) => l.trim() && !l.startsWith('#')).length);
+  assert.equal(dataset.places.length, built.handoutRows - readFileSync(new URL('../../data/removed.txt', import.meta.url), 'utf8').split(/\r?\n/).filter((l) => l.trim() && !l.startsWith('#')).length);
   const pantheon = rows.find((r) => r.name === 'Pantheon')!;
   assert.equal(pantheon.loc, 'Rome');
   assert.equal(pantheon.style.id, '6.2');

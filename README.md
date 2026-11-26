@@ -76,8 +76,10 @@ All code, comments and UI text are English (one approved exception: the keyword 
 
 ```bash
 npm run typecheck
-npm test        # data rules
+npm test        # every module's own tests (next to its code), data rules, module boundaries, style ownership
 ```
+
+Tests live next to the code they check (`src/**/*.test.ts`, `scripts/data/data.test.ts`); repo-wide checks are in `tests/`.
 
 ## Not verified
 

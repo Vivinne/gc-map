@@ -1,11 +1,10 @@
-import type { EraId } from '../../data';
 
 /**
  * Design tokens read from TypeScript: the colour of each style, the basemap colours and the spacing.
  * Kept from GC Atlas v1 (see KEEP.md). The page greys, motion, corners and sizes are in tokens.css.
  */
 /** Colour of each style category ("Earth to sky": warm for the oldest styles, cool for the newest) */
-export const ERA_COLORS: Record<EraId, string> = {
+export const ERA_COLORS = {
   ancient: '#D58774',
   medieval: '#C38C53',
   renaissance: '#A6943C',
@@ -16,7 +15,7 @@ export const ERA_COLORS: Record<EraId, string> = {
   modern: '#507CB5',
   beauxarts: '#6B8BA2',
   others: '#80878F',
-};
+} as const satisfies Record<string, string>;
 
 /** Paper white (tokens.css --paper): panels, the open building's disc, the rims of number points */
 export const PAPER = '#fff';

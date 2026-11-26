@@ -1,6 +1,7 @@
+/* C2 address: rate-limited address writes; map views out of range ignored. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ADDRESS_GAP, createAddressWriter, type Clock } from '../src/core/address';
+import { ADDRESS_GAP, createAddressWriter, type Clock } from './index';
 
 /** A fake page and clock: timers run when the test moves time forward */
 function setup(opts: { refuse?: (n: number) => boolean } = {}) {
@@ -95,4 +96,10 @@ test('B9 address: a write the browser refuses does not throw', () => {
   s.w.set('/gc-map/?q=b');
   s.advance(ADDRESS_GAP);
   assert.equal(s.url(), '/gc-map/?q=b');
+});
+
+test('B3 address: a map view out of range is ignored', async () => {
+  const { fromQuery } = await import('./index');
+  for (const m of ['12,95,5', '999,999,99', ',,', '12,41', '12,41,99', 'a,b,c']) assert.equal(fromQuery(`?m=${m}`).view, null, m);
+  assert.deepEqual(fromQuery('?m=12.48,41.89,13').view, { lng: 12.48, lat: 41.89, zoom: 13 });
 });
