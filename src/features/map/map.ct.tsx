@@ -345,3 +345,113 @@ test.describe('extras (F5d)', () => {
     await expectAccessible(page);
   });
 });
+
+test.describe('moving map (moved here from batch 4)', () => {
+  test('camera time: a jump of 2 zoom levels takes 420 + 150 × 2 = 720 ms (±50 ms); reduced motion: at once', async ({ mount, page }) => {
+    await mount(<MapStory />);
+    await mapReady(page);
+    const took = await page.evaluate(async () => {
+      const v = window.mapTest.map()!.view()!;
+      const n = window.mapTest.events.length;
+      const t0 = performance.now();
+      window.mapTest.map()!.moveTo({ ...v, zoom: v.zoom + 2 });
+      while (!window.mapTest.events.slice(n).some((e) => e.startsWith('view:'))) await new Promise((r) => setTimeout(r, 5));
+      return performance.now() - t0;
+    });
+    expect(Math.abs(took - 720)).toBeLessThanOrEqual(50);
+  });
+
+  test('reduced motion: the camera jumps at once', async ({ mount, page }) => {
+    await mount(<MapStory reduced />);
+    await mapReady(page);
+    const took = await page.evaluate(async () => {
+      const v = window.mapTest.map()!.view()!;
+      const n = window.mapTest.events.length;
+      const t0 = performance.now();
+      window.mapTest.map()!.moveTo({ ...v, zoom: v.zoom + 2 });
+      while (!window.mapTest.events.slice(n).some((e) => e.startsWith('view:'))) await new Promise((r) => setTimeout(r, 5));
+      return performance.now() - t0;
+    });
+    expect(took).toBeLessThan(60);
+  });
+
+  test('N13: a press while the map moves opens what was under the pointer when it went down', async ({ mount, page, isMobile }) => {
+    test.skip(isMobile, 'mouse press');
+    await mount(<MapStory />);
+    await mapReady(page);
+    // a slow zoom about the middle: the dot nearest the middle moves little between reading it and pressing it
+    await page.evaluate(() => {
+      const v = window.mapTest.map()!.view()!;
+      window.mapTest.map()!.moveTo({ ...v, zoom: v.zoom + 4 });
+    });
+    await page.waitForTimeout(250);
+    // pressed and released as the browser does, in the page itself, so no time passes between finding the dot and
+    // pressing it; the map keeps moving under the pointer for 250 ms before the release
+    const { id, other } = await page.evaluate(async () => {
+      const cx = innerWidth / 2, cy = innerHeight / 2;
+      const dot = [...document.querySelectorAll('svg.overlay circle.mk.dot')].map((e) => ({ e, r: e.getBoundingClientRect() })).sort((a, b) => Math.hypot(a.r.x - cx, a.r.y - cy) - Math.hypot(b.r.x - cx, b.r.y - cy))[0]!;
+      const x = dot.r.x + dot.r.width / 2, y = dot.r.y + dot.r.height / 2;
+      const at = { clientX: x, clientY: y, bubbles: true, button: 0, pointerType: 'mouse', isPrimary: true, pointerId: 1 };
+      dot.e.dispatchEvent(new PointerEvent('pointerdown', at));
+      await new Promise((r) => setTimeout(r, 250));
+      const now = document.elementFromPoint(x, y);
+      window.dispatchEvent(new PointerEvent('pointerup', at));
+      now?.dispatchEvent(new MouseEvent('click', { ...at, detail: 1 }));
+      return { id: dot.e.getAttribute('data-key')!, other: now?.closest('svg.overlay .mk')?.getAttribute('data-key') ?? '' };
+    });
+    expect(other, 'the map moved on: the pointer is no longer on that dot').not.toBe(id);
+    await expect.poll(() => page.evaluate(() => window.mapTest.events.filter((e) => /^(select|group):/.test(e)))).toEqual([`select:${id}`]);
+  });
+
+  test('B2: a finger between two close markers opens the nearer one', async ({ mount, page, isMobile }) => {
+    test.skip(!isMobile, 'finger');
+    await mount(<MapStory compact />);
+    await mapReady(page);
+    let pair: [string, { x: number; y: number }, string, { x: number; y: number }] | null = null;
+    for (const v of [null, { lng: 11.3, lat: 44.5, zoom: 6.5 }, { lng: 12.4, lat: 41.9, zoom: 10 }, { lng: 2.3, lat: 48.85, zoom: 9 }]) {
+      if (v) await andRest(page, () => page.evaluate((x) => window.mapTest.map()!.moveTo(x), v));
+      const dots = Object.entries((await marks(page)).dots);
+      for (let i = 0; i < dots.length && !pair; i++)
+        for (let k = i + 1; k < dots.length && !pair; k++) {
+          const [a, p] = dots[i]!, [b, q] = dots[k]!;
+          const gap = Math.hypot(p.x - q.x, p.y - q.y);
+          if (gap > 18 && gap < 34) pair = [a, p, b, q];
+        }
+      if (pair) break;
+    }
+    test.skip(!pair, 'no two markers close enough on these views');
+    const [a, p, b, q] = pair!;
+    await page.touchscreen.tap(p.x + (q.x - p.x) * 0.35, p.y + (q.y - p.y) * 0.35);
+    await page.waitForTimeout(800);
+    await page.touchscreen.tap(p.x + (q.x - p.x) * 0.65, p.y + (q.y - p.y) * 0.65);
+    await expect.poll(() => page.evaluate(() => window.mapTest.events.filter((e) => e.startsWith('select:')))).toEqual([`select:${a}`, `select:${b}`]);
+  });
+
+  test('R6: + keeps the number points until the zoom ends; the mouse wheel regroups during the zoom', async ({ mount, page, isMobile }) => {
+    test.skip(isMobile, 'buttons and wheel');
+    await mount(<MapStory />);
+    await mapReady(page);
+    const groups = () => page.evaluate(() => [...document.querySelectorAll('svg.overlay g.mk.num')].map((g) => g.getAttribute('data-key')!));
+    /** Number points seen during a zoom (until the map stops) that were not there before it: new groupings */
+    const regrouped = async (start: () => Promise<unknown>) => {
+      const before = new Set(await groups());
+      const n = await page.evaluate(() => window.mapTest.events.length);
+      const fresh = new Set<string>();
+      await start();
+      for (let i = 0; i < 80; i++) {
+        if (await page.evaluate((k) => window.mapTest.events.slice(k).some((e) => e.startsWith('view:')), n)) break;
+        for (const k of await groups()) if (!before.has(k)) fresh.add(k);
+        await page.waitForTimeout(15);
+      }
+      return fresh.size;
+    };
+    // (points leave the screen as it zooms in; none splits or merges until the zoom ends)
+    expect(await regrouped(() => page.getByRole('button', { name: 'Zoom in' }).click()), 'no new grouping during the + zoom').toBe(0);
+    await andRest(page, () => page.evaluate(() => window.mapTest.map()!.moveTo({ lng: 10, lat: 47, zoom: 4.2 })));
+    const wheelSteps = await regrouped(async () => {
+      await page.mouse.move(700, 400);
+      for (let i = 0; i < 6; i++) await page.mouse.wheel(0, -120);
+    });
+    expect(wheelSteps, 'the wheel regroups as it zooms').toBeGreaterThan(0);
+  });
+});

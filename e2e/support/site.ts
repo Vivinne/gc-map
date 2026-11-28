@@ -116,6 +116,8 @@ export async function rest(page: Page) {
 }
 
 export async function fresh(page: Page) {
+  // a fresh visit: nothing saved from an earlier visit in this test
+  if (page.url().startsWith('http')) await page.evaluate(() => (sessionStorage.clear(), localStorage.clear()));
   await streetTiles(page, 'ok');
   // one recent search and one recent building waiting, so the recent lists can be used from the start
   await page.addInitScript(() => {
@@ -260,7 +262,7 @@ export async function act(page: Page, mobile: boolean, name: string) {
     await rail(page, 'Search').click();
     await page.waitForTimeout(300);
     await page.locator(box).click();
-  } else await ACTIONS[name]!.run(page, mobile);
+  } else if (name !== 'none') await ACTIONS[name]!.run(page, mobile);
   await rest(page);
 }
 

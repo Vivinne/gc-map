@@ -23,7 +23,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: 0,
   reporter: [['list'], ['json', { outputFile: 'test-results/e2e.json' }]],
-  use: { baseURL: `http://localhost:${PORT}${BASE}/`, trace: 'retain-on-failure', launchOptions },
+  use: { baseURL: `http://localhost:${PORT}${BASE}/`, trace: 'retain-on-failure', actionTimeout: 10000, launchOptions },
   webServer: { command: `npx tsx scripts/tools/serve.ts ${process.env.SITE_DIR || 'out'} ${PORT} ${BASE}`, port: PORT, reuseExistingServer: !process.env.CI },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
