@@ -60,3 +60,21 @@ test('map names: short names stay on one line; a single word longer than the lin
   assert.deepEqual(fill('Short name', 20), ['Short name']);
   assert.deepEqual(labelLines('Aaaaaaaaaaaaaaaaaaaaaaa Bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'), ['Aaaaaaaaaaaaaaaaaaaaaaa', 'Bbbbbbbbbbbbbbbbbbbbbbb…']);
 });
+
+// F5c basemap: every layer takes its colour from MAP_COLORS (KEEP.md); street detail starts at zoom 6, borders stop at 10
+test('F5c basemap: layer colours from MAP_COLORS, street layers from zoom 6, offline land and borders always there', async () => {
+  const { styleSpec } = await import('./basemap/style');
+  const { MAP_COLORS } = await import('../../shared/tokens');
+  const s = styleSpec();
+  const paint = (id: string) => s.layers.find((l) => l.id === id)! as { paint: Record<string, unknown>; minzoom?: number; maxzoom?: number };
+  assert.equal(paint('sea').paint['background-color'], MAP_COLORS.sea);
+  assert.equal(paint('land').paint['fill-color'], MAP_COLORS.land);
+  assert.equal(paint('ofm-water').paint['fill-color'], MAP_COLORS.sea);
+  assert.equal(paint('ofm-river').paint['line-color'], MAP_COLORS.sea);
+  assert.equal(paint('ofm-roads').paint['line-color'], MAP_COLORS.road);
+  assert.equal(paint('ofm-buildings').paint['fill-color'], MAP_COLORS.building);
+  assert.equal(paint('borders').paint['line-color'], MAP_COLORS.border);
+  for (const l of s.layers.filter((x) => (x as { source?: string }).source === 'ofm')) assert.ok(((l as { minzoom?: number }).minzoom ?? 0) >= 6, l.id);
+  assert.equal(paint('borders').maxzoom, 10);
+  assert.equal(paint('land').minzoom, undefined);
+});

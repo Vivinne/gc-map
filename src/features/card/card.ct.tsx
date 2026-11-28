@@ -72,17 +72,17 @@ test('card: data lines carry no Chinese and no field names', async ({ mount }) =
 });
 
 for (const canBack of [true, false])
-  test(`card: \uff1c ${canBack ? 'shown' : 'hidden'}; \uff1c and × report`, async ({ mount }) => {
+  test(`card: \uff1c ${canBack ? 'shown' : 'hidden'}; \uff1c and × report`, async ({ mount, isMobile }) => {
     const seen: string[] = [];
-    const card = await mount(<BuildingCard b={KIND.one} mobile={false} canBack={canBack} onBack={() => seen.push('back')} onClose={() => seen.push('close')} onArchitect={noop} />);
+    const card = await mount(<BuildingCard b={KIND.one} mobile={isMobile} canBack={canBack} onBack={() => seen.push('back')} onClose={() => seen.push('close')} onArchitect={noop} />);
     await expect(card.getByRole('button', { name: 'Back' })).toHaveCount(canBack ? 1 : 0);
     if (canBack) await card.getByRole('button', { name: 'Back' }).click();
     await card.getByRole('button', { name: 'Close' }).click();
     expect(seen).toEqual(canBack ? ['back', 'close'] : ['close']);
   });
 
-test('card: the card text can be selected; press feedback, focus ring, accessibility', async ({ mount, page }) => {
-  const card = await mount(<BuildingCard b={KIND.two} mobile={false} canBack onBack={noop} onClose={noop} onArchitect={noop} />);
+test('card: the card text can be selected; press feedback, focus ring, accessibility', async ({ mount, page, isMobile }) => {
+  const card = await mount(<BuildingCard b={KIND.two} mobile={isMobile} canBack onBack={noop} onClose={noop} onArchitect={noop} />);
   await expect(card.locator('.c-sum')).not.toHaveCSS('user-select', 'none');
   await expectPressFeedback(page, card.locator('.c-who').first());
   await expectPressFeedback(page, card.getByRole('button', { name: 'Close' }));
