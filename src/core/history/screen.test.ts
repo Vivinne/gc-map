@@ -1,4 +1,4 @@
-/* C1 history, layer 1: screen equality and when \uff1c shows (decision table). */
+/* C1 history, layer 1: screen equality and when ＜ shows (decision table). */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { EMPTY_SCREEN, canGoBack, isEmptyScreen, type Screen } from './index';
@@ -16,7 +16,7 @@ test('history: the plain map is the only empty screen', () => {
   for (const o of [{ q: 'a' }, { list: 'preview' as const }, { b: 'x' }]) assert.ok(!isEmptyScreen(s(o)));
 });
 
-test('history: when \uff1c shows (decision table)', () => {
+test('history: when ＜ shows (decision table)', () => {
   const plain = EMPTY_SCREEN, results = s({ q: 'a', list: 'results' }), card = s({ b: 'x' }), cardOnResults = s({ q: 'a', list: 'results', b: 'x' });
   const table: [Screen[], boolean][] = [
     [[plain], false],

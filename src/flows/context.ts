@@ -62,7 +62,7 @@ export const afterPanel = (f: () => void) => window.setTimeout(f, PANEL_WAIT);
 /** Buildings of these ids (unknown ids left out) */
 export const byIds = (ids: string[], get: (id: string) => Building | undefined) => ids.map(get).filter((b): b is Building => !!b);
 
-/** Open a new screen; the screen it leaves keeps the map view, its scroll and its typed text, so \uff1c can bring them back */
+/** Open a new screen; the screen it leaves keeps the map view, its scroll and its typed text, so ＜ can bring them back */
 export function openScreen(c: Ctx, s: Screen): void {
   const view = c.map.current?.view() ?? undefined;
   const scroll = c.panel.current?.querySelector('.p-body')?.scrollTop ?? undefined;

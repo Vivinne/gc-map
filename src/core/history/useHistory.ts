@@ -8,7 +8,7 @@ import { saveStack, startStack } from './stack';
 export type Leave = (left: Screen) => Partial<Screen>;
 
 /**
- * C1 history: the one owner of the screens behind \uff1c. Every change to the history goes through these calls;
+ * C1 history: the one owner of the screens behind ＜. Every change to the history goes through these calls;
  * the history is saved for this tab after each change.
  */
 export function useHistory(start: Screen) {
@@ -24,7 +24,7 @@ export function useHistory(start: Screen) {
       if (sameScreen(cur, next)) return st;
       return [...st.slice(0, -1), { ...cur, ...leave(cur) }, next];
     });
-  /** \uff1c: the top screen goes; the last screen always stays (T5-1) */
+  /** ＜: the top screen goes; the last screen always stays (T5-1) */
   const back = () => setStack((st) => (st.length > 1 ? st.slice(0, -1) : st));
   /** The top screen gives way to `next`; when `next` equals the screen under it, that screen comes back instead (no second, identical step) */
   const replace = (next: Screen) => setStack((st) => (st.length > 1 && sameScreen(st[st.length - 2]!, next) ? st.slice(0, -1) : [...st.slice(0, -1), next]));

@@ -21,7 +21,7 @@ export function railSearch(c: Ctx): void {
   c.dock.show();
   c.setSearchPage(true);
   if (c.railPage === 'search') return;
-  // with no search, the typing screen itself goes on top (no extra empty step that \uff1c would stop at, 2026-11-25)
+  // with no search, the typing screen itself goes on top (no extra empty step that ＜ would stop at, 2026-11-25)
   // a picked Category tag is not a search: the search page opens empty over it
   const q = c.top.list === 'era' ? '' : c.top.q;
   // text typed and not sent comes back in the box, with the typing screen (2026-11-25)

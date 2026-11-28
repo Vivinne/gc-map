@@ -27,7 +27,7 @@ test('search: every word must be found, in any order; "and" is an ordinary word'
 });
 
 test('search: full-width, letter case and outer spaces are folded', () => {
-  assert.deepEqual(names('\uff32\uff2f\uff2d\uff25'), names('rome'));
+  assert.deepEqual(names('ＲＯＭＥ'), names('rome'));
   assert.deepEqual(names('  PANTHEON  '), ['Pantheon', 'Panthéon']);
 });
 

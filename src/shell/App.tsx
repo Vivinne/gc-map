@@ -74,7 +74,7 @@ export default function App() {
   const found = useMemo(() => (top.q ? listOf(top.q, top.list) : { main: [], more: [] }), [top.q, top.list]);
   const [moreOpen, setMoreOpen] = useState('');
   const moreView = useRef<View | null>(null);
-  // another search on screen folds the other outcomes away: \uff1c back to this search shows them folded
+  // another search on screen folds the other outcomes away: ＜ back to this search shows them folded
   useEffect(() => {
     if (moreOpen && moreOpen !== top.q) setMoreOpen('');
   }, [moreOpen, top.q]);
@@ -138,8 +138,8 @@ export default function App() {
   useKeys(ctx);
 
   const editing = top.list === 'preview' && !top.b;
-  // \uff1c in the search box only while the box is opened again over a submitted search (it goes back to the
-  // screen from before the box was clicked); submitted results carry their \uff1c and × in the list's own top row
+  // ＜ in the search box only while the box is opened again over a submitted search (it goes back to the
+  // screen from before the box was clicked); submitted results carry their ＜ and × in the list's own top row
   const prevScreen = stack.length > 1 ? stack[stack.length - 2]! : null;
   const boxBack = back && editing && !!prevScreen?.q;
   // the typed text stays in the box while a card opened from the preview is on top of it
@@ -157,8 +157,8 @@ export default function App() {
   const mapView = useCallback((v: View) => mapStopped(live.current, v), []);
   const mapFail = useCallback(() => setMapDown(true), []);
   const mapReadyStable = useCallback(() => mapReady(live.current), []);
-  /** Desktop search page: \uff1c as on the results list; while typing, back to the screen the page was opened over */
-  // the typing page gets \uff1c whenever it was opened over another screen than the plain map (card, list, Category;
+  /** Desktop search page: ＜ as on the results list; while typing, back to the screen the page was opened over */
+  // the typing page gets ＜ whenever it was opened over another screen than the plain map (card, list, Category;
   // user, 2026-11-25), not only over a submitted search as the phone box does
   const searchBack = editing ? back && !!prevScreen && !isEmptyScreen(prevScreen) : back;
   const searchBox = (docked: boolean) => (
@@ -235,7 +235,7 @@ export default function App() {
   // The page on screen (see pages.ts), and the panel that shows it
   const page = pageOf(top, { card: !!selected, groupSize: group.length, hasPreview, mobile, panelOpen });
   const head = (title?: string, canBack = back) => <HeadBar canBack={canBack} onBack={() => goBack(ctx)} onClose={() => closeAll(ctx)} title={title} />;
-  // opened from the plain map, \uff1c on Category or a tag list would only close it, like ×: only × shows
+  // opened from the plain map, ＜ on Category or a tag list would only close it, like ×: only × shows
   const backUnlessPlain = back && !(prevScreen && isEmptyScreen(prevScreen));
   let panel: React.ReactNode = null;
   switch (page) {
@@ -264,7 +264,7 @@ export default function App() {
       );
       break;
     case 'tag':
-      // a picked Category tag: its name is the title, \uff1c goes back to the tags
+      // a picked Category tag: its name is the title, ＜ goes back to the tags
       panel = (
         <Panel ref={panelRef} scroll={top.scroll} key="era" mobile={mobile} place="sheet" label={top.q} className="results" resetKey={`era:${top.q}`} head={head(top.q, backUnlessPlain)}>
           {resultsBody}
@@ -279,7 +279,7 @@ export default function App() {
       );
       break;
     case 'search':
-      // desktop: the search box is the page's top row (2026-11-24): \uff1c and × sit in the box, no title
+      // desktop: the search box is the page's top row (2026-11-24): ＜ and × sit in the box, no title
       panel = (
         <Panel ref={panelRef} scroll={top.scroll} key="search" mobile={false} place="top" label="Search" className="search" resetKey={`${top.list}:${top.q}`} head={<>{searchBox(true)}</>}>
           {editing ? hasPreview && previewBody : top.list === 'results' && top.q ? resultsBody : null}

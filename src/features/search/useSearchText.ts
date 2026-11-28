@@ -39,7 +39,7 @@ export function useSearchText(screen: string, sent: string) {
       unsent.current = null;
       setDraft('');
     },
-    /** The box shows this text again (\uff1c, the box opened again); what waits stays */
+    /** The box shows this text again (＜, the box opened again); what waits stays */
     show(t: string) {
       setDraft(t);
     },

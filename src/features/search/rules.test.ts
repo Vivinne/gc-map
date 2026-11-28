@@ -8,7 +8,7 @@ import { addRecentBuilding, addRecentText, recentBuildings, recentTexts, removeR
 
 test('search: text folding: case, full width, accents, extra spaces, quotes', () => {
   assert.equal(normQuery('  Panthéon   ROME '), 'pantheon rome');
-  assert.equal(normQuery('\uff32\uff2f\uff2d\uff25'), 'rome');
+  assert.equal(normQuery('ＲＯＭＥ'), 'rome');
   assert.equal(normQuery(''), '');
 });
 

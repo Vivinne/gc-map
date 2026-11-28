@@ -1,4 +1,4 @@
-/* W6 \uff1c: the previous screen comes back with its lists, its search and the map as it was then (SPEC R2, §7). */
+/* W6 ＜: the previous screen comes back with its lists, its search and the map as it was then (SPEC R2, §7). */
 import { BY_ID, type Building } from '../data';
 import { listOf } from './lists';
 import { afterPanel, byIds, type Ctx } from './context';
