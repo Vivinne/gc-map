@@ -92,7 +92,7 @@ Site: https://vivinne.github.io/gc-map/ (`/gc-map/atlas/` redirects there). KEEP
 
 ## 9. Building card
 
-- Rows 1–2 on the category colour (KEEP.md): ＜ / × row, then the name, bold.
+- Rows 1–2 on the category colour (KEEP.md; white text on every category colour reaches 3:1, Ancient and Medieval darkened on 2026-11-28): ＜ / × row, then the name, bold.
 - Row 3: built span · city (start–completion, as the year rules give).
 - Row 4: architect · style. Each architect is a link → text search. Style: the finer style if any, else the category name. No architect: the style only, as in the list rows (user, 2026-11-28).
 - Row 5: summary (Chinese).
