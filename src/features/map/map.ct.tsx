@@ -76,14 +76,16 @@ test.describe('map (F5)', () => {
     await expect(page.locator('.map-tiles')).toBeVisible({ timeout: 12000 });
   });
 
-  // T4-1 (to confirm with the user): the tile server's index not answering shows the notice at once on the Europe view,
-  // where no street detail is drawn; the 10 s wait counts only from zoom 6 for this reason
-  test('Europe view with the tile server not answering: no notice (street detail starts at zoom 6)', async ({ mount, page }) => {
-    test.fail(true, 'T4-1');
+  // T4-1 (user, 2026-11-28): the notice shows only at zoom 6 or closer, where street detail is drawn
+  test('tile server not answering: no notice on the Europe view; it shows once the map is at zoom 6, and goes when it is back out', async ({ mount, page }) => {
     await streetTiles(page, 'fail');
     await mount(<MapStory />);
     await mapReady(page);
     await page.waitForTimeout(1000);
+    await expect(page.locator('.map-tiles')).toHaveCount(0);
+    await andRest(page, () => page.evaluate(() => window.mapTest.map()!.moveTo({ lng: 12.49, lat: 41.89, zoom: 7 })));
+    await expect(page.locator('.map-tiles')).toBeVisible();
+    await andRest(page, () => page.evaluate(() => window.mapTest.map()!.moveTo({ lng: 12.49, lat: 41.89, zoom: 4 })));
     await expect(page.locator('.map-tiles')).toHaveCount(0);
   });
 });

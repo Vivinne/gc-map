@@ -44,7 +44,7 @@ Site: https://vivinne.github.io/gc-map/ (`/gc-map/atlas/` redirects there). KEEP
 
 - Map only, no top bar, no tabs. Default view: Europe.
 - Desktop: the rail on the left edge (56 px, over the map), top down: Search (magnifier), Category (four squares), the fold button (a list in a rounded frame). Each a 40 px square with a thin frame and rounded corners, its press and lit colours inside the frame; no divider line.
-- Desktop content panel: every non-map part (search box, preview, results, Category, tag list, number point list, card) sits in one panel 16 px right of the rail and 16 px from the top, 380 px wide, as tall as its content up to 16 px above the scale bar. It slides out from behind the rail and back in 200 ms.
+- Desktop content panel: every non-map part (search box, preview, results, Category, tag list, number point list, card) sits in one panel 16 px right of the rail and 16 px from the top, 380 px wide, as tall as its content up to 16 px above the bottom of the page (user, 2026-11-28). It slides out from behind the rail and back in 200 ms.
 - Desktop search page: the search box is the page's top row, with ＜ and × inside the box; no title. Other pages: ＜ top left (R2), title, × top right.
 - Phone: search box top left, Category button (four squares) to its right. Preview and Category open under the search box; other lists and the card rise from the bottom to half the screen. Sheets: the title area drags, the content scrolls; drag down from half folds to the title, from full back to half; drag up when the content is longer goes full screen up to the search box (title kept). Landscape follows the same rules.
 - Zoom + / − bottom right (desktop; the phone pinches). Mouse wheel zooms. Scale bar (KEEP.md): desktop 16 px left of the zoom buttons on their bottom line; phone bottom left, sharing its bottom line with the source line.
@@ -121,7 +121,7 @@ The tag of a tag list gets its own key (P2; see §15). The ＜ history lives in 
 
 ## 12. Load failure
 
-As v1 (KEEP.md): WebGL off → message, Details, building list. Street tiles failing → `Map detail didn't load.` with Retry.
+As v1 (KEEP.md): WebGL off → message, Details, building list. Street tiles failing → `Map detail didn't load.` with Retry, shown only while the map is at zoom 6 or closer, where street detail is drawn (user, 2026-11-28).
 
 ## 13. Code rules
 

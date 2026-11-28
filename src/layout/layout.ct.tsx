@@ -36,19 +36,8 @@ test.describe('desktop panel', () => {
     expect([Math.round(p.x), Math.round(p.y), Math.round(p.width)]).toEqual([56 + 16, 16, 380]);
   });
 
-  // T4-2 (to confirm with the user): SPEC §4 says a long panel stops 16 px above the scale bar;
-  // the site (old and new) lets it run to 16 px above the bottom of the page
-  test('a long panel stops 16 px above the scale bar (SPEC §4)', async ({ mount, page }) => {
-    test.fail(true, 'T4-2');
-    await mount(<PanelStory rows={60} />);
-    await page.waitForTimeout(300);
-    const p = await box(page, 'section.panel');
-    const vh = page.viewportSize()!.height;
-    // the scale bar's top: 24 px from the bottom, about 22 px high
-    expect(p.y + p.height).toBeLessThanOrEqual(vh - 24 - 22 - 16);
-  });
-
-  test('a long panel: its title row stays, the rows scroll, nothing beyond the page', async ({ mount, page }) => {
+  // SPEC 4 (user, 2026-11-28, T4-2): a long panel runs to 16 px above the bottom of the page
+  test('a long panel: down to 16 px above the bottom; its title row stays, the rows scroll', async ({ mount, page }) => {
     await mount(<PanelStory rows={60} />);
     await page.waitForTimeout(300);
     const p = await box(page, 'section.panel');

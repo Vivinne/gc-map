@@ -124,17 +124,25 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
   // a tile server that is slow or does not answer gives no error: no street tile by TILE_WAIT counts as a failure.
   // Street tiles are used only from STREET_ZOOM on, so the wait runs only while the map is that close (zoomed
   // further out nothing is asked for; counting there showed the notice on the plain Europe view)
+  // One rule for both ways a failure is known (an error from the server, or no tile by TILE_WAIT): the notice shows
+  // only while the map is at STREET_ZOOM or closer, where street detail is drawn (user, 2026-11-28, T4-1)
   const tileTimer = useRef(0);
+  /** The street tiles are known to have failed (until Retry) */
+  const tilesBroken = useRef(false);
+  const showTileFail = (map: MlMap) => setTileFail(tilesBroken.current && !tilesOk.current && map.getZoom() >= STREET_ZOOM);
   const waitForTiles = (map: MlMap) => {
-    if (tilesOk.current || map.getZoom() < STREET_ZOOM) {
+    if (tilesOk.current || tilesBroken.current || map.getZoom() < STREET_ZOOM) {
       window.clearTimeout(tileTimer.current);
       tileTimer.current = 0;
+      showTileFail(map);
       return;
     }
     if (tileTimer.current) return;
     tileTimer.current = window.setTimeout(() => {
       tileTimer.current = 0;
-      if (!tilesOk.current && map.getZoom() >= STREET_ZOOM) setTileFail(true);
+      if (tilesOk.current) return;
+      tilesBroken.current = true;
+      showTileFail(map);
     }, TILE_WAIT);
   };
   useEffect(() => () => window.clearTimeout(tileTimer.current), []);
@@ -189,7 +197,10 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
     map.touchZoomRotate.disableRotation();
     map.on('error', (e) => {
       const ev = e as { sourceId?: string; error?: { message?: string; url?: string } };
-      if (!tilesOk.current && (ev.sourceId === 'ofm' || /openfreemap/.test(`${ev.error?.message ?? ''} ${ev.error?.url ?? ''}`))) setTileFail(true);
+      if (!tilesOk.current && (ev.sourceId === 'ofm' || /openfreemap/.test(`${ev.error?.message ?? ''} ${ev.error?.url ?? ''}`))) {
+        tilesBroken.current = true;
+        showTileFail(map);
+      }
     });
     // The overlay is redrawn in the same frame as the map, so the marks never lag or shake while the map moves
     let queued = false;
@@ -385,6 +396,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(props, ref) {
             onClick={() => {
               setTileFail(false);
               tilesOk.current = false;
+              tilesBroken.current = false;
               const m = mapRef.current;
               if (styleRef.current) m?.setStyle(styleRef.current());
               if (m) waitForTiles(m);
