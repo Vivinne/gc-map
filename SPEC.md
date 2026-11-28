@@ -52,7 +52,7 @@ Site: https://vivinne.github.io/gc-map/ (`/gc-map/atlas/` redirects there). KEEP
 ## 5. Search
 
 - Placeholder: `Search architecture, architect, style…`
-- Click the box: Recent shows up to 5 texts and up to 5 buildings, each newest first. Texts differing only in letter case are one entry (the spelling sent last stays).
+- Click the box: Recent shows up to 3 texts and up to 3 buildings, each newest first (user, 2026-11-28). Texts differing only in letter case are one entry (the spelling sent last stays).
 - Typing: results appear at once in the preview (main matches only, up to 30), no highlighting. Enter sends. Empty text: nothing happens. No match: Enter sends nothing and the list shows `No Results`, then a grey line `Try other words, or clear the search with ×.`
 - A preview row opens its card; ＜ returns to the preview with the text kept. Text typed and not sent stays when another screen opens and comes back when the box opens again; a reload keeps it.
 - Text folding: letter case, full-/half-width, accents and extra spaces do not count.
