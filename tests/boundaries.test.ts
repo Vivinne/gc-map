@@ -53,10 +53,10 @@ function target(from: string, spec: string): string | null {
   return null;
 }
 
-const files = [...walk('src'), ...walk('scripts')].filter((f) => !f.endsWith('.test.ts'));
+const files = [...walk('src'), ...walk('scripts')].filter((f) => !/\.(test\.ts|ct\.tsx)$/.test(f));
 
 test('boundaries: every source file belongs to a module', () => {
-  const loose = files.filter((f) => !moduleOf(f) && !f.startsWith('scripts/build-'));
+  const loose = files.filter((f) => !moduleOf(f) && !f.startsWith('scripts/build-') && !f.startsWith('scripts/tools/'));
   assert.deepEqual(loose, []);
 });
 

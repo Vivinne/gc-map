@@ -33,7 +33,7 @@ const CITY: Record<string, [number, number, number]> = {
   Columbus: [39.99, -83.0, 25], 'San Diego': [32.85, -117.2, 30], Philadelphia: [39.95, -75.17, 30], Imola: [44.36, 11.71, 15],
 };
 // Drop parenthesised qualifiers (ASCII or full-width) and any CJK words, e.g. a country suffix or a "near" qualifier
-export const cityKey = (loc: string) => loc.replace(/[(（].*?[)）]/g, '').replace(/[　-鿿＀-￯]+/g, '').trim();
+export const cityKey = (loc: string) => loc.replace(/[(\uFF08].*?[)\uFF09]/g, '').replace(/[\u3000-\u9FFF\uFF00-\uFFEF]+/g, '').trim();
 const km = (a: number, b: number, c: number, d: number) => {
   const R = 6371;
   const r = Math.PI / 180;

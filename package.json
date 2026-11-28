@@ -11,7 +11,10 @@
     "build": "next build",
     "serve": "python3 -m http.server 3000 --directory out",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" \"tests/*.test.ts\""
+    "test": "tsx --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" \"tests/*.test.ts\"",
+    "test:coverage": "tsx --test --experimental-test-coverage --test-coverage-include=\"src/**\" --test-coverage-include=\"scripts/**\" --test-coverage-exclude=\"**/*.test.ts\" \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" \"tests/*.test.ts\"",
+    "ct": "playwright test -c playwright-ct.config.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
@@ -24,6 +27,9 @@
     "world-atlas": "^2.0.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.1",
+    "@playwright/experimental-ct-react": "^1.62.1",
+    "@playwright/test": "^1.62.1",
     "@types/d3-geo": "^3.1.1",
     "@types/geojson": "^7946.0.16",
     "@types/node": "^22.0.0",
@@ -32,6 +38,7 @@
     "@types/topojson-client": "^3.1.5",
     "@types/topojson-simplify": "^3.0.3",
     "esbuild": "^0.25.0",
+    "lighthouse": "^13.6.0",
     "topojson-simplify": "^3.0.3",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"

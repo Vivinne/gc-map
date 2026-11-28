@@ -76,8 +76,14 @@ All code, comments and UI text are English (one approved exception: the keyword 
 
 ```bash
 npm run typecheck
-npm test        # every module's own tests (next to its code), data rules, module boundaries, style ownership
+npm test              # unit and integration tests (next to each module), data rules, module boundaries, style ownership, repo rules
+npm run test:coverage # the same, with a coverage report
+npm run ct            # component tests: each module alone in a real browser (*.ct.tsx next to the module)
+npm run build && npm run e2e   # the built site in a real browser: core flows and accessibility (e2e/)
 ```
+
+Test plan: Project docs `gc/test-plan.md` (levels, gates, tools) and `gc/test-modules.md` (what each module is tested for).
+Where Playwright cannot download its browser, set `PW_CHROMIUM` to a local Chromium.
 
 Tests live next to the code they check (`src/**/*.test.ts`, `scripts/data/data.test.ts`); repo-wide checks are in `tests/`.
 

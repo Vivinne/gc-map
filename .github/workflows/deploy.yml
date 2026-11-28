@@ -30,7 +30,13 @@ jobs:
       # a type error or a failing test stops the deploy: the live site stays as it was (D2)
       - run: npm run typecheck
       - run: npm test
+      # component tests (layer 2) and the core browser checks (layers 4 and 5) run in Chromium
+      - run: npx playwright install --with-deps chromium
+      - run: npm run ct
       - run: npm run build
+        env:
+          BASE_PATH: /gc-map
+      - run: npm run e2e
         env:
           BASE_PATH: /gc-map
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1

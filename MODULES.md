@@ -81,5 +81,5 @@ Leave alone: every other module
 ## After each change
 
 1. `npm run typecheck`
-2. `npm test` (unit tests of every module, data rules, module boundaries, style ownership)
+2. `npm test` (unit tests of every module, data rules, module boundaries, style ownership, repo rules); `npm run ct` for a module's component tests
 3. Push to `main` → GitHub Actions checks, builds and publishes https://vivinne.github.io/gc-map/
