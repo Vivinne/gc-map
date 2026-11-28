@@ -1,6 +1,9 @@
 /*
  * System tests (layer 4) and site-wide quality checks (layer 5): the built site in a real browser.
- * Build first (npm run build), then npm run e2e. SITE_DIR serves another build (e.g. the old version) instead of out/.
+ * Build first (npm run build), then npm run e2e.
+ * npm run e2e: what every deploy runs (core flows, accessibility, shared links); npm run e2e:full adds the
+ * long system runs (every state transition, every path with its detours, about 30 minutes), run before going live.
+ * SITE_DIR serves another build (e.g. the old version) instead of out/.
  * PW_CHROMIUM: a local Chromium to use where Playwright cannot download its own (the test environment).
  */
 import { defineConfig, devices } from '@playwright/test';
