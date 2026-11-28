@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/experimental-ct-react';
 import type { Page } from '@playwright/test';
 import { expectAccessible } from '../../playwright/checks';
 import { PanelStory, RoomStory } from './layout.story';
-import { LEAVE_MS } from './index';
+import { LEAVE_MS } from './Leave';
 
 const box = async (page: Page, sel: string) => (await page.locator(sel).first().boundingBox())!;
 const rootVar = (page: Page, name: string) => page.evaluate((n: string) => document.documentElement.style.getPropertyValue(n), name);

@@ -10,15 +10,14 @@ const draftSaved = (page: Page) => page.evaluate(() => sessionStorage.getItem('g
 test('typed text: kept for this tab while typing; another screen keeps the text waiting (unsent), not the box', async ({ mount, page }) => {
   await mount(<TextStory />);
   await ready(page);
-  await page.evaluate(() => window.textTest.text.setDraft('vil'));
+  await page.evaluate(() => window.textTest.text.type('vil'));
   await expect.poll(() => draftSaved(page)).toBe('vil');
   await page.evaluate(() => {
-    window.textTest.text.unsent.current = 'vil';
     window.textTest.setScreen('category');
   });
   await expect.poll(() => draftSaved(page)).toBe('vil');
   await page.evaluate(() => {
-    window.textTest.text.unsent.current = null;
+    window.textTest.text.send('villa');
     window.textTest.setScreen('results');
   });
   await expect.poll(() => draftSaved(page)).toBeNull();

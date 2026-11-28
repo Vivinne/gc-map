@@ -17,7 +17,7 @@ test('N5 scale bar: never longer than 110 px, also near the poles fully zoomed i
 });
 
 test('R4 framing room: the free part of the map never goes below the minimum, however much the panels cover', async () => {
-  const { roomFor } = await import('./index');
+  const { roomFor } = await import('./geo');
   for (const [W, H, pad] of [[882, 264, { top: 64, right: 0, bottom: 132, left: 0 }], [882, 86, { top: 64, right: 0, bottom: 43, left: 0 }], [1280, 800, { top: 64, right: 48, bottom: 0, left: 396 }], [300, 200, { top: 300, right: 300, bottom: 300, left: 300 }]] as const) {
     const { p, f } = roomFor(W, H, pad, 40, 40);
     assert.ok(H - f.top - f.bottom >= 39.99 && W - f.left - f.right >= 39.99, `${W}×${H}`);
@@ -46,7 +46,7 @@ test('E4 map names: the open name ends in … only when two lines of the room ca
 });
 
 test('scale bar: labels in m and km; the shortest bar when even 1 m is longer than 110 px', async () => {
-  const { scaleFor } = await import('./index');
+  const { scaleFor } = await import('./extras/scale');
   assert.match(scaleFor(0, 18).label, /^\d+ m$/);
   assert.match(scaleFor(45, 4).label, /^\d+ km$/);
   const s = scaleFor(85, 30);

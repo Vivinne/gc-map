@@ -3,7 +3,8 @@ import '../../../tests/support/browser';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { BUILDINGS } from '../../data';
-import { EMPTY_SCREEN, loadStack, saveStack, startStack, type Screen } from './index';
+import { EMPTY_SCREEN, type Screen } from './index';
+import { loadStack, saveStack, startStack } from './stack';
 
 const id = BUILDINGS[0]!.id;
 const results: Screen = { q: 'villa', list: 'results', group: [], b: '' };

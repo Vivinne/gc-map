@@ -1,7 +1,7 @@
 /* F1 search, layer 2: the search box alone (gc/test-modules.md, search). */
 import { expect, test } from '@playwright/experimental-ct-react';
 import { expectAccessible, expectCleanLayout, expectFocusRing, expectPressFeedback } from '../../../playwright/checks';
-import { SEARCH_HINT } from './index';
+import { SEARCH_HINT } from './SearchBox';
 import { Box } from './search.story';
 
 const noop = () => {};

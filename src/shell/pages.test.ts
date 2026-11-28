@@ -30,8 +30,8 @@ test('pages: every combination of screen, device and panel (decision table)', ()
 });
 
 test('pages: a key per desktop page (a new page slides in on its own)', () => {
-  const k = (o: Partial<Screen>, card = false, groupSize = 0, menuPage = false) => dockKeyOf({ ...EMPTY_SCREEN, ...o }, { card, groupSize, menuPage });
-  assert.equal(k({}, false, 0, true), 'menu');
+  const k = (o: Partial<Screen>, card = false, groupSize = 0, nothingOpen = false) => dockKeyOf({ ...EMPTY_SCREEN, ...o }, { card, groupSize, nothingOpen });
+  assert.equal(k({}, false, 0, true), 'none');
   assert.equal(k({ b: 'x' }, true, 0, true), 'card');
   assert.equal(k({ list: 'category' }), 'category');
   assert.equal(k({ list: 'era', q: 'Baroque' }), 'era-Baroque');

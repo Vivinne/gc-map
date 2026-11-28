@@ -1,5 +1,5 @@
 /* W flows: actions that use several modules, one per file (see MODULES.md). */
-export { afterPanel, type Ctx } from './context';
+export { type Ctx } from './context';
 export { listOf } from './lists';
 export { openCard } from './openCard';
 export { openGroup } from './openGroup';

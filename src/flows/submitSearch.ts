@@ -9,17 +9,16 @@ export function submitSearch(c: Ctx, text: string): void {
   const split = searchSplit(t);
   // no match at all: nothing is submitted, the preview says No Results
   if (!split.main.length && !split.more.length) return;
-  c.text.unsent.current = null;
   const found = split.main;
   c.input.current?.blur();
-  c.text.setDraft(t);
+  c.text.send(t);
   c.recent.addText(t);
   c.more.set('');
   const next: Screen = { q: t, list: 'results', group: [], b: '' };
   // The search preview is only the typing step: the submitted search takes its place in the history,
-  // so ＜ goes back to the screen before the typing (e.g. the previous search's results), not to the half-typed text
+  // so \uff1c goes back to the screen before the typing (e.g. the previous search's results), not to the half-typed text
   // The same search sent again from the box over its own results goes back to those results: no second,
-  // identical step (R1, ＜ would seem to do nothing)
+  // identical step (R1, \uff1c would seem to do nothing)
   if (c.top.list === 'preview' && !c.top.b) c.history.replace(next);
   else openScreen(c, next);
   if (found.length) {

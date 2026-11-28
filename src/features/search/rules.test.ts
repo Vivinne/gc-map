@@ -2,11 +2,13 @@ import '../../../tests/support/browser';
 /* F1 search, layer 1: search rules (gc/search-rules.md), text folding, recent lists (boundaries and damaged data). */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { addRecentBuilding, addRecentText, normQuery, recentBuildings, recentTexts, removeRecentBuilding, removeRecentText, search, searchSplit } from './index';
+import { search, searchSplit } from './index';
+import { normQuery } from './search';
+import { addRecentBuilding, addRecentText, recentBuildings, recentTexts, removeRecentBuilding, removeRecentText } from './recent';
 
 test('search: text folding: case, full width, accents, extra spaces, quotes', () => {
   assert.equal(normQuery('  Panthéon   ROME '), 'pantheon rome');
-  assert.equal(normQuery('ＲＯＭＥ'), 'rome');
+  assert.equal(normQuery('\uff32\uff2f\uff2d\uff25'), 'rome');
   assert.equal(normQuery(''), '');
 });
 
@@ -52,7 +54,7 @@ test('recent: blank and non-text entries in the saved list are left out', () => 
 });
 
 test('typed text: kept as typed, an empty box kept as empty, nothing kept once the box goes', async () => {
-  const { loadDraft, saveDraft } = await import('./index');
+  const { loadDraft, saveDraft } = await import('./draft');
   saveDraft('vil');
   assert.equal(loadDraft(), 'vil');
   saveDraft('');

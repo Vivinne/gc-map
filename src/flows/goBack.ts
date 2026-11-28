@@ -1,4 +1,4 @@
-/* W6 ＜: the previous screen comes back with its lists, its search and the map as it was then (SPEC R2, §7). */
+/* W6 \uff1c: the previous screen comes back with its lists, its search and the map as it was then (SPEC R2, §7). */
 import { BY_ID, type Building } from '../data';
 import { listOf } from './lists';
 import { afterPanel, byIds, type Ctx } from './context';
@@ -8,7 +8,7 @@ export function goBack(c: Ctx): void {
   if (stack.length < 2) return;
   const prev = stack[stack.length - 2]!;
   c.history.back();
-  c.text.setDraft(prev.draft ?? prev.q);
+  c.text.show(prev.draft ?? prev.q);
   // A results list or a number point list comes back with all its buildings framed (as when it opened);
   // a card comes back with its building in sight, as it was when the card opened (the map may have been
   // moved away from it before the next card was opened); other screens come back with the map as it was left

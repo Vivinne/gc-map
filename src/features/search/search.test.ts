@@ -27,7 +27,7 @@ test('search: every word must be found, in any order; "and" is an ordinary word'
 });
 
 test('search: full-width, letter case and outer spaces are folded', () => {
-  assert.deepEqual(names('ＲＯＭＥ'), names('rome'));
+  assert.deepEqual(names('\uff32\uff2f\uff2d\uff25'), names('rome'));
   assert.deepEqual(names('  PANTHEON  '), ['Pantheon', 'Panthéon']);
 });
 
@@ -55,7 +55,7 @@ test('N1 search: a curly apostrophe (iPhone keyboard) finds names with a straigh
 });
 
 test('recent texts: "Rome" and "rome" are one entry, the spelling typed last stays', async () => {
-  const { addRecentText, recentTexts } = await import('./index');
+  const { addRecentText, recentTexts } = await import('./recent');
   addRecentText('Rome');
   addRecentText('Gaudi');
   addRecentText('rome');
@@ -65,7 +65,7 @@ test('recent texts: "Rome" and "rome" are one entry, the spelling typed last sta
 });
 
 test('N3 recents: damaged saved data gives empty lists', async () => {
-  const { recentTexts, recentBuildings } = await import('./index');
+  const { recentTexts, recentBuildings } = await import('./recent');
   for (const v of ['{}', 'null', '"x"', '[1,{}]', 'not json']) {
     localStorage.setItem('gc-atlas:recent-text', v);
     localStorage.setItem('gc-atlas:recent-building', v);
@@ -75,7 +75,7 @@ test('N3 recents: damaged saved data gives empty lists', async () => {
 });
 
 test('R5 typed text: an emptied search box is kept as empty over a reload', async () => {
-  const { saveDraft, loadDraft } = await import('./index');
+  const { saveDraft, loadDraft } = await import('./draft');
   saveDraft('');
   assert.equal(loadDraft(), '');
   saveDraft(null);

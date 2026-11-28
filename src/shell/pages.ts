@@ -30,8 +30,8 @@ export function pageOf(s: Screen, o: { card: boolean; groupSize: number; hasPrev
 }
 
 /** Desktop: a key per panel page (a new page mounts a new panel, with its own entry animation) */
-export function dockKeyOf(s: Screen, o: { card: boolean; groupSize: number; menuPage: boolean }): string {
-  if (o.menuPage && !o.card) return 'menu';
+export function dockKeyOf(s: Screen, o: { card: boolean; groupSize: number; nothingOpen: boolean }): string {
+  if (o.nothingOpen && !o.card) return 'none';
   if (o.card) return 'card';
   if (s.list === 'category') return 'category';
   if (s.list === 'era') return `era-${s.q}`;

@@ -15,9 +15,8 @@ const doors = code.filter((f) => f.endsWith('index.ts') && f !== join(SRC, 'shel
 const offered = (door: string): string[] =>
   [...readFileSync(door, 'utf8').matchAll(/export\s*\{([^}]*)\}/g)].flatMap((m) => m[1]!.split(',').map((x) => x.trim().replace(/^type\s+/, '').split(/\s+as\s+/).pop()!).filter(Boolean));
 
-// T5-3 (found in test batch 5, waiting for the user): 6 names are used by no other module and no test
-// (AddressWriter, ResultRow, afterPanel, SheetState, saveFolded, Room); 21 more are used only by their module's own tests
-test('doors: every name offered is used outside its module', { todo: 'T5-3' }, () => {
+// T5-3 (fixed 2026-11-28): a module's own tests reach inside it; its door offers only what other modules use
+test('doors: every name offered is used outside its module', () => {
   const unused: string[] = [];
   for (const door of doors) {
     const home = dirname(door);

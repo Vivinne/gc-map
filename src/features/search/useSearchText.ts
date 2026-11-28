@@ -18,7 +18,32 @@ export function useSearchText(screen: string, sent: string) {
   const unsent = useRef<string | null>(typeof window === 'undefined' ? null : loadDraft());
   // kept over a reload: the typing screen's text, or on another screen the text typed and not sent
   useEffect(() => saveDraft(typing ? draft : unsent.current), [draft, screen]);
-  return { draft, setDraft, unsent };
+  // the only ways the text changes (T5-2): other modules call these and never touch the text itself
+  return {
+    /** The text in the box */
+    draft,
+    /** Text typed and not sent, waiting for the box to open again (null: none) */
+    waiting: (): string | null => unsent.current,
+    /** A letter typed: the box shows it, and it waits if another screen opens */
+    type(t: string) {
+      unsent.current = t;
+      setDraft(t);
+    },
+    /** A search sent: the box shows it; nothing waits any more */
+    send(t: string) {
+      unsent.current = null;
+      setDraft(t);
+    },
+    /** × or Esc: the box empties; nothing waits */
+    clear() {
+      unsent.current = null;
+      setDraft('');
+    },
+    /** The box shows this text again (\uff1c, the box opened again); what waits stays */
+    show(t: string) {
+      setDraft(t);
+    },
+  };
 }
 
 /** F1 search: recent searches and buildings, newest first (SPEC §5) */

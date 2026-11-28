@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { View } from '../../core/history';
 import { BUILDINGS, BY_ID, type Building } from '../../data';
-import { MapView, type MapHandle, type Padding } from './index';
+import { MapView, type MapHandle } from './index';
+import type { Padding } from './MapView';
 
 export interface MapProps {
   ids?: string[];

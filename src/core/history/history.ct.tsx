@@ -58,10 +58,8 @@ test('back and reset: back takes the top step; reset leaves only the screen give
   expect(await saved(page)).toEqual([S()]);
 });
 
-// T5-1 (found in test batch 5): \uff1c with one step left empties the history (the page then has no screen); today only the
-// \uff1c flow calls it, and it checks first. The door itself should keep the last step.
+// T5-1 (fixed 2026-11-28): the door itself keeps the last step
 test('back on the only step keeps it', async ({ mount, page }) => {
-  test.fail(true, 'T5-1');
   await mount(<HistoryStory />);
   await call(page, 'back');
   expect(await stack(page)).toHaveLength(1);

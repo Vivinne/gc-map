@@ -1,7 +1,7 @@
 /* C2 address: rate-limited address writes; map views out of range ignored. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ADDRESS_GAP, createAddressWriter, type Clock } from './index';
+import { ADDRESS_GAP, createAddressWriter, type Clock } from './writer';
 
 /** A fake page and clock: timers run when the test moves time forward */
 function setup(opts: { refuse?: (n: number) => boolean } = {}) {
