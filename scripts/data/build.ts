@@ -1,7 +1,6 @@
 // D1 data pipeline: handout §6 tables + data/ files + coordinates -> the full dataset and the site file
-import { readFileSync } from 'node:fs';
 import type { EraId, SiteData } from '../../src/data';
-import { ERAS, P, ascii, dataLines, eraOfStyle, fields, isEra, slug } from './common';
+import { ERAS, ascii, dataLines, eraOfStyle, fields, isEra, mustRead, slug } from './common';
 import { LEAK } from './check';
 import { cityKey, loadPoints, nationsOf } from './geo';
 import { parseHandout } from './parse';
@@ -15,7 +14,7 @@ export function buildData(): BuildResult {
   // Buildings the user took off the site (data/removed.txt): dropped here, and lines about them in the other data files are ignored
   const REMOVED = new Set(dataLines('data/removed.txt').map((l) => l.trim()));
   const gone = (n: string) => REMOVED.has(n);
-  const parsed = parseHandout(readFileSync(P('content/handout-c3-s6.md'), 'utf8'));
+  const parsed = parseHandout(mustRead('content/handout-c3-s6.md'));
   const { styles } = parsed;
   for (const n of REMOVED) if (!parsed.rows.some((r) => r.name === n)) errors.push(`removed.txt: no handout row named "${n}"`);
   const handout = parsed.rows.filter((r) => !gone(r.name));

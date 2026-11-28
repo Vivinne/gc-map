@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ERAS, LEAK, buildData, parseCoord, parseHandout, siteData, slug } from './index';
+import { ERAS, LEAK, buildData, gapsMarkdown, parseCoord, parseHandout, siteData, slug, useFiles } from './index';
 import { dataset as site } from '../../src/data';
 
 // The full build result, with the source and audit fields the site file leaves out
@@ -162,4 +162,82 @@ test('data: names, location labels and architects follow the synced Doc (data/do
   assert.equal(by.get('Unité d\'Habitation')!.locLabel, 'Marseille, FR');
   assert.equal(by.get('Pantheon')!.who, 'Hadrian');
   assert.ok(!dataset.places.some((p) => !p.locLabel));
+});
+
+// ---------- Layer 1, batch 2: every error the build reports, fed broken data (the repo files stay as they are) ----------
+
+const real = (f: string) => readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8');
+function buildWith(files: Record<string, string>) {
+  const restore = useFiles(files);
+  try {
+    return buildData();
+  } finally {
+    restore();
+  }
+}
+const has = (list: string[], re: RegExp) => assert.ok(list.some((e) => re.test(e)), `${re} in\n${list.join('\n')}`);
+
+test('build errors: coordinate lines (unknown building, bad coordinate, out of range, bad url, city with no range)', () => {
+  const extra = [
+    'No Such Building |  | en:X | 41.9°N 12.5°E | ',
+    'Cloaca Maxima | s1 | en:X | not a coordinate | ',
+    'Cloaca Maxima | s2 | en:X | 48.85°N 2.35°E | ',
+    'Cloaca Maxima | s3 | url:http://plain.example | 41.89°N 12.48°E | ',
+    'Cloaca Maxima | s4 | en:X | 41.89°N 12.48°E | Supplementary location: Atlantis',
+    'Cloaca Maxima | s5 | url:https://ok.example | 41.89°N 12.48°E | approximate',
+    'Cloaca Maxima | s6 | en:X | NONE | not found in the source',
+  ];
+  const r = buildWith({ 'data/geo-raw.txt': real('data/geo-raw.txt') + '\n' + extra.join('\n') + '\n' });
+  has(r.errors, /building not found: "No Such Building"/);
+  has(r.errors, /geo-raw line \d+: /);
+  has(r.errors, /km from "Rome"/);
+  has(r.errors, /url must be an https URL/);
+  has(r.errors, /CITY has no range for "Atlantis"/);
+  const cloaca = r.places.find((p) => p.name === 'Cloaca Maxima')!;
+  assert.ok(cloaca.points.some((p) => p.sub === 's5' && p.precision === 'approx' && p.sourceUrl === 'https://ok.example'));
+  assert.ok(r.unlocated.some((u) => u.name === 'Cloaca Maxima' && u.kind === 'partial'));
+});
+
+test('build errors: estimates and manual coordinates', () => {
+  const est = ['name,sub,lat,lng,conf,note', 'No Such,,41,12,h,', 'Cloaca Maxima,e1,abc,12,h,', 'Cloaca Maxima,e2,41.89,12.48,z,', 'Cloaca Maxima,,41.89,12.48,h,', 'Cloaca Maxima,e3,48.85,2.35,m,far'];
+  const man = ['name,sub,lat,lng,source_url,note', 'Nothing,,,,,', 'No Such,,41,12,https://x,', 'Cloaca Maxima,,abc,12,https://x,', 'Cloaca Maxima,,41.8889,12.4803,https://manual.example,checked'];
+  const r = buildWith({ 'data/geo-estimate.csv': est.join('\n'), 'data/geo-manual.csv': man.join('\n') });
+  has(r.errors, /geo-estimate line 2: building not found/);
+  has(r.errors, /geo-estimate line 3: lat\/lng is not a valid number/);
+  has(r.errors, /geo-estimate line 4: conf must be h, m or l/);
+  has(r.warns, /geo-estimate skipped \(coordinate already present\): Cloaca Maxima/);
+  has(r.errors, /geo-estimate line 6: coordinate is \d+ km from "Rome"/);
+  has(r.errors, /geo-manual line 3: building not found/);
+  has(r.errors, /geo-manual line 4: lat\/lng is not a valid number/);
+  const p = r.places.find((x) => x.name === 'Cloaca Maxima')!.points.find((x) => x.sub === '')!;
+  assert.deepEqual([p.precision, p.sourceUrl], ['manual', 'https://manual.example']);
+});
+
+test('build errors: removed, display and style lists naming no building; a bad category id', () => {
+  const r = buildWith({
+    'data/removed.txt': real('data/removed.txt') + '\nNo Such Removed\n',
+    'data/doc-display.txt': real('data/doc-display.txt') + '\nNo Such Display | X |  | \n',
+    'data/style-split.txt': real('data/style-split.txt') + '\nNo Such Style | Baroque | baroque\nCloaca Maxima | Roman | notanera\n',
+  });
+  has(r.errors, /removed.txt: no handout row named "No Such Removed"/);
+  has(r.errors, /doc-display.txt: no building named "No Such Display"/);
+  has(r.errors, /style-split.txt: no building named "No Such Style"/);
+  has(r.errors, /style-split.txt: bad era id notanera/);
+});
+
+test('build: a missing source file stops the build with its name', () => {
+  assert.throws(() => buildWith({ 'data/geo-raw.txt': null as unknown as string }), /Missing file: data\/geo-raw.txt/);
+});
+
+// SPEC P3 (one entry, one place) is not checked by the build yet: SPEC §15, bug 5
+test('build errors: an entry with two places', { todo: 'SPEC §15 bug 5: P3 not checked yet' }, () => {
+  const r = buildWith({ 'data/geo-raw.txt': real('data/geo-raw.txt') + '\nCloaca Maxima | second | en:X | 41.89°N 12.48°E | \n' });
+  has(r.errors, /one place/);
+});
+
+test('gaps report: headings, estimates and unlocated rows', () => {
+  const md = gapsMarkdown(built.places, built.unlocated);
+  assert.match(md, /^# /m);
+  const withGap = gapsMarkdown(built.places, [{ name: 'X', loc: 'Rome', kind: 'not-found', reason: 'r', subs: [] } as never]);
+  assert.match(withGap, /\| X \|/);
 });

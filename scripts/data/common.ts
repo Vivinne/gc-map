@@ -1,6 +1,6 @@
 // D1 data pipeline: shared paths, data-file readers, category groups and ids
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { EraId } from '../../src/data';
@@ -24,9 +24,28 @@ export const ERAS: { id: EraId; label: string; styles: string[] }[] = [
 export const isEra = (id: string): id is EraId => ERAS.some((e) => e.id === id);
 export const eraOfStyle = (sid: string) => ERAS.find((e) => e.styles.includes(sid))?.id;
 
+const realText = (file: string): string | null => (existsSync(P(file)) ? readFileSync(P(file), 'utf8') : null);
+let source = realText;
+/** A repo file as text (path from the repo root), or null when it is not there */
+export const readText = (file: string): string | null => source(file);
+/** A repo file as text; a missing file stops the build */
+export const mustRead = (file: string): string => {
+  const t = readText(file);
+  if (t === null) throw new Error(`Missing file: ${file}`);
+  return t;
+};
+/**
+ * Tests: read some files from `files` instead of the repo (to feed broken data and check every error the build
+ * reports). Returns a function that puts the repo files back.
+ */
+export function useFiles(files: Record<string, string | null>): () => void {
+  source = (file) => (file in files ? files[file]! : realText(file));
+  return () => void (source = realText);
+}
+
 /** Data lines of a file in data/: blank lines and # comments left out */
 export const dataLines = (file: string) =>
-  readFileSync(resolve(ROOT, file), 'utf8')
+  mustRead(file)
     .split(/\r?\n/)
     .filter((l) => l.trim() && !l.startsWith('#'));
 /** Fields of a "a | b | c" line, trimmed */

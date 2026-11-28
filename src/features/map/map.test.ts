@@ -44,3 +44,19 @@ test('E4 map names: the open name ends in … only when two lines of the room ca
   assert.ok(cut[1]!.endsWith('…'));
   for (const l of cut) assert.ok(l.length <= 12);
 });
+
+test('scale bar: labels in m and km; the shortest bar when even 1 m is longer than 110 px', async () => {
+  const { scaleFor } = await import('./index');
+  assert.match(scaleFor(0, 18).label, /^\d+ m$/);
+  assert.match(scaleFor(45, 4).label, /^\d+ km$/);
+  const s = scaleFor(85, 30);
+  assert.deepEqual([s.metres, s.label, s.px], [1, '1 m', 110]);
+});
+
+test('map names: short names stay on one line; a single word longer than the line is cut; nothing left over', () => {
+  assert.deepEqual(labelLines('Pantheon'), ['Pantheon']);
+  assert.deepEqual(labelLines('Supercalifragilisticexpialidocious'), [fill('Supercalifragilisticexpialidocious', 24)[0]!]);
+  assert.ok(labelLines('Supercalifragilisticexpialidocious')[0]!.endsWith('…'));
+  assert.deepEqual(fill('Short name', 20), ['Short name']);
+  assert.deepEqual(labelLines('Aaaaaaaaaaaaaaaaaaaaaaa Bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'), ['Aaaaaaaaaaaaaaaaaaaaaaa', 'Bbbbbbbbbbbbbbbbbbbbbbb…']);
+});

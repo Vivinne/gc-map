@@ -1,12 +1,12 @@
 // D1 data pipeline: coordinates (geo-raw.txt, geo-estimate.csv, geo-manual.csv), range checks and countries
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { geoArea, geoContains, geoDistance } from 'd3-geo';
 import type { Feature, FeatureCollection, MultiPolygon, Polygon, Position } from 'geojson';
 import { feature } from 'topojson-client';
 import type { GeometryCollection, Topology } from 'topojson-specification';
 import type { Precision } from '../../src/data';
-import { P, fields } from './common';
+import { fields, mustRead, readText } from './common';
 import { parseCoord } from './parse';
 import type { RawPoint, Row } from './types';
 
@@ -49,7 +49,7 @@ export function loadPoints(byName: Map<string, Row>, gone: (name: string) => boo
   const pts = new Map<string, RawPoint[]>();
   const addPoint = (name: string, p: RawPoint) => pts.set(name, [...(pts.get(name) ?? []), p]);
   const misses: { name: string; sub: string; page: string; reason: string }[] = [];
-  for (const [i, line] of readFileSync(P('data/geo-raw.txt'), 'utf8').split(/\r?\n/).entries()) {
+  for (const [i, line] of mustRead('data/geo-raw.txt').split(/\r?\n/).entries()) {
     if (!line.trim() || line.startsWith('#')) continue;
     const [key = '', sub = '', page = '', raw = '', note = ''] = fields(line);
     const at = `geo-raw line ${i + 1}`;
@@ -105,7 +105,7 @@ export function loadPoints(byName: Map<string, Row>, gone: (name: string) => boo
     m: 'Medium confidence (within about 1 km)',
     l: 'Low confidence (may be several km off, or a linear / grouped item)',
   };
-  const csvLines = (file: string) => (existsSync(P(file)) ? readFileSync(P(file), 'utf8').split(/\r?\n/).entries() : []);
+  const csvLines = (file: string) => readText(file)?.split(/\r?\n/).entries() ?? [];
   const badLatLng = (lat: string, lng: string) => !Number.isFinite(+lat) || !Number.isFinite(+lng) || Math.abs(+lat) > 90 || Math.abs(+lng) > 180;
   const rangeCheck = (at: string, row: Row, lat: number, lng: number, warnMissing: boolean) => {
     const box = CITY[cityKey(row.loc)];
