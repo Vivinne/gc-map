@@ -5,8 +5,8 @@
  */
 /** Colour of each style category ("Earth to sky": warm for the oldest styles, cool for the newest) */
 export const ERA_COLORS = {
-  ancient: '#D58774',
-  medieval: '#C38C53',
+  ancient: '#D27F6B',
+  medieval: '#C2894F',
   renaissance: '#A6943C',
   mannerism: '#799C51',
   baroque: '#4B9C75',

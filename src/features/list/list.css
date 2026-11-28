@@ -17,7 +17,7 @@
 .has-x > .row { padding-right: var(--sz-40); }
 .rm-x { position: absolute; top: 50%; right: var(--sz-8); width: var(--sz-24); height: var(--sz-24); margin-top: calc(-1 * var(--sz-12)); display: grid; place-items: center; color: var(--g66); border-radius: var(--r-s); }
 @media (hover: hover) { .rm-x:hover { color: var(--ink); background: var(--g92); } }
-.rm-x:active { color: var(--ink); background: var(--g92); }
+.rm-x:active { color: var(--ink); background: var(--g85); transform: translateY(var(--sz-1)); }
 .rows.recent + .rows { border-top: var(--sz-1) solid var(--rule); }
 .rows.recent + .recent-b { border-top: var(--sz-1) solid var(--rule); }
 /* recent buildings in the search preview: name with built span · city on the first line, architect · style below.

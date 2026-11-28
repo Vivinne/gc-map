@@ -57,8 +57,8 @@ for (const [kind, b] of Object.entries(KIND))
     expect(asked).toEqual(people.map((p) => p.search));
   });
 
-// SPEC §9 says a card with no architect shows "-"; the site (old and new) shows the style only
-test('card: no architect shows "-"', { annotation: { type: 'issue', description: 'T3-1: SPEC §9 "-" vs the site: style only' } }, async ({ mount }) => {
+// SPEC 9 (user, 2026-11-28): no architect shows the style only, as the list rows do
+test('card: no architect shows the style only', async ({ mount }) => {
   const card = await mount(<BuildingCard b={KIND.none} mobile={false} canBack onBack={noop} onClose={noop} onArchitect={noop} />);
   await expect(card.locator('.c-line').nth(1)).toHaveText(shownStyle(KIND.none));
 });
@@ -87,8 +87,7 @@ test('card: the card text can be selected; press feedback, focus ring, accessibi
   await expectPressFeedback(page, card.locator('.c-who').first());
   await expectPressFeedback(page, card.getByRole('button', { name: 'Close' }));
   await expectFocusRing(page, card.locator('.c-who').first());
-  // the white title on its category colour is checked on its own below (T3-2)
-  await expectAccessible(page, '#root', ['color-contrast: h1']);
+  await expectAccessible(page);
 });
 
 // WCAG 1.4.3 / 1.4.11: white bold 22 px title and the white \uff1c × on the category colour need 3:1
@@ -96,7 +95,7 @@ const lum = (h: string) => {
   const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
   return 0.2126 * c[0]! + 0.7152 * c[1]! + 0.0722 * c[2]!;
 };
-// known defect, kept until the user decides (T3-2: Ancient 2.78:1, Medieval 2.92:1): passes while it still fails
-test.fail('card: white title on every category colour reaches 3:1', { annotation: { type: 'issue', description: 'T3-2' } }, async () => {
+// T3-2 (fixed 2026-11-28): Ancient and Medieval darkened
+test('card: white title on every category colour reaches 3:1', async () => {
   for (const e of Object.values(ERAS)) expect(1.05 / (lum(e.color) + 0.05), e.label).toBeGreaterThanOrEqual(3);
 });

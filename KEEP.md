@@ -14,7 +14,7 @@ Everything below survives the redesign unchanged. Anything not listed here is fr
 | Type: Archivo Variable for the interface; Chinese text (`.sum`) in the device's own Chinese font (Noto Sans TC if installed, else PingFang TC, Microsoft JhengHei…; no Chinese font is shipped, Q10, 2026-11-20), 14 px / 1.45 | `src/shared/tokens/tokens.css`, `src/features/card/card.css` (`.sum`) |
 | Spacing: 16 px from every edge, controls 32 px high, list rows 40 px | `src/shared/tokens/tokens.ts` (`INSET`, `CONTROL_H`, `ROW_H`), drawn from the size scale in `src/shared/tokens/tokens.css` |
 
-Category colours in order: Ancient `#D58774`, Medieval `#C38C53`, Renaissance `#A6943C`, Mannerism `#799C51`, Baroque `#4B9C75`, Neoclassicism `#1B9794`, Art Nouveau `#278CAB`, Modern `#507CB5`, Beaux-Arts `#6B8BA2`, Others `#80878F`.
+Category colours in order: Ancient `#D27F6B`, Medieval `#C2894F`, Renaissance `#A6943C`, Mannerism `#799C51`, Baroque `#4B9C75`, Neoclassicism `#1B9794`, Art Nouveau `#278CAB`, Modern `#507CB5`, Beaux-Arts `#6B8BA2`, Others `#80878F`. Ancient and Medieval were darkened on 2026-11-28 (user) so the white card title on them reaches 3:1 (WCAG); every category colour must keep white text at 3:1 or more.
 
 ## Components and effects
 | What | Where | Rule |

@@ -94,7 +94,7 @@ Site: https://vivinne.github.io/gc-map/ (`/gc-map/atlas/` redirects there). KEEP
 
 - Rows 1–2 on the category colour (KEEP.md): ＜ / × row, then the name, bold.
 - Row 3: built span · city (start–completion, as the year rules give).
-- Row 4: architect · style. Each architect is a link → text search. Style: the finer style if any, else the category name. No architect: `-`.
+- Row 4: architect · style. Each architect is a link → text search. Style: the finer style if any, else the category name. No architect: the style only, as in the list rows (user, 2026-11-28).
 - Row 5: summary (Chinese).
 - Keywords: one italic line, plain text, label `關鍵字：` (E3); struck keywords stay struck.
 - Last, small grey italic: exam years (`TEST-ARCHED 2016 / 2018`).

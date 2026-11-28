@@ -18,10 +18,11 @@ test('data: first part of a span as written', () => {
   for (const [raw, s] of [['1928-1931', '1928'], ['1546–1590', '1546'], ['', ''], ['\u2014', ''], ['1500\uff08note\uff09', '1500']] as const) assert.equal(shortYear(raw), s, raw);
 });
 
-// Found in test batch 2: the comment of shortYear promises "BC 447-BC 432" -> "BC 447", but the whole span comes back.
-// The field (yearShort) is not shown anywhere today. Kept as a todo until the user decides (gc/restructure-progress.md).
-test('data: first part of a BC span', { todo: 'defect T2-1: BC span not cut' }, () => {
+// T2-1 (test batch 2, fixed 2026-11-28): a BC or AD span is cut at its first part too
+test('data: first part of a BC span', () => {
   assert.equal(shortYear('BC 447-BC 432'), 'BC 447');
+  assert.equal(shortYear('AD 118-AD 125'), 'AD 118');
+  assert.equal(shortYear('1928-1931'), '1928');
 });
 
 test('data: text folding for search (accents, curly quotes, case)', () => {

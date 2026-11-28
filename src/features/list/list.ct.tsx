@@ -101,11 +101,10 @@ test('recent buildings: the remove × reports its building and keeps room beside
   await expectCleanLayout(list, { inside: '.rm-x' });
 });
 
-// known defect, kept until the user decides (T3-3): with a mouse, the pressed × looks the same as the pointed ×
-test('recent buildings: the remove × looks different while pressed', async ({ mount, page, isMobile }) => {
-  test.fail(!isMobile, 'T3-3');
+// T3-3 (fixed 2026-11-28): the pressed × is darker than the pointed × and moves down 1 px, as other buttons do
+test('recent buildings: the remove × looks different while pressed', async ({ mount, page }) => {
   const list = await mount(<ListInPanel list={longest} remove onEvent={() => {}} />);
-  await expectPressFeedback(page, list.locator('.rm-x').first(), { move: false });
+  await expectPressFeedback(page, list.locator('.rm-x').first());
 });
 
 test('rows: press feedback, focus ring, accessibility', async ({ mount, page }) => {

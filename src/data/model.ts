@@ -43,7 +43,7 @@ export function startYear(raw: string): number | null {
 export function shortYear(raw: string): string {
   const s = raw.trim();
   if (!s || s === '\u2014') return '';
-  return (s.split(/\s*[\u2013\u2014]\s*|-(?=\d)|\uff08/)[0] ?? s).trim();
+  return (s.split(/\s*[\u2013\u2014]\s*|-(?=\d|BC |AD )|\uff08/)[0] ?? s).trim();
 }
 
 export function norm(s: string): string {
